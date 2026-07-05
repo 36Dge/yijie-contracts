@@ -1,0 +1,14 @@
+asyncapi: 3.0.0
+info:
+  title: Yijie Events
+  version: 0.1.0
+channels:
+  task.events:
+    address: task.events
+    messages:
+      taskEvent:
+        payload:
+          type: object
+          properties:
+            task_id:
+              type: string

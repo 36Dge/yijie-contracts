@@ -1,0 +1,11 @@
+openapi: 3.1.0
+info:
+  title: Yijie Internal API
+  version: 0.1.0
+paths:
+  /internal/healthz:
+    get:
+      summary: Internal health check
+      responses:
+        "200":
+          description: OK

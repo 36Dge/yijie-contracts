@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.yijie.ai/ecommerce/listing.schema.json",
+  "title": "Listing",
+  "type": "object",
+  "required": ["platform", "url"],
+  "properties": {
+    "platform": { "type": "string" },
+    "url": { "type": "string", "format": "uri" },
+    "title": { "type": "string" }
+  }
+}

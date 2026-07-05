@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.yijie.ai/chat/message.schema.json",
+  "title": "ChatMessage",
+  "type": "object",
+  "required": ["id", "role", "content"],
+  "properties": {
+    "id": { "type": "string" },
+    "role": { "type": "string", "enum": ["user", "assistant", "tool", "system"] },
+    "content": { "type": "string" }
+  }
+}

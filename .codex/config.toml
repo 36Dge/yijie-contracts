@@ -1,0 +1,7 @@
+[workspace]
+name = "yijie-contracts"
+stack = "OpenAPI + Protobuf + JSON Schema + SDK generation"
+
+[rules]
+contract_first = true
+breaking_change_check_required = true

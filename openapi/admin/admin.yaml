@@ -1,0 +1,11 @@
+openapi: 3.1.0
+info:
+  title: Yijie Admin API
+  version: 0.1.0
+paths:
+  /admin/healthz:
+    get:
+      summary: Admin health check
+      responses:
+        "200":
+          description: OK

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.yijie.ai/skills/skill-manifest.schema.json",
+  "title": "SkillManifest",
+  "type": "object",
+  "required": ["name", "version", "risk_level"],
+  "properties": {
+    "name": { "type": "string" },
+    "version": { "type": "string" },
+    "risk_level": { "type": "string", "enum": ["low", "medium", "high"] }
+  }
+}

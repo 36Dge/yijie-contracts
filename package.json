@@ -1,0 +1,15 @@
+{
+  "name": "@yijie/contracts",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "generate": "node scripts/generate.mjs",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "test": "pnpm generate && pnpm lint",
+    "build": "pnpm generate"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  }
+}

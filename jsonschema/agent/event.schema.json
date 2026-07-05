@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.yijie.ai/agent/event.schema.json",
+  "title": "AgentEvent",
+  "type": "object",
+  "required": ["task_id", "event_type"],
+  "properties": {
+    "task_id": { "type": "string" },
+    "codex_thread_id": { "type": "string" },
+    "event_type": { "type": "string" }
+  }
+}

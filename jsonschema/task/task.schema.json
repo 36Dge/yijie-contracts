@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.yijie.ai/task/task.schema.json",
+  "title": "AgentTask",
+  "type": "object",
+  "required": ["id", "status", "title"],
+  "properties": {
+    "id": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "running", "waiting_approval", "completed", "failed"]
+    },
+    "title": { "type": "string" }
+  }
+}

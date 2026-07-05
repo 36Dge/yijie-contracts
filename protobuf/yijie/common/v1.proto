@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package yijie.common.v1;
+
+option go_package = "github.com/36Dge/yijie/yijie-contracts/sdks/go/yijie/common/v1;commonv1";
+
+message TraceContext {
+  string trace_id = 1;
+  string request_id = 2;
+  string tenant_id = 3;
+  string user_id = 4;
+}
