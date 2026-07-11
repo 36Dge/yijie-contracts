@@ -1,11 +1,75 @@
-openapi: 3.1.0
+openapi: 3.0.3
 info:
   title: Yijie Public API
   version: 0.1.0
+  description: Public HTTP contract for Yijie clients.
+servers:
+  - url: https://api.yijie.ai
+security: []
+tags:
+  - name: System
+    description: Service health and readiness endpoints.
 paths:
   /healthz:
     get:
-      summary: Health check
+      operationId: getHealth
+      summary: Check process health
+      tags: [System]
       responses:
         "200":
-          description: OK
+          description: Process is healthy.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceStatus"
+  /readyz:
+    get:
+      operationId: getReadiness
+      summary: Check service readiness
+      tags: [System]
+      responses:
+        "200":
+          description: Service is ready to receive traffic.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Readiness"
+  /v1/status:
+    get:
+      operationId: getServiceStatus
+      summary: Get public service status
+      tags: [System]
+      responses:
+        "200":
+          description: Current service status.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceStatus"
+components:
+  schemas:
+    Readiness:
+      type: object
+      additionalProperties: false
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [ready]
+    ServiceStatus:
+      type: object
+      additionalProperties: false
+      required: [service, status, environment, database, cache]
+      properties:
+        service:
+          type: string
+          enum: [yijie-api]
+        status:
+          type: string
+          enum: [ok, degraded]
+        environment:
+          type: string
+        database:
+          type: string
+        cache:
+          type: string

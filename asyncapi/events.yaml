@@ -2,13 +2,38 @@ asyncapi: 3.0.0
 info:
   title: Yijie Events
   version: 0.1.0
+  description: Event contracts exchanged by Yijie services.
 channels:
-  task.events:
+  taskEvents:
     address: task.events
     messages:
       taskEvent:
-        payload:
-          type: object
-          properties:
-            task_id:
-              type: string
+        $ref: "#/components/messages/TaskEvent"
+operations:
+  receiveTaskEvents:
+    action: receive
+    channel:
+      $ref: "#/channels/taskEvents"
+    messages:
+      - $ref: "#/channels/taskEvents/messages/taskEvent"
+components:
+  messages:
+    TaskEvent:
+      name: TaskEvent
+      title: Agent task lifecycle event
+      payload:
+        type: object
+        additionalProperties: false
+        required: [task_id, status]
+        properties:
+          task_id:
+            type: string
+          status:
+            type: string
+            enum: [draft, running, waiting_approval, completed, failed]
+          trace_id:
+            type: string
+          agent_session_id:
+            type: string
+          codex_thread_id:
+            type: string

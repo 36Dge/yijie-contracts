@@ -3,10 +3,11 @@
   "$id": "https://contracts.yijie.ai/ecommerce/listing.schema.json",
   "title": "Listing",
   "type": "object",
+  "additionalProperties": false,
   "required": ["platform", "url"],
   "properties": {
-    "platform": { "type": "string" },
+    "platform": { "type": "string", "enum": ["amazon", "temu", "shopee", "tiktok-shop"] },
     "url": { "type": "string", "format": "uri" },
-    "title": { "type": "string" }
+    "title": { "type": "string", "minLength": 1 }
   }
 }

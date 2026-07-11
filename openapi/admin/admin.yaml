@@ -1,11 +1,36 @@
-openapi: 3.1.0
+openapi: 3.0.3
 info:
   title: Yijie Admin API
   version: 0.1.0
+  description: Administrative API contract for internal operators.
+servers:
+  - url: https://admin-api.yijie.ai
+security: []
+tags:
+  - name: System
+    description: Administrative service health endpoints.
 paths:
   /admin/healthz:
     get:
-      summary: Admin health check
+      operationId: getAdminHealth
+      summary: Check admin API health
+      tags: [System]
       responses:
         "200":
-          description: OK
+          description: Admin API is healthy.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      additionalProperties: false
+      required: [service, status]
+      properties:
+        service:
+          type: string
+        status:
+          type: string
+          enum: [ok, degraded]

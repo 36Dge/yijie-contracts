@@ -1,7 +1,0 @@
-syntax = "proto3";
-
-package yijie.services.agent_host.v1;
-
-option go_package = "github.com/36Dge/yijie/yijie-contracts/sdks/go/yijie/services/agent_host/v1;agenthostv1";
-
-service AgentHostService {}

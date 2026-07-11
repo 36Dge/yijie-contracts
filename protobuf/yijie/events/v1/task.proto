@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package yijie.events.v1;
+
+option go_package = "github.com/36Dge/yijie-contracts/sdks/go/protobuf/yijie/events/v1;eventsv1";
+
+enum TaskStatus {
+  TASK_STATUS_UNSPECIFIED = 0;
+  TASK_STATUS_DRAFT = 1;
+  TASK_STATUS_RUNNING = 2;
+  TASK_STATUS_WAITING_APPROVAL = 3;
+  TASK_STATUS_COMPLETED = 4;
+  TASK_STATUS_FAILED = 5;
+}
+
+message TaskEvent {
+  string task_id = 1;
+  string agent_session_id = 2;
+  string codex_thread_id = 3;
+  string status = 4;
+  TaskStatus status_code = 5;
+}

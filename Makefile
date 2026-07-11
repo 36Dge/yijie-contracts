@@ -1,4 +1,4 @@
-.PHONY: generate lint test
+.PHONY: generate lint test breaking build
 
 generate:
 	pnpm generate
@@ -8,3 +8,9 @@ lint:
 
 test:
 	pnpm test
+
+breaking:
+	pnpm breaking
+
+build:
+	pnpm build

@@ -3,13 +3,33 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "packageManager": "pnpm@11.7.0",
+  "engines": {
+    "node": ">=24 <27",
+    "pnpm": ">=11 <12"
+  },
   "scripts": {
     "generate": "node scripts/generate.mjs",
-    "lint": "tsc -p tsconfig.json --noEmit",
-    "test": "pnpm generate && pnpm lint",
-    "build": "pnpm generate"
+    "validate:api": "redocly lint",
+    "validate:schemas": "node scripts/validate-json-schemas.mjs",
+    "validate:proto": "buf lint",
+    "lint": "pnpm validate:api && pnpm validate:schemas && pnpm validate:proto && tsc -p tsconfig.json --noEmit && go vet ./...",
+    "test": "node scripts/check-generated.mjs && node --test tests/*.test.mjs && go test ./...",
+    "breaking": "./scripts/check-breaking.sh",
+    "build": "pnpm generate && tsc -p tsconfig.json"
   },
   "devDependencies": {
-    "typescript": "^6.0.3"
+    "@bufbuild/buf": "1.71.0",
+    "@bufbuild/protoc-gen-es": "2.12.1",
+    "@redocly/cli": "2.38.0",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "json-schema-to-typescript": "15.0.4",
+    "openapi-typescript": "7.13.0",
+    "typescript": "5.9.3",
+    "yaml": "2.9.0"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "2.12.1"
   }
 }

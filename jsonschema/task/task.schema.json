@@ -3,13 +3,14 @@
   "$id": "https://contracts.yijie.ai/task/task.schema.json",
   "title": "AgentTask",
   "type": "object",
+  "additionalProperties": false,
   "required": ["id", "status", "title"],
   "properties": {
-    "id": { "type": "string" },
+    "id": { "type": "string", "minLength": 1 },
     "status": {
       "type": "string",
       "enum": ["draft", "running", "waiting_approval", "completed", "failed"]
     },
-    "title": { "type": "string" }
+    "title": { "type": "string", "minLength": 1 }
   }
 }
