@@ -9,6 +9,8 @@ security: []
 tags:
   - name: System
     description: Service health and readiness endpoints.
+  - name: Tasks
+    description: Agent task lifecycle endpoints.
 paths:
   /healthz:
     get:
@@ -34,6 +36,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Readiness"
+        "503":
+          description: A required dependency is unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Readiness"
   /v1/status:
     get:
       operationId: getServiceStatus
@@ -46,6 +54,74 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ServiceStatus"
+  /v1/tasks:
+    post:
+      operationId: createTask
+      summary: Create an agent task
+      tags: [Tasks]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTaskRequest"
+      responses:
+        "201":
+          description: Task created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "400":
+          description: Request is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Task could not be persisted.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /v1/tasks/{task_id}:
+    parameters:
+      - name: task_id
+        in: path
+        required: true
+        description: Task identifier.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: getTask
+      summary: Get a task by identifier
+      tags: [Tasks]
+      responses:
+        "200":
+          description: Task found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "400":
+          description: Task identifier is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Task was not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Task could not be read.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
     Readiness:
@@ -55,7 +131,7 @@ components:
       properties:
         status:
           type: string
-          enum: [ready]
+          enum: [ready, not_ready]
     ServiceStatus:
       type: object
       additionalProperties: false
@@ -72,4 +148,74 @@ components:
         database:
           type: string
         cache:
+          type: string
+    CreateTaskRequest:
+      type: object
+      additionalProperties: false
+      required: [tenant_id, task_type, title, input]
+      properties:
+        tenant_id:
+          type: string
+          format: uuid
+        task_type:
+          type: string
+          minLength: 1
+          maxLength: 100
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        input:
+          type: object
+          additionalProperties: true
+    Task:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - tenant_id
+        - task_type
+        - title
+        - status
+        - input
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        task_type:
+          type: string
+        title:
+          type: string
+        status:
+          type: string
+          enum: [draft, running, waiting_approval, completed, failed]
+        input:
+          type: object
+          additionalProperties: true
+        result:
+          type: object
+          additionalProperties: true
+          nullable: true
+        error_message:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [code, message]
+      properties:
+        code:
+          type: string
+        message:
           type: string

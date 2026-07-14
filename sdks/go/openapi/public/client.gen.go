@@ -4,6 +4,7 @@
 package publicapi
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -11,16 +12,23 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
+
+	"github.com/oapi-codegen/runtime"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // Defines values for ReadinessStatus.
 const (
-	Ready ReadinessStatus = "ready"
+	NotReady ReadinessStatus = "not_ready"
+	Ready    ReadinessStatus = "ready"
 )
 
 // Valid indicates whether the value is a known member of the ReadinessStatus enum.
 func (e ReadinessStatus) Valid() bool {
 	switch e {
+	case NotReady:
+		return true
 	case Ready:
 		return true
 	default:
@@ -61,6 +69,47 @@ func (e ServiceStatusStatus) Valid() bool {
 	}
 }
 
+// Defines values for TaskStatus.
+const (
+	Completed       TaskStatus = "completed"
+	Draft           TaskStatus = "draft"
+	Failed          TaskStatus = "failed"
+	Running         TaskStatus = "running"
+	WaitingApproval TaskStatus = "waiting_approval"
+)
+
+// Valid indicates whether the value is a known member of the TaskStatus enum.
+func (e TaskStatus) Valid() bool {
+	switch e {
+	case Completed:
+		return true
+	case Draft:
+		return true
+	case Failed:
+		return true
+	case Running:
+		return true
+	case WaitingApproval:
+		return true
+	default:
+		return false
+	}
+}
+
+// CreateTaskRequest defines model for CreateTaskRequest.
+type CreateTaskRequest struct {
+	Input    map[string]interface{} `json:"input"`
+	TaskType string                 `json:"task_type"`
+	TenantId openapi_types.UUID     `json:"tenant_id"`
+	Title    string                 `json:"title"`
+}
+
+// ErrorResponse defines model for ErrorResponse.
+type ErrorResponse struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
 // Readiness defines model for Readiness.
 type Readiness struct {
 	Status ReadinessStatus `json:"status"`
@@ -83,6 +132,26 @@ type ServiceStatusService string
 
 // ServiceStatusStatus defines model for ServiceStatus.Status.
 type ServiceStatusStatus string
+
+// Task defines model for Task.
+type Task struct {
+	CreatedAt    time.Time               `json:"created_at"`
+	ErrorMessage *string                 `json:"error_message,omitempty"`
+	Id           openapi_types.UUID      `json:"id"`
+	Input        map[string]interface{}  `json:"input"`
+	Result       *map[string]interface{} `json:"result,omitempty"`
+	Status       TaskStatus              `json:"status"`
+	TaskType     string                  `json:"task_type"`
+	TenantId     openapi_types.UUID      `json:"tenant_id"`
+	Title        string                  `json:"title"`
+	UpdatedAt    time.Time               `json:"updated_at"`
+}
+
+// TaskStatus defines model for Task.Status.
+type TaskStatus string
+
+// CreateTaskJSONRequestBody defines body for CreateTask for application/json ContentType.
+type CreateTaskJSONRequestBody = CreateTaskRequest
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -165,6 +234,14 @@ type ClientInterface interface {
 
 	// GetServiceStatus request
 	GetServiceStatus(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateTaskWithBody request with any body
+	CreateTaskWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateTask(ctx context.Context, body CreateTaskJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetTask request
+	GetTask(ctx context.Context, taskId openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) GetHealth(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -193,6 +270,42 @@ func (c *Client) GetReadiness(ctx context.Context, reqEditors ...RequestEditorFn
 
 func (c *Client) GetServiceStatus(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetServiceStatusRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateTaskWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateTaskRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateTask(ctx context.Context, body CreateTaskJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateTaskRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetTask(ctx context.Context, taskId openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetTaskRequest(c.Server, taskId)
 	if err != nil {
 		return nil, err
 	}
@@ -284,6 +397,80 @@ func NewGetServiceStatusRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
+// NewCreateTaskRequest calls the generic CreateTask builder with application/json body
+func NewCreateTaskRequest(server string, body CreateTaskJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateTaskRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateTaskRequestWithBody generates requests for CreateTask with any type of body
+func NewCreateTaskRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/tasks")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetTaskRequest generates requests for GetTask
+func NewGetTaskRequest(server string, taskId openapi_types.UUID) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "task_id", taskId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/tasks/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -335,6 +522,14 @@ type ClientWithResponsesInterface interface {
 
 	// GetServiceStatusWithResponse request
 	GetServiceStatusWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetServiceStatusResponse, error)
+
+	// CreateTaskWithBodyWithResponse request with any body
+	CreateTaskWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateTaskResponse, error)
+
+	CreateTaskWithResponse(ctx context.Context, body CreateTaskJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateTaskResponse, error)
+
+	// GetTaskWithResponse request
+	GetTaskWithResponse(ctx context.Context, taskId openapi_types.UUID, reqEditors ...RequestEditorFn) (*GetTaskResponse, error)
 }
 
 type GetHealthResponse struct {
@@ -371,6 +566,7 @@ type GetReadinessResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *Readiness
+	JSON503      *Readiness
 }
 
 // Status returns HTTPResponse.Status
@@ -427,6 +623,71 @@ func (r GetServiceStatusResponse) ContentType() string {
 	return ""
 }
 
+type CreateTaskResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *Task
+	JSON400      *ErrorResponse
+	JSON500      *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateTaskResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateTaskResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r CreateTaskResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetTaskResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Task
+	JSON400      *ErrorResponse
+	JSON404      *ErrorResponse
+	JSON500      *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetTaskResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetTaskResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetTaskResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 // GetHealthWithResponse request returning *GetHealthResponse
 func (c *ClientWithResponses) GetHealthWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetHealthResponse, error) {
 	rsp, err := c.GetHealth(ctx, reqEditors...)
@@ -452,6 +713,32 @@ func (c *ClientWithResponses) GetServiceStatusWithResponse(ctx context.Context, 
 		return nil, err
 	}
 	return ParseGetServiceStatusResponse(rsp)
+}
+
+// CreateTaskWithBodyWithResponse request with arbitrary body returning *CreateTaskResponse
+func (c *ClientWithResponses) CreateTaskWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateTaskResponse, error) {
+	rsp, err := c.CreateTaskWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateTaskResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateTaskWithResponse(ctx context.Context, body CreateTaskJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateTaskResponse, error) {
+	rsp, err := c.CreateTask(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateTaskResponse(rsp)
+}
+
+// GetTaskWithResponse request returning *GetTaskResponse
+func (c *ClientWithResponses) GetTaskWithResponse(ctx context.Context, taskId openapi_types.UUID, reqEditors ...RequestEditorFn) (*GetTaskResponse, error) {
+	rsp, err := c.GetTask(ctx, taskId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetTaskResponse(rsp)
 }
 
 // ParseGetHealthResponse parses an HTTP response from a GetHealthWithResponse call
@@ -501,6 +788,13 @@ func ParseGetReadinessResponse(rsp *http.Response) (*GetReadinessResponse, error
 		}
 		response.JSON200 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest Readiness
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
 	}
 
 	return response, nil
@@ -526,6 +820,93 @@ func ParseGetServiceStatusResponse(rsp *http.Response) (*GetServiceStatusRespons
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateTaskResponse parses an HTTP response from a CreateTaskWithResponse call
+func ParseCreateTaskResponse(rsp *http.Response) (*CreateTaskResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateTaskResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest Task
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetTaskResponse parses an HTTP response from a GetTaskWithResponse call
+func ParseGetTaskResponse(rsp *http.Response) (*GetTaskResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetTaskResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Task
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
 
 	}
 

@@ -8,11 +8,15 @@ tool (
 	google.golang.org/protobuf/cmd/protoc-gen-go
 )
 
-require google.golang.org/protobuf v1.36.11
+require (
+	github.com/oapi-codegen/runtime v1.5.0
+	google.golang.org/protobuf v1.36.11
+)
 
 require (
 	cloud.google.com/go v0.123.0 // indirect
 	github.com/TwiN/go-color v1.4.1 // indirect
+	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/bahlo/generic-list-go v0.2.0 // indirect
 	github.com/buger/jsonparser v1.1.2 // indirect
 	github.com/dprotaso/go-yit v0.0.0-20220510233725-9ba8df137936 // indirect
@@ -21,6 +25,7 @@ require (
 	github.com/go-openapi/jsonpointer v0.22.5 // indirect
 	github.com/go-openapi/swag/jsonname v0.25.5 // indirect
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/invopop/jsonschema v0.14.0 // indirect
 	github.com/oapi-codegen/oapi-codegen/v2 v2.7.2 // indirect

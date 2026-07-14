@@ -4,13 +4,29 @@
   "title": "AgentTask",
   "type": "object",
   "additionalProperties": false,
-  "required": ["id", "status", "title"],
+  "required": [
+    "id",
+    "tenant_id",
+    "task_type",
+    "status",
+    "title",
+    "input",
+    "created_at",
+    "updated_at"
+  ],
   "properties": {
-    "id": { "type": "string", "minLength": 1 },
+    "id": { "type": "string", "format": "uuid" },
+    "tenant_id": { "type": "string", "format": "uuid" },
+    "task_type": { "type": "string", "minLength": 1, "maxLength": 100 },
     "status": {
       "type": "string",
       "enum": ["draft", "running", "waiting_approval", "completed", "failed"]
     },
-    "title": { "type": "string", "minLength": 1 }
+    "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "input": { "type": "object", "additionalProperties": true },
+    "result": { "type": ["object", "null"], "additionalProperties": true },
+    "error_message": { "type": ["string", "null"] },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" }
   }
 }
