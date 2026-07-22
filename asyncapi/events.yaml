@@ -9,6 +9,11 @@ channels:
     messages:
       taskEvent:
         $ref: "#/components/messages/TaskEvent"
+  agentSessionEvents:
+    address: agent.session.events
+    messages:
+      agentSessionEvent:
+        $ref: "#/components/messages/AgentSessionEvent"
 operations:
   receiveTaskEvents:
     action: receive
@@ -16,6 +21,12 @@ operations:
       $ref: "#/channels/taskEvents"
     messages:
       - $ref: "#/channels/taskEvents/messages/taskEvent"
+  receiveAgentSessionEvents:
+    action: receive
+    channel:
+      $ref: "#/channels/agentSessionEvents"
+    messages:
+      - $ref: "#/channels/agentSessionEvents/messages/agentSessionEvent"
 components:
   messages:
     TaskEvent:
@@ -37,3 +48,9 @@ components:
             type: string
           codex_thread_id:
             type: string
+    AgentSessionEvent:
+      name: AgentSessionEvent
+      title: Ordered Agent Host session event
+      summary: At-least-once event ordered by sequence within a single stream_id.
+      payload:
+        $ref: ../jsonschema/agent/session-event.schema.json

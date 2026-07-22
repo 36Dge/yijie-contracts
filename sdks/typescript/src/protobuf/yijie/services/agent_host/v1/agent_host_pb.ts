@@ -2,19 +2,322 @@
 // @generated from file yijie/services/agent_host/v1/agent_host.proto (package yijie.services.agent_host.v1, syntax proto3)
 /* eslint-disable */
 
-import type { GenFile, GenService } from "@bufbuild/protobuf/codegenv2";
-import { fileDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
+import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
+import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
+import type { TraceContext } from "../../../common/v1/common_pb";
+import { file_yijie_common_v1_common } from "../../../common/v1/common_pb";
+import type { AgentSession, AgentSessionEvent } from "../../../events/v1/agent_session_pb";
+import { file_yijie_events_v1_agent_session } from "../../../events/v1/agent_session_pb";
+import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file yijie/services/agent_host/v1/agent_host.proto.
  */
 export const file_yijie_services_agent_host_v1_agent_host: GenFile = /*@__PURE__*/
-  fileDesc("Ci15aWppZS9zZXJ2aWNlcy9hZ2VudF9ob3N0L3YxL2FnZW50X2hvc3QucHJvdG8SHHlpamllLnNlcnZpY2VzLmFnZW50X2hvc3QudjEyEgoQQWdlbnRIb3N0U2VydmljZUJcWlpnaXRodWIuY29tLzM2RGdlL3lpamllLWNvbnRyYWN0cy9zZGtzL2dvL3Byb3RvYnVmL3lpamllL3NlcnZpY2VzL2FnZW50X2hvc3QvdjE7YWdlbnRob3N0djFiBnByb3RvMw");
+  fileDesc("Ci15aWppZS9zZXJ2aWNlcy9hZ2VudF9ob3N0L3YxL2FnZW50X2hvc3QucHJvdG8SHHlpamllLnNlcnZpY2VzLmFnZW50X2hvc3QudjEiYQoTU3RhcnRTZXNzaW9uUmVxdWVzdBIsCgV0cmFjZRgBIAEoCzIdLnlpamllLmNvbW1vbi52MS5UcmFjZUNvbnRleHQSDwoHdGFza19pZBgCIAEoCRILCgNjd2QYAyABKAkiRgoUU3RhcnRTZXNzaW9uUmVzcG9uc2USLgoHc2Vzc2lvbhgBIAEoCzIdLnlpamllLmV2ZW50cy52MS5BZ2VudFNlc3Npb24iXgoUUmVzdW1lU2Vzc2lvblJlcXVlc3QSLAoFdHJhY2UYASABKAsyHS55aWppZS5jb21tb24udjEuVHJhY2VDb250ZXh0EhgKEGFnZW50X3Nlc3Npb25faWQYAiABKAkiRwoVUmVzdW1lU2Vzc2lvblJlc3BvbnNlEi4KB3Nlc3Npb24YASABKAsyHS55aWppZS5ldmVudHMudjEuQWdlbnRTZXNzaW9uIi0KEUdldFNlc3Npb25SZXF1ZXN0EhgKEGFnZW50X3Nlc3Npb25faWQYASABKAkiRAoSR2V0U2Vzc2lvblJlc3BvbnNlEi4KB3Nlc3Npb24YASABKAsyHS55aWppZS5ldmVudHMudjEuQWdlbnRTZXNzaW9uIoMBChBTdGFydFR1cm5SZXF1ZXN0EiwKBXRyYWNlGAEgASgLMh0ueWlqaWUuY29tbW9uLnYxLlRyYWNlQ29udGV4dBIYChBhZ2VudF9zZXNzaW9uX2lkGAIgASgJEg0KBWlucHV0GAMgASgJEhgKEHJlYXNvbmluZ19lZmZvcnQYBCABKAkiJAoRU3RhcnRUdXJuUmVzcG9uc2USDwoHdHVybl9pZBgBIAEoCSJvChRJbnRlcnJ1cHRUdXJuUmVxdWVzdBIsCgV0cmFjZRgBIAEoCzIdLnlpamllLmNvbW1vbi52MS5UcmFjZUNvbnRleHQSGAoQYWdlbnRfc2Vzc2lvbl9pZBgCIAEoCRIPCgd0dXJuX2lkGAMgASgJIhcKFUludGVycnVwdFR1cm5SZXNwb25zZSJdChZTdWJzY3JpYmVFdmVudHNSZXF1ZXN0EhgKEGFnZW50X3Nlc3Npb25faWQYASABKAkSEQoJc3RyZWFtX2lkGAIgASgJEhYKDmFmdGVyX3NlcXVlbmNlGAMgASgEIkwKF1N1YnNjcmliZUV2ZW50c1Jlc3BvbnNlEjEKBWV2ZW50GAEgASgLMiIueWlqaWUuZXZlbnRzLnYxLkFnZW50U2Vzc2lvbkV2ZW50Mt8FChBBZ2VudEhvc3RTZXJ2aWNlEnUKDFN0YXJ0U2Vzc2lvbhIxLnlpamllLnNlcnZpY2VzLmFnZW50X2hvc3QudjEuU3RhcnRTZXNzaW9uUmVxdWVzdBoyLnlpamllLnNlcnZpY2VzLmFnZW50X2hvc3QudjEuU3RhcnRTZXNzaW9uUmVzcG9uc2USeAoNUmVzdW1lU2Vzc2lvbhIyLnlpamllLnNlcnZpY2VzLmFnZW50X2hvc3QudjEuUmVzdW1lU2Vzc2lvblJlcXVlc3QaMy55aWppZS5zZXJ2aWNlcy5hZ2VudF9ob3N0LnYxLlJlc3VtZVNlc3Npb25SZXNwb25zZRJvCgpHZXRTZXNzaW9uEi8ueWlqaWUuc2VydmljZXMuYWdlbnRfaG9zdC52MS5HZXRTZXNzaW9uUmVxdWVzdBowLnlpamllLnNlcnZpY2VzLmFnZW50X2hvc3QudjEuR2V0U2Vzc2lvblJlc3BvbnNlEmwKCVN0YXJ0VHVybhIuLnlpamllLnNlcnZpY2VzLmFnZW50X2hvc3QudjEuU3RhcnRUdXJuUmVxdWVzdBovLnlpamllLnNlcnZpY2VzLmFnZW50X2hvc3QudjEuU3RhcnRUdXJuUmVzcG9uc2USeAoNSW50ZXJydXB0VHVybhIyLnlpamllLnNlcnZpY2VzLmFnZW50X2hvc3QudjEuSW50ZXJydXB0VHVyblJlcXVlc3QaMy55aWppZS5zZXJ2aWNlcy5hZ2VudF9ob3N0LnYxLkludGVycnVwdFR1cm5SZXNwb25zZRKAAQoPU3Vic2NyaWJlRXZlbnRzEjQueWlqaWUuc2VydmljZXMuYWdlbnRfaG9zdC52MS5TdWJzY3JpYmVFdmVudHNSZXF1ZXN0GjUueWlqaWUuc2VydmljZXMuYWdlbnRfaG9zdC52MS5TdWJzY3JpYmVFdmVudHNSZXNwb25zZTABQlxaWmdpdGh1Yi5jb20vMzZEZ2UveWlqaWUtY29udHJhY3RzL3Nka3MvZ28vcHJvdG9idWYveWlqaWUvc2VydmljZXMvYWdlbnRfaG9zdC92MTthZ2VudGhvc3R2MWIGcHJvdG8z", [file_yijie_common_v1_common, file_yijie_events_v1_agent_session]);
+
+/**
+ * @generated from message yijie.services.agent_host.v1.StartSessionRequest
+ */
+export type StartSessionRequest = Message<"yijie.services.agent_host.v1.StartSessionRequest"> & {
+  /**
+   * @generated from field: yijie.common.v1.TraceContext trace = 1;
+   */
+  trace?: TraceContext | undefined;
+
+  /**
+   * @generated from field: string task_id = 2;
+   */
+  taskId: string;
+
+  /**
+   * @generated from field: string cwd = 3;
+   */
+  cwd: string;
+};
+
+/**
+ * Describes the message yijie.services.agent_host.v1.StartSessionRequest.
+ * Use `create(StartSessionRequestSchema)` to create a new message.
+ */
+export const StartSessionRequestSchema: GenMessage<StartSessionRequest> = /*@__PURE__*/
+  messageDesc(file_yijie_services_agent_host_v1_agent_host, 0);
+
+/**
+ * @generated from message yijie.services.agent_host.v1.StartSessionResponse
+ */
+export type StartSessionResponse = Message<"yijie.services.agent_host.v1.StartSessionResponse"> & {
+  /**
+   * @generated from field: yijie.events.v1.AgentSession session = 1;
+   */
+  session?: AgentSession | undefined;
+};
+
+/**
+ * Describes the message yijie.services.agent_host.v1.StartSessionResponse.
+ * Use `create(StartSessionResponseSchema)` to create a new message.
+ */
+export const StartSessionResponseSchema: GenMessage<StartSessionResponse> = /*@__PURE__*/
+  messageDesc(file_yijie_services_agent_host_v1_agent_host, 1);
+
+/**
+ * @generated from message yijie.services.agent_host.v1.ResumeSessionRequest
+ */
+export type ResumeSessionRequest = Message<"yijie.services.agent_host.v1.ResumeSessionRequest"> & {
+  /**
+   * @generated from field: yijie.common.v1.TraceContext trace = 1;
+   */
+  trace?: TraceContext | undefined;
+
+  /**
+   * @generated from field: string agent_session_id = 2;
+   */
+  agentSessionId: string;
+};
+
+/**
+ * Describes the message yijie.services.agent_host.v1.ResumeSessionRequest.
+ * Use `create(ResumeSessionRequestSchema)` to create a new message.
+ */
+export const ResumeSessionRequestSchema: GenMessage<ResumeSessionRequest> = /*@__PURE__*/
+  messageDesc(file_yijie_services_agent_host_v1_agent_host, 2);
+
+/**
+ * @generated from message yijie.services.agent_host.v1.ResumeSessionResponse
+ */
+export type ResumeSessionResponse = Message<"yijie.services.agent_host.v1.ResumeSessionResponse"> & {
+  /**
+   * @generated from field: yijie.events.v1.AgentSession session = 1;
+   */
+  session?: AgentSession | undefined;
+};
+
+/**
+ * Describes the message yijie.services.agent_host.v1.ResumeSessionResponse.
+ * Use `create(ResumeSessionResponseSchema)` to create a new message.
+ */
+export const ResumeSessionResponseSchema: GenMessage<ResumeSessionResponse> = /*@__PURE__*/
+  messageDesc(file_yijie_services_agent_host_v1_agent_host, 3);
+
+/**
+ * @generated from message yijie.services.agent_host.v1.GetSessionRequest
+ */
+export type GetSessionRequest = Message<"yijie.services.agent_host.v1.GetSessionRequest"> & {
+  /**
+   * @generated from field: string agent_session_id = 1;
+   */
+  agentSessionId: string;
+};
+
+/**
+ * Describes the message yijie.services.agent_host.v1.GetSessionRequest.
+ * Use `create(GetSessionRequestSchema)` to create a new message.
+ */
+export const GetSessionRequestSchema: GenMessage<GetSessionRequest> = /*@__PURE__*/
+  messageDesc(file_yijie_services_agent_host_v1_agent_host, 4);
+
+/**
+ * @generated from message yijie.services.agent_host.v1.GetSessionResponse
+ */
+export type GetSessionResponse = Message<"yijie.services.agent_host.v1.GetSessionResponse"> & {
+  /**
+   * @generated from field: yijie.events.v1.AgentSession session = 1;
+   */
+  session?: AgentSession | undefined;
+};
+
+/**
+ * Describes the message yijie.services.agent_host.v1.GetSessionResponse.
+ * Use `create(GetSessionResponseSchema)` to create a new message.
+ */
+export const GetSessionResponseSchema: GenMessage<GetSessionResponse> = /*@__PURE__*/
+  messageDesc(file_yijie_services_agent_host_v1_agent_host, 5);
+
+/**
+ * @generated from message yijie.services.agent_host.v1.StartTurnRequest
+ */
+export type StartTurnRequest = Message<"yijie.services.agent_host.v1.StartTurnRequest"> & {
+  /**
+   * @generated from field: yijie.common.v1.TraceContext trace = 1;
+   */
+  trace?: TraceContext | undefined;
+
+  /**
+   * @generated from field: string agent_session_id = 2;
+   */
+  agentSessionId: string;
+
+  /**
+   * @generated from field: string input = 3;
+   */
+  input: string;
+
+  /**
+   * @generated from field: string reasoning_effort = 4;
+   */
+  reasoningEffort: string;
+};
+
+/**
+ * Describes the message yijie.services.agent_host.v1.StartTurnRequest.
+ * Use `create(StartTurnRequestSchema)` to create a new message.
+ */
+export const StartTurnRequestSchema: GenMessage<StartTurnRequest> = /*@__PURE__*/
+  messageDesc(file_yijie_services_agent_host_v1_agent_host, 6);
+
+/**
+ * @generated from message yijie.services.agent_host.v1.StartTurnResponse
+ */
+export type StartTurnResponse = Message<"yijie.services.agent_host.v1.StartTurnResponse"> & {
+  /**
+   * @generated from field: string turn_id = 1;
+   */
+  turnId: string;
+};
+
+/**
+ * Describes the message yijie.services.agent_host.v1.StartTurnResponse.
+ * Use `create(StartTurnResponseSchema)` to create a new message.
+ */
+export const StartTurnResponseSchema: GenMessage<StartTurnResponse> = /*@__PURE__*/
+  messageDesc(file_yijie_services_agent_host_v1_agent_host, 7);
+
+/**
+ * @generated from message yijie.services.agent_host.v1.InterruptTurnRequest
+ */
+export type InterruptTurnRequest = Message<"yijie.services.agent_host.v1.InterruptTurnRequest"> & {
+  /**
+   * @generated from field: yijie.common.v1.TraceContext trace = 1;
+   */
+  trace?: TraceContext | undefined;
+
+  /**
+   * @generated from field: string agent_session_id = 2;
+   */
+  agentSessionId: string;
+
+  /**
+   * @generated from field: string turn_id = 3;
+   */
+  turnId: string;
+};
+
+/**
+ * Describes the message yijie.services.agent_host.v1.InterruptTurnRequest.
+ * Use `create(InterruptTurnRequestSchema)` to create a new message.
+ */
+export const InterruptTurnRequestSchema: GenMessage<InterruptTurnRequest> = /*@__PURE__*/
+  messageDesc(file_yijie_services_agent_host_v1_agent_host, 8);
+
+/**
+ * @generated from message yijie.services.agent_host.v1.InterruptTurnResponse
+ */
+export type InterruptTurnResponse = Message<"yijie.services.agent_host.v1.InterruptTurnResponse"> & {
+};
+
+/**
+ * Describes the message yijie.services.agent_host.v1.InterruptTurnResponse.
+ * Use `create(InterruptTurnResponseSchema)` to create a new message.
+ */
+export const InterruptTurnResponseSchema: GenMessage<InterruptTurnResponse> = /*@__PURE__*/
+  messageDesc(file_yijie_services_agent_host_v1_agent_host, 9);
+
+/**
+ * @generated from message yijie.services.agent_host.v1.SubscribeEventsRequest
+ */
+export type SubscribeEventsRequest = Message<"yijie.services.agent_host.v1.SubscribeEventsRequest"> & {
+  /**
+   * @generated from field: string agent_session_id = 1;
+   */
+  agentSessionId: string;
+
+  /**
+   * @generated from field: string stream_id = 2;
+   */
+  streamId: string;
+
+  /**
+   * @generated from field: uint64 after_sequence = 3;
+   */
+  afterSequence: bigint;
+};
+
+/**
+ * Describes the message yijie.services.agent_host.v1.SubscribeEventsRequest.
+ * Use `create(SubscribeEventsRequestSchema)` to create a new message.
+ */
+export const SubscribeEventsRequestSchema: GenMessage<SubscribeEventsRequest> = /*@__PURE__*/
+  messageDesc(file_yijie_services_agent_host_v1_agent_host, 10);
+
+/**
+ * @generated from message yijie.services.agent_host.v1.SubscribeEventsResponse
+ */
+export type SubscribeEventsResponse = Message<"yijie.services.agent_host.v1.SubscribeEventsResponse"> & {
+  /**
+   * @generated from field: yijie.events.v1.AgentSessionEvent event = 1;
+   */
+  event?: AgentSessionEvent | undefined;
+};
+
+/**
+ * Describes the message yijie.services.agent_host.v1.SubscribeEventsResponse.
+ * Use `create(SubscribeEventsResponseSchema)` to create a new message.
+ */
+export const SubscribeEventsResponseSchema: GenMessage<SubscribeEventsResponse> = /*@__PURE__*/
+  messageDesc(file_yijie_services_agent_host_v1_agent_host, 11);
 
 /**
  * @generated from service yijie.services.agent_host.v1.AgentHostService
  */
 export const AgentHostService: GenService<{
+  /**
+   * @generated from rpc yijie.services.agent_host.v1.AgentHostService.StartSession
+   */
+  startSession: {
+    methodKind: "unary";
+    input: typeof StartSessionRequestSchema;
+    output: typeof StartSessionResponseSchema;
+  },
+  /**
+   * @generated from rpc yijie.services.agent_host.v1.AgentHostService.ResumeSession
+   */
+  resumeSession: {
+    methodKind: "unary";
+    input: typeof ResumeSessionRequestSchema;
+    output: typeof ResumeSessionResponseSchema;
+  },
+  /**
+   * @generated from rpc yijie.services.agent_host.v1.AgentHostService.GetSession
+   */
+  getSession: {
+    methodKind: "unary";
+    input: typeof GetSessionRequestSchema;
+    output: typeof GetSessionResponseSchema;
+  },
+  /**
+   * @generated from rpc yijie.services.agent_host.v1.AgentHostService.StartTurn
+   */
+  startTurn: {
+    methodKind: "unary";
+    input: typeof StartTurnRequestSchema;
+    output: typeof StartTurnResponseSchema;
+  },
+  /**
+   * @generated from rpc yijie.services.agent_host.v1.AgentHostService.InterruptTurn
+   */
+  interruptTurn: {
+    methodKind: "unary";
+    input: typeof InterruptTurnRequestSchema;
+    output: typeof InterruptTurnResponseSchema;
+  },
+  /**
+   * @generated from rpc yijie.services.agent_host.v1.AgentHostService.SubscribeEvents
+   */
+  subscribeEvents: {
+    methodKind: "server_streaming";
+    input: typeof SubscribeEventsRequestSchema;
+    output: typeof SubscribeEventsResponseSchema;
+  },
 }> = /*@__PURE__*/
   serviceDesc(file_yijie_services_agent_host_v1_agent_host, 0);
 

@@ -17,8 +17,14 @@ async function findSchemas(dir) {
 }
 
 function compareSchema(oldSchema, newSchema, location, errors) {
-  if (oldSchema.type && newSchema.type && oldSchema.type !== newSchema.type) {
-    errors.push(`${location}: type changed from ${oldSchema.type} to ${newSchema.type}`);
+  if (
+    oldSchema.type &&
+    newSchema.type &&
+    JSON.stringify(oldSchema.type) !== JSON.stringify(newSchema.type)
+  ) {
+    errors.push(
+      `${location}: type changed from ${JSON.stringify(oldSchema.type)} to ${JSON.stringify(newSchema.type)}`,
+    );
   }
   const oldProperties = oldSchema.properties ?? {};
   const newProperties = newSchema.properties ?? {};

@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.yijie.ai/agent/session-event.schema.json",
+  "title": "AgentSessionEvent",
+  "description": "A sanitized Agent Host event. Sequence is monotonic only within one stream_id. A new Host process creates a new stream_id and does not replay content from an earlier process.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_id",
+    "stream_id",
+    "sequence",
+    "occurred_at",
+    "task_id",
+    "agent_session_id",
+    "codex_thread_id",
+    "event_type",
+    "terminal",
+    "payload"
+  ],
+  "definitions": {
+    "threadStartedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model", "model_provider"],
+      "properties": {
+        "model": { "type": "string", "minLength": 1 },
+        "model_provider": { "type": "string", "minLength": 1 }
+      }
+    },
+    "turnLifecyclePayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["in_progress", "completed", "interrupted", "failed"]
+        },
+        "code": { "type": "string" },
+        "message": { "type": "string" }
+      }
+    },
+    "itemLifecyclePayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["item_type"],
+      "properties": {
+        "item_type": { "type": "string", "minLength": 1 },
+        "text": { "type": "string" }
+      }
+    },
+    "agentMessageDeltaPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["delta"],
+      "properties": {
+        "delta": { "type": "string" }
+      }
+    },
+    "agentProblemPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["message", "will_retry"],
+      "properties": {
+        "code": { "type": "string" },
+        "message": { "type": "string" },
+        "will_retry": { "type": "boolean" }
+      }
+    }
+  },
+  "properties": {
+    "schema_version": { "const": 1 },
+    "event_id": { "type": "string", "format": "uuid" },
+    "stream_id": { "type": "string", "format": "uuid" },
+    "sequence": { "type": "integer", "minimum": 1 },
+    "occurred_at": { "type": "string", "format": "date-time" },
+    "trace_id": { "type": "string", "minLength": 1 },
+    "request_id": { "type": "string", "minLength": 1 },
+    "tenant_id": { "type": "string", "minLength": 1 },
+    "user_id": { "type": "string", "minLength": 1 },
+    "task_id": { "type": "string", "format": "uuid" },
+    "agent_session_id": { "type": "string", "format": "uuid" },
+    "codex_thread_id": { "type": "string", "format": "uuid" },
+    "turn_id": { "type": "string", "format": "uuid" },
+    "item_id": { "type": "string", "minLength": 1 },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "thread.started",
+        "turn.started",
+        "item.started",
+        "item.agent_message.delta",
+        "item.completed",
+        "turn.completed",
+        "error",
+        "warning"
+      ]
+    },
+    "terminal": { "type": "boolean" },
+    "payload": {
+      "oneOf": [
+        { "$ref": "#/definitions/threadStartedPayload" },
+        { "$ref": "#/definitions/turnLifecyclePayload" },
+        { "$ref": "#/definitions/itemLifecyclePayload" },
+        { "$ref": "#/definitions/agentMessageDeltaPayload" },
+        { "$ref": "#/definitions/agentProblemPayload" }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "enum": ["turn.started", "turn.completed", "error"]
+          }
+        },
+        "required": ["event_type"]
+      },
+      "then": {
+        "type": "object",
+        "required": ["turn_id"],
+        "properties": {
+          "turn_id": { "type": "string", "format": "uuid" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "enum": ["item.started", "item.agent_message.delta", "item.completed"]
+          }
+        },
+        "required": ["event_type"]
+      },
+      "then": {
+        "type": "object",
+        "required": ["turn_id", "item_id"],
+        "properties": {
+          "turn_id": { "type": "string", "format": "uuid" },
+          "item_id": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "event_type": { "const": "thread.started" } },
+        "required": ["event_type"]
+      },
+      "then": {
+        "properties": { "payload": { "$ref": "#/definitions/threadStartedPayload" } }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": { "enum": ["turn.started", "turn.completed"] }
+        },
+        "required": ["event_type"]
+      },
+      "then": {
+        "properties": { "payload": { "$ref": "#/definitions/turnLifecyclePayload" } }
+      }
+    },
+    {
+      "if": {
+        "properties": { "event_type": { "enum": ["item.started", "item.completed"] } },
+        "required": ["event_type"]
+      },
+      "then": {
+        "properties": { "payload": { "$ref": "#/definitions/itemLifecyclePayload" } }
+      }
+    },
+    {
+      "if": {
+        "properties": { "event_type": { "const": "item.agent_message.delta" } },
+        "required": ["event_type"]
+      },
+      "then": {
+        "properties": { "payload": { "$ref": "#/definitions/agentMessageDeltaPayload" } }
+      }
+    },
+    {
+      "if": {
+        "properties": { "event_type": { "enum": ["error", "warning"] } },
+        "required": ["event_type"]
+      },
+      "then": {
+        "properties": { "payload": { "$ref": "#/definitions/agentProblemPayload" } }
+      }
+    },
+    {
+      "if": {
+        "properties": { "event_type": { "const": "turn.completed" } },
+        "required": ["event_type"]
+      },
+      "then": { "properties": { "terminal": { "const": true } } },
+      "else": { "properties": { "terminal": { "const": false } } }
+    }
+  ]
+}

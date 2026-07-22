@@ -2,6 +2,72 @@ syntax = "proto3";
 
 package yijie.services.agent_host.v1;
 
+import "yijie/common/v1/common.proto";
+import "yijie/events/v1/agent_session.proto";
+
 option go_package = "github.com/36Dge/yijie-contracts/sdks/go/protobuf/yijie/services/agent_host/v1;agenthostv1";
 
-service AgentHostService {}
+service AgentHostService {
+  rpc StartSession(StartSessionRequest) returns (StartSessionResponse);
+  rpc ResumeSession(ResumeSessionRequest) returns (ResumeSessionResponse);
+  rpc GetSession(GetSessionRequest) returns (GetSessionResponse);
+  rpc StartTurn(StartTurnRequest) returns (StartTurnResponse);
+  rpc InterruptTurn(InterruptTurnRequest) returns (InterruptTurnResponse);
+  rpc SubscribeEvents(SubscribeEventsRequest) returns (stream SubscribeEventsResponse);
+}
+
+message StartSessionRequest {
+  yijie.common.v1.TraceContext trace = 1;
+  string task_id = 2;
+  string cwd = 3;
+}
+
+message StartSessionResponse {
+  yijie.events.v1.AgentSession session = 1;
+}
+
+message ResumeSessionRequest {
+  yijie.common.v1.TraceContext trace = 1;
+  string agent_session_id = 2;
+}
+
+message ResumeSessionResponse {
+  yijie.events.v1.AgentSession session = 1;
+}
+
+message GetSessionRequest {
+  string agent_session_id = 1;
+}
+
+message GetSessionResponse {
+  yijie.events.v1.AgentSession session = 1;
+}
+
+message StartTurnRequest {
+  yijie.common.v1.TraceContext trace = 1;
+  string agent_session_id = 2;
+  string input = 3;
+  string reasoning_effort = 4;
+}
+
+message StartTurnResponse {
+  string turn_id = 1;
+}
+
+message InterruptTurnRequest {
+  yijie.common.v1.TraceContext trace = 1;
+  string agent_session_id = 2;
+  string turn_id = 3;
+}
+
+message InterruptTurnResponse {}
+
+message SubscribeEventsRequest {
+  string agent_session_id = 1;
+  string stream_id = 2;
+  uint64 after_sequence = 3;
+}
+
+message SubscribeEventsResponse {
+  yijie.events.v1.AgentSessionEvent event = 1;
+}

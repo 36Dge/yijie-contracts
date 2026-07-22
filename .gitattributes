@@ -1,0 +1,2 @@
+# Buf's generated TypeScript files end with a separator blank line.
+sdks/typescript/src/protobuf/** whitespace=-blank-at-eof

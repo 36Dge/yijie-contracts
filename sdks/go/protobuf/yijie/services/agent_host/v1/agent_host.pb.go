@@ -7,9 +7,12 @@
 package agenthostv1
 
 import (
+	v1 "github.com/36Dge/yijie-contracts/sdks/go/protobuf/yijie/common/v1"
+	v11 "github.com/36Dge/yijie-contracts/sdks/go/protobuf/yijie/events/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
+	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -20,20 +23,709 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type StartSessionRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Trace         *v1.TraceContext       `protobuf:"bytes,1,opt,name=trace,proto3" json:"trace,omitempty"`
+	TaskId        string                 `protobuf:"bytes,2,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"`
+	Cwd           string                 `protobuf:"bytes,3,opt,name=cwd,proto3" json:"cwd,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StartSessionRequest) Reset() {
+	*x = StartSessionRequest{}
+	mi := &file_yijie_services_agent_host_v1_agent_host_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StartSessionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StartSessionRequest) ProtoMessage() {}
+
+func (x *StartSessionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_yijie_services_agent_host_v1_agent_host_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StartSessionRequest.ProtoReflect.Descriptor instead.
+func (*StartSessionRequest) Descriptor() ([]byte, []int) {
+	return file_yijie_services_agent_host_v1_agent_host_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *StartSessionRequest) GetTrace() *v1.TraceContext {
+	if x != nil {
+		return x.Trace
+	}
+	return nil
+}
+
+func (x *StartSessionRequest) GetTaskId() string {
+	if x != nil {
+		return x.TaskId
+	}
+	return ""
+}
+
+func (x *StartSessionRequest) GetCwd() string {
+	if x != nil {
+		return x.Cwd
+	}
+	return ""
+}
+
+type StartSessionResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Session       *v11.AgentSession      `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StartSessionResponse) Reset() {
+	*x = StartSessionResponse{}
+	mi := &file_yijie_services_agent_host_v1_agent_host_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StartSessionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StartSessionResponse) ProtoMessage() {}
+
+func (x *StartSessionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_yijie_services_agent_host_v1_agent_host_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StartSessionResponse.ProtoReflect.Descriptor instead.
+func (*StartSessionResponse) Descriptor() ([]byte, []int) {
+	return file_yijie_services_agent_host_v1_agent_host_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *StartSessionResponse) GetSession() *v11.AgentSession {
+	if x != nil {
+		return x.Session
+	}
+	return nil
+}
+
+type ResumeSessionRequest struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Trace          *v1.TraceContext       `protobuf:"bytes,1,opt,name=trace,proto3" json:"trace,omitempty"`
+	AgentSessionId string                 `protobuf:"bytes,2,opt,name=agent_session_id,json=agentSessionId,proto3" json:"agent_session_id,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *ResumeSessionRequest) Reset() {
+	*x = ResumeSessionRequest{}
+	mi := &file_yijie_services_agent_host_v1_agent_host_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResumeSessionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResumeSessionRequest) ProtoMessage() {}
+
+func (x *ResumeSessionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_yijie_services_agent_host_v1_agent_host_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResumeSessionRequest.ProtoReflect.Descriptor instead.
+func (*ResumeSessionRequest) Descriptor() ([]byte, []int) {
+	return file_yijie_services_agent_host_v1_agent_host_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *ResumeSessionRequest) GetTrace() *v1.TraceContext {
+	if x != nil {
+		return x.Trace
+	}
+	return nil
+}
+
+func (x *ResumeSessionRequest) GetAgentSessionId() string {
+	if x != nil {
+		return x.AgentSessionId
+	}
+	return ""
+}
+
+type ResumeSessionResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Session       *v11.AgentSession      `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResumeSessionResponse) Reset() {
+	*x = ResumeSessionResponse{}
+	mi := &file_yijie_services_agent_host_v1_agent_host_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResumeSessionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResumeSessionResponse) ProtoMessage() {}
+
+func (x *ResumeSessionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_yijie_services_agent_host_v1_agent_host_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResumeSessionResponse.ProtoReflect.Descriptor instead.
+func (*ResumeSessionResponse) Descriptor() ([]byte, []int) {
+	return file_yijie_services_agent_host_v1_agent_host_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *ResumeSessionResponse) GetSession() *v11.AgentSession {
+	if x != nil {
+		return x.Session
+	}
+	return nil
+}
+
+type GetSessionRequest struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	AgentSessionId string                 `protobuf:"bytes,1,opt,name=agent_session_id,json=agentSessionId,proto3" json:"agent_session_id,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *GetSessionRequest) Reset() {
+	*x = GetSessionRequest{}
+	mi := &file_yijie_services_agent_host_v1_agent_host_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetSessionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetSessionRequest) ProtoMessage() {}
+
+func (x *GetSessionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_yijie_services_agent_host_v1_agent_host_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetSessionRequest.ProtoReflect.Descriptor instead.
+func (*GetSessionRequest) Descriptor() ([]byte, []int) {
+	return file_yijie_services_agent_host_v1_agent_host_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *GetSessionRequest) GetAgentSessionId() string {
+	if x != nil {
+		return x.AgentSessionId
+	}
+	return ""
+}
+
+type GetSessionResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Session       *v11.AgentSession      `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetSessionResponse) Reset() {
+	*x = GetSessionResponse{}
+	mi := &file_yijie_services_agent_host_v1_agent_host_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetSessionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetSessionResponse) ProtoMessage() {}
+
+func (x *GetSessionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_yijie_services_agent_host_v1_agent_host_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetSessionResponse.ProtoReflect.Descriptor instead.
+func (*GetSessionResponse) Descriptor() ([]byte, []int) {
+	return file_yijie_services_agent_host_v1_agent_host_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *GetSessionResponse) GetSession() *v11.AgentSession {
+	if x != nil {
+		return x.Session
+	}
+	return nil
+}
+
+type StartTurnRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Trace           *v1.TraceContext       `protobuf:"bytes,1,opt,name=trace,proto3" json:"trace,omitempty"`
+	AgentSessionId  string                 `protobuf:"bytes,2,opt,name=agent_session_id,json=agentSessionId,proto3" json:"agent_session_id,omitempty"`
+	Input           string                 `protobuf:"bytes,3,opt,name=input,proto3" json:"input,omitempty"`
+	ReasoningEffort string                 `protobuf:"bytes,4,opt,name=reasoning_effort,json=reasoningEffort,proto3" json:"reasoning_effort,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *StartTurnRequest) Reset() {
+	*x = StartTurnRequest{}
+	mi := &file_yijie_services_agent_host_v1_agent_host_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StartTurnRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StartTurnRequest) ProtoMessage() {}
+
+func (x *StartTurnRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_yijie_services_agent_host_v1_agent_host_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StartTurnRequest.ProtoReflect.Descriptor instead.
+func (*StartTurnRequest) Descriptor() ([]byte, []int) {
+	return file_yijie_services_agent_host_v1_agent_host_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *StartTurnRequest) GetTrace() *v1.TraceContext {
+	if x != nil {
+		return x.Trace
+	}
+	return nil
+}
+
+func (x *StartTurnRequest) GetAgentSessionId() string {
+	if x != nil {
+		return x.AgentSessionId
+	}
+	return ""
+}
+
+func (x *StartTurnRequest) GetInput() string {
+	if x != nil {
+		return x.Input
+	}
+	return ""
+}
+
+func (x *StartTurnRequest) GetReasoningEffort() string {
+	if x != nil {
+		return x.ReasoningEffort
+	}
+	return ""
+}
+
+type StartTurnResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TurnId        string                 `protobuf:"bytes,1,opt,name=turn_id,json=turnId,proto3" json:"turn_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StartTurnResponse) Reset() {
+	*x = StartTurnResponse{}
+	mi := &file_yijie_services_agent_host_v1_agent_host_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StartTurnResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StartTurnResponse) ProtoMessage() {}
+
+func (x *StartTurnResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_yijie_services_agent_host_v1_agent_host_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StartTurnResponse.ProtoReflect.Descriptor instead.
+func (*StartTurnResponse) Descriptor() ([]byte, []int) {
+	return file_yijie_services_agent_host_v1_agent_host_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *StartTurnResponse) GetTurnId() string {
+	if x != nil {
+		return x.TurnId
+	}
+	return ""
+}
+
+type InterruptTurnRequest struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Trace          *v1.TraceContext       `protobuf:"bytes,1,opt,name=trace,proto3" json:"trace,omitempty"`
+	AgentSessionId string                 `protobuf:"bytes,2,opt,name=agent_session_id,json=agentSessionId,proto3" json:"agent_session_id,omitempty"`
+	TurnId         string                 `protobuf:"bytes,3,opt,name=turn_id,json=turnId,proto3" json:"turn_id,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *InterruptTurnRequest) Reset() {
+	*x = InterruptTurnRequest{}
+	mi := &file_yijie_services_agent_host_v1_agent_host_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *InterruptTurnRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*InterruptTurnRequest) ProtoMessage() {}
+
+func (x *InterruptTurnRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_yijie_services_agent_host_v1_agent_host_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use InterruptTurnRequest.ProtoReflect.Descriptor instead.
+func (*InterruptTurnRequest) Descriptor() ([]byte, []int) {
+	return file_yijie_services_agent_host_v1_agent_host_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *InterruptTurnRequest) GetTrace() *v1.TraceContext {
+	if x != nil {
+		return x.Trace
+	}
+	return nil
+}
+
+func (x *InterruptTurnRequest) GetAgentSessionId() string {
+	if x != nil {
+		return x.AgentSessionId
+	}
+	return ""
+}
+
+func (x *InterruptTurnRequest) GetTurnId() string {
+	if x != nil {
+		return x.TurnId
+	}
+	return ""
+}
+
+type InterruptTurnResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *InterruptTurnResponse) Reset() {
+	*x = InterruptTurnResponse{}
+	mi := &file_yijie_services_agent_host_v1_agent_host_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *InterruptTurnResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*InterruptTurnResponse) ProtoMessage() {}
+
+func (x *InterruptTurnResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_yijie_services_agent_host_v1_agent_host_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use InterruptTurnResponse.ProtoReflect.Descriptor instead.
+func (*InterruptTurnResponse) Descriptor() ([]byte, []int) {
+	return file_yijie_services_agent_host_v1_agent_host_proto_rawDescGZIP(), []int{9}
+}
+
+type SubscribeEventsRequest struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	AgentSessionId string                 `protobuf:"bytes,1,opt,name=agent_session_id,json=agentSessionId,proto3" json:"agent_session_id,omitempty"`
+	StreamId       string                 `protobuf:"bytes,2,opt,name=stream_id,json=streamId,proto3" json:"stream_id,omitempty"`
+	AfterSequence  uint64                 `protobuf:"varint,3,opt,name=after_sequence,json=afterSequence,proto3" json:"after_sequence,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *SubscribeEventsRequest) Reset() {
+	*x = SubscribeEventsRequest{}
+	mi := &file_yijie_services_agent_host_v1_agent_host_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SubscribeEventsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SubscribeEventsRequest) ProtoMessage() {}
+
+func (x *SubscribeEventsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_yijie_services_agent_host_v1_agent_host_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SubscribeEventsRequest.ProtoReflect.Descriptor instead.
+func (*SubscribeEventsRequest) Descriptor() ([]byte, []int) {
+	return file_yijie_services_agent_host_v1_agent_host_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *SubscribeEventsRequest) GetAgentSessionId() string {
+	if x != nil {
+		return x.AgentSessionId
+	}
+	return ""
+}
+
+func (x *SubscribeEventsRequest) GetStreamId() string {
+	if x != nil {
+		return x.StreamId
+	}
+	return ""
+}
+
+func (x *SubscribeEventsRequest) GetAfterSequence() uint64 {
+	if x != nil {
+		return x.AfterSequence
+	}
+	return 0
+}
+
+type SubscribeEventsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Event         *v11.AgentSessionEvent `protobuf:"bytes,1,opt,name=event,proto3" json:"event,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SubscribeEventsResponse) Reset() {
+	*x = SubscribeEventsResponse{}
+	mi := &file_yijie_services_agent_host_v1_agent_host_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SubscribeEventsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SubscribeEventsResponse) ProtoMessage() {}
+
+func (x *SubscribeEventsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_yijie_services_agent_host_v1_agent_host_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SubscribeEventsResponse.ProtoReflect.Descriptor instead.
+func (*SubscribeEventsResponse) Descriptor() ([]byte, []int) {
+	return file_yijie_services_agent_host_v1_agent_host_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *SubscribeEventsResponse) GetEvent() *v11.AgentSessionEvent {
+	if x != nil {
+		return x.Event
+	}
+	return nil
+}
+
 var File_yijie_services_agent_host_v1_agent_host_proto protoreflect.FileDescriptor
 
 const file_yijie_services_agent_host_v1_agent_host_proto_rawDesc = "" +
 	"\n" +
-	"-yijie/services/agent_host/v1/agent_host.proto\x12\x1cyijie.services.agent_host.v12\x12\n" +
-	"\x10AgentHostServiceB\\ZZgithub.com/36Dge/yijie-contracts/sdks/go/protobuf/yijie/services/agent_host/v1;agenthostv1b\x06proto3"
+	"-yijie/services/agent_host/v1/agent_host.proto\x12\x1cyijie.services.agent_host.v1\x1a\x1cyijie/common/v1/common.proto\x1a#yijie/events/v1/agent_session.proto\"u\n" +
+	"\x13StartSessionRequest\x123\n" +
+	"\x05trace\x18\x01 \x01(\v2\x1d.yijie.common.v1.TraceContextR\x05trace\x12\x17\n" +
+	"\atask_id\x18\x02 \x01(\tR\x06taskId\x12\x10\n" +
+	"\x03cwd\x18\x03 \x01(\tR\x03cwd\"O\n" +
+	"\x14StartSessionResponse\x127\n" +
+	"\asession\x18\x01 \x01(\v2\x1d.yijie.events.v1.AgentSessionR\asession\"u\n" +
+	"\x14ResumeSessionRequest\x123\n" +
+	"\x05trace\x18\x01 \x01(\v2\x1d.yijie.common.v1.TraceContextR\x05trace\x12(\n" +
+	"\x10agent_session_id\x18\x02 \x01(\tR\x0eagentSessionId\"P\n" +
+	"\x15ResumeSessionResponse\x127\n" +
+	"\asession\x18\x01 \x01(\v2\x1d.yijie.events.v1.AgentSessionR\asession\"=\n" +
+	"\x11GetSessionRequest\x12(\n" +
+	"\x10agent_session_id\x18\x01 \x01(\tR\x0eagentSessionId\"M\n" +
+	"\x12GetSessionResponse\x127\n" +
+	"\asession\x18\x01 \x01(\v2\x1d.yijie.events.v1.AgentSessionR\asession\"\xb2\x01\n" +
+	"\x10StartTurnRequest\x123\n" +
+	"\x05trace\x18\x01 \x01(\v2\x1d.yijie.common.v1.TraceContextR\x05trace\x12(\n" +
+	"\x10agent_session_id\x18\x02 \x01(\tR\x0eagentSessionId\x12\x14\n" +
+	"\x05input\x18\x03 \x01(\tR\x05input\x12)\n" +
+	"\x10reasoning_effort\x18\x04 \x01(\tR\x0freasoningEffort\",\n" +
+	"\x11StartTurnResponse\x12\x17\n" +
+	"\aturn_id\x18\x01 \x01(\tR\x06turnId\"\x8e\x01\n" +
+	"\x14InterruptTurnRequest\x123\n" +
+	"\x05trace\x18\x01 \x01(\v2\x1d.yijie.common.v1.TraceContextR\x05trace\x12(\n" +
+	"\x10agent_session_id\x18\x02 \x01(\tR\x0eagentSessionId\x12\x17\n" +
+	"\aturn_id\x18\x03 \x01(\tR\x06turnId\"\x17\n" +
+	"\x15InterruptTurnResponse\"\x86\x01\n" +
+	"\x16SubscribeEventsRequest\x12(\n" +
+	"\x10agent_session_id\x18\x01 \x01(\tR\x0eagentSessionId\x12\x1b\n" +
+	"\tstream_id\x18\x02 \x01(\tR\bstreamId\x12%\n" +
+	"\x0eafter_sequence\x18\x03 \x01(\x04R\rafterSequence\"S\n" +
+	"\x17SubscribeEventsResponse\x128\n" +
+	"\x05event\x18\x01 \x01(\v2\".yijie.events.v1.AgentSessionEventR\x05event2\xdf\x05\n" +
+	"\x10AgentHostService\x12u\n" +
+	"\fStartSession\x121.yijie.services.agent_host.v1.StartSessionRequest\x1a2.yijie.services.agent_host.v1.StartSessionResponse\x12x\n" +
+	"\rResumeSession\x122.yijie.services.agent_host.v1.ResumeSessionRequest\x1a3.yijie.services.agent_host.v1.ResumeSessionResponse\x12o\n" +
+	"\n" +
+	"GetSession\x12/.yijie.services.agent_host.v1.GetSessionRequest\x1a0.yijie.services.agent_host.v1.GetSessionResponse\x12l\n" +
+	"\tStartTurn\x12..yijie.services.agent_host.v1.StartTurnRequest\x1a/.yijie.services.agent_host.v1.StartTurnResponse\x12x\n" +
+	"\rInterruptTurn\x122.yijie.services.agent_host.v1.InterruptTurnRequest\x1a3.yijie.services.agent_host.v1.InterruptTurnResponse\x12\x80\x01\n" +
+	"\x0fSubscribeEvents\x124.yijie.services.agent_host.v1.SubscribeEventsRequest\x1a5.yijie.services.agent_host.v1.SubscribeEventsResponse0\x01B\\ZZgithub.com/36Dge/yijie-contracts/sdks/go/protobuf/yijie/services/agent_host/v1;agenthostv1b\x06proto3"
 
-var file_yijie_services_agent_host_v1_agent_host_proto_goTypes = []any{}
+var (
+	file_yijie_services_agent_host_v1_agent_host_proto_rawDescOnce sync.Once
+	file_yijie_services_agent_host_v1_agent_host_proto_rawDescData []byte
+)
+
+func file_yijie_services_agent_host_v1_agent_host_proto_rawDescGZIP() []byte {
+	file_yijie_services_agent_host_v1_agent_host_proto_rawDescOnce.Do(func() {
+		file_yijie_services_agent_host_v1_agent_host_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_yijie_services_agent_host_v1_agent_host_proto_rawDesc), len(file_yijie_services_agent_host_v1_agent_host_proto_rawDesc)))
+	})
+	return file_yijie_services_agent_host_v1_agent_host_proto_rawDescData
+}
+
+var file_yijie_services_agent_host_v1_agent_host_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_yijie_services_agent_host_v1_agent_host_proto_goTypes = []any{
+	(*StartSessionRequest)(nil),     // 0: yijie.services.agent_host.v1.StartSessionRequest
+	(*StartSessionResponse)(nil),    // 1: yijie.services.agent_host.v1.StartSessionResponse
+	(*ResumeSessionRequest)(nil),    // 2: yijie.services.agent_host.v1.ResumeSessionRequest
+	(*ResumeSessionResponse)(nil),   // 3: yijie.services.agent_host.v1.ResumeSessionResponse
+	(*GetSessionRequest)(nil),       // 4: yijie.services.agent_host.v1.GetSessionRequest
+	(*GetSessionResponse)(nil),      // 5: yijie.services.agent_host.v1.GetSessionResponse
+	(*StartTurnRequest)(nil),        // 6: yijie.services.agent_host.v1.StartTurnRequest
+	(*StartTurnResponse)(nil),       // 7: yijie.services.agent_host.v1.StartTurnResponse
+	(*InterruptTurnRequest)(nil),    // 8: yijie.services.agent_host.v1.InterruptTurnRequest
+	(*InterruptTurnResponse)(nil),   // 9: yijie.services.agent_host.v1.InterruptTurnResponse
+	(*SubscribeEventsRequest)(nil),  // 10: yijie.services.agent_host.v1.SubscribeEventsRequest
+	(*SubscribeEventsResponse)(nil), // 11: yijie.services.agent_host.v1.SubscribeEventsResponse
+	(*v1.TraceContext)(nil),         // 12: yijie.common.v1.TraceContext
+	(*v11.AgentSession)(nil),        // 13: yijie.events.v1.AgentSession
+	(*v11.AgentSessionEvent)(nil),   // 14: yijie.events.v1.AgentSessionEvent
+}
 var file_yijie_services_agent_host_v1_agent_host_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	12, // 0: yijie.services.agent_host.v1.StartSessionRequest.trace:type_name -> yijie.common.v1.TraceContext
+	13, // 1: yijie.services.agent_host.v1.StartSessionResponse.session:type_name -> yijie.events.v1.AgentSession
+	12, // 2: yijie.services.agent_host.v1.ResumeSessionRequest.trace:type_name -> yijie.common.v1.TraceContext
+	13, // 3: yijie.services.agent_host.v1.ResumeSessionResponse.session:type_name -> yijie.events.v1.AgentSession
+	13, // 4: yijie.services.agent_host.v1.GetSessionResponse.session:type_name -> yijie.events.v1.AgentSession
+	12, // 5: yijie.services.agent_host.v1.StartTurnRequest.trace:type_name -> yijie.common.v1.TraceContext
+	12, // 6: yijie.services.agent_host.v1.InterruptTurnRequest.trace:type_name -> yijie.common.v1.TraceContext
+	14, // 7: yijie.services.agent_host.v1.SubscribeEventsResponse.event:type_name -> yijie.events.v1.AgentSessionEvent
+	0,  // 8: yijie.services.agent_host.v1.AgentHostService.StartSession:input_type -> yijie.services.agent_host.v1.StartSessionRequest
+	2,  // 9: yijie.services.agent_host.v1.AgentHostService.ResumeSession:input_type -> yijie.services.agent_host.v1.ResumeSessionRequest
+	4,  // 10: yijie.services.agent_host.v1.AgentHostService.GetSession:input_type -> yijie.services.agent_host.v1.GetSessionRequest
+	6,  // 11: yijie.services.agent_host.v1.AgentHostService.StartTurn:input_type -> yijie.services.agent_host.v1.StartTurnRequest
+	8,  // 12: yijie.services.agent_host.v1.AgentHostService.InterruptTurn:input_type -> yijie.services.agent_host.v1.InterruptTurnRequest
+	10, // 13: yijie.services.agent_host.v1.AgentHostService.SubscribeEvents:input_type -> yijie.services.agent_host.v1.SubscribeEventsRequest
+	1,  // 14: yijie.services.agent_host.v1.AgentHostService.StartSession:output_type -> yijie.services.agent_host.v1.StartSessionResponse
+	3,  // 15: yijie.services.agent_host.v1.AgentHostService.ResumeSession:output_type -> yijie.services.agent_host.v1.ResumeSessionResponse
+	5,  // 16: yijie.services.agent_host.v1.AgentHostService.GetSession:output_type -> yijie.services.agent_host.v1.GetSessionResponse
+	7,  // 17: yijie.services.agent_host.v1.AgentHostService.StartTurn:output_type -> yijie.services.agent_host.v1.StartTurnResponse
+	9,  // 18: yijie.services.agent_host.v1.AgentHostService.InterruptTurn:output_type -> yijie.services.agent_host.v1.InterruptTurnResponse
+	11, // 19: yijie.services.agent_host.v1.AgentHostService.SubscribeEvents:output_type -> yijie.services.agent_host.v1.SubscribeEventsResponse
+	14, // [14:20] is the sub-list for method output_type
+	8,  // [8:14] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_yijie_services_agent_host_v1_agent_host_proto_init() }
@@ -47,12 +739,13 @@ func file_yijie_services_agent_host_v1_agent_host_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_yijie_services_agent_host_v1_agent_host_proto_rawDesc), len(file_yijie_services_agent_host_v1_agent_host_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   0,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_yijie_services_agent_host_v1_agent_host_proto_goTypes,
 		DependencyIndexes: file_yijie_services_agent_host_v1_agent_host_proto_depIdxs,
+		MessageInfos:      file_yijie_services_agent_host_v1_agent_host_proto_msgTypes,
 	}.Build()
 	File_yijie_services_agent_host_v1_agent_host_proto = out.File
 	file_yijie_services_agent_host_v1_agent_host_proto_goTypes = nil
