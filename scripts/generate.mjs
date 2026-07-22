@@ -34,6 +34,7 @@ async function collectJsonSchemas(dir) {
 for (const dir of [
   "sdks/go/openapi",
   "sdks/go/protobuf",
+  "sdks/asyncapi",
   "sdks/typescript/src/openapi",
   "sdks/typescript/src/protobuf",
   "sdks/typescript/src/jsonschema",
@@ -45,6 +46,7 @@ const openapiSpecs = [
   ["public", "publicapi", "openapi/public/public.yaml"],
   ["admin", "adminapi", "openapi/admin/admin.yaml"],
   ["internal", "internalapi", "openapi/internal/internal.yaml"],
+  ["agent-host", "agenthostapi", "openapi/agent-host/agent-host.yaml"],
 ];
 
 for (const [name, goPackage, spec] of openapiSpecs) {
@@ -76,6 +78,16 @@ for (const [name, goPackage, spec] of openapiSpecs) {
 
 await run("pnpm", ["exec", "buf", "generate"]);
 
+await mkdir(path.join(root, "sdks/asyncapi"), { recursive: true });
+await run("pnpm", [
+  "exec",
+  "redocly",
+  "bundle",
+  "asyncapi/events.yaml",
+  "--output",
+  "sdks/asyncapi/events.bundle.json",
+]);
+
 const schemas = await collectJsonSchemas(path.join(root, "jsonschema"));
 const schemaExports = [];
 for (const { relativePath, schema } of schemas) {
@@ -90,16 +102,21 @@ for (const { relativePath, schema } of schemas) {
       format: false,
     }),
   );
-  schemaExports.push(`export * from "./jsonschema/${outputName}.gen";`);
+  schemaExports.push(`export * from "./jsonschema/${outputName}.gen.js";`);
 }
 
 await writeFile(
   path.join(root, "sdks/typescript/src/index.ts"),
   [
     "/* Generated SDK entrypoint. Do not edit by hand. */",
-    'export * as PublicApi from "./openapi/public.gen";',
-    'export * as AdminApi from "./openapi/admin.gen";',
-    'export * as InternalApi from "./openapi/internal.gen";',
+    'export * as PublicApi from "./openapi/public.gen.js";',
+    'export * as AdminApi from "./openapi/admin.gen.js";',
+    'export * as InternalApi from "./openapi/internal.gen.js";',
+    'export * as AgentHostApi from "./openapi/agent-host.gen.js";',
+    'export * as CommonV1 from "./protobuf/yijie/common/v1/common_pb.js";',
+    'export * as AgentSessionEventsV1 from "./protobuf/yijie/events/v1/agent_session_pb.js";',
+    'export * as TaskEventsV1 from "./protobuf/yijie/events/v1/task_pb.js";',
+    'export * as AgentHostV1 from "./protobuf/yijie/services/agent_host/v1/agent_host_pb.js";',
     ...schemaExports,
     "",
   ].join("\n"),

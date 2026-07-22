@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.yijie.ai/compatibility/agent-host-runtime.schema.json",
+  "title": "AgentHostRuntimeCompatibility",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "contracts_version", "runtime", "host_projection"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "contracts_version": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$"
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository",
+        "repository_commit",
+        "upstream_tag",
+        "upstream_commit",
+        "version",
+        "transport",
+        "experimental_api",
+        "schema_file_count",
+        "schema_tree_sha256"
+      ],
+      "properties": {
+        "repository": { "type": "string", "format": "uri" },
+        "repository_commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "upstream_tag": { "const": "rust-v0.144.6" },
+        "upstream_commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "version": { "const": "0.144.6" },
+        "transport": { "const": "stdio" },
+        "experimental_api": { "const": false },
+        "schema_file_count": { "const": 267 },
+        "schema_tree_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "host_projection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "transport",
+        "authentication",
+        "sandbox",
+        "approval_policy",
+        "runtime_methods",
+        "runtime_notifications"
+      ],
+      "properties": {
+        "transport": { "const": "local-http-sse" },
+        "authentication": { "const": "owner-only-bearer" },
+        "sandbox": { "const": "read-only" },
+        "approval_policy": { "const": "never" },
+        "runtime_methods": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "runtime_notifications": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

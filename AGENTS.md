@@ -11,17 +11,19 @@
 当前仓库已经包含：
 
 - Public、Admin 和 Internal 三组 OpenAPI；
+- Agent Host 本机 HTTP/SSE OpenAPI；
 - Agent Host 服务与任务事件 Protobuf；
 - 任务事件 AsyncAPI；
+- Codex Runtime 与 Agent Host 投影的机器可校验兼容清单；
 - Agent、Audit、Chat、Listing、Skill 和 Task JSON Schema；
 - 提交到 Git 的 Go/TypeScript SDK 生成产物；
-- OpenAPI、Protobuf 和部分 JSON Schema 破坏性检查。
+- OpenAPI、Protobuf、JSON Schema 和 AsyncAPI 结构性破坏检查。
 
 当前仍需如实区分的能力：
 
-- 三组 OpenAPI 目前均为 `security: []`，认证、授权和服务身份尚未形成生产契约；
-- Redocly 会校验 AsyncAPI，但 `scripts/generate.mjs` 不生成 AsyncAPI 产物；
-- JSON Schema breaking checker 只覆盖部分常见破坏性变化，不能代替人工兼容性评审；
+- Public、Admin 和 Internal 三组 OpenAPI 目前均为 `security: []`，认证、授权和服务身份尚未形成生产契约；Agent Host 仅定义本机 owner-only bearer 边界；
+- AsyncAPI 会由 Redocly 校验并打包为单文件产物，但不生成特定 broker 的客户端；
+- JSON Schema/AsyncAPI breaking checker 覆盖常见结构约束变化，仍不能代替人工业务语义兼容性评审；
 - 契约生成和校验通过不代表下游实现、部署或端到端兼容已经完成。
 
 ## 仓库边界
@@ -38,6 +40,7 @@
 - `openapi/public/`：Desktop 等外部客户端使用的公共 HTTP API；
 - `openapi/admin/`：Admin Web 使用的管理 HTTP API；
 - `openapi/internal/`：服务间 HTTP API；
+- `openapi/agent-host/`：Desktop 与本机 Agent Host 的 HTTP/SSE API；
 - `protobuf/yijie/`：版本化 RPC 和事件消息；
 - `asyncapi/`：异步 channel、operation 和 message 语义；
 - `jsonschema/`：跨工具、Skill、审计和文档边界的结构约束；
@@ -83,7 +86,7 @@
 - 只修改源契约和生成脚本，然后运行 `pnpm generate`；
 - 生成后检查完整 git diff，生成文件必须与源文件在同一变更中提交；
 - 不手工修补 `*.gen.*`、`*.pb.go` 或 SDK entrypoint；生成结果错误时修复源或 generator；
-- `pnpm test` 会重新执行生成检查，源与生成物不一致时可能留下工作区改动，运行前后都要检查状态；
+- `pnpm test` 会重新执行生成检查，源与生成物不一致时失败并可能留下工作区改动；运行前后都要检查状态；
 - 契约合并和可消费版本先于下游实现，下游按生产者、服务、客户端和发布依赖顺序更新；
 - 跨仓变更需要列出所有消费者，并在各自仓库按其 `AGENTS.md` 生成、实现和测试。
 
@@ -108,11 +111,12 @@ make test     # 生成物同步、契约测试和 Go 测试
 make breaking # 默认相对本地 main
 ./scripts/check-breaking.sh origin/main # 需要远端生产基线时显式指定
 make build    # 生成并编译 TypeScript SDK
+pnpm pack:sdk # 构建本地 SDK tarball；不向未确认 registry 发布
 ```
 
 - 任意源契约或 generator 改动至少执行 `make generate && make lint && make test`；
 - 已发布契约改动还必须执行正确基线的 breaking check；
-- AsyncAPI 变更执行现有 Redocly lint，并额外人工检查跨格式语义；当前没有 AsyncAPI SDK 生成门禁；
+- AsyncAPI 变更执行 Redocly lint、bundle 生成同步和 breaking check，并额外人工检查跨格式语义；
 - 运行生成前记录工作区状态，禁止覆盖用户尚未提交的生成物改动。
 
 ## 完成标准

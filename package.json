@@ -1,8 +1,21 @@
 {
   "name": "@yijie/contracts",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
+  "main": "./sdks/typescript/dist/index.js",
+  "types": "./sdks/typescript/dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./sdks/typescript/dist/index.d.ts",
+      "import": "./sdks/typescript/dist/index.js"
+    },
+    "./asyncapi/events.bundle.json": "./sdks/asyncapi/events.bundle.json"
+  },
+  "files": [
+    "sdks/typescript/dist",
+    "sdks/asyncapi/events.bundle.json"
+  ],
   "packageManager": "pnpm@11.7.0",
   "engines": {
     "node": ">=24 <27",
@@ -16,7 +29,8 @@
     "lint": "pnpm validate:api && pnpm validate:schemas && pnpm validate:proto && tsc -p tsconfig.json --noEmit && go vet ./...",
     "test": "node scripts/check-generated.mjs && node --test tests/*.test.mjs && go test ./...",
     "breaking": "./scripts/check-breaking.sh",
-    "build": "pnpm generate && tsc -p tsconfig.json"
+    "build": "pnpm generate && tsc -p tsconfig.json",
+    "pack:sdk": "pnpm build && pnpm pack --pack-destination .artifacts"
   },
   "devDependencies": {
     "@bufbuild/buf": "1.71.0",

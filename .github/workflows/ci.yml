@@ -29,6 +29,7 @@ jobs:
       - run: git diff --exit-code
       - run: make lint
       - run: make test
+      - run: pnpm pack:sdk
       - run: pnpm audit --audit-level high
       - run: go run golang.org/x/vuln/cmd/govulncheck@v1.6.0 ./...
       - if: github.ref_name != 'main'

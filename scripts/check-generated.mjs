@@ -4,7 +4,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 
 const exec = promisify(execFile);
-const roots = ["sdks/go", "sdks/typescript/src"];
+const roots = ["sdks/go", "sdks/typescript/src", "sdks/asyncapi"];
 
 async function snapshot(dir) {
   const result = new Map();

@@ -4,13 +4,20 @@ info:
   version: 0.1.0
   description: Event contracts exchanged by Yijie services.
 channels:
-  taskEvents:
+  task.events:
     address: task.events
     messages:
       taskEvent:
-        $ref: "#/components/messages/TaskEvent"
+        payload:
+          type: object
+          properties:
+            task_id:
+              type: string
   agentSessionEvents:
     address: agent.session.events
+    description: >-
+      Sanitized Agent Host events. Consumers order and resume events by
+      stream_id plus sequence and deduplicate at-least-once delivery by event_id.
     messages:
       agentSessionEvent:
         $ref: "#/components/messages/AgentSessionEvent"
@@ -18,39 +25,31 @@ operations:
   receiveTaskEvents:
     action: receive
     channel:
-      $ref: "#/channels/taskEvents"
+      $ref: "#/channels/task.events"
     messages:
-      - $ref: "#/channels/taskEvents/messages/taskEvent"
+      - $ref: "#/channels/task.events/messages/taskEvent"
   receiveAgentSessionEvents:
     action: receive
+    description: >-
+      Receive one AgentSessionEvent at a time. A stream_id change starts a new
+      ordering domain; it does not imply replay of events from an earlier Host process.
     channel:
       $ref: "#/channels/agentSessionEvents"
     messages:
       - $ref: "#/channels/agentSessionEvents/messages/agentSessionEvent"
 components:
   messages:
-    TaskEvent:
-      name: TaskEvent
-      title: Agent task lifecycle event
-      payload:
-        type: object
-        additionalProperties: false
-        required: [task_id, status]
-        properties:
-          task_id:
-            type: string
-          status:
-            type: string
-            enum: [draft, running, waiting_approval, completed, failed]
-          trace_id:
-            type: string
-          agent_session_id:
-            type: string
-          codex_thread_id:
-            type: string
     AgentSessionEvent:
       name: AgentSessionEvent
       title: Ordered Agent Host session event
       summary: At-least-once event ordered by sequence within a single stream_id.
+      description: >-
+        JSON payload semantics are authoritative in the referenced JSON Schema.
+        Protobuf message yijie.events.v1.AgentSessionEvent carries the equivalent
+        service and asynchronous-consumer model.
+      contentType: application/json
+      correlationId:
+        description: Agent Host session that owns the ordered event stream.
+        location: $message.payload#/agent_session_id
       payload:
         $ref: ../jsonschema/agent/session-event.schema.json

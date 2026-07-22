@@ -6,6 +6,6 @@ plugins:
     opt: paths=source_relative
   - local: ["pnpm", "exec", "protoc-gen-es"]
     out: sdks/typescript/src/protobuf
-    opt: target=ts
+    opt: target=ts,import_extension=js
 inputs:
   - directory: protobuf

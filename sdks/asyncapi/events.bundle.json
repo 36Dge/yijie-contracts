@@ -1,0 +1,993 @@
+{
+  "asyncapi": "3.0.0",
+  "info": {
+    "title": "Yijie Events",
+    "version": "0.1.0",
+    "description": "Event contracts exchanged by Yijie services."
+  },
+  "channels": {
+    "task.events": {
+      "address": "task.events",
+      "messages": {
+        "taskEvent": {
+          "payload": {
+            "type": "object",
+            "properties": {
+              "task_id": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "agentSessionEvents": {
+      "address": "agent.session.events",
+      "description": "Sanitized Agent Host events. Consumers order and resume events by stream_id plus sequence and deduplicate at-least-once delivery by event_id.",
+      "messages": {
+        "agentSessionEvent": {
+          "$ref": "#/components/messages/AgentSessionEvent"
+        }
+      }
+    }
+  },
+  "operations": {
+    "receiveTaskEvents": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/task.events"
+      },
+      "messages": [
+        {
+          "$ref": "#/channels/task.events/messages/taskEvent"
+        }
+      ]
+    },
+    "receiveAgentSessionEvents": {
+      "action": "receive",
+      "description": "Receive one AgentSessionEvent at a time. A stream_id change starts a new ordering domain; it does not imply replay of events from an earlier Host process.",
+      "channel": {
+        "$ref": "#/channels/agentSessionEvents"
+      },
+      "messages": [
+        {
+          "$ref": "#/components/messages/AgentSessionEvent"
+        }
+      ]
+    }
+  },
+  "components": {
+    "messages": {
+      "AgentSessionEvent": {
+        "name": "AgentSessionEvent",
+        "title": "Ordered Agent Host session event",
+        "summary": "At-least-once event ordered by sequence within a single stream_id.",
+        "description": "JSON payload semantics are authoritative in the referenced JSON Schema. Protobuf message yijie.events.v1.AgentSessionEvent carries the equivalent service and asynchronous-consumer model.",
+        "contentType": "application/json",
+        "correlationId": {
+          "description": "Agent Host session that owns the ordered event stream.",
+          "location": "$message.payload#/agent_session_id"
+        },
+        "payload": {
+          "$ref": "#/components/schemas/session-event.schema"
+        }
+      }
+    },
+    "schemas": {
+      "schemaVersion": {
+        "const": 1
+      },
+      "eventId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "streamId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "sequence": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "occurredAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "traceId": {
+        "type": "string",
+        "minLength": 1
+      },
+      "requestId": {
+        "type": "string",
+        "minLength": 1
+      },
+      "tenantId": {
+        "type": "string",
+        "minLength": 1
+      },
+      "userId": {
+        "type": "string",
+        "minLength": 1
+      },
+      "taskId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "agentSessionId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "codexThreadId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "threadStartedPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "model",
+          "model_provider"
+        ],
+        "properties": {
+          "model": {
+            "type": "string",
+            "minLength": 1
+          },
+          "model_provider": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "turnId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "turnStartedPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "const": "in_progress"
+          }
+        }
+      },
+      "itemId": {
+        "type": "string",
+        "minLength": 1
+      },
+      "itemLifecyclePayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "item_type"
+        ],
+        "properties": {
+          "item_type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "text": {
+            "type": "string"
+          }
+        }
+      },
+      "agentMessageDeltaPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "delta"
+        ],
+        "properties": {
+          "delta": {
+            "type": "string"
+          }
+        }
+      },
+      "turnCompletedPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "completed",
+              "interrupted",
+              "failed"
+            ]
+          },
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "agentProblemPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "message",
+          "will_retry"
+        ],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "will_retry": {
+            "type": "boolean"
+          }
+        }
+      },
+      "agentWarningPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "message",
+          "will_retry"
+        ],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "will_retry": {
+            "const": false
+          }
+        }
+      },
+      "session-event.schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://contracts.yijie.ai/agent/session-event.schema.json",
+        "title": "AgentSessionEvent",
+        "description": "A sanitized Agent Host event. The event_type discriminator selects one payload, correlation-ID, and terminal-state variant. Sequence is monotonic only within one stream_id. A new Host process creates a new stream_id and does not replay content from an earlier process.",
+        "oneOf": [
+          {
+            "title": "ThreadStartedEvent",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "schema_version",
+              "event_id",
+              "stream_id",
+              "sequence",
+              "occurred_at",
+              "task_id",
+              "agent_session_id",
+              "codex_thread_id",
+              "event_type",
+              "terminal",
+              "payload"
+            ],
+            "properties": {
+              "schema_version": {
+                "$ref": "#/components/schemas/schemaVersion"
+              },
+              "event_id": {
+                "$ref": "#/components/schemas/eventId"
+              },
+              "stream_id": {
+                "$ref": "#/components/schemas/streamId"
+              },
+              "sequence": {
+                "$ref": "#/components/schemas/sequence"
+              },
+              "occurred_at": {
+                "$ref": "#/components/schemas/occurredAt"
+              },
+              "trace_id": {
+                "$ref": "#/components/schemas/traceId"
+              },
+              "request_id": {
+                "$ref": "#/components/schemas/requestId"
+              },
+              "tenant_id": {
+                "$ref": "#/components/schemas/tenantId"
+              },
+              "user_id": {
+                "$ref": "#/components/schemas/userId"
+              },
+              "task_id": {
+                "$ref": "#/components/schemas/taskId"
+              },
+              "agent_session_id": {
+                "$ref": "#/components/schemas/agentSessionId"
+              },
+              "codex_thread_id": {
+                "$ref": "#/components/schemas/codexThreadId"
+              },
+              "event_type": {
+                "const": "thread.started"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/threadStartedPayload"
+              }
+            }
+          },
+          {
+            "title": "TurnStartedEvent",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "schema_version",
+              "event_id",
+              "stream_id",
+              "sequence",
+              "occurred_at",
+              "task_id",
+              "agent_session_id",
+              "codex_thread_id",
+              "turn_id",
+              "event_type",
+              "terminal",
+              "payload"
+            ],
+            "properties": {
+              "schema_version": {
+                "$ref": "#/components/schemas/schemaVersion"
+              },
+              "event_id": {
+                "$ref": "#/components/schemas/eventId"
+              },
+              "stream_id": {
+                "$ref": "#/components/schemas/streamId"
+              },
+              "sequence": {
+                "$ref": "#/components/schemas/sequence"
+              },
+              "occurred_at": {
+                "$ref": "#/components/schemas/occurredAt"
+              },
+              "trace_id": {
+                "$ref": "#/components/schemas/traceId"
+              },
+              "request_id": {
+                "$ref": "#/components/schemas/requestId"
+              },
+              "tenant_id": {
+                "$ref": "#/components/schemas/tenantId"
+              },
+              "user_id": {
+                "$ref": "#/components/schemas/userId"
+              },
+              "task_id": {
+                "$ref": "#/components/schemas/taskId"
+              },
+              "agent_session_id": {
+                "$ref": "#/components/schemas/agentSessionId"
+              },
+              "codex_thread_id": {
+                "$ref": "#/components/schemas/codexThreadId"
+              },
+              "turn_id": {
+                "$ref": "#/components/schemas/turnId"
+              },
+              "event_type": {
+                "const": "turn.started"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/turnStartedPayload"
+              }
+            }
+          },
+          {
+            "title": "ItemStartedEvent",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "schema_version",
+              "event_id",
+              "stream_id",
+              "sequence",
+              "occurred_at",
+              "task_id",
+              "agent_session_id",
+              "codex_thread_id",
+              "turn_id",
+              "item_id",
+              "event_type",
+              "terminal",
+              "payload"
+            ],
+            "properties": {
+              "schema_version": {
+                "$ref": "#/components/schemas/schemaVersion"
+              },
+              "event_id": {
+                "$ref": "#/components/schemas/eventId"
+              },
+              "stream_id": {
+                "$ref": "#/components/schemas/streamId"
+              },
+              "sequence": {
+                "$ref": "#/components/schemas/sequence"
+              },
+              "occurred_at": {
+                "$ref": "#/components/schemas/occurredAt"
+              },
+              "trace_id": {
+                "$ref": "#/components/schemas/traceId"
+              },
+              "request_id": {
+                "$ref": "#/components/schemas/requestId"
+              },
+              "tenant_id": {
+                "$ref": "#/components/schemas/tenantId"
+              },
+              "user_id": {
+                "$ref": "#/components/schemas/userId"
+              },
+              "task_id": {
+                "$ref": "#/components/schemas/taskId"
+              },
+              "agent_session_id": {
+                "$ref": "#/components/schemas/agentSessionId"
+              },
+              "codex_thread_id": {
+                "$ref": "#/components/schemas/codexThreadId"
+              },
+              "turn_id": {
+                "$ref": "#/components/schemas/turnId"
+              },
+              "item_id": {
+                "$ref": "#/components/schemas/itemId"
+              },
+              "event_type": {
+                "const": "item.started"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/itemLifecyclePayload"
+              }
+            }
+          },
+          {
+            "title": "AgentMessageDeltaEvent",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "schema_version",
+              "event_id",
+              "stream_id",
+              "sequence",
+              "occurred_at",
+              "task_id",
+              "agent_session_id",
+              "codex_thread_id",
+              "turn_id",
+              "item_id",
+              "event_type",
+              "terminal",
+              "payload"
+            ],
+            "properties": {
+              "schema_version": {
+                "$ref": "#/components/schemas/schemaVersion"
+              },
+              "event_id": {
+                "$ref": "#/components/schemas/eventId"
+              },
+              "stream_id": {
+                "$ref": "#/components/schemas/streamId"
+              },
+              "sequence": {
+                "$ref": "#/components/schemas/sequence"
+              },
+              "occurred_at": {
+                "$ref": "#/components/schemas/occurredAt"
+              },
+              "trace_id": {
+                "$ref": "#/components/schemas/traceId"
+              },
+              "request_id": {
+                "$ref": "#/components/schemas/requestId"
+              },
+              "tenant_id": {
+                "$ref": "#/components/schemas/tenantId"
+              },
+              "user_id": {
+                "$ref": "#/components/schemas/userId"
+              },
+              "task_id": {
+                "$ref": "#/components/schemas/taskId"
+              },
+              "agent_session_id": {
+                "$ref": "#/components/schemas/agentSessionId"
+              },
+              "codex_thread_id": {
+                "$ref": "#/components/schemas/codexThreadId"
+              },
+              "turn_id": {
+                "$ref": "#/components/schemas/turnId"
+              },
+              "item_id": {
+                "$ref": "#/components/schemas/itemId"
+              },
+              "event_type": {
+                "const": "item.agent_message.delta"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/agentMessageDeltaPayload"
+              }
+            }
+          },
+          {
+            "title": "ItemCompletedEvent",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "schema_version",
+              "event_id",
+              "stream_id",
+              "sequence",
+              "occurred_at",
+              "task_id",
+              "agent_session_id",
+              "codex_thread_id",
+              "turn_id",
+              "item_id",
+              "event_type",
+              "terminal",
+              "payload"
+            ],
+            "properties": {
+              "schema_version": {
+                "$ref": "#/components/schemas/schemaVersion"
+              },
+              "event_id": {
+                "$ref": "#/components/schemas/eventId"
+              },
+              "stream_id": {
+                "$ref": "#/components/schemas/streamId"
+              },
+              "sequence": {
+                "$ref": "#/components/schemas/sequence"
+              },
+              "occurred_at": {
+                "$ref": "#/components/schemas/occurredAt"
+              },
+              "trace_id": {
+                "$ref": "#/components/schemas/traceId"
+              },
+              "request_id": {
+                "$ref": "#/components/schemas/requestId"
+              },
+              "tenant_id": {
+                "$ref": "#/components/schemas/tenantId"
+              },
+              "user_id": {
+                "$ref": "#/components/schemas/userId"
+              },
+              "task_id": {
+                "$ref": "#/components/schemas/taskId"
+              },
+              "agent_session_id": {
+                "$ref": "#/components/schemas/agentSessionId"
+              },
+              "codex_thread_id": {
+                "$ref": "#/components/schemas/codexThreadId"
+              },
+              "turn_id": {
+                "$ref": "#/components/schemas/turnId"
+              },
+              "item_id": {
+                "$ref": "#/components/schemas/itemId"
+              },
+              "event_type": {
+                "const": "item.completed"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/itemLifecyclePayload"
+              }
+            }
+          },
+          {
+            "title": "TurnCompletedEvent",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "schema_version",
+              "event_id",
+              "stream_id",
+              "sequence",
+              "occurred_at",
+              "task_id",
+              "agent_session_id",
+              "codex_thread_id",
+              "turn_id",
+              "event_type",
+              "terminal",
+              "payload"
+            ],
+            "properties": {
+              "schema_version": {
+                "$ref": "#/components/schemas/schemaVersion"
+              },
+              "event_id": {
+                "$ref": "#/components/schemas/eventId"
+              },
+              "stream_id": {
+                "$ref": "#/components/schemas/streamId"
+              },
+              "sequence": {
+                "$ref": "#/components/schemas/sequence"
+              },
+              "occurred_at": {
+                "$ref": "#/components/schemas/occurredAt"
+              },
+              "trace_id": {
+                "$ref": "#/components/schemas/traceId"
+              },
+              "request_id": {
+                "$ref": "#/components/schemas/requestId"
+              },
+              "tenant_id": {
+                "$ref": "#/components/schemas/tenantId"
+              },
+              "user_id": {
+                "$ref": "#/components/schemas/userId"
+              },
+              "task_id": {
+                "$ref": "#/components/schemas/taskId"
+              },
+              "agent_session_id": {
+                "$ref": "#/components/schemas/agentSessionId"
+              },
+              "codex_thread_id": {
+                "$ref": "#/components/schemas/codexThreadId"
+              },
+              "turn_id": {
+                "$ref": "#/components/schemas/turnId"
+              },
+              "event_type": {
+                "const": "turn.completed"
+              },
+              "terminal": {
+                "const": true
+              },
+              "payload": {
+                "$ref": "#/components/schemas/turnCompletedPayload"
+              }
+            }
+          },
+          {
+            "title": "AgentErrorEvent",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "schema_version",
+              "event_id",
+              "stream_id",
+              "sequence",
+              "occurred_at",
+              "task_id",
+              "agent_session_id",
+              "codex_thread_id",
+              "turn_id",
+              "event_type",
+              "terminal",
+              "payload"
+            ],
+            "properties": {
+              "schema_version": {
+                "$ref": "#/components/schemas/schemaVersion"
+              },
+              "event_id": {
+                "$ref": "#/components/schemas/eventId"
+              },
+              "stream_id": {
+                "$ref": "#/components/schemas/streamId"
+              },
+              "sequence": {
+                "$ref": "#/components/schemas/sequence"
+              },
+              "occurred_at": {
+                "$ref": "#/components/schemas/occurredAt"
+              },
+              "trace_id": {
+                "$ref": "#/components/schemas/traceId"
+              },
+              "request_id": {
+                "$ref": "#/components/schemas/requestId"
+              },
+              "tenant_id": {
+                "$ref": "#/components/schemas/tenantId"
+              },
+              "user_id": {
+                "$ref": "#/components/schemas/userId"
+              },
+              "task_id": {
+                "$ref": "#/components/schemas/taskId"
+              },
+              "agent_session_id": {
+                "$ref": "#/components/schemas/agentSessionId"
+              },
+              "codex_thread_id": {
+                "$ref": "#/components/schemas/codexThreadId"
+              },
+              "turn_id": {
+                "$ref": "#/components/schemas/turnId"
+              },
+              "event_type": {
+                "const": "error"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/agentProblemPayload"
+              }
+            }
+          },
+          {
+            "title": "AgentWarningEvent",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "schema_version",
+              "event_id",
+              "stream_id",
+              "sequence",
+              "occurred_at",
+              "task_id",
+              "agent_session_id",
+              "codex_thread_id",
+              "event_type",
+              "terminal",
+              "payload"
+            ],
+            "properties": {
+              "schema_version": {
+                "$ref": "#/components/schemas/schemaVersion"
+              },
+              "event_id": {
+                "$ref": "#/components/schemas/eventId"
+              },
+              "stream_id": {
+                "$ref": "#/components/schemas/streamId"
+              },
+              "sequence": {
+                "$ref": "#/components/schemas/sequence"
+              },
+              "occurred_at": {
+                "$ref": "#/components/schemas/occurredAt"
+              },
+              "trace_id": {
+                "$ref": "#/components/schemas/traceId"
+              },
+              "request_id": {
+                "$ref": "#/components/schemas/requestId"
+              },
+              "tenant_id": {
+                "$ref": "#/components/schemas/tenantId"
+              },
+              "user_id": {
+                "$ref": "#/components/schemas/userId"
+              },
+              "task_id": {
+                "$ref": "#/components/schemas/taskId"
+              },
+              "agent_session_id": {
+                "$ref": "#/components/schemas/agentSessionId"
+              },
+              "codex_thread_id": {
+                "$ref": "#/components/schemas/codexThreadId"
+              },
+              "event_type": {
+                "const": "warning"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/agentWarningPayload"
+              }
+            }
+          }
+        ],
+        "definitions": {
+          "schemaVersion": {
+            "const": 1
+          },
+          "eventId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "streamId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "traceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "userId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "taskId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "agentSessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "codexThreadId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "turnId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "itemId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "threadStartedPayload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "model",
+              "model_provider"
+            ],
+            "properties": {
+              "model": {
+                "type": "string",
+                "minLength": 1
+              },
+              "model_provider": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "turnStartedPayload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "const": "in_progress"
+              }
+            }
+          },
+          "turnCompletedPayload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "completed",
+                  "interrupted",
+                  "failed"
+                ]
+              },
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            }
+          },
+          "itemLifecyclePayload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "item_type"
+            ],
+            "properties": {
+              "item_type": {
+                "type": "string",
+                "minLength": 1
+              },
+              "text": {
+                "type": "string"
+              }
+            }
+          },
+          "agentMessageDeltaPayload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "delta"
+            ],
+            "properties": {
+              "delta": {
+                "type": "string"
+              }
+            }
+          },
+          "agentProblemPayload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "message",
+              "will_retry"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "will_retry": {
+                "type": "boolean"
+              }
+            }
+          },
+          "agentWarningPayload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "message",
+              "will_retry"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "will_retry": {
+                "const": false
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -212,8 +212,10 @@ type AgentSession struct {
 	ModelProvider  string                 `protobuf:"bytes,8,opt,name=model_provider,json=modelProvider,proto3" json:"model_provider,omitempty"`
 	CreatedAt      *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt      *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// Stable, sanitized failure reason. Present only when state is AGENT_SESSION_STATE_FAILED.
+	FailureCode   *string `protobuf:"bytes,11,opt,name=failure_code,json=failureCode,proto3,oneof" json:"failure_code,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *AgentSession) Reset() {
@@ -316,6 +318,13 @@ func (x *AgentSession) GetUpdatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *AgentSession) GetFailureCode() string {
+	if x != nil && x.FailureCode != nil {
+		return *x.FailureCode
+	}
+	return ""
+}
+
 type ThreadStartedPayload struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Model         string                 `protobuf:"bytes,1,opt,name=model,proto3" json:"model,omitempty"`
@@ -369,10 +378,14 @@ func (x *ThreadStartedPayload) GetModelProvider() string {
 }
 
 type TurnLifecyclePayload struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Status        AgentTurnStatus        `protobuf:"varint,1,opt,name=status,proto3,enum=yijie.events.v1.AgentTurnStatus" json:"status,omitempty"`
-	ErrorCode     string                 `protobuf:"bytes,2,opt,name=error_code,json=errorCode,proto3" json:"error_code,omitempty"`
-	ErrorMessage  string                 `protobuf:"bytes,3,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// turn_started requires AGENT_TURN_STATUS_IN_PROGRESS. turn_completed requires
+	// AGENT_TURN_STATUS_COMPLETED, AGENT_TURN_STATUS_INTERRUPTED, or
+	// AGENT_TURN_STATUS_FAILED.
+	Status AgentTurnStatus `protobuf:"varint,1,opt,name=status,proto3,enum=yijie.events.v1.AgentTurnStatus" json:"status,omitempty"`
+	// Only turn_completed may carry a sanitized error code and message.
+	ErrorCode     string `protobuf:"bytes,2,opt,name=error_code,json=errorCode,proto3" json:"error_code,omitempty"`
+	ErrorMessage  string `protobuf:"bytes,3,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -525,10 +538,11 @@ func (x *AgentMessageDeltaPayload) GetDelta() string {
 }
 
 type AgentProblemPayload struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          string                 `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	WillRetry     bool                   `protobuf:"varint,3,opt,name=will_retry,json=willRetry,proto3" json:"will_retry,omitempty"`
+	state   protoimpl.MessageState `protogen:"open.v1"`
+	Code    string                 `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"`
+	Message string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	// Warning events require false. Error events preserve the Runtime retry signal.
+	WillRetry     bool `protobuf:"varint,3,opt,name=will_retry,json=willRetry,proto3" json:"will_retry,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -595,10 +609,16 @@ type AgentSessionEvent struct {
 	TaskId         string                 `protobuf:"bytes,7,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"`
 	AgentSessionId string                 `protobuf:"bytes,8,opt,name=agent_session_id,json=agentSessionId,proto3" json:"agent_session_id,omitempty"`
 	CodexThreadId  string                 `protobuf:"bytes,9,opt,name=codex_thread_id,json=codexThreadId,proto3" json:"codex_thread_id,omitempty"`
-	TurnId         string                 `protobuf:"bytes,10,opt,name=turn_id,json=turnId,proto3" json:"turn_id,omitempty"`
-	ItemId         string                 `protobuf:"bytes,11,opt,name=item_id,json=itemId,proto3" json:"item_id,omitempty"`
-	EventType      AgentEventType         `protobuf:"varint,12,opt,name=event_type,json=eventType,proto3,enum=yijie.events.v1.AgentEventType" json:"event_type,omitempty"`
-	Terminal       bool                   `protobuf:"varint,13,opt,name=terminal,proto3" json:"terminal,omitempty"`
+	// Required for turn_started, turn_completed, item events, and error.
+	TurnId string `protobuf:"bytes,10,opt,name=turn_id,json=turnId,proto3" json:"turn_id,omitempty"`
+	// Required only for item_started, agent_message_delta, and item_completed.
+	ItemId    string         `protobuf:"bytes,11,opt,name=item_id,json=itemId,proto3" json:"item_id,omitempty"`
+	EventType AgentEventType `protobuf:"varint,12,opt,name=event_type,json=eventType,proto3,enum=yijie.events.v1.AgentEventType" json:"event_type,omitempty"`
+	// True only for turn_completed. Error and warning events are informational.
+	Terminal bool `protobuf:"varint,13,opt,name=terminal,proto3" json:"terminal,omitempty"`
+	// The populated field must correspond to event_type. JSON/SSE consumers use
+	// jsonschema/agent/session-event.schema.json, which enforces this pairing.
+	//
 	// Types that are valid to be assigned to Payload:
 	//
 	//	*AgentSessionEvent_ThreadStarted
@@ -870,7 +890,7 @@ var File_yijie_events_v1_agent_session_proto protoreflect.FileDescriptor
 
 const file_yijie_events_v1_agent_session_proto_rawDesc = "" +
 	"\n" +
-	"#yijie/events/v1/agent_session.proto\x12\x0fyijie.events.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cyijie/common/v1/common.proto\"\x9e\x03\n" +
+	"#yijie/events/v1/agent_session.proto\x12\x0fyijie.events.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cyijie/common/v1/common.proto\"\xd7\x03\n" +
 	"\fAgentSession\x12\x17\n" +
 	"\atask_id\x18\x01 \x01(\tR\x06taskId\x12(\n" +
 	"\x10agent_session_id\x18\x02 \x01(\tR\x0eagentSessionId\x12&\n" +
@@ -884,7 +904,9 @@ const file_yijie_events_v1_agent_session_proto_rawDesc = "" +
 	"created_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
 	"updated_at\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"S\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12&\n" +
+	"\ffailure_code\x18\v \x01(\tH\x00R\vfailureCode\x88\x01\x01B\x0f\n" +
+	"\r_failure_code\"S\n" +
 	"\x14ThreadStartedPayload\x12\x14\n" +
 	"\x05model\x18\x01 \x01(\tR\x05model\x12%\n" +
 	"\x0emodel_provider\x18\x02 \x01(\tR\rmodelProvider\"\x94\x01\n" +
@@ -1008,6 +1030,7 @@ func file_yijie_events_v1_agent_session_proto_init() {
 	if File_yijie_events_v1_agent_session_proto != nil {
 		return
 	}
+	file_yijie_events_v1_agent_session_proto_msgTypes[0].OneofWrappers = []any{}
 	file_yijie_events_v1_agent_session_proto_msgTypes[6].OneofWrappers = []any{
 		(*AgentSessionEvent_ThreadStarted)(nil),
 		(*AgentSessionEvent_TurnStarted)(nil),

@@ -5,6 +5,8 @@ apis:
     root: ./openapi/admin/admin.yaml
   internal@v1:
     root: ./openapi/internal/internal.yaml
+  agent-host@v1:
+    root: ./openapi/agent-host/agent-host.yaml
   events@v1:
     root: ./asyncapi/events.yaml
 

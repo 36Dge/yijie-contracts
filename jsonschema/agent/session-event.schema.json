@@ -2,23 +2,322 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contracts.yijie.ai/agent/session-event.schema.json",
   "title": "AgentSessionEvent",
-  "description": "A sanitized Agent Host event. Sequence is monotonic only within one stream_id. A new Host process creates a new stream_id and does not replay content from an earlier process.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "schema_version",
-    "event_id",
-    "stream_id",
-    "sequence",
-    "occurred_at",
-    "task_id",
-    "agent_session_id",
-    "codex_thread_id",
-    "event_type",
-    "terminal",
-    "payload"
+  "description": "A sanitized Agent Host event. The event_type discriminator selects one payload, correlation-ID, and terminal-state variant. Sequence is monotonic only within one stream_id. A new Host process creates a new stream_id and does not replay content from an earlier process.",
+  "oneOf": [
+    {
+      "title": "ThreadStartedEvent",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "event_id",
+        "stream_id",
+        "sequence",
+        "occurred_at",
+        "task_id",
+        "agent_session_id",
+        "codex_thread_id",
+        "event_type",
+        "terminal",
+        "payload"
+      ],
+      "properties": {
+        "schema_version": { "$ref": "#/definitions/schemaVersion" },
+        "event_id": { "$ref": "#/definitions/eventId" },
+        "stream_id": { "$ref": "#/definitions/streamId" },
+        "sequence": { "$ref": "#/definitions/sequence" },
+        "occurred_at": { "$ref": "#/definitions/occurredAt" },
+        "trace_id": { "$ref": "#/definitions/traceId" },
+        "request_id": { "$ref": "#/definitions/requestId" },
+        "tenant_id": { "$ref": "#/definitions/tenantId" },
+        "user_id": { "$ref": "#/definitions/userId" },
+        "task_id": { "$ref": "#/definitions/taskId" },
+        "agent_session_id": { "$ref": "#/definitions/agentSessionId" },
+        "codex_thread_id": { "$ref": "#/definitions/codexThreadId" },
+        "event_type": { "const": "thread.started" },
+        "terminal": { "const": false },
+        "payload": { "$ref": "#/definitions/threadStartedPayload" }
+      }
+    },
+    {
+      "title": "TurnStartedEvent",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "event_id",
+        "stream_id",
+        "sequence",
+        "occurred_at",
+        "task_id",
+        "agent_session_id",
+        "codex_thread_id",
+        "turn_id",
+        "event_type",
+        "terminal",
+        "payload"
+      ],
+      "properties": {
+        "schema_version": { "$ref": "#/definitions/schemaVersion" },
+        "event_id": { "$ref": "#/definitions/eventId" },
+        "stream_id": { "$ref": "#/definitions/streamId" },
+        "sequence": { "$ref": "#/definitions/sequence" },
+        "occurred_at": { "$ref": "#/definitions/occurredAt" },
+        "trace_id": { "$ref": "#/definitions/traceId" },
+        "request_id": { "$ref": "#/definitions/requestId" },
+        "tenant_id": { "$ref": "#/definitions/tenantId" },
+        "user_id": { "$ref": "#/definitions/userId" },
+        "task_id": { "$ref": "#/definitions/taskId" },
+        "agent_session_id": { "$ref": "#/definitions/agentSessionId" },
+        "codex_thread_id": { "$ref": "#/definitions/codexThreadId" },
+        "turn_id": { "$ref": "#/definitions/turnId" },
+        "event_type": { "const": "turn.started" },
+        "terminal": { "const": false },
+        "payload": { "$ref": "#/definitions/turnStartedPayload" }
+      }
+    },
+    {
+      "title": "ItemStartedEvent",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "event_id",
+        "stream_id",
+        "sequence",
+        "occurred_at",
+        "task_id",
+        "agent_session_id",
+        "codex_thread_id",
+        "turn_id",
+        "item_id",
+        "event_type",
+        "terminal",
+        "payload"
+      ],
+      "properties": {
+        "schema_version": { "$ref": "#/definitions/schemaVersion" },
+        "event_id": { "$ref": "#/definitions/eventId" },
+        "stream_id": { "$ref": "#/definitions/streamId" },
+        "sequence": { "$ref": "#/definitions/sequence" },
+        "occurred_at": { "$ref": "#/definitions/occurredAt" },
+        "trace_id": { "$ref": "#/definitions/traceId" },
+        "request_id": { "$ref": "#/definitions/requestId" },
+        "tenant_id": { "$ref": "#/definitions/tenantId" },
+        "user_id": { "$ref": "#/definitions/userId" },
+        "task_id": { "$ref": "#/definitions/taskId" },
+        "agent_session_id": { "$ref": "#/definitions/agentSessionId" },
+        "codex_thread_id": { "$ref": "#/definitions/codexThreadId" },
+        "turn_id": { "$ref": "#/definitions/turnId" },
+        "item_id": { "$ref": "#/definitions/itemId" },
+        "event_type": { "const": "item.started" },
+        "terminal": { "const": false },
+        "payload": { "$ref": "#/definitions/itemLifecyclePayload" }
+      }
+    },
+    {
+      "title": "AgentMessageDeltaEvent",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "event_id",
+        "stream_id",
+        "sequence",
+        "occurred_at",
+        "task_id",
+        "agent_session_id",
+        "codex_thread_id",
+        "turn_id",
+        "item_id",
+        "event_type",
+        "terminal",
+        "payload"
+      ],
+      "properties": {
+        "schema_version": { "$ref": "#/definitions/schemaVersion" },
+        "event_id": { "$ref": "#/definitions/eventId" },
+        "stream_id": { "$ref": "#/definitions/streamId" },
+        "sequence": { "$ref": "#/definitions/sequence" },
+        "occurred_at": { "$ref": "#/definitions/occurredAt" },
+        "trace_id": { "$ref": "#/definitions/traceId" },
+        "request_id": { "$ref": "#/definitions/requestId" },
+        "tenant_id": { "$ref": "#/definitions/tenantId" },
+        "user_id": { "$ref": "#/definitions/userId" },
+        "task_id": { "$ref": "#/definitions/taskId" },
+        "agent_session_id": { "$ref": "#/definitions/agentSessionId" },
+        "codex_thread_id": { "$ref": "#/definitions/codexThreadId" },
+        "turn_id": { "$ref": "#/definitions/turnId" },
+        "item_id": { "$ref": "#/definitions/itemId" },
+        "event_type": { "const": "item.agent_message.delta" },
+        "terminal": { "const": false },
+        "payload": { "$ref": "#/definitions/agentMessageDeltaPayload" }
+      }
+    },
+    {
+      "title": "ItemCompletedEvent",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "event_id",
+        "stream_id",
+        "sequence",
+        "occurred_at",
+        "task_id",
+        "agent_session_id",
+        "codex_thread_id",
+        "turn_id",
+        "item_id",
+        "event_type",
+        "terminal",
+        "payload"
+      ],
+      "properties": {
+        "schema_version": { "$ref": "#/definitions/schemaVersion" },
+        "event_id": { "$ref": "#/definitions/eventId" },
+        "stream_id": { "$ref": "#/definitions/streamId" },
+        "sequence": { "$ref": "#/definitions/sequence" },
+        "occurred_at": { "$ref": "#/definitions/occurredAt" },
+        "trace_id": { "$ref": "#/definitions/traceId" },
+        "request_id": { "$ref": "#/definitions/requestId" },
+        "tenant_id": { "$ref": "#/definitions/tenantId" },
+        "user_id": { "$ref": "#/definitions/userId" },
+        "task_id": { "$ref": "#/definitions/taskId" },
+        "agent_session_id": { "$ref": "#/definitions/agentSessionId" },
+        "codex_thread_id": { "$ref": "#/definitions/codexThreadId" },
+        "turn_id": { "$ref": "#/definitions/turnId" },
+        "item_id": { "$ref": "#/definitions/itemId" },
+        "event_type": { "const": "item.completed" },
+        "terminal": { "const": false },
+        "payload": { "$ref": "#/definitions/itemLifecyclePayload" }
+      }
+    },
+    {
+      "title": "TurnCompletedEvent",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "event_id",
+        "stream_id",
+        "sequence",
+        "occurred_at",
+        "task_id",
+        "agent_session_id",
+        "codex_thread_id",
+        "turn_id",
+        "event_type",
+        "terminal",
+        "payload"
+      ],
+      "properties": {
+        "schema_version": { "$ref": "#/definitions/schemaVersion" },
+        "event_id": { "$ref": "#/definitions/eventId" },
+        "stream_id": { "$ref": "#/definitions/streamId" },
+        "sequence": { "$ref": "#/definitions/sequence" },
+        "occurred_at": { "$ref": "#/definitions/occurredAt" },
+        "trace_id": { "$ref": "#/definitions/traceId" },
+        "request_id": { "$ref": "#/definitions/requestId" },
+        "tenant_id": { "$ref": "#/definitions/tenantId" },
+        "user_id": { "$ref": "#/definitions/userId" },
+        "task_id": { "$ref": "#/definitions/taskId" },
+        "agent_session_id": { "$ref": "#/definitions/agentSessionId" },
+        "codex_thread_id": { "$ref": "#/definitions/codexThreadId" },
+        "turn_id": { "$ref": "#/definitions/turnId" },
+        "event_type": { "const": "turn.completed" },
+        "terminal": { "const": true },
+        "payload": { "$ref": "#/definitions/turnCompletedPayload" }
+      }
+    },
+    {
+      "title": "AgentErrorEvent",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "event_id",
+        "stream_id",
+        "sequence",
+        "occurred_at",
+        "task_id",
+        "agent_session_id",
+        "codex_thread_id",
+        "turn_id",
+        "event_type",
+        "terminal",
+        "payload"
+      ],
+      "properties": {
+        "schema_version": { "$ref": "#/definitions/schemaVersion" },
+        "event_id": { "$ref": "#/definitions/eventId" },
+        "stream_id": { "$ref": "#/definitions/streamId" },
+        "sequence": { "$ref": "#/definitions/sequence" },
+        "occurred_at": { "$ref": "#/definitions/occurredAt" },
+        "trace_id": { "$ref": "#/definitions/traceId" },
+        "request_id": { "$ref": "#/definitions/requestId" },
+        "tenant_id": { "$ref": "#/definitions/tenantId" },
+        "user_id": { "$ref": "#/definitions/userId" },
+        "task_id": { "$ref": "#/definitions/taskId" },
+        "agent_session_id": { "$ref": "#/definitions/agentSessionId" },
+        "codex_thread_id": { "$ref": "#/definitions/codexThreadId" },
+        "turn_id": { "$ref": "#/definitions/turnId" },
+        "event_type": { "const": "error" },
+        "terminal": { "const": false },
+        "payload": { "$ref": "#/definitions/agentProblemPayload" }
+      }
+    },
+    {
+      "title": "AgentWarningEvent",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "event_id",
+        "stream_id",
+        "sequence",
+        "occurred_at",
+        "task_id",
+        "agent_session_id",
+        "codex_thread_id",
+        "event_type",
+        "terminal",
+        "payload"
+      ],
+      "properties": {
+        "schema_version": { "$ref": "#/definitions/schemaVersion" },
+        "event_id": { "$ref": "#/definitions/eventId" },
+        "stream_id": { "$ref": "#/definitions/streamId" },
+        "sequence": { "$ref": "#/definitions/sequence" },
+        "occurred_at": { "$ref": "#/definitions/occurredAt" },
+        "trace_id": { "$ref": "#/definitions/traceId" },
+        "request_id": { "$ref": "#/definitions/requestId" },
+        "tenant_id": { "$ref": "#/definitions/tenantId" },
+        "user_id": { "$ref": "#/definitions/userId" },
+        "task_id": { "$ref": "#/definitions/taskId" },
+        "agent_session_id": { "$ref": "#/definitions/agentSessionId" },
+        "codex_thread_id": { "$ref": "#/definitions/codexThreadId" },
+        "event_type": { "const": "warning" },
+        "terminal": { "const": false },
+        "payload": { "$ref": "#/definitions/agentWarningPayload" }
+      }
+    }
   ],
   "definitions": {
+    "schemaVersion": { "const": 1 },
+    "eventId": { "type": "string", "format": "uuid" },
+    "streamId": { "type": "string", "format": "uuid" },
+    "sequence": { "type": "integer", "minimum": 1 },
+    "occurredAt": { "type": "string", "format": "date-time" },
+    "traceId": { "type": "string", "minLength": 1 },
+    "requestId": { "type": "string", "minLength": 1 },
+    "tenantId": { "type": "string", "minLength": 1 },
+    "userId": { "type": "string", "minLength": 1 },
+    "taskId": { "type": "string", "format": "uuid" },
+    "agentSessionId": { "type": "string", "format": "uuid" },
+    "codexThreadId": { "type": "string", "format": "uuid" },
+    "turnId": { "type": "string", "format": "uuid" },
+    "itemId": { "type": "string", "minLength": 1 },
     "threadStartedPayload": {
       "type": "object",
       "additionalProperties": false,
@@ -28,14 +327,22 @@
         "model_provider": { "type": "string", "minLength": 1 }
       }
     },
-    "turnLifecyclePayload": {
+    "turnStartedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": { "const": "in_progress" }
+      }
+    },
+    "turnCompletedPayload": {
       "type": "object",
       "additionalProperties": false,
       "required": ["status"],
       "properties": {
         "status": {
           "type": "string",
-          "enum": ["in_progress", "completed", "interrupted", "failed"]
+          "enum": ["completed", "interrupted", "failed"]
         },
         "code": { "type": "string" },
         "message": { "type": "string" }
@@ -67,137 +374,16 @@
         "message": { "type": "string" },
         "will_retry": { "type": "boolean" }
       }
+    },
+    "agentWarningPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["message", "will_retry"],
+      "properties": {
+        "code": { "type": "string" },
+        "message": { "type": "string" },
+        "will_retry": { "const": false }
+      }
     }
-  },
-  "properties": {
-    "schema_version": { "const": 1 },
-    "event_id": { "type": "string", "format": "uuid" },
-    "stream_id": { "type": "string", "format": "uuid" },
-    "sequence": { "type": "integer", "minimum": 1 },
-    "occurred_at": { "type": "string", "format": "date-time" },
-    "trace_id": { "type": "string", "minLength": 1 },
-    "request_id": { "type": "string", "minLength": 1 },
-    "tenant_id": { "type": "string", "minLength": 1 },
-    "user_id": { "type": "string", "minLength": 1 },
-    "task_id": { "type": "string", "format": "uuid" },
-    "agent_session_id": { "type": "string", "format": "uuid" },
-    "codex_thread_id": { "type": "string", "format": "uuid" },
-    "turn_id": { "type": "string", "format": "uuid" },
-    "item_id": { "type": "string", "minLength": 1 },
-    "event_type": {
-      "type": "string",
-      "enum": [
-        "thread.started",
-        "turn.started",
-        "item.started",
-        "item.agent_message.delta",
-        "item.completed",
-        "turn.completed",
-        "error",
-        "warning"
-      ]
-    },
-    "terminal": { "type": "boolean" },
-    "payload": {
-      "oneOf": [
-        { "$ref": "#/definitions/threadStartedPayload" },
-        { "$ref": "#/definitions/turnLifecyclePayload" },
-        { "$ref": "#/definitions/itemLifecyclePayload" },
-        { "$ref": "#/definitions/agentMessageDeltaPayload" },
-        { "$ref": "#/definitions/agentProblemPayload" }
-      ]
-    }
-  },
-  "allOf": [
-    {
-      "if": {
-        "properties": {
-          "event_type": {
-            "enum": ["turn.started", "turn.completed", "error"]
-          }
-        },
-        "required": ["event_type"]
-      },
-      "then": {
-        "type": "object",
-        "required": ["turn_id"],
-        "properties": {
-          "turn_id": { "type": "string", "format": "uuid" }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "event_type": {
-            "enum": ["item.started", "item.agent_message.delta", "item.completed"]
-          }
-        },
-        "required": ["event_type"]
-      },
-      "then": {
-        "type": "object",
-        "required": ["turn_id", "item_id"],
-        "properties": {
-          "turn_id": { "type": "string", "format": "uuid" },
-          "item_id": { "type": "string", "minLength": 1 }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": { "event_type": { "const": "thread.started" } },
-        "required": ["event_type"]
-      },
-      "then": {
-        "properties": { "payload": { "$ref": "#/definitions/threadStartedPayload" } }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "event_type": { "enum": ["turn.started", "turn.completed"] }
-        },
-        "required": ["event_type"]
-      },
-      "then": {
-        "properties": { "payload": { "$ref": "#/definitions/turnLifecyclePayload" } }
-      }
-    },
-    {
-      "if": {
-        "properties": { "event_type": { "enum": ["item.started", "item.completed"] } },
-        "required": ["event_type"]
-      },
-      "then": {
-        "properties": { "payload": { "$ref": "#/definitions/itemLifecyclePayload" } }
-      }
-    },
-    {
-      "if": {
-        "properties": { "event_type": { "const": "item.agent_message.delta" } },
-        "required": ["event_type"]
-      },
-      "then": {
-        "properties": { "payload": { "$ref": "#/definitions/agentMessageDeltaPayload" } }
-      }
-    },
-    {
-      "if": {
-        "properties": { "event_type": { "enum": ["error", "warning"] } },
-        "required": ["event_type"]
-      },
-      "then": {
-        "properties": { "payload": { "$ref": "#/definitions/agentProblemPayload" } }
-      }
-    },
-    {
-      "if": {
-        "properties": { "event_type": { "const": "turn.completed" } },
-        "required": ["event_type"]
-      },
-      "then": { "properties": { "terminal": { "const": true } } },
-      "else": { "properties": { "terminal": { "const": false } } }
-    }
-  ]
+  }
 }

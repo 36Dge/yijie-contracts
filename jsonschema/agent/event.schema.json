@@ -3,11 +3,10 @@
   "$id": "https://contracts.yijie.ai/agent/event.schema.json",
   "title": "AgentEvent",
   "type": "object",
-  "additionalProperties": false,
   "required": ["task_id", "event_type"],
   "properties": {
-    "task_id": { "type": "string", "minLength": 1 },
-    "codex_thread_id": { "type": "string", "minLength": 1 },
-    "event_type": { "type": "string", "minLength": 1 }
+    "task_id": { "type": "string" },
+    "codex_thread_id": { "type": "string" },
+    "event_type": { "type": "string" }
   }
 }

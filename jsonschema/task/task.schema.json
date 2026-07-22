@@ -3,26 +3,16 @@
   "$id": "https://contracts.yijie.ai/task/task.schema.json",
   "title": "AgentTask",
   "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "id",
-    "tenant_id",
-    "task_type",
-    "status",
-    "title",
-    "input",
-    "created_at",
-    "updated_at"
-  ],
+  "required": ["id", "status", "title"],
   "properties": {
-    "id": { "type": "string", "format": "uuid" },
+    "id": { "type": "string" },
     "tenant_id": { "type": "string", "format": "uuid" },
     "task_type": { "type": "string", "minLength": 1, "maxLength": 100 },
     "status": {
       "type": "string",
       "enum": ["draft", "running", "waiting_approval", "completed", "failed"]
     },
-    "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "title": { "type": "string" },
     "input": { "type": "object", "additionalProperties": true },
     "result": { "type": ["object", "null"], "additionalProperties": true },
     "error_message": { "type": ["string", "null"] },
