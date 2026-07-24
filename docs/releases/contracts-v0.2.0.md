@@ -1,6 +1,7 @@
-# contracts-v0.2.0 发布说明
+# contracts-v0.2.0 发布候选说明
 
 `contracts-v0.2.0` 是首个覆盖 Agent Host Runtime Baseline 2 的候选可消费版本。
+在同名 tag 创建且通过 tag provenance 复核前，本文件不构成已发布声明。
 
 ## 范围
 
@@ -17,13 +18,26 @@
 ## 发布顺序
 
 1. 先提交 `yijie-codex` 的双向兼容门禁，记录最终完整 commit；该步骤不修改 Runtime 上游源码、Schema tree 或 binary；
-2. 将 `compatibility/agent-host-runtime-v1.json` 的 `runtime.repository_commit` 更新为该 commit，重新生成并完成 lint、测试和 breaking check；
-3. 合并 `yijie-contracts` 并创建 `contracts-v0.2.0` tag；
-4. `yijie-agent-host` 从该 tag 同步 OpenAPI、事件 JSON Schema、Runtime 兼容清单、版本和 SHA-256，并重新生成本地类型；
-5. Codex Runtime 与 Host 的普通/集成门禁全部通过后，再由 Desktop 消费 TypeScript SDK；
-6. cloud runner、平台身份、工具和审批协议使用后续版本，不混入本版本。
+2. 将 `compatibility/agent-host-runtime-v1.json` 的 `runtime.repository_commit` 更新为该 commit，重新生成，并相对登记的 fallback 完整 commit 完成 lint、测试、breaking check 和人工语义审查；
+3. 合并本版本所有源契约、生成物、测试、发布说明及治理变更，形成干净、远端可获取的最终 candidate 完整 commit；
+4. `yijie-agent-host` 从该精确 candidate commit 做非生产同步，锁定版本、contracts 完整 commit、各源 digest 和 generator 身份，重新生成本地类型并通过 Host/Codex Runtime conformance 与集成门禁；
+5. 只有第 4 步针对最终 candidate 通过后，才创建 `contracts-v0.2.0`，且 tag 必须指向同一个已测试 commit；
+6. Host 验证 `contracts-v0.2.0^{commit}` 等于已锁定的 candidate commit、digest 未变，再把 provenance 从 candidate commit 切换为 tag 并复跑检查；
+7. 在后续 registry 变更中把 tag + 完整 commit 登记为 supported baseline；此后 Desktop 才能固定该已发布引用并消费 TypeScript SDK；
+8. cloud runner、平台身份、工具和审批协议使用后续版本，不混入本版本。
 
-`runtime.repository_commit` 是故意设置的双向精确绑定。当前未提交工作区仍以现有 `yijie-codex` `HEAD` 验证；一旦 Codex 仓产生新提交，第二步必须执行，不能把旧 SHA 带入发布 tag。
+`runtime.repository_commit` 是故意设置的双向精确绑定。前两步已经完成：
+
+- `yijie-codex` 兼容门禁提交并推送为 `a9b343964f8e74e11ba86059613464ec343d5eb0`；
+- 当前兼容清单已固定该完整 commit，并通过候选阶段的生成、lint、测试和 breaking check；
+- 首版无已发布基线期间登记的 fallback breaking 基线为
+  `c51c6d424a6706724ce6dfbbb7511e644694adb4`。
+
+最终 candidate 完整 commit 只有在第 3 步合并后才能产生，不能在其自身内容中自引用。
+第 2 步已有结果不能替代针对最终 candidate 的第 4—6 步跨仓复核。
+
+在创建 `contracts-v0.2.0` tag 前若 Codex Runtime 身份、canonical schema 或兼容门禁再次
+变化，必须重新固定新完整 commit 并执行双向验证，不能把旧 SHA 带入发布 tag。
 
 ## 回滚
 
@@ -31,7 +45,12 @@ Host 保留已提交的契约 snapshot 和生成代码。若候选版本回滚�
 
 ## 尚需人工动作
 
-- 创建 Git tag；
-- 在 `yijie-codex` 变更提交后回填最终 `runtime.repository_commit`；
+- 合并当前候选的全部治理与发布文件，记录最终远端 candidate 完整 commit；
+- 相对登记的 fallback commit 重跑候选 generate、lint、test、breaking check 并保存证据；
+- 让 Agent Host 从该精确 candidate commit 重新同步、补齐 contracts commit/generator
+  lock，并完成 Host/Codex Runtime conformance 与集成检查；
+- 仅在上述检查通过后，在同一 candidate commit 创建 Git tag；
+- 验证 tag provenance 与 digest 后，将 Host provenance 切换为 tag 并复跑检查；
+- 在后续 registry 变更中把 tag + 完整 commit 晋升为 supported baseline；
 - 在确定 TypeScript registry 和访问策略后增加发布凭据及发布 job；
 - Desktop 正式接入时记录其固定的 contracts 版本。
