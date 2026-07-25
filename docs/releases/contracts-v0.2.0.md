@@ -28,7 +28,8 @@
 
 `runtime.repository_commit` 是故意设置的双向精确绑定。前两步已经完成：
 
-- `yijie-codex` 兼容门禁提交并推送为 `a9b343964f8e74e11ba86059613464ec343d5eb0`；
+- `yijie-codex` 当前兼容门禁与治理提交并推送为
+  `3aa317cebbbc9c743f6b1a18522be11a7ebb5d6f`；
 - 当前兼容清单已固定该完整 commit，并通过候选阶段的生成、lint、测试和 breaking check；
 - 首版无已发布基线期间登记的 fallback breaking 基线为
   `c51c6d424a6706724ce6dfbbb7511e644694adb4`。
