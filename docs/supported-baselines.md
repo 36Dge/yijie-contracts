@@ -1,34 +1,43 @@
 # Supported Contract Baselines
 
-## 当前状态（2026-07-24）
+## 当前状态（2026-07-25）
 
 ### 已发布支持基线
 
-当前没有已发布、可用于生产的 contracts tag，因此也没有 `supported` 或
-`deprecating` 基线。
+- 版本：`0.2.0`
+- 不可移动 tag：`contracts-v0.2.0`
+- 完整 commit：`f16a497e1377f45747f8ff9292b4b60cf2027f88`
+- 状态：`supported`
+- 远端可用性：本地 commit/tag 已创建；本轮未执行 push，推送后必须复核远端 tag
+  provenance
+- producer/Owner：`yijie-agent-host` / Agent Runtime Team
+- 已验证 consumer：`yijie-agent-host`
+  `34e94acf293f6daad61c4d42fa47028a2d1318e4`
+- 支持范围：Agent Host Runtime Baseline 2 的本机 HTTP/SSE、Agent session event 和
+  Codex Runtime `0.144.6` 稳定投影
+- 尚未进入范围：Desktop 正式消费、cloud runner、平台身份、MCP、工具和审批
+- 兼容窗口：在明确登记 deprecation/unsupported 条件前持续支持
+- 回滚：回退 Host 的契约 snapshot 并禁用 Baseline 2 对外接口；这是首个支持版本，
+  没有更早的已发布 contracts tag 可回退
 
 ### 当前候选
 
-- 计划版本：`0.2.0`
-- 计划 tag：`contracts-v0.2.0`（尚未创建）
-- 最终候选完整 commit：待本次候选变更合并后记录；不得在同一 commit 中自引用
-- 状态：`candidate`
-- 用途：仅允许从干净、可获取的远端完整 commit 做非生产跨仓集成
+当前没有待晋升的 contracts candidate。
 
-### 首版 fallback breaking 基线
+### `0.2.0` 首版登记的 fallback breaking 证据
 
-在没有已发布基线期间，所有发布评审必须相对
+`contracts-v0.2.0` 发布评审已相对
 `c51c6d424a6706724ce6dfbbb7511e644694adb4` 执行并记录 breaking check。该 commit
 是本政策建立时的 `origin/main`，只是为防止“零基线”检查真空而登记的 fallback，
-不是已发布版本、生产支持声明或下游消费引用。fallback 变更必须由契约 Owner 在 PR
-中说明理由并更新本文件，不能静默跟随浮动 `origin/main`。
+不是已发布版本、生产支持声明或下游消费引用。结果为 OpenAPI、AsyncAPI 和 JSON
+Schema 均无结构性 breaking change，并由 Agent Runtime/Contracts Owner 完成人工语义
+复核：本次只更新精确 Runtime repository provenance，不改变 Runtime 方法、通知、
+transport、schema、权限或失败语义。
 
-因此在 `contracts-v0.2.0` 创建前：
-
-- breaking check 使用上面的完整 fallback commit，而不是只写 `origin/main`；
-- 下游只能把最终候选完整 commit 标为非生产集成引用；
-- 不得声称已有生产支持窗口或把计划 tag 写成已发布；
-- Agent Host、Desktop 和其它 consumers 不能据此宣称 supported/release-ready。
+从下一次契约变更开始，breaking check 必须至少包含
+`contracts-v0.2.0^{commit}` 对应的完整 commit
+`f16a497e1377f45747f8ff9292b4b60cf2027f88`；不得继续使用首版 fallback 代替已发布
+支持基线。
 
 ## 发布后维护规则
 

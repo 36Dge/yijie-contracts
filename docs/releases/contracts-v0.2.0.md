@@ -1,7 +1,8 @@
-# contracts-v0.2.0 发布候选说明
+# contracts-v0.2.0 发布说明
 
-`contracts-v0.2.0` 是首个覆盖 Agent Host Runtime Baseline 2 的候选可消费版本。
-在同名 tag 创建且通过 tag provenance 复核前，本文件不构成已发布声明。
+`contracts-v0.2.0` 是首个覆盖 Agent Host Runtime Baseline 2 的 supported 契约版本。
+不可移动 tag 指向
+`f16a497e1377f45747f8ff9292b4b60cf2027f88`，Agent Host 已验证并固定相同 commit。
 
 ## 范围
 
@@ -15,7 +16,7 @@
 
 既有 JSON Schema `$id` 保持向后兼容。已有属性不新增必填要求，不收紧旧字段的格式、枚举、长度或 `additionalProperties`。Agent Host 契约和 Runtime 兼容清单是新增接口。
 
-## 发布顺序
+## 发布顺序与本地完成证据
 
 1. 先提交 `yijie-codex` 的双向兼容门禁，记录最终完整 commit；该步骤不修改 Runtime 上游源码、Schema tree 或 binary；
 2. 将 `compatibility/agent-host-runtime-v1.json` 的 `runtime.repository_commit` 更新为该 commit，重新生成，并相对登记的 fallback 完整 commit 完成 lint、测试、breaking check 和人工语义审查；
@@ -26,32 +27,35 @@
 7. 在后续 registry 变更中把 tag + 完整 commit 登记为 supported baseline；此后 Desktop 才能固定该已发布引用并消费 TypeScript SDK；
 8. cloud runner、平台身份、工具和审批协议使用后续版本，不混入本版本。
 
-`runtime.repository_commit` 是故意设置的双向精确绑定。前两步已经完成：
+`runtime.repository_commit` 是故意设置的双向精确绑定。最终发布证据：
 
 - `yijie-codex` 当前兼容门禁与治理提交并推送为
   `3aa317cebbbc9c743f6b1a18522be11a7ebb5d6f`；
-- 当前兼容清单已固定该完整 commit，并通过候选阶段的生成、lint、测试和 breaking check；
+- contracts tag 与完整 commit：
+  `contracts-v0.2.0` /
+  `f16a497e1377f45747f8ff9292b4b60cf2027f88`；
+- Agent Host consumer commit：
+  `34e94acf293f6daad61c4d42fa47028a2d1318e4`；
+- Agent Host generator：
+  `github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.7.2`；
+- 当前兼容清单已固定 Runtime 完整 commit，并通过生成、lint、测试、fallback breaking
+  check、Codex 双向投影和 Host 真实固定 Runtime 无模型集成；
 - 首版无已发布基线期间登记的 fallback breaking 基线为
   `c51c6d424a6706724ce6dfbbb7511e644694adb4`。
 
-最终 candidate 完整 commit 只有在第 3 步合并后才能产生，不能在其自身内容中自引用。
-第 2 步已有结果不能替代针对最终 candidate 的第 4—6 步跨仓复核。
-
-在创建 `contracts-v0.2.0` tag 前若 Codex Runtime 身份、canonical schema 或兼容门禁再次
-变化，必须重新固定新完整 commit 并执行双向验证，不能把旧 SHA 带入发布 tag。
+后续若 Codex Runtime 身份、canonical schema 或兼容门禁变化，必须进入新的 contracts
+版本，固定新的完整 commit 并重新执行双向验证；不得移动或覆盖
+`contracts-v0.2.0`。
 
 ## 回滚
 
-Host 保留已提交的契约 snapshot 和生成代码。若候选版本回滚，Host 回退到上一已验证 snapshot；不得只回退生成物而保留不匹配的源契约。由于这是首个 Agent Host 可消费版本，回滚意味着禁用 Baseline 2 对外接口，而不是回退到未定义协议。
+Host 保留已提交的契约 snapshot 和生成代码。若本版本回滚，Host 回退到上一已验证
+snapshot；不得只回退生成物而保留不匹配的源契约。由于这是首个 Agent Host 可消费
+版本，回滚意味着禁用 Baseline 2 对外接口，而不是回退到未定义协议。
 
-## 尚需人工动作
+## 后续动作
 
-- 合并当前候选的全部治理与发布文件，记录最终远端 candidate 完整 commit；
-- 相对登记的 fallback commit 重跑候选 generate、lint、test、breaking check 并保存证据；
-- 让 Agent Host 从该精确 candidate commit 重新同步、补齐 contracts commit/generator
-  lock，并完成 Host/Codex Runtime conformance 与集成检查；
-- 仅在上述检查通过后，在同一 candidate commit 创建 Git tag；
-- 验证 tag provenance 与 digest 后，将 Host provenance 切换为 tag 并复跑检查；
-- 在后续 registry 变更中把 tag + 完整 commit 晋升为 supported baseline；
+- 将本地 contracts candidate commit、Agent Host consumer commit、registry commit 和
+  `contracts-v0.2.0` tag 一并推送远端后，复核远端 tag provenance；
 - 在确定 TypeScript registry 和访问策略后增加发布凭据及发布 job；
 - Desktop 正式接入时记录其固定的 contracts 版本。

@@ -2,7 +2,10 @@
 
 多仓 API 契约中心，负责 OpenAPI、Protobuf、AsyncAPI、JSON Schema、Runtime 兼容矩阵和 SDK 生成。
 
-当前 `0.2.0` 候选版本新增 Agent Host HTTP/SSE OpenAPI、严格的 8 类 Agent session 事件联合类型、Codex Runtime `0.144.6` 兼容清单，以及可消费的 Go/TypeScript/AsyncAPI 生成物。发布和回滚顺序见 [`docs/releases/contracts-v0.2.0.md`](docs/releases/contracts-v0.2.0.md)。
+当前 supported 版本 `contracts-v0.2.0` 提供 Agent Host HTTP/SSE OpenAPI、严格的 8 类
+Agent session 事件联合类型、Codex Runtime `0.144.6` 兼容清单，以及可消费的
+Go/TypeScript/AsyncAPI 生成物。发布和回滚顺序见
+[`docs/releases/contracts-v0.2.0.md`](docs/releases/contracts-v0.2.0.md)。
 
 跨仓契约变更必须遵循
 [`docs/contract-change-policy.md`](docs/contract-change-policy.md)：先分类影响、修改权威
