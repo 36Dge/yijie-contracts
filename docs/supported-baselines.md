@@ -1,6 +1,6 @@
 # Supported Contract Baselines
 
-## 当前状态（2026-07-25）
+## 当前状态（2026-08-01）
 
 ### 已发布支持基线
 
@@ -8,8 +8,9 @@
 - 不可移动 tag：`contracts-v0.2.0`
 - 完整 commit：`f16a497e1377f45747f8ff9292b4b60cf2027f88`
 - 状态：`supported`
-- 远端可用性：本地 commit/tag 已创建；本轮未执行 push，推送后必须复核远端 tag
-  provenance
+- 远端可用性：2026-08-01 已复核远端 annotated tag object
+  `c6e8577dc68c0962bb16bfed0550b48c18fc9f47`，其 peeled commit 为
+  `f16a497e1377f45747f8ff9292b4b60cf2027f88`
 - producer/Owner：`yijie-agent-host` / Agent Runtime Team
 - 已验证 consumer：`yijie-agent-host`
   `34e94acf293f6daad61c4d42fa47028a2d1318e4`
@@ -22,7 +23,26 @@
 
 ### 当前候选
 
-当前没有待晋升的 contracts candidate。
+- 版本：`0.3.0 candidate`
+- 计划不可移动 tag：`contracts-v0.3.0`（尚未创建）
+- 状态：`candidate`；不是 supported/release-ready
+- contract impact：`semantic`
+- S1 source/generated commit：`ab5e71db6e4d61eb9c761446066142de2edbb444`
+- 最终 candidate 完整 commit：S2 evidence commit 形成后在外部 FEAT-125 需求包登记；
+  本文件不能自引用尚未形成的包含自身 commit
+- Owner/producer：段成威 / `yijie-api`
+- 已知/登记 consumers：`yijie-desktop`、`unknown-public`；`yijie-agent-host` 不迁移，
+  继续固定 `contracts-v0.2.0`
+- 权威源：`openapi/public/public.yaml#listMyTenants` 与 `#getMyCapabilities`
+- Public source SHA-256：
+  `7bd40dd1c5a53cc1dcd317e3a64bf7189170fd7f575b25bb07f0eb243d0319ed`
+- Generator：`openapi-typescript 7.13.0`、`oapi-codegen 2.7.2`
+- Breaking baseline：2026-08-01 相对
+  `f16a497e1377f45747f8ff9292b4b60cf2027f88` PASS；自动结果不替代 semantic/security
+  review
+- 尚未完成：远端 candidate 可用性、G2A、API/Desktop exact pin 与 conformance、两租户
+  E2E、不可移动 tag、生产发布和 supported baseline 晋升
+- 回滚：不启用 provider/consumer，继续使用 `contracts-v0.2.0`
 
 ### `0.2.0` 首版登记的 fallback breaking 证据
 

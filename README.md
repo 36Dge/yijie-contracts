@@ -7,6 +7,11 @@ Agent session 事件联合类型、Codex Runtime `0.144.6` 兼容清单，以及
 Go/TypeScript/AsyncAPI 生成物。发布和回滚顺序见
 [`docs/releases/contracts-v0.2.0.md`](docs/releases/contracts-v0.2.0.md)。
 
+当前 `0.3.0` candidate 在保持 `contracts-v0.2.0` 支持窗口与既有 Public operations
+不变的前提下，新增 authenticated tenant discovery 与 capability projection。它尚未
+tag、尚未通过 API/Desktop conformance，也不是 supported release；候选范围和门禁见
+[`docs/releases/contracts-v0.3.0.md`](docs/releases/contracts-v0.3.0.md)。
+
 跨仓契约变更必须遵循
 [`docs/contract-change-policy.md`](docs/contract-change-policy.md)：先分类影响、修改权威
 源并完成生成/兼容评审，形成不可变引用；每个下游 PR 在自身合并前完成精确 pin 和
