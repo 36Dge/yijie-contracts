@@ -1,0 +1,4 @@
+{
+  "code": "tenant_access_denied",
+  "message": "tenant membership is suspended or denied"
+}

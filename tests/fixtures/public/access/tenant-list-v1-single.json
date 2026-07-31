@@ -1,0 +1,8 @@
+{
+  "tenants": [
+    {
+      "tenant_id": "019c0123-4567-7abc-8123-456789abcdef",
+      "display_name": "Synthetic Tenant"
+    }
+  ]
+}

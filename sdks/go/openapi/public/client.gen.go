@@ -18,6 +18,25 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+const (
+	UserBearerScopes userBearerContextKey = "userBearer.Scopes"
+)
+
+// Defines values for CapabilityProjectionSchemaVersion.
+const (
+	N1 CapabilityProjectionSchemaVersion = 1
+)
+
+// Valid indicates whether the value is a known member of the CapabilityProjectionSchemaVersion enum.
+func (e CapabilityProjectionSchemaVersion) Valid() bool {
+	switch e {
+	case N1:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ReadinessStatus.
 const (
 	NotReady ReadinessStatus = "not_ready"
@@ -96,6 +115,29 @@ func (e TaskStatus) Valid() bool {
 	}
 }
 
+// CapabilityKey Open namespaced capability key. The initial values are governance metadata,
+// not a closed enum; consumers must ignore unknown valid values.
+type CapabilityKey = string
+
+// CapabilityProjection defines model for CapabilityProjection.
+type CapabilityProjection struct {
+	// AuthorizationRevision Tenant authorization snapshot revision within the JavaScript safe-integer range.
+	AuthorizationRevision int64 `json:"authorization_revision"`
+
+	// Capabilities Sorted, unique, allow-only capability keys. Unknown valid keys are ignored by consumers.
+	Capabilities []CapabilityKey `json:"capabilities"`
+
+	// ExpiresAt Snapshot expiry, no later than five minutes after issuance.
+	ExpiresAt     time.Time                         `json:"expires_at"`
+	SchemaVersion CapabilityProjectionSchemaVersion `json:"schema_version"`
+
+	// TenantId Verified tenant identifier echoed for context matching, not proof of authorization.
+	TenantId openapi_types.UUID `json:"tenant_id"`
+}
+
+// CapabilityProjectionSchemaVersion defines model for CapabilityProjection.SchemaVersion.
+type CapabilityProjectionSchemaVersion int32
+
 // CreateTaskRequest defines model for CreateTaskRequest.
 type CreateTaskRequest struct {
 	Input    map[string]interface{} `json:"input"`
@@ -149,6 +191,51 @@ type Task struct {
 
 // TaskStatus defines model for Task.Status.
 type TaskStatus string
+
+// TenantSelection defines model for TenantSelection.
+type TenantSelection struct {
+	// DisplayName Presentation-only tenant name; never used for authorization.
+	DisplayName string             `json:"display_name"`
+	TenantId    openapi_types.UUID `json:"tenant_id"`
+}
+
+// TenantSelectionList defines model for TenantSelectionList.
+type TenantSelectionList struct {
+	// Tenants Active memberships available to the authenticated user.
+	Tenants []TenantSelection `json:"tenants"`
+}
+
+// TenantIdHeader defines model for TenantIdHeader.
+type TenantIdHeader = openapi_types.UUID
+
+// AccessInternalError defines model for AccessInternalError.
+type AccessInternalError = ErrorResponse
+
+// AuthorizationUnavailable defines model for AuthorizationUnavailable.
+type AuthorizationUnavailable = ErrorResponse
+
+// InvalidTenantContext defines model for InvalidTenantContext.
+type InvalidTenantContext = ErrorResponse
+
+// TenantAccessDenied defines model for TenantAccessDenied.
+type TenantAccessDenied = ErrorResponse
+
+// UserAccessDenied defines model for UserAccessDenied.
+type UserAccessDenied = ErrorResponse
+
+// UserBearerUnauthorized defines model for UserBearerUnauthorized.
+type UserBearerUnauthorized = ErrorResponse
+
+// userBearerContextKey is the context key for userBearer security scheme
+type userBearerContextKey string
+
+// GetMyCapabilitiesParams defines parameters for GetMyCapabilities.
+type GetMyCapabilitiesParams struct {
+	// XYijieTenantID UUID of the tenant selected by the client. This is an untrusted selection
+	// hint; the API independently verifies the authenticated user, tenant, active
+	// membership, and tenant-scoped roles for every request.
+	XYijieTenantID TenantIdHeader `json:"X-Yijie-Tenant-ID"`
+}
 
 // CreateTaskJSONRequestBody defines body for CreateTask for application/json ContentType.
 type CreateTaskJSONRequestBody = CreateTaskRequest
@@ -232,6 +319,12 @@ type ClientInterface interface {
 	// GetReadiness request
 	GetReadiness(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetMyCapabilities request
+	GetMyCapabilities(ctx context.Context, params *GetMyCapabilitiesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListMyTenants request
+	ListMyTenants(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetServiceStatus request
 	GetServiceStatus(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -258,6 +351,30 @@ func (c *Client) GetHealth(ctx context.Context, reqEditors ...RequestEditorFn) (
 
 func (c *Client) GetReadiness(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetReadinessRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetMyCapabilities(ctx context.Context, params *GetMyCapabilitiesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetMyCapabilitiesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListMyTenants(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListMyTenantsRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -353,6 +470,73 @@ func NewGetReadinessRequest(server string) (*http.Request, error) {
 	}
 
 	operationPath := fmt.Sprintf("/readyz")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetMyCapabilitiesRequest generates requests for GetMyCapabilities
+func NewGetMyCapabilitiesRequest(server string, params *GetMyCapabilitiesParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/me/capabilities")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "X-Yijie-Tenant-ID", params.XYijieTenantID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Yijie-Tenant-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewListMyTenantsRequest generates requests for ListMyTenants
+func NewListMyTenantsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/me/tenants")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -520,6 +704,12 @@ type ClientWithResponsesInterface interface {
 	// GetReadinessWithResponse request
 	GetReadinessWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetReadinessResponse, error)
 
+	// GetMyCapabilitiesWithResponse request
+	GetMyCapabilitiesWithResponse(ctx context.Context, params *GetMyCapabilitiesParams, reqEditors ...RequestEditorFn) (*GetMyCapabilitiesResponse, error)
+
+	// ListMyTenantsWithResponse request
+	ListMyTenantsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListMyTenantsResponse, error)
+
 	// GetServiceStatusWithResponse request
 	GetServiceStatusWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetServiceStatusResponse, error)
 
@@ -587,6 +777,75 @@ func (r GetReadinessResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetReadinessResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetMyCapabilitiesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CapabilityProjection
+	JSON400      *InvalidTenantContext
+	JSON401      *UserBearerUnauthorized
+	JSON403      *TenantAccessDenied
+	JSON500      *AccessInternalError
+	JSON503      *AuthorizationUnavailable
+}
+
+// Status returns HTTPResponse.Status
+func (r GetMyCapabilitiesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetMyCapabilitiesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetMyCapabilitiesResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type ListMyTenantsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *TenantSelectionList
+	JSON401      *UserBearerUnauthorized
+	JSON403      *UserAccessDenied
+	JSON500      *AccessInternalError
+	JSON503      *AuthorizationUnavailable
+}
+
+// Status returns HTTPResponse.Status
+func (r ListMyTenantsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListMyTenantsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListMyTenantsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -706,6 +965,24 @@ func (c *ClientWithResponses) GetReadinessWithResponse(ctx context.Context, reqE
 	return ParseGetReadinessResponse(rsp)
 }
 
+// GetMyCapabilitiesWithResponse request returning *GetMyCapabilitiesResponse
+func (c *ClientWithResponses) GetMyCapabilitiesWithResponse(ctx context.Context, params *GetMyCapabilitiesParams, reqEditors ...RequestEditorFn) (*GetMyCapabilitiesResponse, error) {
+	rsp, err := c.GetMyCapabilities(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetMyCapabilitiesResponse(rsp)
+}
+
+// ListMyTenantsWithResponse request returning *ListMyTenantsResponse
+func (c *ClientWithResponses) ListMyTenantsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListMyTenantsResponse, error) {
+	rsp, err := c.ListMyTenants(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListMyTenantsResponse(rsp)
+}
+
 // GetServiceStatusWithResponse request returning *GetServiceStatusResponse
 func (c *ClientWithResponses) GetServiceStatusWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetServiceStatusResponse, error) {
 	rsp, err := c.GetServiceStatus(ctx, reqEditors...)
@@ -790,6 +1067,121 @@ func ParseGetReadinessResponse(rsp *http.Response) (*GetReadinessResponse, error
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
 		var dest Readiness
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetMyCapabilitiesResponse parses an HTTP response from a GetMyCapabilitiesWithResponse call
+func ParseGetMyCapabilitiesResponse(rsp *http.Response) (*GetMyCapabilitiesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetMyCapabilitiesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CapabilityProjection
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest InvalidTenantContext
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UserBearerUnauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest TenantAccessDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest AccessInternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest AuthorizationUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListMyTenantsResponse parses an HTTP response from a ListMyTenantsWithResponse call
+func ParseListMyTenantsResponse(rsp *http.Response) (*ListMyTenantsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListMyTenantsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TenantSelectionList
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UserBearerUnauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest UserAccessDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest AccessInternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest AuthorizationUnavailable
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

@@ -1,0 +1,4 @@
+{
+  "code": "authorization_unavailable",
+  "message": "authorization dependencies are unavailable"
+}

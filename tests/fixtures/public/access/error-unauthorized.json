@@ -1,0 +1,4 @@
+{
+  "code": "unauthorized",
+  "message": "valid bearer authentication is required"
+}

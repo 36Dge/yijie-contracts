@@ -55,6 +55,52 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/me/tenants": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List active tenant memberships for the authenticated user
+         * @description Returns only active tenant memberships for the authenticated internal user.
+         *     This operation does not accept a tenant selection because it is the source
+         *     used to establish the current selection. Display names are presentation-only
+         *     and never authorize access.
+         */
+        get: operations["listMyTenants"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/me/capabilities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the authenticated user's capability projection for one tenant
+         * @description Computes an allow-only, read-only capability snapshot after independently
+         *     verifying the authenticated user, selected tenant, active membership, and
+         *     tenant-scoped roles. The tenant header is an untrusted selection hint and
+         *     never serves as proof of authorization.
+         */
+        get: operations["getMyCapabilities"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/tasks": {
         parameters: {
             query?: never;
@@ -109,6 +155,45 @@ export interface components {
             database: string;
             cache: string;
         };
+        TenantSelectionList: {
+            /** @description Active memberships available to the authenticated user. */
+            tenants: components["schemas"]["TenantSelection"][];
+        };
+        TenantSelection: {
+            /** Format: uuid */
+            tenant_id: string;
+            /** @description Presentation-only tenant name; never used for authorization. */
+            display_name: string;
+        };
+        CapabilityProjection: {
+            /**
+             * Format: int32
+             * @enum {integer}
+             */
+            schema_version: 1;
+            /**
+             * Format: uuid
+             * @description Verified tenant identifier echoed for context matching, not proof of authorization.
+             */
+            tenant_id: string;
+            /**
+             * Format: int64
+             * @description Tenant authorization snapshot revision within the JavaScript safe-integer range.
+             */
+            authorization_revision: number;
+            /**
+             * Format: date-time
+             * @description Snapshot expiry, no later than five minutes after issuance.
+             */
+            expires_at: string;
+            /** @description Sorted, unique, allow-only capability keys. Unknown valid keys are ignored by consumers. */
+            capabilities: components["schemas"]["CapabilityKey"][];
+        };
+        /**
+         * @description Open namespaced capability key. The initial values are governance metadata,
+         *     not a closed enum; consumers must ignore unknown valid values.
+         */
+        CapabilityKey: string;
         CreateTaskRequest: {
             /** Format: uuid */
             tenant_id: string;
@@ -144,10 +229,87 @@ export interface components {
             message: string;
         };
     };
-    responses: never;
-    parameters: never;
+    responses: {
+        /** @description `invalid_tenant_context`: `X-Yijie-Tenant-ID` is missing or is not a UUID. */
+        InvalidTenantContext: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ErrorResponse"];
+            };
+        };
+        /** @description `unauthorized`: a valid external IdP access JWT is required. */
+        UserBearerUnauthorized: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                "WWW-Authenticate": components["headers"]["BearerChallenge"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ErrorResponse"];
+            };
+        };
+        /** @description `user_access_denied`: the authenticated internal user is suspended or denied. */
+        UserAccessDenied: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ErrorResponse"];
+            };
+        };
+        /** @description `tenant_access_denied`: the selected tenant or active membership is denied. */
+        TenantAccessDenied: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ErrorResponse"];
+            };
+        };
+        /** @description `internal_error`: the access operation failed without exposing internal details. */
+        AccessInternalError: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ErrorResponse"];
+            };
+        };
+        /** @description `authorization_unavailable`: identity, JWKS, membership, or RBAC data is unavailable. */
+        AuthorizationUnavailable: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                "Retry-After": components["headers"]["RetryAfter"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ErrorResponse"];
+            };
+        };
+    };
+    parameters: {
+        /**
+         * @description UUID of the tenant selected by the client. This is an untrusted selection
+         *     hint; the API independently verifies the authenticated user, tenant, active
+         *     membership, and tenant-scoped roles for every request.
+         */
+        TenantIdHeader: string;
+    };
     requestBodies: never;
-    headers: never;
+    headers: {
+        /** @description Prevents authenticated identity, tenant, and permission data from being cached. */
+        NoStore: "no-store";
+        /** @description Bearer authentication challenge without credential details. */
+        BearerChallenge: string;
+        /** @description Optional delay before retrying an unavailable authorization dependency. */
+        RetryAfter: string;
+    };
     pathItems: never;
 }
 export type $defs = Record<string, never>;
@@ -219,6 +381,64 @@ export interface operations {
                     "application/json": components["schemas"]["ServiceStatus"];
                 };
             };
+        };
+    };
+    listMyTenants: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Active tenant memberships, which may be empty. */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantSelectionList"];
+                };
+            };
+            401: components["responses"]["UserBearerUnauthorized"];
+            403: components["responses"]["UserAccessDenied"];
+            500: components["responses"]["AccessInternalError"];
+            503: components["responses"]["AuthorizationUnavailable"];
+        };
+    };
+    getMyCapabilities: {
+        parameters: {
+            query?: never;
+            header: {
+                /**
+                 * @description UUID of the tenant selected by the client. This is an untrusted selection
+                 *     hint; the API independently verifies the authenticated user, tenant, active
+                 *     membership, and tenant-scoped roles for every request.
+                 */
+                "X-Yijie-Tenant-ID": components["parameters"]["TenantIdHeader"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A complete capability snapshot; the capability array may be empty. */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CapabilityProjection"];
+                };
+            };
+            400: components["responses"]["InvalidTenantContext"];
+            401: components["responses"]["UserBearerUnauthorized"];
+            403: components["responses"]["TenantAccessDenied"];
+            500: components["responses"]["AccessInternalError"];
+            503: components["responses"]["AuthorizationUnavailable"];
         };
     };
     createTask: {
