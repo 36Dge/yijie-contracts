@@ -29,6 +29,7 @@
     "lint": "pnpm validate:api && pnpm validate:schemas && pnpm validate:proto && tsc -p tsconfig.json --noEmit && go vet ./...",
     "test": "node scripts/check-generated.mjs && node --test tests/*.test.mjs && go test ./...",
     "breaking": "./scripts/check-breaking.sh",
+    "check:v1-wire": "node scripts/check-v1-wire-equality.mjs",
     "build": "pnpm generate && tsc -p tsconfig.json",
     "pack:sdk": "pnpm build && pnpm pack --pack-destination .artifacts"
   },

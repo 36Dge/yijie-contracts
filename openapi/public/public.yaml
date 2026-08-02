@@ -197,7 +197,12 @@ paths:
         and `X-Yijie-Tenant-ID` selection are independently verified; the client cannot
         submit or override `tenant_id` or `created_by_user_id`. Reusing an idempotency
         key with the same canonical request returns the original result; reusing it with
-        different input returns `idempotency_conflict`.
+        a different content-free reference returns `idempotency_conflict`.
+
+        This control-plane operation accepts metadata only. It must never receive or
+        derive prompt, message, raw reasoning, title content, project paths, or provider
+        output. Conversation content and generated titles remain in the local Desktop
+        SQLCipher authority and are not represented by this resource.
       tags: [Tasks]
       x-yijie-required-capability: task.create
       security:
@@ -232,7 +237,7 @@ paths:
         "500":
           $ref: "#/components/responses/TaskV2InternalError"
         "503":
-          $ref: "#/components/responses/AuthorizationUnavailable"
+          $ref: "#/components/responses/TaskV2AuthorizationUnavailable"
   /v2/tasks/{task_id}:
     parameters:
       - $ref: "#/components/parameters/TaskV2Id"
@@ -243,7 +248,9 @@ paths:
         Returns a task only when the authenticated internal user is its creator in the
         verified tenant, unless a future explicit `task.read_all` capability is added
         and authorized. Roles alone do not grant cross-creator access. Missing and
-        unauthorized identifiers share `task_not_found` to prevent enumeration.
+        unauthorized identifiers share `task_not_found` to prevent enumeration. The
+        response is metadata-only and never returns prompt, message, raw reasoning,
+        title content, project paths, provider output, or local conversation state.
       tags: [Tasks]
       x-yijie-required-capability: task.read
       security:
@@ -271,7 +278,7 @@ paths:
         "500":
           $ref: "#/components/responses/TaskV2InternalError"
         "503":
-          $ref: "#/components/responses/AuthorizationUnavailable"
+          $ref: "#/components/responses/TaskV2AuthorizationUnavailable"
 components:
   securitySchemes:
     userBearer:
@@ -406,7 +413,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ErrorResponse"
+            $ref: "#/components/schemas/TaskV2ErrorResponse"
     TaskV2Unauthenticated:
       description: "`unauthenticated`: a valid external IdP access JWT is required."
       x-yijie-error-code: unauthenticated
@@ -418,7 +425,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ErrorResponse"
+            $ref: "#/components/schemas/TaskV2ErrorResponse"
     TaskV2AccessDenied:
       description: "`access_denied`: the authenticated user, tenant membership, or required task capability is denied."
       x-yijie-error-code: access_denied
@@ -428,7 +435,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ErrorResponse"
+            $ref: "#/components/schemas/TaskV2ErrorResponse"
     TaskV2NotFound:
       description: "`task_not_found`: no creator-private task is visible for this identifier and verified tenant."
       x-yijie-error-code: task_not_found
@@ -438,7 +445,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ErrorResponse"
+            $ref: "#/components/schemas/TaskV2ErrorResponse"
     TaskV2IdempotencyConflict:
       description: "`idempotency_conflict`: the idempotency key was already used with different canonical input."
       x-yijie-error-code: idempotency_conflict
@@ -448,7 +455,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ErrorResponse"
+            $ref: "#/components/schemas/TaskV2ErrorResponse"
     TaskV2InternalError:
       description: "`internal_error`: the task operation failed without exposing internal details."
       x-yijie-error-code: internal_error
@@ -458,7 +465,19 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ErrorResponse"
+            $ref: "#/components/schemas/TaskV2ErrorResponse"
+    TaskV2AuthorizationUnavailable:
+      description: "`authorization_unavailable`: identity, JWKS, membership, or RBAC data is unavailable."
+      x-yijie-error-code: authorization_unavailable
+      headers:
+        Cache-Control:
+          $ref: "#/components/headers/NoStore"
+        Retry-After:
+          $ref: "#/components/headers/RetryAfter"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/TaskV2ErrorResponse"
   schemas:
     Readiness:
       type: object
@@ -581,20 +600,33 @@ components:
     CreateTaskV2Request:
       type: object
       additionalProperties: false
-      required: [task_type, title, input]
+      required: [task_type, input]
       properties:
         task_type:
           type: string
-          minLength: 1
-          maxLength: 100
-        title:
-          type: string
-          minLength: 1
-          maxLength: 200
+          enum: [conversation]
         input:
-          type: object
-          description: Task-type-specific input. Identity, tenant, ownership, and authorization fields are forbidden.
-          additionalProperties: true
+          $ref: "#/components/schemas/TaskContentReferenceV2"
+    TaskContentReferenceV2:
+      type: object
+      description: |
+        Closed, content-free control-plane reference. `client_reference_id` is a fresh
+        opaque UUID and must not be derived from or encode a prompt, message, raw
+        reasoning, title, project path, filesystem identifier, identity, tenant, or
+        authorization fact.
+      additionalProperties: false
+      required: [schema_version, content_mode, client_reference_id]
+      properties:
+        schema_version:
+          type: integer
+          format: int32
+          enum: [1]
+        content_mode:
+          type: string
+          enum: [local_only]
+        client_reference_id:
+          type: string
+          format: uuid
     TaskV2:
       type: object
       additionalProperties: false
@@ -603,7 +635,6 @@ components:
         - tenant_id
         - created_by_user_id
         - task_type
-        - title
         - status
         - input
         - created_at
@@ -622,31 +653,35 @@ components:
           description: Server-derived internal creator identifier; never accepted from clients.
         task_type:
           type: string
-          minLength: 1
-          maxLength: 100
-        title:
-          type: string
-          minLength: 1
-          maxLength: 200
+          enum: [conversation]
         status:
           type: string
           enum: [draft, running, waiting_approval, completed, failed]
         input:
-          type: object
-          additionalProperties: true
-        result:
-          type: object
-          additionalProperties: true
-          nullable: true
-        error_message:
-          type: string
-          nullable: true
+          $ref: "#/components/schemas/TaskContentReferenceV2"
         created_at:
           type: string
           format: date-time
         updated_at:
           type: string
           format: date-time
+    TaskV2ErrorResponse:
+      type: object
+      description: Closed, content-free Public Tasks v2 error body. Error detail is server-side only.
+      additionalProperties: false
+      required: [code]
+      properties:
+        code:
+          type: string
+          enum:
+            - invalid_request
+            - invalid_tenant_context
+            - unauthenticated
+            - access_denied
+            - task_not_found
+            - idempotency_conflict
+            - authorization_unavailable
+            - internal_error
     Task:
       type: object
       additionalProperties: false

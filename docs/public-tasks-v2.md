@@ -1,7 +1,8 @@
 # Public Tasks v2 contract candidate
 
-Status: G2A source-contract candidate. This document and generated SDKs do not authorize provider,
-consumer, route, database, or production implementation.
+Status: DEC-126-023 replacement source-contract candidate; DEC-126-024 final G2A approval is pending.
+This document and generated SDKs do not authorize provider, consumer, route, database, or production
+implementation.
 
 ## Authority and consumers
 
@@ -22,6 +23,12 @@ evidence of active traffic.
 - The provider independently resolves the internal user, validates active tenant membership, and checks
   the exact task action. Missing authorization data fails closed.
 - `tenant_id` and `created_by_user_id` are server-derived. `CreateTaskV2Request` rejects either field.
+- The request contains only the closed `task_type=conversation` discriminator and a closed
+  `TaskContentReferenceV2`. The reference consists of schema version `1`, `content_mode=local_only`, and
+  a fresh opaque UUID. Neither field is a container for task-specific input.
+- Request and success response have no `title`, `result`, or `error_message` field. They reject all
+  additional properties, including prompt, message, raw reasoning, title-derived content and project
+  paths.
 - Tasks are creator-private. A normal role never grants cross-creator access. A future expansion requires
   explicit `task.read_all` or `task.manage_all`; neither capability is introduced by this candidate.
 - Rows without a trustworthy creator are quarantined by implementation policy and are not guessed or
@@ -33,11 +40,26 @@ evidence of active traffic.
 
 Create requires a UUID `Idempotency-Key`, scoped by verified user, tenant, and operation. A retry after an
 unknown network result reuses the same key and canonical request. Same key plus different input returns
-`idempotency_conflict`; permanent delete is not part of this candidate.
+`idempotency_conflict`; here input means only the closed content-free reference. Permanent delete is not
+part of this candidate.
 
 Stable errors are `invalid_request`, `invalid_tenant_context`, `unauthenticated`, `access_denied`,
-`task_not_found`, `idempotency_conflict`, `authorization_unavailable`, and `internal_error`. Bodies never
-contain SQL, stack, credential, provider response, message text, or authorization internals.
+`task_not_found`, `idempotency_conflict`, `authorization_unavailable`, and `internal_error`. The closed v2
+error body contains only `code`; SQL, stack, credential, provider response, message text and authorization
+internals remain server-side. Legacy v1 continues using its unchanged `ErrorResponse`.
+
+## Data authority and migration from the prior candidate
+
+- Desktop SQLCipher is the sole durable authority for local prompt, message, raw reasoning, generated
+  title and project path. Public Tasks/PostgreSQL must neither store nor reconstruct those values.
+- `client_reference_id` is generated independently as an opaque UUID. It must not be a hash, encoding,
+  slug or other derivative of local content, filesystem paths, identity, tenant or authorization data.
+- The immutable prior candidate
+  `c000a0245acb5c3f7ead5d2a877fb60c281c588c` remains unchanged. Consumers must not combine its arbitrary
+  `input` semantics with this replacement shape.
+- Because the prior candidate was not a supported release, migration is replacement-by-exact-SHA after
+  DEC-126-024 rather than a wire-compatible rollout. No provider or consumer may pin this branch name.
+- `/v1/tasks*` source and wire remain byte/structure isolated from this v2-only correction.
 
 ## Compatibility and retirement
 

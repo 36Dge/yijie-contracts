@@ -26,29 +26,33 @@
 - 版本：`0.3.0 candidate`
 - 计划不可移动 tag：`contracts-v0.3.0`（尚未创建）
 - 状态：`candidate`；不是 supported/release-ready
-- contract impact：FEAT-125 为 `semantic`；FEAT-126 产品语义为 `breaking`，当前 source
-  candidate 通过新 `/v2` paths/schema 做 versioned additive expand，尚未执行 legacy retirement
+- contract impact：FEAT-125 为 `semantic`；FEAT-126 产品语义为 `breaking`。相对已发布0.2.0仍
+  通过新 `/v2` paths/schema 做versioned additive expand；相对既有未发布`c000a024`候选则收窄
+  request/response，是明确的replacement candidate，尚未执行legacy retirement
 - S1 source/generated commit：`ab5e71db6e4d61eb9c761446066142de2edbb444`
-- 最终 candidate 完整 commit：S2 evidence commit 形成后在外部 FEAT-125 需求包登记；
-  本文件不能自引用尚未形成的包含自身 commit
+- 既有immutable FEAT-126 candidate：
+  `c000a0245acb5c3f7ead5d2a877fb60c281c588c`；Draft PR #1保持不变
+- DEC-126-023 replacement candidate完整commit：形成后在外部FEAT-126需求包登记并提交
+  DEC-126-024；本文件不能自引用尚未形成的包含自身commit
 - Owner/producer：段成威 / `yijie-api`、`yijie-agent-host`
 - 已知/登记 consumers：`yijie-desktop`、`unknown-public`；FEAT-125 Runtime Baseline 2 的
   `yijie-agent-host` 继续固定 `contracts-v0.2.0`，FEAT-126 的未来 Host v2 producer 另行 pin
 - 权威源：FEAT-125 为 `openapi/public/public.yaml#listMyTenants` 与
   `#getMyCapabilities`；FEAT-126 source/generated overlay 为 Public Tasks v2、Agent Host v2
   title/cleanup/events、AgentSessionEventV2 JSON Schema/Proto/AsyncAPI
+- Public Tasks v2数据边界：仅closed `TaskContentReferenceV2`；prompt、message、raw reasoning、
+  title派生正文、provider output和项目路径不得进入request/response/PostgreSQL。local conversation
+  正文及自动标题只属于Desktop SQLCipher
 - Public source SHA-256：
-  `7bd40dd1c5a53cc1dcd317e3a64bf7189170fd7f575b25bb07f0eb243d0319ed`
+  `c8d9e6742802e0f0392ea8221a5fdd028f76107df893ab4c531da75f9e9e354b`
 - Generator：`openapi-typescript 7.13.0`、`oapi-codegen 2.7.2`
 - Breaking baseline：2026-08-01 相对
   `f16a497e1377f45747f8ff9292b4b60cf2027f88` PASS；自动结果不替代 semantic/security
   review
-- FEAT-126 source-shape evidence（2026-08-02）：DEC-126-018已Accepted；候选parent为
-  `9ec34abd6e7dfb5a23b0154d467694167224ebbb`，本文随source/generated candidate commit提交；
-  `make generate/lint/test/build`
-  PASS、Node 27/27、29 generated files current、支持基线 breaking PASS、Public Tasks v1 2 paths
-  与 Agent Host v1 7 paths 结构相等；source/SDK digest 见本版本 release note
-- 尚未完成：远端 candidate 可用性、完整commit的post-commit复验/外部登记、G2A最终批准、
+- FEAT-126历史source-shape evidence（2026-08-02）：DEC-126-018/019/020与`c000a024`证据保留，
+  但DEC-126-023已批准方案C并关闭Q-017；新的content-free replacement以`c000a024`为parent，
+  当前等待本地完整commit、post-commit复验和DEC-126-024最终G2A批准
+- 尚未完成：replacement完整commit的post-commit复验/外部登记、DEC-126-024最终G2A批准、
   API/Host/Desktop exact pin与conformance、两租户E2E、不可移动tag、生产发布和supported
   baseline晋升
 - 回滚：不启用 provider/consumer，继续使用 `contracts-v0.2.0`

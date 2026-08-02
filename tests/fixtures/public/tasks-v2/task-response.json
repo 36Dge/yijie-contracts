@@ -3,10 +3,11 @@
   "tenant_id": "019fbd88-cbc3-7bf1-934d-7b05cd693f35",
   "created_by_user_id": "019fbd88-cbc3-7bf1-934d-7b05cd693f36",
   "task_type": "conversation",
-  "title": "分析新市场进入方案",
   "status": "draft",
   "input": {
-    "text": "请比较两个合成市场样本的进入条件"
+    "schema_version": 1,
+    "content_mode": "local_only",
+    "client_reference_id": "019fbd88-cbc3-7bf1-934d-7b05cd693f37"
   },
   "created_at": "2026-08-02T10:00:00Z",
   "updated_at": "2026-08-02T10:00:00Z"

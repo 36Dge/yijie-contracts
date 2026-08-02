@@ -24,13 +24,28 @@ const (
 
 // Defines values for CapabilityProjectionSchemaVersion.
 const (
-	N1 CapabilityProjectionSchemaVersion = 1
+	CapabilityProjectionSchemaVersionN1 CapabilityProjectionSchemaVersion = 1
 )
 
 // Valid indicates whether the value is a known member of the CapabilityProjectionSchemaVersion enum.
 func (e CapabilityProjectionSchemaVersion) Valid() bool {
 	switch e {
-	case N1:
+	case CapabilityProjectionSchemaVersionN1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CreateTaskV2RequestTaskType.
+const (
+	CreateTaskV2RequestTaskTypeConversation CreateTaskV2RequestTaskType = "conversation"
+)
+
+// Valid indicates whether the value is a known member of the CreateTaskV2RequestTaskType enum.
+func (e CreateTaskV2RequestTaskType) Valid() bool {
+	switch e {
+	case CreateTaskV2RequestTaskTypeConversation:
 		return true
 	default:
 		return false
@@ -115,6 +130,36 @@ func (e TaskStatus) Valid() bool {
 	}
 }
 
+// Defines values for TaskContentReferenceV2ContentMode.
+const (
+	LocalOnly TaskContentReferenceV2ContentMode = "local_only"
+)
+
+// Valid indicates whether the value is a known member of the TaskContentReferenceV2ContentMode enum.
+func (e TaskContentReferenceV2ContentMode) Valid() bool {
+	switch e {
+	case LocalOnly:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TaskContentReferenceV2SchemaVersion.
+const (
+	TaskContentReferenceV2SchemaVersionN1 TaskContentReferenceV2SchemaVersion = 1
+)
+
+// Valid indicates whether the value is a known member of the TaskContentReferenceV2SchemaVersion enum.
+func (e TaskContentReferenceV2SchemaVersion) Valid() bool {
+	switch e {
+	case TaskContentReferenceV2SchemaVersionN1:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for TaskV2Status.
 const (
 	TaskV2StatusCompleted       TaskV2Status = "completed"
@@ -136,6 +181,57 @@ func (e TaskV2Status) Valid() bool {
 	case TaskV2StatusRunning:
 		return true
 	case TaskV2StatusWaitingApproval:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TaskV2TaskType.
+const (
+	TaskV2TaskTypeConversation TaskV2TaskType = "conversation"
+)
+
+// Valid indicates whether the value is a known member of the TaskV2TaskType enum.
+func (e TaskV2TaskType) Valid() bool {
+	switch e {
+	case TaskV2TaskTypeConversation:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TaskV2ErrorResponseCode.
+const (
+	TaskV2ErrorResponseCodeAccessDenied             TaskV2ErrorResponseCode = "access_denied"
+	TaskV2ErrorResponseCodeAuthorizationUnavailable TaskV2ErrorResponseCode = "authorization_unavailable"
+	TaskV2ErrorResponseCodeIdempotencyConflict      TaskV2ErrorResponseCode = "idempotency_conflict"
+	TaskV2ErrorResponseCodeInternalError            TaskV2ErrorResponseCode = "internal_error"
+	TaskV2ErrorResponseCodeInvalidRequest           TaskV2ErrorResponseCode = "invalid_request"
+	TaskV2ErrorResponseCodeInvalidTenantContext     TaskV2ErrorResponseCode = "invalid_tenant_context"
+	TaskV2ErrorResponseCodeTaskNotFound             TaskV2ErrorResponseCode = "task_not_found"
+	TaskV2ErrorResponseCodeUnauthenticated          TaskV2ErrorResponseCode = "unauthenticated"
+)
+
+// Valid indicates whether the value is a known member of the TaskV2ErrorResponseCode enum.
+func (e TaskV2ErrorResponseCode) Valid() bool {
+	switch e {
+	case TaskV2ErrorResponseCodeAccessDenied:
+		return true
+	case TaskV2ErrorResponseCodeAuthorizationUnavailable:
+		return true
+	case TaskV2ErrorResponseCodeIdempotencyConflict:
+		return true
+	case TaskV2ErrorResponseCodeInternalError:
+		return true
+	case TaskV2ErrorResponseCodeInvalidRequest:
+		return true
+	case TaskV2ErrorResponseCodeInvalidTenantContext:
+		return true
+	case TaskV2ErrorResponseCodeTaskNotFound:
+		return true
+	case TaskV2ErrorResponseCodeUnauthenticated:
 		return true
 	default:
 		return false
@@ -175,11 +271,16 @@ type CreateTaskRequest struct {
 
 // CreateTaskV2Request defines model for CreateTaskV2Request.
 type CreateTaskV2Request struct {
-	// Input Task-type-specific input. Identity, tenant, ownership, and authorization fields are forbidden.
-	Input    map[string]interface{} `json:"input"`
-	TaskType string                 `json:"task_type"`
-	Title    string                 `json:"title"`
+	// Input Closed, content-free control-plane reference. `client_reference_id` is a fresh
+	// opaque UUID and must not be derived from or encode a prompt, message, raw
+	// reasoning, title, project path, filesystem identifier, identity, tenant, or
+	// authorization fact.
+	Input    TaskContentReferenceV2      `json:"input"`
+	TaskType CreateTaskV2RequestTaskType `json:"task_type"`
 }
+
+// CreateTaskV2RequestTaskType defines model for CreateTaskV2Request.TaskType.
+type CreateTaskV2RequestTaskType string
 
 // ErrorResponse defines model for ErrorResponse.
 type ErrorResponse struct {
@@ -227,27 +328,56 @@ type Task struct {
 // TaskStatus defines model for Task.Status.
 type TaskStatus string
 
+// TaskContentReferenceV2 Closed, content-free control-plane reference. `client_reference_id` is a fresh
+// opaque UUID and must not be derived from or encode a prompt, message, raw
+// reasoning, title, project path, filesystem identifier, identity, tenant, or
+// authorization fact.
+type TaskContentReferenceV2 struct {
+	ClientReferenceId openapi_types.UUID                  `json:"client_reference_id"`
+	ContentMode       TaskContentReferenceV2ContentMode   `json:"content_mode"`
+	SchemaVersion     TaskContentReferenceV2SchemaVersion `json:"schema_version"`
+}
+
+// TaskContentReferenceV2ContentMode defines model for TaskContentReferenceV2.ContentMode.
+type TaskContentReferenceV2ContentMode string
+
+// TaskContentReferenceV2SchemaVersion defines model for TaskContentReferenceV2.SchemaVersion.
+type TaskContentReferenceV2SchemaVersion int32
+
 // TaskV2 defines model for TaskV2.
 type TaskV2 struct {
 	CreatedAt time.Time `json:"created_at"`
 
 	// CreatedByUserId Server-derived internal creator identifier; never accepted from clients.
-	CreatedByUserId openapi_types.UUID      `json:"created_by_user_id"`
-	ErrorMessage    *string                 `json:"error_message,omitempty"`
-	Id              openapi_types.UUID      `json:"id"`
-	Input           map[string]interface{}  `json:"input"`
-	Result          *map[string]interface{} `json:"result,omitempty"`
-	Status          TaskV2Status            `json:"status"`
-	TaskType        string                  `json:"task_type"`
+	CreatedByUserId openapi_types.UUID `json:"created_by_user_id"`
+	Id              openapi_types.UUID `json:"id"`
+
+	// Input Closed, content-free control-plane reference. `client_reference_id` is a fresh
+	// opaque UUID and must not be derived from or encode a prompt, message, raw
+	// reasoning, title, project path, filesystem identifier, identity, tenant, or
+	// authorization fact.
+	Input    TaskContentReferenceV2 `json:"input"`
+	Status   TaskV2Status           `json:"status"`
+	TaskType TaskV2TaskType         `json:"task_type"`
 
 	// TenantId Verified tenant context; never an authorization credential.
 	TenantId  openapi_types.UUID `json:"tenant_id"`
-	Title     string             `json:"title"`
 	UpdatedAt time.Time          `json:"updated_at"`
 }
 
 // TaskV2Status defines model for TaskV2.Status.
 type TaskV2Status string
+
+// TaskV2TaskType defines model for TaskV2.TaskType.
+type TaskV2TaskType string
+
+// TaskV2ErrorResponse Closed, content-free Public Tasks v2 error body. Error detail is server-side only.
+type TaskV2ErrorResponse struct {
+	Code TaskV2ErrorResponseCode `json:"code"`
+}
+
+// TaskV2ErrorResponseCode defines model for TaskV2ErrorResponse.Code.
+type TaskV2ErrorResponseCode string
 
 // TenantSelection defines model for TenantSelection.
 type TenantSelection struct {
@@ -280,23 +410,26 @@ type AuthorizationUnavailable = ErrorResponse
 // InvalidTenantContext defines model for InvalidTenantContext.
 type InvalidTenantContext = ErrorResponse
 
-// TaskV2AccessDenied defines model for TaskV2AccessDenied.
-type TaskV2AccessDenied = ErrorResponse
+// TaskV2AccessDenied Closed, content-free Public Tasks v2 error body. Error detail is server-side only.
+type TaskV2AccessDenied = TaskV2ErrorResponse
 
-// TaskV2BadRequest defines model for TaskV2BadRequest.
-type TaskV2BadRequest = ErrorResponse
+// TaskV2AuthorizationUnavailable Closed, content-free Public Tasks v2 error body. Error detail is server-side only.
+type TaskV2AuthorizationUnavailable = TaskV2ErrorResponse
 
-// TaskV2IdempotencyConflict defines model for TaskV2IdempotencyConflict.
-type TaskV2IdempotencyConflict = ErrorResponse
+// TaskV2BadRequest Closed, content-free Public Tasks v2 error body. Error detail is server-side only.
+type TaskV2BadRequest = TaskV2ErrorResponse
 
-// TaskV2InternalError defines model for TaskV2InternalError.
-type TaskV2InternalError = ErrorResponse
+// TaskV2IdempotencyConflict Closed, content-free Public Tasks v2 error body. Error detail is server-side only.
+type TaskV2IdempotencyConflict = TaskV2ErrorResponse
 
-// TaskV2NotFound defines model for TaskV2NotFound.
-type TaskV2NotFound = ErrorResponse
+// TaskV2InternalError Closed, content-free Public Tasks v2 error body. Error detail is server-side only.
+type TaskV2InternalError = TaskV2ErrorResponse
 
-// TaskV2Unauthenticated defines model for TaskV2Unauthenticated.
-type TaskV2Unauthenticated = ErrorResponse
+// TaskV2NotFound Closed, content-free Public Tasks v2 error body. Error detail is server-side only.
+type TaskV2NotFound = TaskV2ErrorResponse
+
+// TaskV2Unauthenticated Closed, content-free Public Tasks v2 error body. Error detail is server-side only.
+type TaskV2Unauthenticated = TaskV2ErrorResponse
 
 // TenantAccessDenied defines model for TenantAccessDenied.
 type TenantAccessDenied = ErrorResponse
@@ -1222,7 +1355,7 @@ type CreateTaskV2Response struct {
 	JSON403      *TaskV2AccessDenied
 	JSON409      *TaskV2IdempotencyConflict
 	JSON500      *TaskV2InternalError
-	JSON503      *AuthorizationUnavailable
+	JSON503      *TaskV2AuthorizationUnavailable
 }
 
 // Status returns HTTPResponse.Status
@@ -1258,7 +1391,7 @@ type GetTaskV2Response struct {
 	JSON403      *TaskV2AccessDenied
 	JSON404      *TaskV2NotFound
 	JSON500      *TaskV2InternalError
-	JSON503      *AuthorizationUnavailable
+	JSON503      *TaskV2AuthorizationUnavailable
 }
 
 // Status returns HTTPResponse.Status
@@ -1726,7 +1859,7 @@ func ParseCreateTaskV2Response(rsp *http.Response) (*CreateTaskV2Response, error
 		response.JSON500 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
-		var dest AuthorizationUnavailable
+		var dest TaskV2AuthorizationUnavailable
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -1794,7 +1927,7 @@ func ParseGetTaskV2Response(rsp *http.Response) (*GetTaskV2Response, error) {
 		response.JSON500 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
-		var dest AuthorizationUnavailable
+		var dest TaskV2AuthorizationUnavailable
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

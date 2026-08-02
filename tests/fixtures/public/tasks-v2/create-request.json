@@ -1,7 +1,8 @@
 {
   "task_type": "conversation",
-  "title": "分析新市场进入方案",
   "input": {
-    "text": "请比较两个合成市场样本的进入条件"
+    "schema_version": 1,
+    "content_mode": "local_only",
+    "client_reference_id": "019fbd88-cbc3-7bf1-934d-7b05cd693f37"
   }
 }

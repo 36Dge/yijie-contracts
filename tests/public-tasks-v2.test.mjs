@@ -37,6 +37,36 @@ function assertNoStore(response) {
   assert.equal(response.headers?.["Cache-Control"]?.$ref, "#/components/headers/NoStore");
 }
 
+const forbiddenConversationKeys = [
+  "prompt",
+  "message",
+  "text",
+  "raw_reasoning",
+  "reasoning",
+  "title",
+  "project_path",
+  "cwd",
+  "path",
+  "result",
+  "error_message",
+];
+
+function assertNoForbiddenConversationKeys(value, location) {
+  if (Array.isArray(value)) {
+    value.forEach((item, index) => assertNoForbiddenConversationKeys(item, `${location}[${index}]`));
+    return;
+  }
+  if (value === null || typeof value !== "object") return;
+  for (const [key, item] of Object.entries(value)) {
+    assert.equal(
+      forbiddenConversationKeys.includes(key),
+      false,
+      `${location} contains forbidden conversation key ${key}`,
+    );
+    assertNoForbiddenConversationKeys(item, `${location}.${key}`);
+  }
+}
+
 test("Public Tasks v2 is authenticated, tenant-scoped, creator-private, and idempotent", () => {
   const create = spec.paths["/v2/tasks"].post;
   const get = spec.paths["/v2/tasks/{task_id}"].get;
@@ -59,17 +89,43 @@ test("Public Tasks v2 is authenticated, tenant-scoped, creator-private, and idem
   });
 
   const request = spec.components.schemas.CreateTaskV2Request;
-  assert.deepEqual(request.required, ["task_type", "title", "input"]);
+  assert.deepEqual(request.required, ["task_type", "input"]);
   assert.equal(request.additionalProperties, false);
   assert.equal(request.properties.tenant_id, undefined);
   assert.equal(request.properties.created_by_user_id, undefined);
+  assert.equal(request.properties.title, undefined);
+  assert.deepEqual(request.properties.task_type.enum, ["conversation"]);
+  assert.deepEqual(request.properties.input, {
+    $ref: "#/components/schemas/TaskContentReferenceV2",
+  });
+
+  const contentReference = spec.components.schemas.TaskContentReferenceV2;
+  assert.equal(contentReference.additionalProperties, false);
+  assert.deepEqual(contentReference.required, [
+    "schema_version",
+    "content_mode",
+    "client_reference_id",
+  ]);
+  assert.deepEqual(contentReference.properties.schema_version.enum, [1]);
+  assert.deepEqual(contentReference.properties.content_mode.enum, ["local_only"]);
+  assert.equal(contentReference.properties.client_reference_id.format, "uuid");
+  assert.match(contentReference.description, /must not be derived/);
 
   const task = spec.components.schemas.TaskV2;
   assert.ok(task.required.includes("tenant_id"));
   assert.ok(task.required.includes("created_by_user_id"));
+  assert.equal(task.properties.title, undefined);
+  assert.equal(task.properties.result, undefined);
+  assert.equal(task.properties.error_message, undefined);
+  assert.deepEqual(task.properties.task_type.enum, ["conversation"]);
+  assert.deepEqual(task.properties.input, {
+    $ref: "#/components/schemas/TaskContentReferenceV2",
+  });
   assert.match(task.properties.created_by_user_id.description, /Server-derived/);
   assert.match(get.description, /task\.read_all/);
   assert.match(get.description, /Roles alone do not grant cross-creator access/);
+  assert.match(create.description, /control-plane operation accepts metadata only/);
+  assert.match(get.description, /response is metadata-only/);
 });
 
 test("Public Tasks v2 pins no-store and stable errors without changing anonymous v1", () => {
@@ -103,23 +159,58 @@ test("Public Tasks v2 pins no-store and stable errors without changing anonymous
     spec.components.responses.TaskV2IdempotencyConflict["x-yijie-error-code"],
     "idempotency_conflict",
   );
+  assert.equal(
+    spec.components.responses.TaskV2AuthorizationUnavailable["x-yijie-error-code"],
+    "authorization_unavailable",
+  );
+  assert.deepEqual(spec.components.schemas.TaskV2ErrorResponse.required, ["code"]);
+  assert.equal(spec.components.schemas.TaskV2ErrorResponse.additionalProperties, false);
+  assert.equal(spec.components.schemas.TaskV2ErrorResponse.properties.message, undefined);
+  assert.deepEqual(spec.components.schemas.ErrorResponse.required, ["code", "message"]);
 });
 
-test("Public Tasks v2 canonical fixtures validate and identity injection is rejected", async () => {
+test("Public Tasks v2 canonical fixtures are content-free and reject conversation data", async () => {
   const validateRequest = compileSchema("CreateTaskV2Request");
   const validateTask = compileSchema("TaskV2");
-  const validateError = compileSchema("ErrorResponse");
+  const validateError = compileSchema("TaskV2ErrorResponse");
 
   const request = await readFixture("create-request.json");
   const task = await readFixture("task-response.json");
   assert.equal(validateRequest(request), true, JSON.stringify(validateRequest.errors));
   assert.equal(validateTask(task), true, JSON.stringify(validateTask.errors));
-  assert.equal(validateError(await readFixture("error-access-denied.json")), true);
-  assert.equal(validateError(await readFixture("error-task-not-found.json")), true);
+  const accessDenied = await readFixture("error-access-denied.json");
+  const taskNotFound = await readFixture("error-task-not-found.json");
+  assert.equal(validateError(accessDenied), true);
+  assert.equal(validateError(taskNotFound), true);
+  assertNoForbiddenConversationKeys(accessDenied, "access-denied fixture");
+  assertNoForbiddenConversationKeys(taskNotFound, "task-not-found fixture");
+  assertNoForbiddenConversationKeys(request, "create-request fixture");
+  assertNoForbiddenConversationKeys(task, "task-response fixture");
 
   assert.equal(validateRequest({ ...request, tenant_id: task.tenant_id }), false);
   assert.equal(validateRequest({ ...request, created_by_user_id: task.created_by_user_id }), false);
-  assert.equal(validateRequest({ ...request, title: "" }), false);
+  assert.equal(validateRequest({ ...request, title: "derived title" }), false);
+  for (const key of forbiddenConversationKeys) {
+    assert.equal(
+      validateRequest({ ...request, input: { ...request.input, [key]: "canary-secret" } }),
+      false,
+      `request input must reject ${key}`,
+    );
+  }
+  assert.equal(validateRequest({ ...request, input: { ...request.input, tenant_id: task.tenant_id } }), false);
+  assert.equal(
+    validateRequest({ ...request, input: { ...request.input, created_by_user_id: task.created_by_user_id } }),
+    false,
+  );
+  assert.equal(validateRequest({ ...request, input: { ...request.input, schema_version: 2 } }), false);
+  assert.equal(validateRequest({ ...request, input: { ...request.input, content_mode: "cloud" } }), false);
+  assert.equal(validateRequest({ ...request, input: { ...request.input, client_reference_id: "not-a-uuid" } }), false);
+  assert.equal(validateRequest({ ...request, input: {} }), false);
+  assert.equal(validateRequest({ ...request, task_type: "canary-secret" }), false);
   assert.equal(validateTask({ ...task, created_by_user_id: undefined }), false);
+  assert.equal(validateTask({ ...task, title: "derived title" }), false);
+  assert.equal(validateTask({ ...task, result: { text: "canary-secret" } }), false);
+  assert.equal(validateTask({ ...task, error_message: "canary-secret" }), false);
   assert.equal(validateTask({ ...task, unexpected: true }), false);
+  assert.equal(validateError({ code: "access_denied", message: "canary-secret" }), false);
 });
