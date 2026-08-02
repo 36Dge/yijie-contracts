@@ -1,0 +1,23 @@
+{
+  "schema_version": 2,
+  "event_id": "019fbd88-cbc3-7bf1-934d-7b05cd693f46",
+  "stream_id": "019fbd88-cbc3-7bf1-934d-7b05cd693f41",
+  "sequence": 5,
+  "occurred_at": "2026-08-02T10:00:01Z",
+  "task_id": "019fbd88-cbc3-7bf1-934d-7b05cd693f42",
+  "agent_session_id": "019fbd88-cbc3-7bf1-934d-7b05cd693f43",
+  "codex_thread_id": "019fbd88-cbc3-7bf1-934d-7b05cd693f44",
+  "turn_id": "019fbd88-cbc3-7bf1-934d-7b05cd693f45",
+  "item_id": "reasoning-item-1",
+  "event_type": "item.reasoning_text.finalized",
+  "terminal": false,
+  "payload": {
+    "status": "complete",
+    "contents": [
+      {
+        "content_index": 0,
+        "text": "先比较合成约束。"
+      }
+    ]
+  }
+}

@@ -15,6 +15,15 @@ async function findSchemas(dir) {
 
 const ajv = new Ajv2020({ allErrors: true, strict: true });
 addFormats(ajv);
+for (const keyword of [
+  "x-yijie-max-reasoning-items-per-turn",
+  "x-yijie-max-reasoning-utf8-bytes-per-turn",
+  "x-yijie-max-total-utf8-bytes",
+  "x-yijie-max-utf8-bytes",
+]) {
+  ajv.addKeyword({ keyword, schemaType: "number" });
+}
+ajv.addKeyword({ keyword: "x-yijie-content-index-rule", schemaType: "string" });
 const files = await findSchemas("jsonschema");
 for (const file of files) {
   const schema = JSON.parse(await readFile(file, "utf8"));

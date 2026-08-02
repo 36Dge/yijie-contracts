@@ -21,6 +21,14 @@ channels:
     messages:
       agentSessionEvent:
         $ref: "#/components/messages/AgentSessionEvent"
+  agentSessionEventsV2:
+    address: agent.session.events.v2
+    description: >-
+      Explicitly negotiated v2 Agent Host events. This stream preserves v1
+      lifecycle events and adds bounded raw-reasoning text delta/finalized variants.
+    messages:
+      agentSessionEventV2:
+        $ref: "#/components/messages/AgentSessionEventV2"
 operations:
   receiveTaskEvents:
     action: receive
@@ -37,6 +45,16 @@ operations:
       $ref: "#/channels/agentSessionEvents"
     messages:
       - $ref: "#/channels/agentSessionEvents/messages/agentSessionEvent"
+  receiveAgentSessionEventsV2:
+    action: receive
+    description: >-
+      Receive one AgentSessionEventV2 at a time after explicit schema-version-2
+      negotiation. A stream_id change starts a new ordering domain. Delivery is
+      at least once and consumers deduplicate by event_id.
+    channel:
+      $ref: "#/channels/agentSessionEventsV2"
+    messages:
+      - $ref: "#/channels/agentSessionEventsV2/messages/agentSessionEventV2"
 components:
   messages:
     AgentSessionEvent:
@@ -53,3 +71,18 @@ components:
         location: $message.payload#/agent_session_id
       payload:
         $ref: ../jsonschema/agent/session-event.schema.json
+    AgentSessionEventV2:
+      name: AgentSessionEventV2
+      title: Ordered Agent Host session event v2
+      summary: V1 lifecycle plus bounded raw-reasoning text events.
+      description: >-
+        JSON payload semantics are authoritative in the referenced JSON Schema.
+        Protobuf message yijie.events.v2.AgentSessionEvent carries the equivalent
+        service and asynchronous-consumer model. Producers emit v2 only after the
+        consumer explicitly negotiates schema version 2.
+      contentType: application/json
+      correlationId:
+        description: Agent Host session that owns the ordered event stream.
+        location: $message.payload#/agent_session_id
+      payload:
+        $ref: ../jsonschema/agent/session-event-v2.schema.json

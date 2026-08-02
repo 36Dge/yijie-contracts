@@ -8,8 +8,10 @@ Go/TypeScript/AsyncAPI 生成物。发布和回滚顺序见
 [`docs/releases/contracts-v0.2.0.md`](docs/releases/contracts-v0.2.0.md)。
 
 当前 `0.3.0` candidate 在保持 `contracts-v0.2.0` 支持窗口与既有 Public operations
-不变的前提下，新增 authenticated tenant discovery 与 capability projection。它尚未
-tag、尚未通过 API/Desktop conformance，也不是 supported release；候选范围和门禁见
+不变的前提下，新增 authenticated tenant discovery 与 capability projection。FEAT-126
+另在该未发布candidate上提交FEAT-126 source/generated overlay：versioned Public Tasks v2、
+Agent Host title/cleanup/events v2与AgentSessionEventV2；它尚无tag或下游pin。两部分均尚未
+通过最终producer/consumer conformance，也不是supported release；候选范围和门禁见
 [`docs/releases/contracts-v0.3.0.md`](docs/releases/contracts-v0.3.0.md)。
 
 跨仓契约变更必须遵循

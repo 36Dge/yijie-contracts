@@ -3,11 +3,48 @@
 ## 状态
 
 - 状态：`candidate`；不是 supported release，尚未创建 tag。
-- contract impact：`semantic`。
+- contract impact：FEAT-125 为 `semantic`；FEAT-126 产品语义为 `breaking`，但本候选以新
+  `/v2` paths/schema 进行 additive expand，尚未退休 v1。
 - 计划不可移动 tag：`contracts-v0.3.0`。
 - Owner、需求、技术、安全、consumer Reviewer：段成威。
-- 关联需求：`FEAT-125-authoritative-permission-projection`。
+- 关联需求：`FEAT-125-authoritative-permission-projection`、
+  `FEAT-126-public-task-authorization-hardening`。
 - G2：Passed；G2A：Pending，必须由段成威在候选证据形成后单独批准。
+
+### FEAT-126 source/generated candidate overlay（2026-08-02）
+
+当前未发布的 `0.3.0` candidate 上增加FEAT-126 source/generated候选。段成威已于
+2026-08-02接受DEC-126-018 source shape；本提交仍不创建tag/downstream pin，也不表示G2A已通过。
+它不会改变FEAT-125已登记的S1 commit身份：
+
+- `POST /v2/tasks` 与 `GET /v2/tasks/{task_id}`：bearer、verified tenant selector、
+  `task.create`/`task.read`、creator-private、server-derived ownership、UUID idempotency、
+  no-store 与 closed stable errors；匿名 `/v1/tasks*` wire 保持不变并继续双隔离。
+- Agent Host v2：隔离 `title-generations`、分表面 `cleanup-operations` 和必须显式
+  `event_schema_version=2` 的 events stream；所有操作仍是 owner-only loopback bearer。
+- AgentSessionEventV2：保留 v1 八种 lifecycle variants，仅增加 bounded raw reasoning
+  delta/finalized；JSON Schema 是 SSE 权威，Proto/AsyncAPI 是等价投影。
+- Host 只允许进程内 raw 聚合/有界 replay，不允许 raw 正文进入 bbolt、durable replay、
+  log、metric、trace、audit、error 或 cloud；Desktop durable SQLCipher/级联删除仍是未来实现。
+
+Source/generated identity（完整candidate commit在提交形成后登记到外部FEAT-126包，避免本文
+自引用尚未形成的commit）：
+
+| 项目 | SHA-256 / 值 |
+|---|---|
+| Base full commit | `9ec34abd6e7dfb5a23b0154d467694167224ebbb` |
+| Public OpenAPI | `c7ab2577b26a0776a7c204d3b9ee38b424cbaf0b9b0dc33d99a6806dfced998b` |
+| Agent Host OpenAPI | `d3bb9f33f89f03b7a2cd124e5528d3fbf72e0b88b35711d2d295f8e6959d2c71` |
+| AsyncAPI | `17dc8f7042570c63140de8f388872a7b77668051e9080ecec662d2e284559248` |
+| AgentSessionEventV2 JSON Schema | `b7a6494f58e274964ef5520c790f3891836c2f2cf69391ce67e5cfa00211f424` |
+| AgentSessionEventV2 Proto | `a18c08df2e2805147768e9e1b7eed4f97e4b7d0aebde5b59170c7ff248f1f383` |
+| TypeScript Public generated | `d3493a79ade649a17a78573ae0f9da3fa261f76c4472a151fbabd7056614d03b` |
+| TypeScript Agent Host generated | `6eeb8a77615095aa51daa74e9dc7a84006808381b46b778324d30a375742bed4` |
+| AsyncAPI generated bundle | `f6b0e7d25b399d1fd4bf42f080fc5a379f21422482f3251b3087aeade5b65ac5` |
+| Local SDK tarball | `334db01424e5038ac8d5431c32fa5a08ee3e3f6febeed0ad1639e325add29404` |
+
+以上digest标识本source/generated candidate。只有外部FEAT-126包登记本文所在的完整commit、
+post-commit复验digest不变并由Owner最终批准G2A后，下游才可pin。
 
 ## 权威源与范围
 
@@ -92,6 +129,32 @@ pnpm pack:sdk
 4. 旧 Tasks wire 没有任何 diff；FEAT-125 不把 capability projection 当作 Tasks 授权；
 5. API/Desktop 未实现、未 pin、未做 conformance，`G2A` 和 FEAT-124 `G4-001` 继续阻断。
 
+FEAT-126 overlay 还必须人工确认：
+
+1. Public Tasks v1 两个 paths、Agent Host v1 七个 paths 与支持基线结构相等；新错误码不进入
+   v1 closed `ErrorResponse`。
+2. Public Tasks v2 不接受 client-supplied tenant/creator，读取默认 creator-private，未知外部
+   consumer 继续走 versioned expand。
+3. Raw finalized 替换 delta buffer，closed reason/status 与 UTF-8 aggregate caps 一致；Host 无
+   durable raw sink。
+4. Title response 不包含 prompt/provider/ephemeral/path，cleanup `200` 不能代表 Desktop/OS/磁盘
+   全表面清除。
+5. DEC-126-018 source shape已Accepted；完整commit的post-commit复验、consumer Owner最终G2A
+   review与downstream exact pin未完成前，G2A不通过、所有业务flags保持关闭。
+
+## FEAT-126 本地候选证据（2026-08-02）
+
+| 检查 | 结果 | 说明 |
+|---|---|---|
+| `make generate` | PASS | OpenAPI/Proto/JSON Schema/AsyncAPI generated sources 同步 |
+| `make lint` | PASS | Redocly、JSON Schema、Buf、TypeScript、Go vet |
+| `make test` | PASS | 29 generated files current；Node 27/27；Go packages PASS |
+| `make build` | PASS | 再生成与 TypeScript build 完成 |
+| `pnpm pack:sdk` | PASS | 本地 `@yijie/contracts@0.3.0` tarball；未发布 registry |
+| v0.2.0 breaking check | PASS | OpenAPI/Buf/AsyncAPI/JSON Schema；修复 v2 error enum 隔离后无 v1 enum warnings |
+| Legacy wire equality | PASS | Public Tasks v1 2 paths + Agent Host v1 7 paths 结构相等 |
+| Fixture/conformance | PASS | FEAT-126 source-level tests 11/11；全仓测试计入上述 27/27 |
+
 ## S1/S2 本地证据（2026-08-01）
 
 | 检查 | 结果 | 说明 |
@@ -114,13 +177,14 @@ Runtime repository commit、schema digest、methods、notifications、transport 
 
 ## 合并、发布与回滚
 
-1. 契约候选先形成远端可获取的完整 commit；不创建 tag。
-2. 段成威基于完整 SHA、digest、generator、breaking 和 semantic review 单独批准 G2A。
-3. yijie-api 与 yijie-desktop 固定同一候选完整 SHA/digest，完成非生产 conformance。
-4. 只有最终 candidate 的 producer/consumer、安全和两租户集成全部通过后，才创建指向
+1. 段成威已于2026-08-02接受FEAT-126 DEC-126-018 source shape；这一步不等于G2A通过或实现授权。
+2. 契约候选形成远端可获取的完整commit并复验source/generated/SDK digest；不创建tag。
+3. 段成威基于完整SHA、digest、generator、breaking和semantic/consumer review单独批准G2A。
+4. yijie-api、yijie-agent-host与yijie-desktop固定同一候选完整SHA/digest，完成非生产conformance。
+5. 只有最终 candidate 的 producer/consumer、安全和两租户集成全部通过后，才创建指向
    同一 commit 的 `contracts-v0.3.0`。
-5. tag provenance 与 digest 复核后，API provider first，Desktop consumer 后灰度。
+6. tag provenance 与 digest 复核后，API provider first，Desktop consumer 后灰度。
 
 回滚方式是保持下游 feature flag 关闭并继续使用 `contracts-v0.2.0`。未完成 FEAT-126
 前，生产 `/v1/tasks*` 必须继续由 ingress deny 与 service handler non-registration
-双隔离；本候选不修改 Tasks wire，也不提供其资源级授权。
+双隔离；本候选只定义v2资源级授权wire，不提供已运行的授权实现。

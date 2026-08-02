@@ -1,0 +1,14 @@
+{
+  "operation_id": "019fbd88-cbc3-7bf1-934d-7b05cd693f61",
+  "outcome": "incomplete",
+  "surfaces": {
+    "runtime_thread_tree": "complete",
+    "host_mapping": "incomplete",
+    "host_replay": "not_attempted"
+  },
+  "error": {
+    "code": "cleanup_incomplete",
+    "reason_code": "host_mapping_cleanup_failed",
+    "message": "agent session cleanup is incomplete"
+  }
+}

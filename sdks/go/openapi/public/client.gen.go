@@ -90,25 +90,52 @@ func (e ServiceStatusStatus) Valid() bool {
 
 // Defines values for TaskStatus.
 const (
-	Completed       TaskStatus = "completed"
-	Draft           TaskStatus = "draft"
-	Failed          TaskStatus = "failed"
-	Running         TaskStatus = "running"
-	WaitingApproval TaskStatus = "waiting_approval"
+	TaskStatusCompleted       TaskStatus = "completed"
+	TaskStatusDraft           TaskStatus = "draft"
+	TaskStatusFailed          TaskStatus = "failed"
+	TaskStatusRunning         TaskStatus = "running"
+	TaskStatusWaitingApproval TaskStatus = "waiting_approval"
 )
 
 // Valid indicates whether the value is a known member of the TaskStatus enum.
 func (e TaskStatus) Valid() bool {
 	switch e {
-	case Completed:
+	case TaskStatusCompleted:
 		return true
-	case Draft:
+	case TaskStatusDraft:
 		return true
-	case Failed:
+	case TaskStatusFailed:
 		return true
-	case Running:
+	case TaskStatusRunning:
 		return true
-	case WaitingApproval:
+	case TaskStatusWaitingApproval:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TaskV2Status.
+const (
+	TaskV2StatusCompleted       TaskV2Status = "completed"
+	TaskV2StatusDraft           TaskV2Status = "draft"
+	TaskV2StatusFailed          TaskV2Status = "failed"
+	TaskV2StatusRunning         TaskV2Status = "running"
+	TaskV2StatusWaitingApproval TaskV2Status = "waiting_approval"
+)
+
+// Valid indicates whether the value is a known member of the TaskV2Status enum.
+func (e TaskV2Status) Valid() bool {
+	switch e {
+	case TaskV2StatusCompleted:
+		return true
+	case TaskV2StatusDraft:
+		return true
+	case TaskV2StatusFailed:
+		return true
+	case TaskV2StatusRunning:
+		return true
+	case TaskV2StatusWaitingApproval:
 		return true
 	default:
 		return false
@@ -143,6 +170,14 @@ type CreateTaskRequest struct {
 	Input    map[string]interface{} `json:"input"`
 	TaskType string                 `json:"task_type"`
 	TenantId openapi_types.UUID     `json:"tenant_id"`
+	Title    string                 `json:"title"`
+}
+
+// CreateTaskV2Request defines model for CreateTaskV2Request.
+type CreateTaskV2Request struct {
+	// Input Task-type-specific input. Identity, tenant, ownership, and authorization fields are forbidden.
+	Input    map[string]interface{} `json:"input"`
+	TaskType string                 `json:"task_type"`
 	Title    string                 `json:"title"`
 }
 
@@ -192,6 +227,28 @@ type Task struct {
 // TaskStatus defines model for Task.Status.
 type TaskStatus string
 
+// TaskV2 defines model for TaskV2.
+type TaskV2 struct {
+	CreatedAt time.Time `json:"created_at"`
+
+	// CreatedByUserId Server-derived internal creator identifier; never accepted from clients.
+	CreatedByUserId openapi_types.UUID      `json:"created_by_user_id"`
+	ErrorMessage    *string                 `json:"error_message,omitempty"`
+	Id              openapi_types.UUID      `json:"id"`
+	Input           map[string]interface{}  `json:"input"`
+	Result          *map[string]interface{} `json:"result,omitempty"`
+	Status          TaskV2Status            `json:"status"`
+	TaskType        string                  `json:"task_type"`
+
+	// TenantId Verified tenant context; never an authorization credential.
+	TenantId  openapi_types.UUID `json:"tenant_id"`
+	Title     string             `json:"title"`
+	UpdatedAt time.Time          `json:"updated_at"`
+}
+
+// TaskV2Status defines model for TaskV2.Status.
+type TaskV2Status string
+
 // TenantSelection defines model for TenantSelection.
 type TenantSelection struct {
 	// DisplayName Presentation-only tenant name; never used for authorization.
@@ -205,6 +262,12 @@ type TenantSelectionList struct {
 	Tenants []TenantSelection `json:"tenants"`
 }
 
+// IdempotencyKeyHeader defines model for IdempotencyKeyHeader.
+type IdempotencyKeyHeader = openapi_types.UUID
+
+// TaskV2Id defines model for TaskV2Id.
+type TaskV2Id = openapi_types.UUID
+
 // TenantIdHeader defines model for TenantIdHeader.
 type TenantIdHeader = openapi_types.UUID
 
@@ -216,6 +279,24 @@ type AuthorizationUnavailable = ErrorResponse
 
 // InvalidTenantContext defines model for InvalidTenantContext.
 type InvalidTenantContext = ErrorResponse
+
+// TaskV2AccessDenied defines model for TaskV2AccessDenied.
+type TaskV2AccessDenied = ErrorResponse
+
+// TaskV2BadRequest defines model for TaskV2BadRequest.
+type TaskV2BadRequest = ErrorResponse
+
+// TaskV2IdempotencyConflict defines model for TaskV2IdempotencyConflict.
+type TaskV2IdempotencyConflict = ErrorResponse
+
+// TaskV2InternalError defines model for TaskV2InternalError.
+type TaskV2InternalError = ErrorResponse
+
+// TaskV2NotFound defines model for TaskV2NotFound.
+type TaskV2NotFound = ErrorResponse
+
+// TaskV2Unauthenticated defines model for TaskV2Unauthenticated.
+type TaskV2Unauthenticated = ErrorResponse
 
 // TenantAccessDenied defines model for TenantAccessDenied.
 type TenantAccessDenied = ErrorResponse
@@ -237,8 +318,32 @@ type GetMyCapabilitiesParams struct {
 	XYijieTenantID TenantIdHeader `json:"X-Yijie-Tenant-ID"`
 }
 
+// CreateTaskV2Params defines parameters for CreateTaskV2.
+type CreateTaskV2Params struct {
+	// XYijieTenantID UUID of the tenant selected by the client. This is an untrusted selection
+	// hint; the API independently verifies the authenticated user, tenant, active
+	// membership, and tenant-scoped roles for every request.
+	XYijieTenantID TenantIdHeader `json:"X-Yijie-Tenant-ID"`
+
+	// IdempotencyKey Client-generated UUID that identifies one create intent. Retries of an unknown
+	// network result reuse the same key and request. A key is scoped to the verified
+	// internal user, tenant, operation, and bounded provider retention window.
+	IdempotencyKey IdempotencyKeyHeader `json:"Idempotency-Key"`
+}
+
+// GetTaskV2Params defines parameters for GetTaskV2.
+type GetTaskV2Params struct {
+	// XYijieTenantID UUID of the tenant selected by the client. This is an untrusted selection
+	// hint; the API independently verifies the authenticated user, tenant, active
+	// membership, and tenant-scoped roles for every request.
+	XYijieTenantID TenantIdHeader `json:"X-Yijie-Tenant-ID"`
+}
+
 // CreateTaskJSONRequestBody defines body for CreateTask for application/json ContentType.
 type CreateTaskJSONRequestBody = CreateTaskRequest
+
+// CreateTaskV2JSONRequestBody defines body for CreateTaskV2 for application/json ContentType.
+type CreateTaskV2JSONRequestBody = CreateTaskV2Request
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -335,6 +440,14 @@ type ClientInterface interface {
 
 	// GetTask request
 	GetTask(ctx context.Context, taskId openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateTaskV2WithBody request with any body
+	CreateTaskV2WithBody(ctx context.Context, params *CreateTaskV2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateTaskV2(ctx context.Context, params *CreateTaskV2Params, body CreateTaskV2JSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetTaskV2 request
+	GetTaskV2(ctx context.Context, taskId TaskV2Id, params *GetTaskV2Params, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) GetHealth(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -423,6 +536,42 @@ func (c *Client) CreateTask(ctx context.Context, body CreateTaskJSONRequestBody,
 
 func (c *Client) GetTask(ctx context.Context, taskId openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetTaskRequest(c.Server, taskId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateTaskV2WithBody(ctx context.Context, params *CreateTaskV2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateTaskV2RequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateTaskV2(ctx context.Context, params *CreateTaskV2Params, body CreateTaskV2JSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateTaskV2Request(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetTaskV2(ctx context.Context, taskId TaskV2Id, params *GetTaskV2Params, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetTaskV2Request(c.Server, taskId, params)
 	if err != nil {
 		return nil, err
 	}
@@ -655,6 +804,115 @@ func NewGetTaskRequest(server string, taskId openapi_types.UUID) (*http.Request,
 	return req, nil
 }
 
+// NewCreateTaskV2Request calls the generic CreateTaskV2 builder with application/json body
+func NewCreateTaskV2Request(server string, params *CreateTaskV2Params, body CreateTaskV2JSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateTaskV2RequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewCreateTaskV2RequestWithBody generates requests for CreateTaskV2 with any type of body
+func NewCreateTaskV2RequestWithBody(server string, params *CreateTaskV2Params, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/tasks")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "X-Yijie-Tenant-ID", params.XYijieTenantID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Yijie-Tenant-ID", headerParam0)
+
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithOptions("simple", false, "Idempotency-Key", params.IdempotencyKey, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Idempotency-Key", headerParam1)
+
+	}
+
+	return req, nil
+}
+
+// NewGetTaskV2Request generates requests for GetTaskV2
+func NewGetTaskV2Request(server string, taskId TaskV2Id, params *GetTaskV2Params) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "task_id", taskId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/tasks/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "X-Yijie-Tenant-ID", params.XYijieTenantID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Yijie-Tenant-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -720,6 +978,14 @@ type ClientWithResponsesInterface interface {
 
 	// GetTaskWithResponse request
 	GetTaskWithResponse(ctx context.Context, taskId openapi_types.UUID, reqEditors ...RequestEditorFn) (*GetTaskResponse, error)
+
+	// CreateTaskV2WithBodyWithResponse request with any body
+	CreateTaskV2WithBodyWithResponse(ctx context.Context, params *CreateTaskV2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateTaskV2Response, error)
+
+	CreateTaskV2WithResponse(ctx context.Context, params *CreateTaskV2Params, body CreateTaskV2JSONRequestBody, reqEditors ...RequestEditorFn) (*CreateTaskV2Response, error)
+
+	// GetTaskV2WithResponse request
+	GetTaskV2WithResponse(ctx context.Context, taskId TaskV2Id, params *GetTaskV2Params, reqEditors ...RequestEditorFn) (*GetTaskV2Response, error)
 }
 
 type GetHealthResponse struct {
@@ -947,6 +1213,78 @@ func (r GetTaskResponse) ContentType() string {
 	return ""
 }
 
+type CreateTaskV2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *TaskV2
+	JSON400      *TaskV2BadRequest
+	JSON401      *TaskV2Unauthenticated
+	JSON403      *TaskV2AccessDenied
+	JSON409      *TaskV2IdempotencyConflict
+	JSON500      *TaskV2InternalError
+	JSON503      *AuthorizationUnavailable
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateTaskV2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateTaskV2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r CreateTaskV2Response) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetTaskV2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *TaskV2
+	JSON400      *TaskV2BadRequest
+	JSON401      *TaskV2Unauthenticated
+	JSON403      *TaskV2AccessDenied
+	JSON404      *TaskV2NotFound
+	JSON500      *TaskV2InternalError
+	JSON503      *AuthorizationUnavailable
+}
+
+// Status returns HTTPResponse.Status
+func (r GetTaskV2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetTaskV2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetTaskV2Response) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 // GetHealthWithResponse request returning *GetHealthResponse
 func (c *ClientWithResponses) GetHealthWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetHealthResponse, error) {
 	rsp, err := c.GetHealth(ctx, reqEditors...)
@@ -1016,6 +1354,32 @@ func (c *ClientWithResponses) GetTaskWithResponse(ctx context.Context, taskId op
 		return nil, err
 	}
 	return ParseGetTaskResponse(rsp)
+}
+
+// CreateTaskV2WithBodyWithResponse request with arbitrary body returning *CreateTaskV2Response
+func (c *ClientWithResponses) CreateTaskV2WithBodyWithResponse(ctx context.Context, params *CreateTaskV2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateTaskV2Response, error) {
+	rsp, err := c.CreateTaskV2WithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateTaskV2Response(rsp)
+}
+
+func (c *ClientWithResponses) CreateTaskV2WithResponse(ctx context.Context, params *CreateTaskV2Params, body CreateTaskV2JSONRequestBody, reqEditors ...RequestEditorFn) (*CreateTaskV2Response, error) {
+	rsp, err := c.CreateTaskV2(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateTaskV2Response(rsp)
+}
+
+// GetTaskV2WithResponse request returning *GetTaskV2Response
+func (c *ClientWithResponses) GetTaskV2WithResponse(ctx context.Context, taskId TaskV2Id, params *GetTaskV2Params, reqEditors ...RequestEditorFn) (*GetTaskV2Response, error) {
+	rsp, err := c.GetTaskV2(ctx, taskId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetTaskV2Response(rsp)
 }
 
 // ParseGetHealthResponse parses an HTTP response from a GetHealthWithResponse call
@@ -1299,6 +1663,142 @@ func ParseGetTaskResponse(rsp *http.Response) (*GetTaskResponse, error) {
 			return nil, err
 		}
 		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateTaskV2Response parses an HTTP response from a CreateTaskV2WithResponse call
+func ParseCreateTaskV2Response(rsp *http.Response) (*CreateTaskV2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateTaskV2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest TaskV2
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest TaskV2BadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest TaskV2Unauthenticated
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest TaskV2AccessDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest TaskV2IdempotencyConflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest TaskV2InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest AuthorizationUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetTaskV2Response parses an HTTP response from a GetTaskV2WithResponse call
+func ParseGetTaskV2Response(rsp *http.Response) (*GetTaskV2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetTaskV2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TaskV2
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest TaskV2BadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest TaskV2Unauthenticated
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest TaskV2AccessDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest TaskV2NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest TaskV2InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest AuthorizationUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
 
 	}
 

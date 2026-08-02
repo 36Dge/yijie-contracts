@@ -233,6 +233,114 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v2/agent-sessions/{agent_session_id}/title-generations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate one isolated title candidate
+         * @description Runs the fixed `title-v1` prompt in a pathless ephemeral Runtime thread
+         *     that is isolated from the user's project, persistent thread, and event
+         *     stream. The Host accepts only the first user text, invokes no tools, and
+         *     returns only a validated plain-text title. Prompt text, raw provider
+         *     response, ephemeral identifiers, and project paths never enter the
+         *     response, logs, metrics, traces, or persistent Host state.
+         *
+         *     `operation_id` is scoped to this Agent session and canonical input. The
+         *     same operation and input may return its process-local completed result;
+         *     reuse with different input returns `title_operation_conflict`. An unknown
+         *     provider result is not retried under a new operation ID. This candidate
+         *     does not enable the operation or authorize provider calls.
+         */
+        post: operations["generateAgentSessionTitleV2"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/agent-sessions/{agent_session_id}/cleanup-operations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Remove the Host-managed live surfaces for one Agent session
+         * @description Performs the Host portion of the Desktop deletion saga. The Host first
+         *     rejects an active or unconfirmed turn and verifies exclusive ownership of
+         *     the mapped Runtime thread tree. It then verifies Runtime `thread/delete`,
+         *     including the deletion notification and descendants, before clearing the
+         *     Host bbolt mapping and in-memory replay state.
+         *
+         *     `200` means all three Host-managed live surfaces are confirmed complete.
+         *     Any partial or uncertain result is `409 cleanup_incomplete` with a
+         *     content-free per-surface result and remains retryable under the same
+         *     `operation_id`. To resolve a lost success response after the mapping is
+         *     removed, Host retains for 30 days only a content-free receipt containing
+         *     operation ID, keyed session hash, surface outcomes, timestamps, and schema
+         *     version; it contains no raw session/thread ID, body, title, reasoning, or
+         *     path. A completed Host result does not claim that Desktop SQLCipher/
+         *     checkpoint, Runtime WAL/log bytes, OS snapshots, backups, or SSD history
+         *     were erased; Desktop may report full session deletion only after its
+         *     separately approved local transaction and checkpoint also complete.
+         */
+        post: operations["cleanupAgentSessionV2"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/agent-sessions/{agent_session_id}/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Replay and stream explicitly negotiated Agent session events v2
+         * @description Opens the v2 Server-Sent Events stream. The required
+         *     `event_schema_version=2` query parameter prevents accidental v2 output to a
+         *     v1 consumer. Framing, cursor precedence, bounded in-memory replay, heartbeat,
+         *     at-least-once delivery, and stream-change semantics are identical to the v1
+         *     endpoint. Every non-heartbeat `data` value is a compact single-line
+         *     AgentSessionEventV2 JSON object. The Host must not persist raw-reasoning text
+         *     in bbolt, any durable replay store, logs, metrics, traces, audit, or error
+         *     bodies; bounded process-memory replay remains permitted.
+         *
+         *     The v2 stream preserves the eight v1 lifecycle variants and adds only
+         *     `item.reasoning_text.delta` and `item.reasoning_text.finalized`. A single SSE
+         *     event remains bounded by the Host's 1 MiB hard limit; the stricter reasoning
+         *     caps are authoritative in the v2 JSON Schema and associated conformance docs.
+         */
+        get: operations["streamAgentSessionEventsV2"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -329,6 +437,101 @@ export interface components {
              * @enum {string}
              */
             reasoning_effort: "" | "none" | "high";
+        };
+        GenerateTitleV2Request: {
+            /**
+             * Format: uuid
+             * @description Idempotent title-generation operation identifier selected by Desktop.
+             */
+            operation_id: string;
+            /** @description Correlation only; never authorization input. */
+            trace_id?: string;
+            /** @description Correlation only; never authorization input. */
+            request_id?: string;
+            /** @description First user text only; non-blank and at most 8 KiB UTF-8. */
+            input: string;
+        };
+        GenerateTitleV2Response: {
+            /** Format: uuid */
+            operation_id: string;
+            /** @description NFC, one-line untrusted plain text with 1..40 grapheme clusters and no control, bidi-control, HTML, or Markdown syntax. */
+            title: string;
+        };
+        CleanupAgentSessionV2Request: {
+            /**
+             * Format: uuid
+             * @description Idempotent deletion-saga operation identifier selected by Desktop.
+             */
+            operation_id: string;
+            /** @description Correlation only; never authorization input. */
+            trace_id?: string;
+            /** @description Correlation only; never authorization input. */
+            request_id?: string;
+        };
+        CleanupAgentSessionV2CompletedResponse: {
+            /** Format: uuid */
+            operation_id: string;
+            /** @enum {string} */
+            outcome: "complete";
+            surfaces: components["schemas"]["CleanupCompletedSurfaces"];
+        };
+        CleanupCompletedSurfaces: {
+            /** @enum {string} */
+            runtime_thread_tree: "complete";
+            /** @enum {string} */
+            host_mapping: "complete";
+            /** @enum {string} */
+            host_replay: "complete";
+        };
+        CleanupAgentSessionV2IncompleteResponse: {
+            /** Format: uuid */
+            operation_id: string;
+            /** @enum {string} */
+            outcome: "incomplete";
+            surfaces: components["schemas"]["CleanupIncompleteSurfaces"];
+            error: components["schemas"]["CleanupIncompleteError"];
+        };
+        CleanupIncompleteSurfaces: {
+            runtime_thread_tree: components["schemas"]["CleanupSurfaceStatus"];
+            host_mapping: components["schemas"]["CleanupSurfaceStatus"];
+            host_replay: components["schemas"]["CleanupSurfaceStatus"];
+        };
+        /** @enum {string} */
+        CleanupSurfaceStatus: "complete" | "incomplete" | "not_attempted";
+        CleanupIncompleteError: {
+            /** @enum {string} */
+            code: "cleanup_incomplete";
+            /** @enum {string} */
+            reason_code: "active_turn" | "terminal_unconfirmed" | "shared_thread_mapping" | "runtime_delete_failed" | "runtime_delete_unconfirmed" | "host_mapping_cleanup_failed" | "host_replay_cleanup_failed" | "operation_state_unavailable" | "internal_error";
+            message: string;
+        };
+        TitleOperationConflictError: {
+            error: {
+                /** @enum {string} */
+                code: "title_operation_conflict";
+                message: string;
+            };
+        };
+        TitleOutputInvalidError: {
+            error: {
+                /** @enum {string} */
+                code: "title_output_invalid";
+                message: string;
+            };
+        };
+        TitleGenerationUnavailableError: {
+            error: {
+                /** @enum {string} */
+                code: "title_generation_unavailable";
+                message: string;
+            };
+        };
+        CleanupOperationConflictError: {
+            error: {
+                /** @enum {string} */
+                code: "cleanup_operation_conflict";
+                message: string;
+            };
         };
         SessionResponse: {
             session: components["schemas"]["AgentSession"];
@@ -459,6 +662,38 @@ export interface components {
                 "application/json": components["schemas"]["ErrorResponse"];
             };
         };
+        /** @description `title_operation_conflict`: the operation ID was already used with different canonical input. */
+        TitleOperationConflict: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["TitleOperationConflictError"];
+            };
+        };
+        /** @description `title_output_invalid`: provider output failed the strict object or plain-title validator. */
+        TitleOutputInvalid: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["TitleOutputInvalidError"];
+            };
+        };
+        /** @description `title_generation_unavailable`: the isolated title operation did not produce a known valid result. */
+        TitleGenerationUnavailable: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                /** @description Optional bounded delay in seconds before a controlled retry of the same operation. */
+                "Retry-After"?: number;
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["TitleGenerationUnavailableError"];
+            };
+        };
     };
     parameters: {
         /** @description Control-plane task identifier. One Agent session may be reserved per task. */
@@ -485,6 +720,8 @@ export interface components {
          *     leading zero. The header overrides `stream_id` and `after` query parameters.
          */
         LastEventId: string;
+        /** @description Explicit negotiation guard. Only integer value 2 is accepted on the v2 event stream. */
+        EventSchemaVersionV2: 2;
     };
     requestBodies: never;
     headers: {
@@ -946,6 +1183,165 @@ export interface operations {
              * @description `streaming_unsupported` when the HTTP writer cannot flush streaming
              *     responses; otherwise `internal_error`.
              */
+            500: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    generateAgentSessionTitleV2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GenerateTitleV2Request"];
+            };
+        };
+        responses: {
+            /** @description A sanitized title candidate was generated. */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GenerateTitleV2Response"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            404: components["responses"]["SessionNotFound"];
+            409: components["responses"]["TitleOperationConflict"];
+            422: components["responses"]["TitleOutputInvalid"];
+            503: components["responses"]["TitleGenerationUnavailable"];
+        };
+    };
+    cleanupAgentSessionV2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CleanupAgentSessionV2Request"];
+            };
+        };
+        responses: {
+            /** @description Runtime thread tree, Host mapping, and Host replay are all absent from active stores. */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CleanupAgentSessionV2CompletedResponse"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            404: components["responses"]["SessionNotFound"];
+            /** @description `cleanup_incomplete` when any required surface is partial, blocked, or uncertain; `cleanup_operation_conflict` when an operation ID is reused for a different target or canonical request. */
+            409: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CleanupAgentSessionV2IncompleteResponse"] | components["schemas"]["CleanupOperationConflictError"];
+                };
+            };
+        };
+    };
+    streamAgentSessionEventsV2: {
+        parameters: {
+            query: {
+                /** @description Explicit negotiation guard. Only integer value 2 is accepted on the v2 event stream. */
+                event_schema_version: components["parameters"]["EventSchemaVersionV2"];
+                /**
+                 * @description Expected process-local stream identifier. Required when `after > 0`
+                 *     unless `Last-Event-ID` supplies the complete cursor. A mismatch returns
+                 *     `409 event_stream_changed`.
+                 */
+                stream_id?: components["parameters"]["EventStreamId"];
+                /**
+                 * @description Unsigned 64-bit sequence after which events are replayed. Defaults to
+                 *     zero. Values greater than zero require a matching stream ID. Ignored when
+                 *     `Last-Event-ID` is present.
+                 */
+                after?: components["parameters"]["EventAfter"];
+            };
+            header?: {
+                /**
+                 * @description Complete SSE cursor `<stream_id>:<sequence>`. Sequence is a decimal
+                 *     unsigned 64-bit integer from 1 through 18446744073709551615 with no
+                 *     leading zero. The header overrides `stream_id` and `after` query parameters.
+                 */
+                "Last-Event-ID"?: components["parameters"]["LastEventId"];
+            };
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Retained v2 events were replayed and the connection is subscribed for live v2 events. */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    /** @description Disables reverse-proxy response buffering. */
+                    "X-Accel-Buffering": "no";
+                    /** @description Actual process-local stream identifier used by every returned SSE event ID. */
+                    "X-Yijie-Event-Stream-ID": string;
+                    /** @description Confirms that every returned data event uses AgentSessionEventV2. */
+                    "X-Yijie-Event-Schema-Version": 2;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": string;
+                };
+            };
+            /** @description `invalid_request` or `invalid_event_cursor`: schema negotiation, identifier, or cursor is invalid. */
+            400: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            404: components["responses"]["SessionNotFound"];
+            /** @description `event_stream_changed` or `event_replay_unavailable`: the requested v2 cursor cannot be resumed safely. */
+            409: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `streaming_unsupported` or `internal_error`: the v2 stream cannot be served safely. */
             500: {
                 headers: {
                     "Cache-Control": components["headers"]["NoStore"];
