@@ -1,5 +1,15 @@
 # contracts-v0.3.0 候选说明
 
+## FEAT-126 Runtime provenance refresh（2026-08-14）
+
+FEAT-126 full-case R8 的 no-log corrective 在 Runtime 仓形成 clean checkpoint
+`a4267e77708a23d7af79aa209f48f36ba89fbb12`。该 checkpoint 保持固定上游 tag、commit、
+Runtime version、stable app-server schema tree、transport、method/notification 投影不变，
+只增加 manifest-bound、可重放的持久诊断日志过滤 patch。因此本候选仅刷新
+`compatibility/agent-host-runtime-v1.json` 的 Runtime repository provenance；公共 wire、
+schema 和 Host projection 均无变化。Host consumer 仍须固定新的 Contracts commit、patch
+digest、binary SHA-256 和 size 后才能消费该 artifact。
+
 ## 状态
 
 - 状态：`candidate`；不是 supported release，尚未创建 tag。
