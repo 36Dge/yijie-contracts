@@ -1,5 +1,14 @@
 # contracts-v0.3.0 候选说明
 
+## FEAT-126 R8 persistent diagnostics refresh（2026-08-14）
+
+失败 R8 的 content-free no-log evidence 证明四个精确 Runtime diagnostic targets 会将
+请求或会话字段持久化到 SQLite 日志。Runtime clean checkpoint
+`3e4f5512d5429d9f040a6e43c89c7001098ee1a4` 将这些 targets 加入现有 replay-only filter，
+保持 canonical upstream source、公共 wire、schema tree、Host projection 和 transport 不变。
+本候选因此只刷新 Runtime repository provenance；Host consumer 仍须固定该 checkpoint
+重建产物的 patch digest、binary SHA-256 和 size。
+
 ## FEAT-126 Runtime provenance refresh（2026-08-14）
 
 FEAT-126 full-case R8 的 no-log corrective 在 Runtime 仓形成 clean checkpoint
