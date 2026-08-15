@@ -413,7 +413,12 @@ export interface components {
             tenant_id?: string;
             /** @description Optional correlation context only; it does not authenticate a user. */
             user_id?: string;
-            /** @description Existing absolute local directory. Host resolves symlinks and stores the canonical path. */
+            /**
+             * @description Existing absolute local directory. Host resolves symlinks and uses the
+             *     resulting canonical path as the session working directory. Any private
+             *     persistence representation is an implementation detail and is not part
+             *     of this wire contract.
+             */
             cwd: string;
         };
         StartTurnRequest: {
@@ -545,6 +550,7 @@ export interface components {
             active_turn_id: components["schemas"]["UuidOrEmpty"];
             /** @enum {string} */
             state: "starting" | "idle" | "active" | "failed";
+            /** @description Rehydrated canonical absolute session working directory. */
             cwd: string;
             /** @enum {string} */
             model: "" | "MiniMax-M3";

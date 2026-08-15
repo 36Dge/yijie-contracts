@@ -24,6 +24,18 @@ const surfaces = [
   },
 ];
 
+const approvedAgentHostCwdDescriptions = [
+  {
+    reference: "#/components/schemas/StartSessionRequest",
+    expected:
+      "Existing absolute local directory. Host resolves symlinks and uses the resulting canonical path as the session working directory. Any private persistence representation is an implementation detail and is not part of this wire contract.",
+  },
+  {
+    reference: "#/components/schemas/AgentSession",
+    expected: "Rehydrated canonical absolute session working directory.",
+  },
+];
+
 function readBaseline(file) {
   return parseYaml(execFileSync("git", ["show", `${baseRef}:${file}`], { encoding: "utf8" }));
 }
@@ -80,12 +92,41 @@ function extractWire(spec, paths) {
   };
 }
 
+function assertApprovedAgentHostCwdDescriptions(wire) {
+  for (const { reference, expected } of approvedAgentHostCwdDescriptions) {
+    const description = wire.references[reference]?.properties?.cwd?.description;
+    assert.equal(
+      description?.replaceAll("\n", " ").replaceAll(/\s+/g, " ").trim(),
+      expected,
+      `${reference}.properties.cwd.description must match the approved canonical wording`,
+    );
+  }
+}
+
+function omitApprovedAgentHostCwdDescriptions(wire) {
+  const normalized = structuredClone(wire);
+  for (const { reference } of approvedAgentHostCwdDescriptions) {
+    const cwd = normalized.references[reference]?.properties?.cwd;
+    if (cwd) delete cwd.description;
+  }
+  return normalized;
+}
+
 for (const surface of surfaces) {
   const baseline = readBaseline(surface.file);
   const current = parseYaml(readFileSync(surface.file, "utf8"));
+  const currentWire = extractWire(current, surface.paths);
+  const baselineWire = extractWire(baseline, surface.paths);
+  if (surface.file === "openapi/agent-host/agent-host.yaml") {
+    assertApprovedAgentHostCwdDescriptions(currentWire);
+  }
   assert.deepEqual(
-    extractWire(current, surface.paths),
-    extractWire(baseline, surface.paths),
+    surface.file === "openapi/agent-host/agent-host.yaml"
+      ? omitApprovedAgentHostCwdDescriptions(currentWire)
+      : currentWire,
+    surface.file === "openapi/agent-host/agent-host.yaml"
+      ? omitApprovedAgentHostCwdDescriptions(baselineWire)
+      : baselineWire,
     `${surface.file} legacy v1 wire differs from ${baseRef}`,
   );
   console.log(`${surface.file}: ${surface.paths.length} legacy v1 paths and reference closure are equal`);
