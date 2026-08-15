@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
+import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
 import { access, readFile, readdir } from "node:fs/promises";
 import path from "node:path";
+import { promisify } from "node:util";
 import test from "node:test";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
@@ -19,6 +21,7 @@ const expectedNotifications = [
   "turn/started",
   "warning",
 ];
+const execFileAsync = promisify(execFile);
 
 async function loadCompatibility() {
   return JSON.parse(await readFile(compatibilityPath, "utf8"));
@@ -90,6 +93,16 @@ test("pinned projection exists in a neighboring yijie-codex checkout when availa
   }
 
   const manifest = await loadCompatibility();
+  const { stdout: runtimeHead } = await execFileAsync(
+    "git",
+    ["-C", runtimeRepo, "rev-parse", "HEAD"],
+    { encoding: "utf8" },
+  );
+  assert.equal(
+    runtimeHead.trim(),
+    manifest.runtime.repository_commit,
+    "compatibility manifest must pin the neighboring Runtime checkout exactly",
+  );
   const baseline = JSON.parse(
     await readFile(path.join(runtimeRepo, ".yijie/schemas/app-server/baseline.json"), "utf8"),
   );

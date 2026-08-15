@@ -1,5 +1,17 @@
 # contracts-v0.3.0 候选说明
 
+## FEAT-126 R8 Runtime provenance convergence（2026-08-15）
+
+Runtime clean checkpoint `0ce5902ed400866be0196886bb78f693a004d68d` 扩展既有
+manifest-bound persistent diagnostics filter，继续保持 upstream tag/commit、Runtime
+version、stable app-server schema tree、transport、method/notification 与 Host projection
+不变。本候选仅将 Runtime repository provenance 刷新到该精确 checkpoint；Host consumer
+必须同步消费由该 checkpoint 构建的 binary size、binary SHA-256 和 patch SHA-256。
+
+邻仓 conformance 现在同时校验 Runtime schema projection 与精确 Git HEAD，防止 schema
+未变时过期 repository provenance 被误判为通过。本轮 contract impact 为 `none`：没有修改
+任何 wire、schema、transport、失败语义或安全投影。
+
 ## FEAT-126 R8 persistent diagnostics refresh（2026-08-14）
 
 失败 R8 的 content-free no-log evidence 证明四个精确 Runtime diagnostic targets 会将
