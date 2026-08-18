@@ -1314,7 +1314,9 @@ components:
           type: string
           minLength: 1
           maxLength: 255
-          pattern: "^(?!\\s)(?!.*\\s$)(?!\\.{1,2}$)[^/\\\\\\x00-\\x1F\\x7F]+$"
+          pattern: '^[^/\\\x00-\x1F\x7F\s]([^/\\\x00-\x1F\x7F]*[^/\\\x00-\x1F\x7F\s])?$'
+          not:
+            enum: [".", ".."]
           description: |
             NFC display basename with no path separator, control character, or
             leading/trailing whitespace. It is untrusted text and must never be
