@@ -41,9 +41,9 @@ digest、binary SHA-256 和 size 后才能消费该 artifact。
 - 关联需求：`FEAT-125-authoritative-permission-projection`、
   `FEAT-126-public-task-authorization-hardening`、`FEAT-127-multimodal-chat-attachments`。
 - G2：Passed；FEAT-126历史G2A批准保留，但DEC-126-023已触发replacement re-review；
-  DEC-126-024最终G2A Pending，必须由段成威基于新完整SHA单独批准。FEAT-127 已形成
-  source candidate 与下游非生产 conformance，但 semantic Owner/consumer 最终批准和 release tag
-  仍待完成。
+  DEC-126-024最终G2A Pending，必须由段成威基于新完整SHA单独批准。FEAT-127 本地 candidate
+  的 semantic Owner/consumer review 已于 2026-08-19 批准；该批准不覆盖 release tag、publish、
+  supported 晋升或生产激活。
 
 ### FEAT-127 multimodal chat attachment candidate（2026-08-19）
 
@@ -61,32 +61,31 @@ FEAT-127 在既有 v1/text-only 表面不变的前提下增加两个相关但各
 
 | 项目 | SHA-256 / 值 |
 |---|---|
-| FEAT-127 source candidate commit | `ebdd30f076614ebc7f5149aebf70e851b81ff32b` |
+| FEAT-127 source/generated implementation checkpoint | `ebdd30f076614ebc7f5149aebf70e851b81ff32b` |
 | Agent Host OpenAPI | `3d2f2273160aa05112f63d67f170229780d4526d679cd449a267890a933ea177` |
 | Chat message JSON Schema | `3f277898f8204e02a400053cd56bec3b0eeb37ed2c50db3a6347e7fec61ddf34` |
-| Agent Host v2 turn fixture | `a986217033e9b86b9f2f4e02cd9feef661aef0a970dd106a9df648729ebd4e79` |
+| Agent Host v2 turn fixture | `ec464ce56f749852e65be8d1472d8f5d8cccc82c89d2dd16fab33fbdbe62decc` |
 | TypeScript Agent Host generated | `c6fe5a8a283d5209529fe397e1957c289ccfd93d33999e07f64e55a1faf7d49e` |
 | Go Agent Host generated | `e77b7858fb922588db4cb936fe1fd8a282f58d89c067fcd862668433c3a1b425` |
 | TypeScript Chat Schema generated | `4d620424afab17cbd41a19cb58adfd975c5b7e0d025f9faff821e97fa2fb69fd` |
 | Public OpenAPI（unchanged） | `c8d9e6742802e0f0392ea8221a5fdd028f76107df893ab4c531da75f9e9e354b` |
 | Generators | `openapi-typescript 7.13.0`；`oapi-codegen v2.7.2`；`json-schema-to-typescript 15.0.4` |
 
-Consumer 状态必须按已推送 commit 的实际证据区分：
+Consumer 的 pre-reconciliation implementation checkpoints 为：
 
 - Agent Host `673de86d3d076f4600eb0d0bfb215382677afd72` 的 `api/contracts.lock`
   固定 `0.3.0`、完整 Contracts commit、Agent Host OpenAPI digest 和
   `oapi-codegen v2.7.2`，且 `contract-check` 已通过。
 - Desktop `3efed9aba5faab90ca3ea397a4d6489890df2026` 固定完整 Contracts commit，并通过
-  FEAT-127 producer/consumer conformance；该已推送 commit 未固定 Agent Host OpenAPI digest
-  与 generator identity，因此只能声明 `commit pin + conformance`，不能声明完整 provenance
-  gate 已关闭。
+  FEAT-127 producer/consumer conformance；candidate closure 另要求 Host-wire source/fixture
+  digest lock、显式 Rust adapter 例外和同源 conformance。
 
-`ebdd30f...` 可作为本地/非生产验证的不可变 source candidate，但不是 supported release。
-本轮文档 reconciliation 会形成新的完整 commit；为避免循环身份，不在本文自引用尚未形成的
-SHA，最终 C2 由外部 FEAT-127 交付包或 PR 在提交后登记。`contracts-v0.3.0` 只在正式发布阶段、
-semantic review 和适用 consumer provenance 决策完成后创建；tag 创建后，下游须验证它解析到
-获批 commit 且上述 digest 未变，再决定是否 repin 并切换 provenance。完成这些步骤前不得把
-`0.3.0 candidate` 晋升为 supported/release-ready。
+`ebdd30f...` 是本地/非生产 implementation checkpoint，但不是最终 reconciliation commit 或
+supported release。本轮文档/fixture reconciliation 会形成新的完整 commit；为避免循环身份，
+不在本文自引用尚未形成的 SHA，最终 Contracts、Host、Desktop commit 与 exact pin 由外部
+FEAT-127 交付包或 PR 在提交后登记。`contracts-v0.3.0` 只在正式发布阶段创建；tag 创建后，
+下游须验证它解析到获批 commit 且上述 digest 未变，再决定是否切换 release provenance。完成
+这些步骤前不得把 `0.3.0 candidate` 晋升为 supported/release-ready。
 
 ### FEAT-126 source/generated candidate overlay（2026-08-02）
 
@@ -160,8 +159,9 @@ post-commit复验digest不变并由Owner最终批准G2A后，下游才可pin。
 - 新 operation 采用 provider-first：API 先实现并在非生产关闭 consumer flag，Desktop
   后调用。
 - 未知公开 consumer 仍按保守假设处理；它们不调用新 operation，因此旧交互不失效。
-- `contracts-v0.2.0` 继续作为已发布支持基线；FEAT-127 Host 的非生产候选已精确 pin
-  `ebdd30f...`，这不替代 `0.2.0` 的 supported 状态，也不构成 `0.3.0` 发布。
+- `contracts-v0.2.0` 继续作为已发布支持基线；FEAT-127 Host 的 pre-reconciliation 非生产
+  checkpoint 精确 pin `ebdd30f...`，最终 pin 由外部交付包登记。这不替代 `0.2.0` 的
+  supported 状态，也不构成 `0.3.0` 发布。
 - FEAT-127 v2 turn 和 optional `contentBlocks` 采用 expand；旧 v1 turn 与 required legacy
   `content` 保留。自动结构兼容仍不能代替 ordered block、错误、容量与 consumer 行为的
   semantic review。
@@ -271,12 +271,13 @@ Runtime repository commit、schema digest、methods、notifications、transport 
 
 ## 合并、发布与回滚
 
-1. `ebdd30f...` 是已推送、可供本地/非生产验证的 FEAT-127 source candidate；本轮文档
+1. `ebdd30f...` 是已推送、可供本地/非生产验证的 FEAT-127 implementation checkpoint；本轮
    reconciliation 的最终完整 SHA 在提交后由外部交付包或 PR 登记，不在本文预写。
-2. Host 已形成完整 lock；Desktop 已形成 commit pin + conformance。Desktop 是否补齐 digest/
-   generator lock、两个 consumer 是否 repin 到最终 release commit，须在 tag 前明确决定并复验。
-3. 段成威仍须分别完成 FEAT-126 DEC-126-024 和 FEAT-127 semantic Owner/consumer review；
-   一个 Feature 的 pin 或 conformance 不替代另一个 Feature 的批准。
+2. Host 与 Desktop 均须 repin 最终 reconciliation commit 并复验；Desktop 使用 Host-wire
+   source/fixture digest lock、显式 Rust adapter 例外和同源 conformance，不声称存在已批准的
+   Rust OpenAPI generator。最终 consumer SHA 与结果由外部交付包记录。
+3. 段成威已于 2026-08-19 批准 FEAT-127 本地 candidate semantic Owner/consumer review；
+   FEAT-126 DEC-126-024 仍须独立完成，一个 Feature 的批准不替代另一个 Feature。
 4. `contracts-v0.3.0` 当前不创建。进入正式发布阶段后，先冻结获批完整 commit 和 digest，再创建
    不可移动 tag；下游核对 tag 解析与 digest、切换 provenance 后，才可登记 supported。
 5. package publish、merge、deploy、签名制品和生产激活均不由本候选文档或本地验证自动授权。

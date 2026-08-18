@@ -29,9 +29,9 @@
 - contract impact：FEAT-125 为 `semantic`；FEAT-126 产品语义为 `breaking`，相对已发布
   `0.2.0` 仍通过新 `/v2` paths/schema 做 versioned additive expand；FEAT-127 为
   `semantic`，保留 v1 turn 与 required legacy `content`
-- FEAT-127 source candidate commit：
+- FEAT-127 source/generated implementation checkpoint：
   `ebdd30f076614ebc7f5149aebf70e851b81ff32b`
-- 本轮文档 reconciliation 的最终完整 commit：提交形成后由外部 FEAT-127 交付包或 PR
+- 本轮文档/fixture reconciliation 的最终完整 commit：提交形成后由外部 FEAT-127 交付包或 PR
   登记；本文件不自引用尚未形成的 commit
 - S1 source/generated commit：`ab5e71db6e4d61eb9c761446066142de2edbb444`
 - 既有immutable FEAT-126 candidate：
@@ -54,30 +54,32 @@
 - FEAT-127 Chat message JSON Schema SHA-256：
   `3f277898f8204e02a400053cd56bec3b0eeb37ed2c50db3a6347e7fec61ddf34`
 - FEAT-127 fixture/generated SHA-256：turn fixture
-  `a986217033e9b86b9f2f4e02cd9feef661aef0a970dd106a9df648729ebd4e79`；TypeScript Agent Host
+  `ec464ce56f749852e65be8d1472d8f5d8cccc82c89d2dd16fab33fbdbe62decc`；TypeScript Agent Host
   `c6fe5a8a283d5209529fe397e1957c289ccfd93d33999e07f64e55a1faf7d49e`；Go Agent Host
   `e77b7858fb922588db4cb936fe1fd8a282f58d89c067fcd862668433c3a1b425`；TypeScript Chat
   `4d620424afab17cbd41a19cb58adfd975c5b7e0d025f9faff821e97fa2fb69fd`
 - Generators：`openapi-typescript 7.13.0`、`oapi-codegen v2.7.2`、
   `json-schema-to-typescript 15.0.4`
-- Host consumer/provider：`yijie-agent-host@673de86d3d076f4600eb0d0bfb215382677afd72`
-  已固定 `0.3.0`、完整 Contracts commit、Agent Host OpenAPI digest 与 generator，
-  `contract-check` PASS
-- Desktop consumer：`yijie-desktop@3efed9aba5faab90ca3ea397a4d6489890df2026`
-  已固定完整 Contracts commit并完成 conformance；该已推送 commit 没有 Agent Host OpenAPI
-  digest/generator lock，只能登记为 `commit pin + conformance`
+- Host pre-reconciliation checkpoint：
+  `yijie-agent-host@673de86d3d076f4600eb0d0bfb215382677afd72` 已固定 `0.3.0`、完整
+  Contracts commit、Agent Host OpenAPI digest 与 generator，`contract-check` PASS
+- Desktop pre-reconciliation checkpoint：
+  `yijie-desktop@3efed9aba5faab90ca3ea397a4d6489890df2026` 已固定完整 Contracts commit并完成
+  conformance；candidate closure 另要求 Host-wire source/fixture digest lock、显式 Rust adapter
+  例外与同源 conformance。最终 consumer commits/pins 由外部 FEAT-127 交付包登记
 - Breaking baseline：2026-08-19 相对
   `f16a497e1377f45747f8ff9292b4b60cf2027f88` PASS；自动结果不替代 semantic/security
   review
 - FEAT-126历史source-shape evidence（2026-08-02）：DEC-126-018/019/020与`c000a024`证据保留，
   DEC-126-023已批准方案C并关闭Q-017；DEC-126-024最终G2A仍须独立批准，FEAT-127 的
   consumer pin 不替代该结论
-- tag/release 顺序：当前完整 commit 只允许本地/非生产验证；semantic Owner/consumer review、
-  最终 release commit 与 digest 冻结后才创建 `contracts-v0.3.0`。下游验证 tag 解析和 digest、
+- FEAT-127 semantic review：段成威于 2026-08-19 批准本地 candidate 的 Contracts/Host/Desktop
+  Owner/consumer 语义兼容结论；不批准 tag、publish、supported 晋升或生产激活
+- tag/release 顺序：当前完整 commit 只允许本地/非生产验证；最终 release commit 与 digest
+  冻结后才创建 `contracts-v0.3.0`。下游验证 tag 解析和 digest、
   按评审结论 repin/切换 provenance 后，才可把本候选晋升为 supported
-- 尚未完成：FEAT-126 DEC-126-024、FEAT-127 semantic Owner/consumer 最终批准、Desktop
-  provenance gate 决策、最终 release commit 外部登记、不可移动 tag、适用 consumer repin、
-  package publish、生产发布和 supported baseline 晋升
+- 尚未完成：FEAT-126 DEC-126-024、FEAT-127 最终 reconciliation/consumer identities 外部登记、
+  不可移动 tag、release provenance 切换、package publish、生产发布和 supported baseline 晋升
 - 回滚：不启用 provider/consumer，继续使用 `contracts-v0.2.0`
 
 ### `0.2.0` 首版登记的 fallback breaking 证据

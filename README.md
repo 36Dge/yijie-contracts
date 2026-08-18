@@ -12,15 +12,18 @@ Go/TypeScript/AsyncAPI 生成物。发布和回滚顺序见
 versioned content-free control plane，以及 FEAT-127 ordered multimodal turn。FEAT-127 以
 `POST /v2/agent-sessions/{agent_session_id}/turns` 增加 Host 输入表面，并为 `ChatMessage`
 增加 optional ordered `contentBlocks`，同时保留 required legacy `content`；其最高影响分类为
-`semantic`。当前 FEAT-127 source candidate 为完整 commit `ebdd30f076614ebc7f5149aebf70e851b81ff32b`：
-Host `673de86d3d076f4600eb0d0bfb215382677afd72` 已固定版本、commit、OpenAPI digest 和 generator，
-Desktop `3efed9aba5faab90ca3ea397a4d6489890df2026` 已固定 commit 并完成 conformance，但尚未形成同等
-完整的 digest/generator provenance lock。
+`semantic`。FEAT-127 的 source/generated implementation checkpoint 为完整 commit
+`ebdd30f076614ebc7f5149aebf70e851b81ff32b`；后续 candidate reconciliation 修正 canonical
+fixture 并补齐 consumer provenance。为避免上游文档与下游 commit 形成循环引用，最终
+Contracts/Host/Desktop 完整 SHA、consumer pin 和 conformance 结果统一由 FEAT-127 交付包或 PR
+登记。Desktop 的 Rust wire DTO 暂以显式 adapter、同源 fixture/schema conformance 和有期限例外
+治理，不冒充已批准的 Rust generator。
 
 `contracts-v0.3.0` 尚未创建；完整 commit 可用于本地/非生产验证，但 candidate 不等于
-supported/release-ready。本轮文档 reconciliation 的最终完整 SHA 在提交形成后由外部交付包或
-PR 登记，避免文档自引用；不可移动 tag 延至正式发布阶段创建。tag 创建并核对 digest 后，下游
-才能按评审结论切换 provenance 并声明 supported。候选范围和门禁见
+supported/release-ready。FEAT-127 本地 candidate 的 semantic Owner/consumer review 已于
+2026-08-19 批准，但不构成 tag、publish 或生产批准；本轮 reconciliation 的最终完整 SHA 在
+提交形成后由外部交付包或 PR 登记，避免文档自引用。不可移动 tag 延至正式发布阶段创建；tag
+创建并核对 digest 后，下游才能按评审结论切换 provenance 并声明 supported。候选范围和门禁见
 [`docs/releases/contracts-v0.3.0.md`](docs/releases/contracts-v0.3.0.md)。
 
 跨仓契约变更必须遵循
