@@ -233,6 +233,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v2/agent-sessions/{agent_session_id}/turns": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start an ordered multimodal turn
+         * @description Starts one Runtime turn from an ordered, closed sequence of text, image,
+         *     and file-context blocks. At most one turn may be active for a session.
+         *     The accepted response identifies the turn; progress and terminal state
+         *     are delivered through the explicitly negotiated event stream.
+         *
+         *     Desktop resolves attachment ownership, readiness, and seven-day expiry,
+         *     and revalidates file size and SHA-256 against its local authority before
+         *     calling Host. Host treats every name and text value as untrusted,
+         *     revalidates each decoded image's media type, size, and digest, and does
+         *     not persist the data URL or context chunks in bbolt, replay, logs,
+         *     metrics, or traces. Files are represented only by Desktop-selected text
+         *     context; raw file bytes and local paths are never accepted, so file size
+         *     and digest remain Desktop-verified correlation metadata rather than Host
+         *     authorization input.
+         *
+         *     A request may contain at most 10 image/file blocks. Decoded image bytes
+         *     across the complete turn must not exceed 10 MiB, and UTF-8 file context
+         *     across all file blocks must not exceed 256 KiB. Host enforces these
+         *     aggregate limits before invoking Runtime. They are semantic cross-block
+         *     constraints in addition to the per-field schema bounds.
+         *
+         *     `operation_id` is scoped to the Agent session and the canonical ordered
+         *     content blocks plus reasoning effort. Replaying the same operation and
+         *     canonical input returns the original accepted `turn_id` without invoking
+         *     Runtime again. Reusing the operation ID with different canonical input
+         *     returns `turn_operation_conflict`.
+         */
+        post: operations["startAgentTurnV2"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/agent-sessions/{agent_session_id}/title-generations": {
         parameters: {
             query?: never;
@@ -443,6 +491,114 @@ export interface components {
              */
             reasoning_effort: "" | "none" | "high";
         };
+        StartTurnV2Request: {
+            /**
+             * Format: uuid
+             * @description Desktop-selected idempotency identifier scoped to this Agent session.
+             *     The same canonical ordered input returns the original accepted turn;
+             *     reuse with different input returns `turn_operation_conflict`.
+             */
+            operation_id: string;
+            /** @description Optional correlation identifier copied to events from this operation onward. */
+            trace_id?: string;
+            /** @description Optional request correlation identifier copied to events from this operation onward. */
+            request_id?: string;
+            /** @description Optional correlation context only; it does not grant tenant access. */
+            tenant_id?: string;
+            /** @description Optional correlation context only; it does not authenticate a user. */
+            user_id?: string;
+            /**
+             * @description Ordered Runtime input. Array order is message order and must be
+             *     preserved when Host maps blocks to Runtime UserInput values. The
+             *     request may contain at most 10 image/file blocks. Decoded image bytes
+             *     across all image blocks must be at most 10 MiB; UTF-8 bytes across all
+             *     file `context_chunks` must be at most 256 KiB. Those aggregate limits
+             *     are validated semantically before Runtime invocation.
+             */
+            content_blocks: components["schemas"]["StartTurnV2ContentBlock"][];
+            /**
+             * @description Omit or send the empty string for `none`; clients should prefer omission, `none`, or `high`.
+             * @default none
+             * @enum {string}
+             */
+            reasoning_effort: "" | "none" | "high";
+        };
+        /** @description A closed content-block union discriminated by `type`. */
+        StartTurnV2ContentBlock: components["schemas"]["StartTurnV2TextBlock"] | components["schemas"]["StartTurnV2ImageBlock"] | components["schemas"]["StartTurnV2FileBlock"];
+        StartTurnV2TextBlock: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "text";
+            /** @description Non-blank user text, bounded to 1 MiB in UTF-8 bytes. */
+            text: string;
+        };
+        StartTurnV2ImageBlock: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "image";
+            /**
+             * Format: uuid
+             * @description Desktop attachment identifier; correlation only, never a local path.
+             */
+            attachment_id: string;
+            /** @enum {string} */
+            media_type: "image/jpeg" | "image/png" | "image/webp" | "image/gif";
+            /**
+             * Format: int64
+             * @description Exact decoded image byte length.
+             */
+            size_bytes: number;
+            /** @description Lowercase hexadecimal SHA-256 of the decoded image bytes. */
+            sha256: string;
+            /**
+             * @description Canonical base64 data URL. Its header must equal `media_type`; decoded
+             *     length must equal `size_bytes`; and decoded SHA-256 must equal `sha256`.
+             *     Host validates all three relationships before invoking Runtime and
+             *     never persists this value.
+             */
+            data_url: string;
+        };
+        StartTurnV2FileBlock: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "file";
+            /**
+             * Format: uuid
+             * @description Desktop attachment identifier; correlation only, never a local path.
+             */
+            attachment_id: string;
+            /**
+             * @description NFC display basename with no path separator, control character, or
+             *     leading/trailing whitespace. It is untrusted text and must never be
+             *     interpreted as a path, markup, authorization input, or log label.
+             */
+            name: string;
+            media_type: components["schemas"]["StartTurnV2FileMediaType"];
+            /**
+             * Format: int64
+             * @description Exact original file byte length verified by Desktop before parsing.
+             */
+            size_bytes: number;
+            /** @description Lowercase hexadecimal SHA-256 of the original file bytes, verified by Desktop. */
+            sha256: string;
+            /**
+             * @description Ordered, untrusted plain-text excerpts selected locally from this file.
+             *     Host maps them to bounded Runtime text input and never persists them.
+             *     UTF-8 bytes across every file block in the turn must be at most 256 KiB.
+             */
+            context_chunks: string[];
+        };
+        /**
+         * @description Canonical media type produced after Desktop format and container validation.
+         * @enum {string}
+         */
+        StartTurnV2FileMediaType: "application/pdf" | "text/plain" | "text/markdown" | "text/csv" | "application/json" | "application/yaml" | "application/xml" | "text/html" | "application/rtf" | "application/vnd.openxmlformats-officedocument.wordprocessingml.document" | "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" | "application/vnd.openxmlformats-officedocument.presentationml.presentation";
         GenerateTitleV2Request: {
             /**
              * Format: uuid
@@ -509,6 +665,13 @@ export interface components {
             /** @enum {string} */
             reason_code: "active_turn" | "terminal_unconfirmed" | "shared_thread_mapping" | "runtime_delete_failed" | "runtime_delete_unconfirmed" | "host_mapping_cleanup_failed" | "host_replay_cleanup_failed" | "operation_state_unavailable" | "internal_error";
             message: string;
+        };
+        TurnOperationConflictError: {
+            error: {
+                /** @enum {string} */
+                code: "turn_operation_conflict";
+                message: string;
+            };
         };
         TitleOperationConflictError: {
             error: {
@@ -1198,6 +1361,77 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
+        };
+    };
+    startAgentTurnV2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StartTurnV2Request"];
+            };
+        };
+        responses: {
+            /** @description The Runtime accepted the ordered multimodal turn, or the original accepted result was replayed idempotently. */
+            202: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StartTurnResponse"];
+                };
+            };
+            /**
+             * @description `invalid_request`: malformed or oversized JSON, an unknown field, an
+             *     invalid session identifier, an invalid content block, a mismatched
+             *     data-URL media type, size, or digest, more than 10 attachment blocks,
+             *     an exceeded aggregate image/context limit, or an unsupported
+             *     reasoning effort.
+             */
+            400: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": {
+                     *         "code": "invalid_request",
+                     *         "message": "request parameters are invalid"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            404: components["responses"]["SessionNotFound"];
+            /**
+             * @description `turn_active` when another turn is active; `session_not_usable` when
+             *     the session has no usable Runtime thread; or
+             *     `turn_operation_conflict` when an operation ID is reused with
+             *     different canonical input.
+             */
+            409: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"] | components["schemas"]["TurnOperationConflictError"];
+                };
+            };
+            500: components["responses"]["InternalError"];
+            502: components["responses"]["RuntimeRequestFailed"];
         };
     };
     generateAgentSessionTitleV2: {

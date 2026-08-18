@@ -7,6 +7,97 @@
   "properties": {
     "id": { "type": "string" },
     "role": { "type": "string", "enum": ["user", "assistant", "tool", "system"] },
-    "content": { "type": "string" }
+    "content": { "type": "string" },
+    "contentBlocks": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 16,
+      "contains": {
+        "anyOf": [
+          { "$ref": "#/$defs/imageContentBlock" },
+          { "$ref": "#/$defs/fileContentBlock" }
+        ]
+      },
+      "minContains": 0,
+      "maxContains": 10,
+      "items": {
+        "oneOf": [
+          { "$ref": "#/$defs/textContentBlock" },
+          { "$ref": "#/$defs/imageContentBlock" },
+          { "$ref": "#/$defs/fileContentBlock" }
+        ]
+      }
+    }
+  },
+  "$comment": "contentBlocks is optional ordered multimodal metadata. Legacy content remains the required text projection. At most 10 entries may be image or file blocks.",
+  "$defs": {
+    "textContentBlock": {
+      "title": "ChatTextContentBlock",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "text"],
+      "properties": {
+        "type": { "const": "text" },
+        "text": { "type": "string", "minLength": 1, "maxLength": 1048576, "pattern": "\\S" }
+      }
+    },
+    "imageContentBlock": {
+      "title": "ChatImageContentBlock",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "attachmentId", "name", "mediaType", "sizeBytes", "status", "expiresAt"],
+      "properties": {
+        "type": { "const": "image" },
+        "attachmentId": { "type": "string", "format": "uuid" },
+        "name": { "$ref": "#/$defs/safeDisplayName" },
+        "mediaType": { "type": "string", "enum": ["image/jpeg", "image/png", "image/webp", "image/gif"] },
+        "sizeBytes": { "type": "integer", "minimum": 1, "maximum": 10485760 },
+        "status": { "$ref": "#/$defs/boundAttachmentStatus" },
+        "expiresAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "fileContentBlock": {
+      "title": "ChatFileContentBlock",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "attachmentId", "name", "mediaType", "sizeBytes", "status", "expiresAt"],
+      "properties": {
+        "type": { "const": "file" },
+        "attachmentId": { "type": "string", "format": "uuid" },
+        "name": { "$ref": "#/$defs/safeDisplayName" },
+        "mediaType": { "$ref": "#/$defs/fileMediaType" },
+        "sizeBytes": { "type": "integer", "minimum": 1, "maximum": 10485760 },
+        "status": { "$ref": "#/$defs/boundAttachmentStatus" },
+        "expiresAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "safeDisplayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "pattern": "^(?!\\s)(?!.*\\s$)(?!\\.{1,2}$)[^/\\\\\\x00-\\x1F\\x7F]+$",
+      "description": "Untrusted NFC display basename; never a path or markup."
+    },
+    "boundAttachmentStatus": {
+      "type": "string",
+      "enum": ["bound", "expired"]
+    },
+    "fileMediaType": {
+      "type": "string",
+      "enum": [
+        "application/pdf",
+        "text/plain",
+        "text/markdown",
+        "text/csv",
+        "application/json",
+        "application/yaml",
+        "application/xml",
+        "text/html",
+        "application/rtf",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+      ]
+    }
   }
 }

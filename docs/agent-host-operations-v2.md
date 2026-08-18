@@ -3,6 +3,27 @@
 Status: G2A source-contract candidate. It does not enable Host routes, invoke MiniMax, or authorize
 Host/Desktop implementation.
 
+## Ordered multimodal turns
+
+`POST /v2/agent-sessions/{agent_session_id}/turns` accepts one ordered `content_blocks` array with
+1..16 closed `text`, `image`, or `file` variants. The existing v1 turn remains text-only and unchanged.
+Requests may contain no more than 10 attachment blocks. Each image or file is at most 10 MiB; decoded
+image bytes across the turn are at most 10 MiB; and selected UTF-8 file context across the turn is at
+most 256 KiB.
+
+Images carry a canonical JPEG, PNG, WebP, or GIF data URL plus exact byte count and lowercase SHA-256.
+Host decodes the data URL, verifies that header, byte count, and digest agree, maps it to Runtime image
+input, and never persists the value. Files carry a safe display basename, canonical supported document
+media type, Desktop-verified original byte count and digest, and 1..32 bounded text chunks. Raw file
+bytes and local paths are not accepted; Host therefore cannot independently recompute a file digest and
+treats those file fields only as correlation metadata. Context chunks become bounded Runtime text input
+and are not written to Host persistence, replay, logs, metrics, or traces.
+
+Desktop remains authoritative for attachment ownership, encrypted binary/index storage, readiness, and
+seven-day expiry. The local bearer boundary, trace correlation fields, turn conflict semantics, accepted
+response, and event delivery model match v1. Aggregate limits, cross-field data-URL verification, and the
+maximum attachment count are semantic validations because OpenAPI 3.0 cannot express those relationships.
+
 ## Isolated title generation
 
 `POST /v2/agent-sessions/{agent_session_id}/title-generations` accepts a Desktop-generated UUID
