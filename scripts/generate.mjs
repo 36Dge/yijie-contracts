@@ -102,7 +102,16 @@ for (const { relativePath, schema } of schemas) {
       format: false,
     }),
   );
-  schemaExports.push(`export * from "./jsonschema/${outputName}.gen.js";`);
+  if (outputName === "agent-session-event-v2") {
+    // v2 intentionally preserves the v1 lifecycle type names. Export it as a
+    // namespace so adding the new schema does not make the existing root SDK
+    // exports ambiguous or rename protocol concepts just for TypeScript.
+    schemaExports.push(
+      `export * as AgentSessionEventSchemaV2 from "./jsonschema/${outputName}.gen.js";`,
+    );
+  } else {
+    schemaExports.push(`export * from "./jsonschema/${outputName}.gen.js";`);
+  }
 }
 
 await writeFile(
@@ -115,6 +124,7 @@ await writeFile(
     'export * as AgentHostApi from "./openapi/agent-host.gen.js";',
     'export * as CommonV1 from "./protobuf/yijie/common/v1/common_pb.js";',
     'export * as AgentSessionEventsV1 from "./protobuf/yijie/events/v1/agent_session_pb.js";',
+    'export * as AgentSessionEventsV2 from "./protobuf/yijie/events/v2/agent_session_pb.js";',
     'export * as TaskEventsV1 from "./protobuf/yijie/events/v1/task_pb.js";',
     'export * as AgentHostV1 from "./protobuf/yijie/services/agent_host/v1/agent_host_pb.js";',
     ...schemaExports,

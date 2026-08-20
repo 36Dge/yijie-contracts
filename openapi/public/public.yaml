@@ -188,6 +188,90 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /v2/tasks:
+    post:
+      operationId: createTaskV2
+      summary: Create a creator-private task in the verified tenant
+      description: |
+        Creates a task owned by the authenticated internal user. The bearer identity
+        and `X-Yijie-Tenant-ID` selection are independently verified; the client cannot
+        submit or override `tenant_id` or `created_by_user_id`. Reusing an idempotency
+        key with the same canonical request returns the original result; reusing it with
+        different input returns `idempotency_conflict`.
+      tags: [Tasks]
+      x-yijie-required-capability: task.create
+      security:
+        - userBearer: []
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+        - $ref: "#/components/parameters/IdempotencyKeyHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTaskV2Request"
+      responses:
+        "201":
+          description: Creator-private task created, or the original idempotent result.
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskV2"
+        "400":
+          $ref: "#/components/responses/TaskV2BadRequest"
+        "401":
+          $ref: "#/components/responses/TaskV2Unauthenticated"
+        "403":
+          $ref: "#/components/responses/TaskV2AccessDenied"
+        "409":
+          $ref: "#/components/responses/TaskV2IdempotencyConflict"
+        "500":
+          $ref: "#/components/responses/TaskV2InternalError"
+        "503":
+          $ref: "#/components/responses/AuthorizationUnavailable"
+  /v2/tasks/{task_id}:
+    parameters:
+      - $ref: "#/components/parameters/TaskV2Id"
+    get:
+      operationId: getTaskV2
+      summary: Get a creator-private task in the verified tenant
+      description: |
+        Returns a task only when the authenticated internal user is its creator in the
+        verified tenant, unless a future explicit `task.read_all` capability is added
+        and authorized. Roles alone do not grant cross-creator access. Missing and
+        unauthorized identifiers share `task_not_found` to prevent enumeration.
+      tags: [Tasks]
+      x-yijie-required-capability: task.read
+      security:
+        - userBearer: []
+      parameters:
+        - $ref: "#/components/parameters/TenantIdHeader"
+      responses:
+        "200":
+          description: Creator-private task found.
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskV2"
+        "400":
+          $ref: "#/components/responses/TaskV2BadRequest"
+        "401":
+          $ref: "#/components/responses/TaskV2Unauthenticated"
+        "403":
+          $ref: "#/components/responses/TaskV2AccessDenied"
+        "404":
+          $ref: "#/components/responses/TaskV2NotFound"
+        "500":
+          $ref: "#/components/responses/TaskV2InternalError"
+        "503":
+          $ref: "#/components/responses/AuthorizationUnavailable"
 components:
   securitySchemes:
     userBearer:
@@ -208,6 +292,25 @@ components:
         UUID of the tenant selected by the client. This is an untrusted selection
         hint; the API independently verifies the authenticated user, tenant, active
         membership, and tenant-scoped roles for every request.
+      schema:
+        type: string
+        format: uuid
+    IdempotencyKeyHeader:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: |
+        Client-generated UUID that identifies one create intent. Retries of an unknown
+        network result reuse the same key and request. A key is scoped to the verified
+        internal user, tenant, operation, and bounded provider retention window.
+      schema:
+        type: string
+        format: uuid
+    TaskV2Id:
+      name: task_id
+      in: path
+      required: true
+      description: Creator-private task identifier.
       schema:
         type: string
         format: uuid
@@ -290,6 +393,68 @@ components:
           $ref: "#/components/headers/NoStore"
         Retry-After:
           $ref: "#/components/headers/RetryAfter"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    TaskV2BadRequest:
+      description: "`invalid_request` or `invalid_tenant_context`: request fields or tenant selection are invalid."
+      x-yijie-error-codes: [invalid_request, invalid_tenant_context]
+      headers:
+        Cache-Control:
+          $ref: "#/components/headers/NoStore"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    TaskV2Unauthenticated:
+      description: "`unauthenticated`: a valid external IdP access JWT is required."
+      x-yijie-error-code: unauthenticated
+      headers:
+        Cache-Control:
+          $ref: "#/components/headers/NoStore"
+        WWW-Authenticate:
+          $ref: "#/components/headers/BearerChallenge"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    TaskV2AccessDenied:
+      description: "`access_denied`: the authenticated user, tenant membership, or required task capability is denied."
+      x-yijie-error-code: access_denied
+      headers:
+        Cache-Control:
+          $ref: "#/components/headers/NoStore"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    TaskV2NotFound:
+      description: "`task_not_found`: no creator-private task is visible for this identifier and verified tenant."
+      x-yijie-error-code: task_not_found
+      headers:
+        Cache-Control:
+          $ref: "#/components/headers/NoStore"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    TaskV2IdempotencyConflict:
+      description: "`idempotency_conflict`: the idempotency key was already used with different canonical input."
+      x-yijie-error-code: idempotency_conflict
+      headers:
+        Cache-Control:
+          $ref: "#/components/headers/NoStore"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    TaskV2InternalError:
+      description: "`internal_error`: the task operation failed without exposing internal details."
+      x-yijie-error-code: internal_error
+      headers:
+        Cache-Control:
+          $ref: "#/components/headers/NoStore"
       content:
         application/json:
           schema:
@@ -413,6 +578,75 @@ components:
         input:
           type: object
           additionalProperties: true
+    CreateTaskV2Request:
+      type: object
+      additionalProperties: false
+      required: [task_type, title, input]
+      properties:
+        task_type:
+          type: string
+          minLength: 1
+          maxLength: 100
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        input:
+          type: object
+          description: Task-type-specific input. Identity, tenant, ownership, and authorization fields are forbidden.
+          additionalProperties: true
+    TaskV2:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - tenant_id
+        - created_by_user_id
+        - task_type
+        - title
+        - status
+        - input
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+          description: Verified tenant context; never an authorization credential.
+        created_by_user_id:
+          type: string
+          format: uuid
+          description: Server-derived internal creator identifier; never accepted from clients.
+        task_type:
+          type: string
+          minLength: 1
+          maxLength: 100
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        status:
+          type: string
+          enum: [draft, running, waiting_approval, completed, failed]
+        input:
+          type: object
+          additionalProperties: true
+        result:
+          type: object
+          additionalProperties: true
+          nullable: true
+        error_message:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
     Task:
       type: object
       additionalProperties: false

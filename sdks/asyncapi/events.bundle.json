@@ -29,6 +29,15 @@
           "$ref": "#/components/messages/AgentSessionEvent"
         }
       }
+    },
+    "agentSessionEventsV2": {
+      "address": "agent.session.events.v2",
+      "description": "Explicitly negotiated v2 Agent Host events. This stream preserves v1 lifecycle events and adds bounded raw-reasoning text delta/finalized variants.",
+      "messages": {
+        "agentSessionEventV2": {
+          "$ref": "#/components/messages/AgentSessionEventV2"
+        }
+      }
     }
   },
   "operations": {
@@ -54,6 +63,18 @@
           "$ref": "#/components/messages/AgentSessionEvent"
         }
       ]
+    },
+    "receiveAgentSessionEventsV2": {
+      "action": "receive",
+      "description": "Receive one AgentSessionEventV2 at a time after explicit schema-version-2 negotiation. A stream_id change starts a new ordering domain. Delivery is at least once and consumers deduplicate by event_id.",
+      "channel": {
+        "$ref": "#/channels/agentSessionEventsV2"
+      },
+      "messages": [
+        {
+          "$ref": "#/components/messages/AgentSessionEventV2"
+        }
+      ]
     }
   },
   "components": {
@@ -70,6 +91,20 @@
         },
         "payload": {
           "$ref": "#/components/schemas/session-event.schema"
+        }
+      },
+      "AgentSessionEventV2": {
+        "name": "AgentSessionEventV2",
+        "title": "Ordered Agent Host session event v2",
+        "summary": "V1 lifecycle plus bounded raw-reasoning text events.",
+        "description": "JSON payload semantics are authoritative in the referenced JSON Schema. Protobuf message yijie.events.v2.AgentSessionEvent carries the equivalent service and asynchronous-consumer model. Producers emit v2 only after the consumer explicitly negotiates schema version 2.",
+        "contentType": "application/json",
+        "correlationId": {
+          "description": "Agent Host session that owns the ordered event stream.",
+          "location": "$message.payload#/agent_session_id"
+        },
+        "payload": {
+          "$ref": "#/components/schemas/session-event-v2.schema"
         }
       }
     },
@@ -947,6 +982,1379 @@
                 "type": "string"
               }
             }
+          },
+          "agentProblemPayload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "message",
+              "will_retry"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "will_retry": {
+                "type": "boolean"
+              }
+            }
+          },
+          "agentWarningPayload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "message",
+              "will_retry"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "will_retry": {
+                "const": false
+              }
+            }
+          }
+        }
+      },
+      "eventBase": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema_version",
+          "event_id",
+          "stream_id",
+          "sequence",
+          "occurred_at",
+          "task_id",
+          "agent_session_id",
+          "codex_thread_id",
+          "event_type",
+          "terminal",
+          "payload"
+        ],
+        "properties": {
+          "schema_version": {
+            "const": 2
+          },
+          "event_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "stream_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "occurred_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "trace_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "request_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "tenant_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "user_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "task_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "agent_session_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "codex_thread_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "turn_id": {
+            "$ref": "#/components/schemas/turnId"
+          },
+          "item_id": {
+            "$ref": "#/components/schemas/itemId"
+          },
+          "event_type": {
+            "type": "string"
+          },
+          "terminal": {
+            "type": "boolean"
+          },
+          "payload": {
+            "type": "object"
+          }
+        }
+      },
+      "reasoningTextDeltaPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "content_index",
+          "delta"
+        ],
+        "properties": {
+          "content_index": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 7
+          },
+          "delta": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16384,
+            "x-yijie-max-utf8-bytes": 16384
+          }
+        }
+      },
+      "reasoningReasonCode": {
+        "type": "string",
+        "enum": [
+          "reasoning_not_emitted",
+          "turn_interrupted",
+          "stream_gap",
+          "runtime_error",
+          "limit_exceeded",
+          "protocol_error",
+          "host_shutdown"
+        ]
+      },
+      "reasoningContentPart": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "content_index",
+          "text"
+        ],
+        "properties": {
+          "content_index": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 7
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 65536,
+            "x-yijie-max-utf8-bytes": 65536
+          }
+        }
+      },
+      "reasoningTextFinalizedPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "contents"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "complete",
+              "incomplete",
+              "unavailable"
+            ]
+          },
+          "contents": {
+            "type": "array",
+            "maxItems": 8,
+            "x-yijie-content-index-rule": "zero-based-contiguous-ascending-unique",
+            "items": {
+              "$ref": "#/components/schemas/reasoningContentPart"
+            }
+          },
+          "reason_code": {
+            "$ref": "#/components/schemas/reasoningReasonCode"
+          }
+        },
+        "x-yijie-max-total-utf8-bytes": 131072,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "complete"
+                }
+              },
+              "required": [
+                "status"
+              ]
+            },
+            "then": {
+              "properties": {
+                "contents": {
+                  "type": "array",
+                  "minItems": 1
+                },
+                "reason_code": false
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "incomplete"
+                }
+              },
+              "required": [
+                "status"
+              ]
+            },
+            "then": {
+              "required": [
+                "reason_code"
+              ],
+              "properties": {
+                "contents": {
+                  "type": "array",
+                  "minItems": 1
+                },
+                "reason_code": {
+                  "$ref": "#/components/schemas/reasoningReasonCode"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "unavailable"
+                }
+              },
+              "required": [
+                "status"
+              ]
+            },
+            "then": {
+              "required": [
+                "reason_code"
+              ],
+              "properties": {
+                "contents": {
+                  "type": "array",
+                  "maxItems": 0
+                },
+                "reason_code": {
+                  "$ref": "#/components/schemas/reasoningReasonCode"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "threadStartedEvent": {
+        "title": "ThreadStartedEventV2",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/eventBase"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "event_type": {
+                "const": "thread.started"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/threadStartedPayload"
+              }
+            },
+            "not": {
+              "anyOf": [
+                {
+                  "properties": {
+                    "turn_id": {}
+                  },
+                  "required": [
+                    "turn_id"
+                  ]
+                },
+                {
+                  "properties": {
+                    "item_id": {}
+                  },
+                  "required": [
+                    "item_id"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "turnStartedEvent": {
+        "title": "TurnStartedEventV2",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/eventBase"
+          },
+          {
+            "type": "object",
+            "required": [
+              "turn_id"
+            ],
+            "properties": {
+              "turn_id": {
+                "$ref": "#/components/schemas/turnId"
+              },
+              "event_type": {
+                "const": "turn.started"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/turnStartedPayload"
+              }
+            },
+            "not": {
+              "properties": {
+                "item_id": {}
+              },
+              "required": [
+                "item_id"
+              ]
+            }
+          }
+        ]
+      },
+      "itemStartedEvent": {
+        "title": "ItemStartedEventV2",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/eventBase"
+          },
+          {
+            "type": "object",
+            "required": [
+              "turn_id",
+              "item_id"
+            ],
+            "properties": {
+              "turn_id": {
+                "$ref": "#/components/schemas/turnId"
+              },
+              "item_id": {
+                "$ref": "#/components/schemas/itemId"
+              },
+              "event_type": {
+                "const": "item.started"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/itemLifecyclePayload"
+              }
+            }
+          }
+        ]
+      },
+      "agentMessageDeltaEvent": {
+        "title": "AgentMessageDeltaEventV2",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/eventBase"
+          },
+          {
+            "type": "object",
+            "required": [
+              "turn_id",
+              "item_id"
+            ],
+            "properties": {
+              "turn_id": {
+                "$ref": "#/components/schemas/turnId"
+              },
+              "item_id": {
+                "$ref": "#/components/schemas/itemId"
+              },
+              "event_type": {
+                "const": "item.agent_message.delta"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/agentMessageDeltaPayload"
+              }
+            }
+          }
+        ]
+      },
+      "reasoningTextDeltaEvent": {
+        "title": "ReasoningTextDeltaEventV2",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/eventBase"
+          },
+          {
+            "type": "object",
+            "required": [
+              "turn_id",
+              "item_id"
+            ],
+            "properties": {
+              "turn_id": {
+                "$ref": "#/components/schemas/turnId"
+              },
+              "item_id": {
+                "$ref": "#/components/schemas/itemId"
+              },
+              "event_type": {
+                "const": "item.reasoning_text.delta"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/reasoningTextDeltaPayload"
+              }
+            }
+          }
+        ]
+      },
+      "reasoningTextFinalizedEvent": {
+        "title": "ReasoningTextFinalizedEventV2",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/eventBase"
+          },
+          {
+            "type": "object",
+            "required": [
+              "turn_id",
+              "item_id"
+            ],
+            "properties": {
+              "turn_id": {
+                "$ref": "#/components/schemas/turnId"
+              },
+              "item_id": {
+                "$ref": "#/components/schemas/itemId"
+              },
+              "event_type": {
+                "const": "item.reasoning_text.finalized"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/reasoningTextFinalizedPayload"
+              }
+            }
+          }
+        ]
+      },
+      "itemCompletedEvent": {
+        "title": "ItemCompletedEventV2",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/eventBase"
+          },
+          {
+            "type": "object",
+            "required": [
+              "turn_id",
+              "item_id"
+            ],
+            "properties": {
+              "turn_id": {
+                "$ref": "#/components/schemas/turnId"
+              },
+              "item_id": {
+                "$ref": "#/components/schemas/itemId"
+              },
+              "event_type": {
+                "const": "item.completed"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/itemLifecyclePayload"
+              }
+            }
+          }
+        ]
+      },
+      "turnCompletedEvent": {
+        "title": "TurnCompletedEventV2",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/eventBase"
+          },
+          {
+            "type": "object",
+            "required": [
+              "turn_id"
+            ],
+            "properties": {
+              "turn_id": {
+                "$ref": "#/components/schemas/turnId"
+              },
+              "event_type": {
+                "const": "turn.completed"
+              },
+              "terminal": {
+                "const": true
+              },
+              "payload": {
+                "$ref": "#/components/schemas/turnCompletedPayload"
+              }
+            },
+            "not": {
+              "properties": {
+                "item_id": {}
+              },
+              "required": [
+                "item_id"
+              ]
+            }
+          }
+        ]
+      },
+      "agentErrorEvent": {
+        "title": "AgentErrorEventV2",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/eventBase"
+          },
+          {
+            "type": "object",
+            "required": [
+              "turn_id"
+            ],
+            "properties": {
+              "turn_id": {
+                "$ref": "#/components/schemas/turnId"
+              },
+              "event_type": {
+                "const": "error"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/agentProblemPayload"
+              }
+            },
+            "not": {
+              "properties": {
+                "item_id": {}
+              },
+              "required": [
+                "item_id"
+              ]
+            }
+          }
+        ]
+      },
+      "agentWarningEvent": {
+        "title": "AgentWarningEventV2",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/eventBase"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "event_type": {
+                "const": "warning"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/agentWarningPayload"
+              }
+            },
+            "not": {
+              "anyOf": [
+                {
+                  "properties": {
+                    "turn_id": {}
+                  },
+                  "required": [
+                    "turn_id"
+                  ]
+                },
+                {
+                  "properties": {
+                    "item_id": {}
+                  },
+                  "required": [
+                    "item_id"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "session-event-v2.schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://contracts.yijie.ai/agent/session-event-v2.schema.json",
+        "title": "AgentSessionEventV2",
+        "description": "A sanitized Agent Host event negotiated through the v2 stream. It preserves v1 lifecycle semantics and adds bounded raw-reasoning text projection. Sequence is monotonic only within one stream_id and delivery is at least once.",
+        "x-yijie-max-reasoning-items-per-turn": 8,
+        "x-yijie-max-reasoning-utf8-bytes-per-turn": 262144,
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/threadStartedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/turnStartedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/itemStartedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/agentMessageDeltaEvent"
+          },
+          {
+            "$ref": "#/components/schemas/reasoningTextDeltaEvent"
+          },
+          {
+            "$ref": "#/components/schemas/reasoningTextFinalizedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/itemCompletedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/turnCompletedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/agentErrorEvent"
+          },
+          {
+            "$ref": "#/components/schemas/agentWarningEvent"
+          }
+        ],
+        "definitions": {
+          "eventBase": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "schema_version",
+              "event_id",
+              "stream_id",
+              "sequence",
+              "occurred_at",
+              "task_id",
+              "agent_session_id",
+              "codex_thread_id",
+              "event_type",
+              "terminal",
+              "payload"
+            ],
+            "properties": {
+              "schema_version": {
+                "const": 2
+              },
+              "event_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "stream_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "sequence": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "occurred_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "trace_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "request_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "tenant_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "user_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "task_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "agent_session_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "codex_thread_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "turn_id": {
+                "$ref": "#/components/schemas/turnId"
+              },
+              "item_id": {
+                "$ref": "#/components/schemas/itemId"
+              },
+              "event_type": {
+                "type": "string"
+              },
+              "terminal": {
+                "type": "boolean"
+              },
+              "payload": {
+                "type": "object"
+              }
+            }
+          },
+          "threadStartedEvent": {
+            "title": "ThreadStartedEventV2",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/eventBase"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "event_type": {
+                    "const": "thread.started"
+                  },
+                  "terminal": {
+                    "const": false
+                  },
+                  "payload": {
+                    "$ref": "#/components/schemas/threadStartedPayload"
+                  }
+                },
+                "not": {
+                  "anyOf": [
+                    {
+                      "properties": {
+                        "turn_id": {}
+                      },
+                      "required": [
+                        "turn_id"
+                      ]
+                    },
+                    {
+                      "properties": {
+                        "item_id": {}
+                      },
+                      "required": [
+                        "item_id"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "turnStartedEvent": {
+            "title": "TurnStartedEventV2",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/eventBase"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "turn_id"
+                ],
+                "properties": {
+                  "turn_id": {
+                    "$ref": "#/components/schemas/turnId"
+                  },
+                  "event_type": {
+                    "const": "turn.started"
+                  },
+                  "terminal": {
+                    "const": false
+                  },
+                  "payload": {
+                    "$ref": "#/components/schemas/turnStartedPayload"
+                  }
+                },
+                "not": {
+                  "properties": {
+                    "item_id": {}
+                  },
+                  "required": [
+                    "item_id"
+                  ]
+                }
+              }
+            ]
+          },
+          "itemStartedEvent": {
+            "title": "ItemStartedEventV2",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/eventBase"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "turn_id",
+                  "item_id"
+                ],
+                "properties": {
+                  "turn_id": {
+                    "$ref": "#/components/schemas/turnId"
+                  },
+                  "item_id": {
+                    "$ref": "#/components/schemas/itemId"
+                  },
+                  "event_type": {
+                    "const": "item.started"
+                  },
+                  "terminal": {
+                    "const": false
+                  },
+                  "payload": {
+                    "$ref": "#/components/schemas/itemLifecyclePayload"
+                  }
+                }
+              }
+            ]
+          },
+          "agentMessageDeltaEvent": {
+            "title": "AgentMessageDeltaEventV2",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/eventBase"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "turn_id",
+                  "item_id"
+                ],
+                "properties": {
+                  "turn_id": {
+                    "$ref": "#/components/schemas/turnId"
+                  },
+                  "item_id": {
+                    "$ref": "#/components/schemas/itemId"
+                  },
+                  "event_type": {
+                    "const": "item.agent_message.delta"
+                  },
+                  "terminal": {
+                    "const": false
+                  },
+                  "payload": {
+                    "$ref": "#/components/schemas/agentMessageDeltaPayload"
+                  }
+                }
+              }
+            ]
+          },
+          "reasoningTextDeltaEvent": {
+            "title": "ReasoningTextDeltaEventV2",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/eventBase"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "turn_id",
+                  "item_id"
+                ],
+                "properties": {
+                  "turn_id": {
+                    "$ref": "#/components/schemas/turnId"
+                  },
+                  "item_id": {
+                    "$ref": "#/components/schemas/itemId"
+                  },
+                  "event_type": {
+                    "const": "item.reasoning_text.delta"
+                  },
+                  "terminal": {
+                    "const": false
+                  },
+                  "payload": {
+                    "$ref": "#/components/schemas/reasoningTextDeltaPayload"
+                  }
+                }
+              }
+            ]
+          },
+          "reasoningTextFinalizedEvent": {
+            "title": "ReasoningTextFinalizedEventV2",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/eventBase"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "turn_id",
+                  "item_id"
+                ],
+                "properties": {
+                  "turn_id": {
+                    "$ref": "#/components/schemas/turnId"
+                  },
+                  "item_id": {
+                    "$ref": "#/components/schemas/itemId"
+                  },
+                  "event_type": {
+                    "const": "item.reasoning_text.finalized"
+                  },
+                  "terminal": {
+                    "const": false
+                  },
+                  "payload": {
+                    "$ref": "#/components/schemas/reasoningTextFinalizedPayload"
+                  }
+                }
+              }
+            ]
+          },
+          "itemCompletedEvent": {
+            "title": "ItemCompletedEventV2",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/eventBase"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "turn_id",
+                  "item_id"
+                ],
+                "properties": {
+                  "turn_id": {
+                    "$ref": "#/components/schemas/turnId"
+                  },
+                  "item_id": {
+                    "$ref": "#/components/schemas/itemId"
+                  },
+                  "event_type": {
+                    "const": "item.completed"
+                  },
+                  "terminal": {
+                    "const": false
+                  },
+                  "payload": {
+                    "$ref": "#/components/schemas/itemLifecyclePayload"
+                  }
+                }
+              }
+            ]
+          },
+          "turnCompletedEvent": {
+            "title": "TurnCompletedEventV2",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/eventBase"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "turn_id"
+                ],
+                "properties": {
+                  "turn_id": {
+                    "$ref": "#/components/schemas/turnId"
+                  },
+                  "event_type": {
+                    "const": "turn.completed"
+                  },
+                  "terminal": {
+                    "const": true
+                  },
+                  "payload": {
+                    "$ref": "#/components/schemas/turnCompletedPayload"
+                  }
+                },
+                "not": {
+                  "properties": {
+                    "item_id": {}
+                  },
+                  "required": [
+                    "item_id"
+                  ]
+                }
+              }
+            ]
+          },
+          "agentErrorEvent": {
+            "title": "AgentErrorEventV2",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/eventBase"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "turn_id"
+                ],
+                "properties": {
+                  "turn_id": {
+                    "$ref": "#/components/schemas/turnId"
+                  },
+                  "event_type": {
+                    "const": "error"
+                  },
+                  "terminal": {
+                    "const": false
+                  },
+                  "payload": {
+                    "$ref": "#/components/schemas/agentProblemPayload"
+                  }
+                },
+                "not": {
+                  "properties": {
+                    "item_id": {}
+                  },
+                  "required": [
+                    "item_id"
+                  ]
+                }
+              }
+            ]
+          },
+          "agentWarningEvent": {
+            "title": "AgentWarningEventV2",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/eventBase"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "event_type": {
+                    "const": "warning"
+                  },
+                  "terminal": {
+                    "const": false
+                  },
+                  "payload": {
+                    "$ref": "#/components/schemas/agentWarningPayload"
+                  }
+                },
+                "not": {
+                  "anyOf": [
+                    {
+                      "properties": {
+                        "turn_id": {}
+                      },
+                      "required": [
+                        "turn_id"
+                      ]
+                    },
+                    {
+                      "properties": {
+                        "item_id": {}
+                      },
+                      "required": [
+                        "item_id"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "turnId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "itemId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "threadStartedPayload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "model",
+              "model_provider"
+            ],
+            "properties": {
+              "model": {
+                "type": "string",
+                "minLength": 1
+              },
+              "model_provider": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "turnStartedPayload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "const": "in_progress"
+              }
+            }
+          },
+          "turnCompletedPayload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "completed",
+                  "interrupted",
+                  "failed"
+                ]
+              },
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            }
+          },
+          "itemLifecyclePayload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "item_type"
+            ],
+            "properties": {
+              "item_type": {
+                "type": "string",
+                "minLength": 1
+              },
+              "text": {
+                "type": "string"
+              }
+            }
+          },
+          "agentMessageDeltaPayload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "delta"
+            ],
+            "properties": {
+              "delta": {
+                "type": "string"
+              }
+            }
+          },
+          "reasoningTextDeltaPayload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "content_index",
+              "delta"
+            ],
+            "properties": {
+              "content_index": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 7
+              },
+              "delta": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384,
+                "x-yijie-max-utf8-bytes": 16384
+              }
+            }
+          },
+          "reasoningContentPart": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "content_index",
+              "text"
+            ],
+            "properties": {
+              "content_index": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 7
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 65536,
+                "x-yijie-max-utf8-bytes": 65536
+              }
+            }
+          },
+          "reasoningReasonCode": {
+            "type": "string",
+            "enum": [
+              "reasoning_not_emitted",
+              "turn_interrupted",
+              "stream_gap",
+              "runtime_error",
+              "limit_exceeded",
+              "protocol_error",
+              "host_shutdown"
+            ]
+          },
+          "reasoningTextFinalizedPayload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "status",
+              "contents"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "complete",
+                  "incomplete",
+                  "unavailable"
+                ]
+              },
+              "contents": {
+                "type": "array",
+                "maxItems": 8,
+                "x-yijie-content-index-rule": "zero-based-contiguous-ascending-unique",
+                "items": {
+                  "$ref": "#/components/schemas/reasoningContentPart"
+                }
+              },
+              "reason_code": {
+                "$ref": "#/components/schemas/reasoningReasonCode"
+              }
+            },
+            "x-yijie-max-total-utf8-bytes": 131072,
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "status": {
+                      "const": "complete"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "contents": {
+                      "type": "array",
+                      "minItems": 1
+                    },
+                    "reason_code": false
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "status": {
+                      "const": "incomplete"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "reason_code"
+                  ],
+                  "properties": {
+                    "contents": {
+                      "type": "array",
+                      "minItems": 1
+                    },
+                    "reason_code": {
+                      "$ref": "#/components/schemas/reasoningReasonCode"
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "status": {
+                      "const": "unavailable"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "reason_code"
+                  ],
+                  "properties": {
+                    "contents": {
+                      "type": "array",
+                      "maxItems": 0
+                    },
+                    "reason_code": {
+                      "$ref": "#/components/schemas/reasoningReasonCode"
+                    }
+                  }
+                }
+              }
+            ]
           },
           "agentProblemPayload": {
             "type": "object",

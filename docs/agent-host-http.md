@@ -69,3 +69,9 @@ traces, filesystem paths, and secrets are never part of this envelope.
 `turn.completed` is the only authoritative turn terminal event. A successful
 `204` interrupt only confirms delivery of the interrupt request; clients still
 wait for the terminal SSE event.
+
+FEAT-126 v2 title, cleanup, and explicitly negotiated raw-reasoning stream shapes
+are an unpublished G2A candidate, not part of this supported v1 contract. See
+[`agent-host-operations-v2.md`](agent-host-operations-v2.md) and
+[`agent-session-events-v2.md`](agent-session-events-v2.md); no v2 route is enabled
+or consumable until an immutable candidate pin and the required approvals exist.

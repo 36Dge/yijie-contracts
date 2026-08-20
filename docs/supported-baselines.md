@@ -26,22 +26,31 @@
 - 版本：`0.3.0 candidate`
 - 计划不可移动 tag：`contracts-v0.3.0`（尚未创建）
 - 状态：`candidate`；不是 supported/release-ready
-- contract impact：`semantic`
+- contract impact：FEAT-125 为 `semantic`；FEAT-126 产品语义为 `breaking`，当前 source
+  candidate 通过新 `/v2` paths/schema 做 versioned additive expand，尚未执行 legacy retirement
 - S1 source/generated commit：`ab5e71db6e4d61eb9c761446066142de2edbb444`
 - 最终 candidate 完整 commit：S2 evidence commit 形成后在外部 FEAT-125 需求包登记；
   本文件不能自引用尚未形成的包含自身 commit
-- Owner/producer：段成威 / `yijie-api`
-- 已知/登记 consumers：`yijie-desktop`、`unknown-public`；`yijie-agent-host` 不迁移，
-  继续固定 `contracts-v0.2.0`
-- 权威源：`openapi/public/public.yaml#listMyTenants` 与 `#getMyCapabilities`
+- Owner/producer：段成威 / `yijie-api`、`yijie-agent-host`
+- 已知/登记 consumers：`yijie-desktop`、`unknown-public`；FEAT-125 Runtime Baseline 2 的
+  `yijie-agent-host` 继续固定 `contracts-v0.2.0`，FEAT-126 的未来 Host v2 producer 另行 pin
+- 权威源：FEAT-125 为 `openapi/public/public.yaml#listMyTenants` 与
+  `#getMyCapabilities`；FEAT-126 source/generated overlay 为 Public Tasks v2、Agent Host v2
+  title/cleanup/events、AgentSessionEventV2 JSON Schema/Proto/AsyncAPI
 - Public source SHA-256：
   `7bd40dd1c5a53cc1dcd317e3a64bf7189170fd7f575b25bb07f0eb243d0319ed`
 - Generator：`openapi-typescript 7.13.0`、`oapi-codegen 2.7.2`
 - Breaking baseline：2026-08-01 相对
   `f16a497e1377f45747f8ff9292b4b60cf2027f88` PASS；自动结果不替代 semantic/security
   review
-- 尚未完成：远端 candidate 可用性、G2A、API/Desktop exact pin 与 conformance、两租户
-  E2E、不可移动 tag、生产发布和 supported baseline 晋升
+- FEAT-126 source-shape evidence（2026-08-02）：DEC-126-018已Accepted；候选parent为
+  `9ec34abd6e7dfb5a23b0154d467694167224ebbb`，本文随source/generated candidate commit提交；
+  `make generate/lint/test/build`
+  PASS、Node 27/27、29 generated files current、支持基线 breaking PASS、Public Tasks v1 2 paths
+  与 Agent Host v1 7 paths 结构相等；source/SDK digest 见本版本 release note
+- 尚未完成：远端 candidate 可用性、完整commit的post-commit复验/外部登记、G2A最终批准、
+  API/Host/Desktop exact pin与conformance、两租户E2E、不可移动tag、生产发布和supported
+  baseline晋升
 - 回滚：不启用 provider/consumer，继续使用 `contracts-v0.2.0`
 
 ### `0.2.0` 首版登记的 fallback breaking 证据

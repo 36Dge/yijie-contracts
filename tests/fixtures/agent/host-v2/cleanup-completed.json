@@ -1,0 +1,9 @@
+{
+  "operation_id": "019fbd88-cbc3-7bf1-934d-7b05cd693f61",
+  "outcome": "complete",
+  "surfaces": {
+    "runtime_thread_tree": "complete",
+    "host_mapping": "complete",
+    "host_replay": "complete"
+  }
+}
