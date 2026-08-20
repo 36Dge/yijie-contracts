@@ -20,6 +20,7 @@ for (const keyword of [
   "x-yijie-max-reasoning-utf8-bytes-per-turn",
   "x-yijie-max-total-utf8-bytes",
   "x-yijie-max-utf8-bytes",
+  "x-yijie-max-json-depth",
 ]) {
   ajv.addKeyword({ keyword, schemaType: "number" });
 }

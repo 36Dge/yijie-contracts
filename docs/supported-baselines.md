@@ -1,6 +1,6 @@
 # Supported Contract Baselines
 
-## 当前状态（2026-08-19）
+## 当前状态（2026-08-20）
 
 ### 已发布支持基线
 
@@ -21,7 +21,33 @@
 - 回滚：回退 Host 的契约 snapshot 并禁用 Baseline 2 对外接口；这是首个支持版本，
   没有更早的已发布 contracts tag 可回退
 
-### 当前候选
+### FEAT-128 当前候选
+
+- 版本：`0.4.0 candidate`
+- 计划不可移动 tag：`contracts-v0.4.0`（尚未创建；本轮未授权创建）
+- 状态：`candidate`；不是 supported/release-ready
+- contract impact：`semantic`；以显式协商 v3/additive expansion 保持 v1/v2 不变
+- Owner/producer：段成威 / Contracts Owner；当前只授权 exact-local synthetic producer
+- 已知 consumers：`yijie-agent-host`、`yijie-desktop`；二者业务实现均未授权启动
+- 权威源：AgentSessionEventV3 JSON/Proto/AsyncAPI、Agent Host v3
+  events/content/poster/ack OpenAPI、ReportDocumentV1 JSON Schema
+- 当前 pre-FEAT-128 baseline：
+  `747cf740f2d91e76e5c1a130e8e009f1efa821b8`
+- 已发布 breaking baseline：
+  `f16a497e1377f45747f8ff9292b4b60cf2027f88` (`contracts-v0.2.0`)
+- S1/S2 最终完整 commit：提交形成后由外部 FEAT-128 交付包登记；本文件不自引用
+  尚未形成的 commit
+- G2：2026-08-20 APPROVED，仅允许 Contracts S1/S2
+- G2A：Pending；真实 generate/lint/test/build、双基线 breaking、人工语义/安全评审和
+  不可变 commit 完成后，还必须等待 Host/Desktop 精确 pin 与 conformance
+- Provider gate：image/video/file/report 四类 exact-local synthetic fixture 可用；真实
+  provider/tool producer 保持 blocked
+- 发布边界：无 tag/push/publish/supported 晋升/生产激活授权
+- 回滚：不协商 v3，继续使用既有 v1/v2 与当前 0.3 candidate 表面
+
+详见 [`releases/contracts-v0.4.0.md`](releases/contracts-v0.4.0.md)。
+
+### 前序 `0.3.0` 候选
 
 - 版本：`0.3.0 candidate`
 - 计划不可移动 tag：`contracts-v0.3.0`（尚未创建；延至正式发布阶段）

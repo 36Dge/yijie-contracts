@@ -26,6 +26,15 @@ supported/release-ready。FEAT-127 本地 candidate 的 semantic Owner/consumer 
 创建并核对 digest 后，下游才能按评审结论切换 provenance 并声明 supported。候选范围和门禁见
 [`docs/releases/contracts-v0.3.0.md`](docs/releases/contracts-v0.3.0.md)。
 
+当前 `0.4.0` candidate 在 `0.3.0` candidate 上增加 FEAT-128 structured chat artifacts：
+显式协商的 AgentSessionEventV3、四类 closed Artifact 生命周期、owner-only
+content/poster GET/HEAD、幂等 Desktop commit ACK，以及 closed ReportDocumentV1。
+本候选只授权 exact-local synthetic fixture；真实 provider/tool producer、Host/Desktop
+业务实现、tag、publish、supported 晋升和生产激活均未获授权。S1/S2 权威源、生成物和
+双基线检查完成后，最终不可变 commit 由 FEAT-128 交付包登记；下游 exact pin 未完成前
+G2A 保持 Pending。范围和证据要求见
+[`docs/releases/contracts-v0.4.0.md`](docs/releases/contracts-v0.4.0.md)。
+
 跨仓契约变更必须遵循
 [`docs/contract-change-policy.md`](docs/contract-change-policy.md)：先分类影响、修改权威
 源并完成生成/兼容评审，形成不可变引用；每个下游 PR 在自身合并前完成精确 pin 和

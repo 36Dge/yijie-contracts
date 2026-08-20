@@ -389,6 +389,123 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v3/agent-sessions/{agent_session_id}/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Replay and stream explicitly negotiated Agent session events v3
+         * @description Opens the v3 Server-Sent Events stream. The required
+         *     `event_schema_version=3` query parameter prevents accidental v3 output to
+         *     an older consumer. V3 preserves every v2 lifecycle and reasoning variant
+         *     and adds only the four closed structured-artifact lifecycle variants.
+         *
+         *     The authoritative resume query is `after`; `after_sequence` is not an
+         *     alias and must be rejected as an unknown parameter. `Last-Event-ID`
+         *     overrides `stream_id` and `after`. Delivery is at least once and consumers
+         *     deduplicate by `event_id` inside the current `stream_id` ordering domain.
+         */
+        get: operations["streamAgentSessionEventsV3"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v3/agent-sessions/{agent_session_id}/artifacts/{artifact_id}/content": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+                /** @description Host-generated structured-artifact identifier scoped to the Agent session. */
+                artifact_id: components["parameters"]["ArtifactId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Read verified structured-artifact bytes
+         * @description Reads owner-only bytes from the Host's bounded encrypted staging spool.
+         *     The operation never redirects and never exposes a filesystem path or
+         *     bearer in the body. Range requests use one RFC 7233 byte range only.
+         */
+        get: operations["getAgentArtifactContentV3"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        /** Read verified structured-artifact metadata */
+        head: operations["headAgentArtifactContentV3"];
+        patch?: never;
+        trace?: never;
+    };
+    "/v3/agent-sessions/{agent_session_id}/artifacts/{artifact_id}/poster": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+                /** @description Host-generated structured-artifact identifier scoped to the Agent session. */
+                artifact_id: components["parameters"]["ArtifactId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Read an optional verified video poster
+         * @description Reads the optional image poster associated with a ready video artifact.
+         *     It has the same owner, expiry, no-redirect, no-store, and range rules as
+         *     the content resource. A non-video artifact has no poster resource.
+         */
+        get: operations["getAgentArtifactPosterV3"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        /** Read optional video-poster metadata */
+        head: operations["headAgentArtifactPosterV3"];
+        patch?: never;
+        trace?: never;
+    };
+    "/v3/agent-sessions/{agent_session_id}/artifacts/{artifact_id}/ack": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+                /** @description Host-generated structured-artifact identifier scoped to the Agent session. */
+                artifact_id: components["parameters"]["ArtifactId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Acknowledge a verified Desktop-local artifact commit
+         * @description Desktop native calls this only after an atomic local commit has verified
+         *     the completed event's size and SHA-256. The canonical request is
+         *     idempotent by `ack_id`: replaying the same request returns the original
+         *     acknowledgement, while reuse with different canonical input returns
+         *     `409 artifact_ack_conflict`. Acknowledgement authorizes early staging
+         *     cleanup; cleanup is also allowed on Host restart or after the staging TTL.
+         */
+        post: operations["acknowledgeAgentArtifactV3"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -701,6 +818,45 @@ export interface components {
                 message: string;
             };
         };
+        ArtifactAcknowledgementV3Request: {
+            /**
+             * Format: uuid
+             * @description Desktop-selected idempotency identifier scoped to this artifact.
+             */
+            ack_id: string;
+            /**
+             * Format: int64
+             * @description Exact byte length verified at Desktop's atomic local commit boundary.
+             */
+            size_bytes: number;
+            /** @description Lowercase SHA-256 verified against the completed event before local commit. */
+            sha256: string;
+            /**
+             * Format: date-time
+             * @description UTC timestamp recorded only after Desktop's atomic durable commit succeeds.
+             */
+            local_committed_at: string;
+        };
+        ArtifactAcknowledgementV3Response: {
+            /** Format: uuid */
+            artifact_id: string;
+            /** Format: uuid */
+            ack_id: string;
+            /** @enum {string} */
+            status: "acknowledged";
+            /** @enum {string} */
+            cleanup_status: "pending" | "completed";
+            /** Format: date-time */
+            acknowledged_at: string;
+        };
+        /** @description Content-free v3 artifact failure. It never contains a path, URL, token, digest, provider payload, or artifact bytes. */
+        ArtifactErrorResponseV3: {
+            error: {
+                /** @enum {string} */
+                code: "unauthorized" | "invalid_request" | "invalid_range" | "artifact_not_found" | "artifact_expired" | "artifact_not_ready" | "artifact_manifest_mismatch" | "artifact_ack_conflict" | "artifact_range_not_satisfiable" | "artifact_resource_unavailable" | "internal_error";
+                message: string;
+            };
+        };
         SessionResponse: {
             session: components["schemas"]["AgentSession"];
         };
@@ -863,12 +1019,107 @@ export interface components {
                 "application/json": components["schemas"]["TitleGenerationUnavailableError"];
             };
         };
+        /** @description Verified complete artifact or poster bytes. HEAD returns these headers without a body. */
+        ArtifactBytes: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                "Content-Length": number;
+                /** @description Quoted lowercase SHA-256 of the exact returned resource. */
+                ETag: string;
+                "Accept-Ranges": "bytes";
+                /** @description Safe attachment or inline disposition with a sanitized filename; no path components. */
+                "Content-Disposition": string;
+                "X-Content-Type-Options": "nosniff";
+                [name: string]: unknown;
+            };
+            content: {
+                "application/octet-stream": string;
+            };
+        };
+        /** @description A verified single byte range from an artifact or poster. */
+        ArtifactPartialBytes: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                "Content-Length": number;
+                "Content-Range": string;
+                ETag: string;
+                "Accept-Ranges": "bytes";
+                "Content-Disposition": string;
+                "X-Content-Type-Options": "nosniff";
+                [name: string]: unknown;
+            };
+            content: {
+                "application/octet-stream": string;
+            };
+        };
+        /** @description `invalid_request` or `invalid_range`: path, body, or range input is invalid. */
+        ArtifactBadRequest: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ArtifactErrorResponseV3"];
+            };
+        };
+        /** @description `unauthorized`: a valid owner-only local Agent Host bearer token is required. */
+        ArtifactUnauthorized: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ArtifactErrorResponseV3"];
+            };
+        };
+        /** @description `artifact_not_found`: the artifact does not exist in this owner/session scope, or no poster exists. */
+        ArtifactNotFound: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ArtifactErrorResponseV3"];
+            };
+        };
+        /** @description `artifact_expired`: a content-free tombstone proves that the staging resource expired or was acknowledged and cleaned. */
+        ArtifactExpired: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ArtifactErrorResponseV3"];
+            };
+        };
+        /** @description `artifact_range_not_satisfiable`: the single requested byte range is outside the verified resource. */
+        ArtifactRangeNotSatisfiable: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ArtifactErrorResponseV3"];
+            };
+        };
+        /** @description `artifact_resource_unavailable` or `internal_error`: the resource cannot be served without exposing internal details. */
+        ArtifactInternalError: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ArtifactErrorResponseV3"];
+            };
+        };
     };
     parameters: {
         /** @description Control-plane task identifier. One Agent session may be reserved per task. */
         TaskId: string;
         /** @description Agent Host-generated session identifier. */
         AgentSessionId: string;
+        /** @description Host-generated structured-artifact identifier scoped to the Agent session. */
+        ArtifactId: string;
         /** @description Codex Runtime-generated turn identifier. */
         TurnId: string;
         /**
@@ -891,6 +1142,10 @@ export interface components {
         LastEventId: string;
         /** @description Explicit negotiation guard. Only integer value 2 is accepted on the v2 event stream. */
         EventSchemaVersionV2: 2;
+        /** @description Explicit negotiation guard. Only integer value 3 is accepted on the v3 event stream. */
+        EventSchemaVersionV3: 3;
+        /** @description A single inclusive HTTP byte range. Multiple or malformed ranges are rejected. */
+        ByteRange: string;
     };
     requestBodies: never;
     headers: {
@@ -1591,6 +1846,233 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
+        };
+    };
+    streamAgentSessionEventsV3: {
+        parameters: {
+            query: {
+                /** @description Explicit negotiation guard. Only integer value 3 is accepted on the v3 event stream. */
+                event_schema_version: components["parameters"]["EventSchemaVersionV3"];
+                /**
+                 * @description Expected process-local stream identifier. Required when `after > 0`
+                 *     unless `Last-Event-ID` supplies the complete cursor. A mismatch returns
+                 *     `409 event_stream_changed`.
+                 */
+                stream_id?: components["parameters"]["EventStreamId"];
+                /**
+                 * @description Unsigned 64-bit sequence after which events are replayed. Defaults to
+                 *     zero. Values greater than zero require a matching stream ID. Ignored when
+                 *     `Last-Event-ID` is present.
+                 */
+                after?: components["parameters"]["EventAfter"];
+            };
+            header?: {
+                /**
+                 * @description Complete SSE cursor `<stream_id>:<sequence>`. Sequence is a decimal
+                 *     unsigned 64-bit integer from 1 through 18446744073709551615 with no
+                 *     leading zero. The header overrides `stream_id` and `after` query parameters.
+                 */
+                "Last-Event-ID"?: components["parameters"]["LastEventId"];
+            };
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Retained v3 events were replayed and the connection is subscribed for live v3 events. */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    /** @description Disables reverse-proxy response buffering. */
+                    "X-Accel-Buffering": "no";
+                    /** @description Actual process-local stream identifier used by every returned SSE event ID. */
+                    "X-Yijie-Event-Stream-ID": string;
+                    /** @description Confirms that every returned data event uses AgentSessionEventV3. */
+                    "X-Yijie-Event-Schema-Version": 3;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": string;
+                };
+            };
+            /** @description `invalid_request` or `invalid_event_cursor`: schema negotiation, identifier, or cursor is invalid. */
+            400: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            404: components["responses"]["SessionNotFound"];
+            /** @description `event_stream_changed` or `event_replay_unavailable`: the requested v3 cursor cannot be resumed safely. */
+            409: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `streaming_unsupported` or `internal_error`: the v3 stream cannot be served safely. */
+            500: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAgentArtifactContentV3: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description A single inclusive HTTP byte range. Multiple or malformed ranges are rejected. */
+                Range?: components["parameters"]["ByteRange"];
+            };
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+                /** @description Host-generated structured-artifact identifier scoped to the Agent session. */
+                artifact_id: components["parameters"]["ArtifactId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: components["responses"]["ArtifactBytes"];
+            206: components["responses"]["ArtifactPartialBytes"];
+            400: components["responses"]["ArtifactBadRequest"];
+            401: components["responses"]["ArtifactUnauthorized"];
+            404: components["responses"]["ArtifactNotFound"];
+            410: components["responses"]["ArtifactExpired"];
+            416: components["responses"]["ArtifactRangeNotSatisfiable"];
+            500: components["responses"]["ArtifactInternalError"];
+        };
+    };
+    headAgentArtifactContentV3: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+                /** @description Host-generated structured-artifact identifier scoped to the Agent session. */
+                artifact_id: components["parameters"]["ArtifactId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: components["responses"]["ArtifactBytes"];
+            400: components["responses"]["ArtifactBadRequest"];
+            401: components["responses"]["ArtifactUnauthorized"];
+            404: components["responses"]["ArtifactNotFound"];
+            410: components["responses"]["ArtifactExpired"];
+            500: components["responses"]["ArtifactInternalError"];
+        };
+    };
+    getAgentArtifactPosterV3: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description A single inclusive HTTP byte range. Multiple or malformed ranges are rejected. */
+                Range?: components["parameters"]["ByteRange"];
+            };
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+                /** @description Host-generated structured-artifact identifier scoped to the Agent session. */
+                artifact_id: components["parameters"]["ArtifactId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: components["responses"]["ArtifactBytes"];
+            206: components["responses"]["ArtifactPartialBytes"];
+            400: components["responses"]["ArtifactBadRequest"];
+            401: components["responses"]["ArtifactUnauthorized"];
+            404: components["responses"]["ArtifactNotFound"];
+            410: components["responses"]["ArtifactExpired"];
+            416: components["responses"]["ArtifactRangeNotSatisfiable"];
+            500: components["responses"]["ArtifactInternalError"];
+        };
+    };
+    headAgentArtifactPosterV3: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+                /** @description Host-generated structured-artifact identifier scoped to the Agent session. */
+                artifact_id: components["parameters"]["ArtifactId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: components["responses"]["ArtifactBytes"];
+            400: components["responses"]["ArtifactBadRequest"];
+            401: components["responses"]["ArtifactUnauthorized"];
+            404: components["responses"]["ArtifactNotFound"];
+            410: components["responses"]["ArtifactExpired"];
+            500: components["responses"]["ArtifactInternalError"];
+        };
+    };
+    acknowledgeAgentArtifactV3: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+                /** @description Host-generated structured-artifact identifier scoped to the Agent session. */
+                artifact_id: components["parameters"]["ArtifactId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ArtifactAcknowledgementV3Request"];
+            };
+        };
+        responses: {
+            /** @description The canonical acknowledgement is recorded; staging cleanup is pending or completed. */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ArtifactAcknowledgementV3Response"];
+                };
+            };
+            400: components["responses"]["ArtifactBadRequest"];
+            401: components["responses"]["ArtifactUnauthorized"];
+            404: components["responses"]["ArtifactNotFound"];
+            /** @description `artifact_ack_conflict`, `artifact_not_ready`, or `artifact_manifest_mismatch`: the acknowledgement cannot be applied safely. */
+            409: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ArtifactErrorResponseV3"];
+                };
+            };
+            410: components["responses"]["ArtifactExpired"];
+            500: components["responses"]["ArtifactInternalError"];
         };
     };
 }

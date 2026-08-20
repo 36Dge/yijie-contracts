@@ -102,12 +102,21 @@ for (const { relativePath, schema } of schemas) {
       format: false,
     }),
   );
-  if (outputName === "agent-session-event-v2") {
-    // v2 intentionally preserves the v1 lifecycle type names. Export it as a
-    // namespace so adding the new schema does not make the existing root SDK
-    // exports ambiguous or rename protocol concepts just for TypeScript.
+  if (
+    outputName === "agent-session-event-v2" ||
+    outputName === "agent-session-event-v3" ||
+    outputName === "report-report-document-v1"
+  ) {
+    // Versioned event/report schemas intentionally reuse protocol concept names.
+    // Namespace exports keep additions from making the existing root SDK
+    // exports ambiguous or forcing wire concepts to be renamed for TypeScript.
+    const namespace = {
+      "agent-session-event-v2": "AgentSessionEventSchemaV2",
+      "agent-session-event-v3": "AgentSessionEventSchemaV3",
+      "report-report-document-v1": "ReportDocumentSchemaV1",
+    }[outputName];
     schemaExports.push(
-      `export * as AgentSessionEventSchemaV2 from "./jsonschema/${outputName}.gen.js";`,
+      `export * as ${namespace} from "./jsonschema/${outputName}.gen.js";`,
     );
   } else {
     schemaExports.push(`export * from "./jsonschema/${outputName}.gen.js";`);
@@ -125,6 +134,7 @@ await writeFile(
     'export * as CommonV1 from "./protobuf/yijie/common/v1/common_pb.js";',
     'export * as AgentSessionEventsV1 from "./protobuf/yijie/events/v1/agent_session_pb.js";',
     'export * as AgentSessionEventsV2 from "./protobuf/yijie/events/v2/agent_session_pb.js";',
+    'export * as AgentSessionEventsV3 from "./protobuf/yijie/events/v3/agent_session_pb.js";',
     'export * as TaskEventsV1 from "./protobuf/yijie/events/v1/task_pb.js";',
     'export * as AgentHostV1 from "./protobuf/yijie/services/agent_host/v1/agent_host_pb.js";',
     ...schemaExports,

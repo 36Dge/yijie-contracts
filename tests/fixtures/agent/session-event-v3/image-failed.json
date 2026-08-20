@@ -1,0 +1,23 @@
+{
+  "schema_version": 3,
+  "event_id": "019fbd88-cbc3-7bf1-934d-7b05cd693f63",
+  "stream_id": "019fbd88-cbc3-7bf1-934d-7b05cd693f51",
+  "sequence": 13,
+  "occurred_at": "2026-08-20T02:00:03Z",
+  "task_id": "019fbd88-cbc3-7bf1-934d-7b05cd693f52",
+  "agent_session_id": "019fbd88-cbc3-7bf1-934d-7b05cd693f53",
+  "codex_thread_id": "019fbd88-cbc3-7bf1-934d-7b05cd693f54",
+  "turn_id": "019fbd88-cbc3-7bf1-934d-7b05cd693f55",
+  "event_type": "item.artifact.failed",
+  "terminal": false,
+  "payload": {
+    "artifact_id": "019fbd88-cbc3-7bf1-934d-7b05cd693f70",
+    "kind": "image",
+    "provenance": "synthetic",
+    "status": "failed",
+    "ordinal": 0,
+    "error_code": "generation_failed",
+    "retryable": false,
+    "message": "synthetic generation failed"
+  }
+}

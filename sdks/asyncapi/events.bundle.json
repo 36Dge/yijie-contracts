@@ -2,7 +2,7 @@
   "asyncapi": "3.0.0",
   "info": {
     "title": "Yijie Events",
-    "version": "0.1.0",
+    "version": "0.4.0",
     "description": "Event contracts exchanged by Yijie services."
   },
   "channels": {
@@ -36,6 +36,15 @@
       "messages": {
         "agentSessionEventV2": {
           "$ref": "#/components/messages/AgentSessionEventV2"
+        }
+      }
+    },
+    "agentSessionEventsV3": {
+      "address": "agent.session.events.v3",
+      "description": "Explicitly negotiated v3 Agent Host events. This stream preserves v2 lifecycle and reasoning events and adds the closed structured-artifact lifecycle. Only the exact-local synthetic producer is authorized by this candidate; real provider/tool production remains closed.",
+      "messages": {
+        "agentSessionEventV3": {
+          "$ref": "#/components/messages/AgentSessionEventV3"
         }
       }
     }
@@ -75,6 +84,18 @@
           "$ref": "#/components/messages/AgentSessionEventV2"
         }
       ]
+    },
+    "receiveAgentSessionEventsV3": {
+      "action": "receive",
+      "description": "Receive one AgentSessionEventV3 after explicit schema-version-3 negotiation. A stream_id change starts a new ordering domain. Delivery is at least once and consumers deduplicate by event_id.",
+      "channel": {
+        "$ref": "#/channels/agentSessionEventsV3"
+      },
+      "messages": [
+        {
+          "$ref": "#/components/messages/AgentSessionEventV3"
+        }
+      ]
     }
   },
   "components": {
@@ -105,6 +126,20 @@
         },
         "payload": {
           "$ref": "#/components/schemas/session-event-v2.schema"
+        }
+      },
+      "AgentSessionEventV3": {
+        "name": "AgentSessionEventV3",
+        "title": "Ordered Agent Host session event v3",
+        "summary": "V2 lifecycle and reasoning plus structured-artifact lifecycle.",
+        "description": "JSON payload semantics are authoritative in the referenced JSON Schema. Protobuf message yijie.events.v3.AgentSessionEvent carries the equivalent service and asynchronous-consumer model. Producers emit v3 only after the consumer explicitly negotiates schema version 3.",
+        "contentType": "application/json",
+        "correlationId": {
+          "description": "Agent Host session that owns the ordered event stream.",
+          "location": "$message.payload#/agent_session_id"
+        },
+        "payload": {
+          "$ref": "#/components/schemas/session-event-v3.schema"
         }
       }
     },
@@ -2391,6 +2426,1896 @@
               },
               "will_retry": {
                 "const": false
+              }
+            }
+          }
+        }
+      },
+      "noTurnOrItem": {
+        "type": "object",
+        "not": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "turn_id": {}
+              },
+              "required": [
+                "turn_id"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "item_id": {}
+              },
+              "required": [
+                "item_id"
+              ]
+            }
+          ]
+        }
+      },
+      "turnWithoutItem": {
+        "type": "object",
+        "properties": {
+          "turn_id": {},
+          "item_id": {}
+        },
+        "required": [
+          "turn_id"
+        ],
+        "not": {
+          "type": "object",
+          "properties": {
+            "item_id": {}
+          },
+          "required": [
+            "item_id"
+          ]
+        }
+      },
+      "reasoningTextDeltaPayloadV3": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "content_index",
+          "delta"
+        ],
+        "properties": {
+          "content_index": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 7
+          },
+          "delta": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16384
+          }
+        }
+      },
+      "reasoningContentPartV3": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "content_index",
+          "text"
+        ],
+        "properties": {
+          "content_index": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 7
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 65536
+          }
+        }
+      },
+      "reasoningReasonCodeV3": {
+        "enum": [
+          "reasoning_not_emitted",
+          "turn_interrupted",
+          "stream_gap",
+          "runtime_error",
+          "limit_exceeded",
+          "protocol_error",
+          "host_shutdown"
+        ]
+      },
+      "reasoningTextFinalizedPayloadV3": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "contents"
+        ],
+        "properties": {
+          "status": {
+            "enum": [
+              "complete",
+              "incomplete",
+              "unavailable"
+            ]
+          },
+          "contents": {
+            "type": "array",
+            "maxItems": 8,
+            "items": {
+              "$ref": "#/components/schemas/reasoningContentPartV3"
+            }
+          },
+          "reason_code": {
+            "$ref": "#/components/schemas/reasoningReasonCodeV3"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "complete"
+                }
+              },
+              "required": [
+                "status"
+              ]
+            },
+            "then": {
+              "properties": {
+                "contents": {
+                  "type": "array",
+                  "minItems": 1
+                },
+                "reason_code": false
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "incomplete"
+                }
+              },
+              "required": [
+                "status"
+              ]
+            },
+            "then": {
+              "required": [
+                "reason_code"
+              ],
+              "properties": {
+                "contents": {
+                  "type": "array",
+                  "minItems": 1
+                },
+                "reason_code": {}
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "unavailable"
+                }
+              },
+              "required": [
+                "status"
+              ]
+            },
+            "then": {
+              "required": [
+                "reason_code"
+              ],
+              "properties": {
+                "contents": {
+                  "type": "array",
+                  "maxItems": 0
+                },
+                "reason_code": {}
+              }
+            }
+          }
+        ]
+      },
+      "turnCompletedPayloadV3": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "enum": [
+              "completed",
+              "interrupted",
+              "failed"
+            ]
+          },
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "artifactKind": {
+        "enum": [
+          "image",
+          "video",
+          "file",
+          "report"
+        ]
+      },
+      "artifactProvenance": {
+        "enum": [
+          "synthetic",
+          "provider",
+          "tool"
+        ]
+      },
+      "artifactStartedPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "artifact_id",
+          "kind",
+          "provenance",
+          "status",
+          "ordinal"
+        ],
+        "properties": {
+          "artifact_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/artifactKind"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/artifactProvenance"
+          },
+          "status": {
+            "const": "in_progress"
+          },
+          "ordinal": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "display_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "pattern": "^[^/\\\\]+$"
+          }
+        }
+      },
+      "artifactProgressPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "artifact_id",
+          "kind",
+          "provenance",
+          "status",
+          "ordinal"
+        ],
+        "properties": {
+          "artifact_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/artifactKind"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/artifactProvenance"
+          },
+          "status": {
+            "const": "in_progress"
+          },
+          "ordinal": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "stage": {
+            "enum": [
+              "generating",
+              "processing",
+              "finalizing"
+            ]
+          },
+          "progress_percent": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          }
+        },
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "stage": {}
+            },
+            "required": [
+              "stage"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "progress_percent": {}
+            },
+            "required": [
+              "progress_percent"
+            ]
+          }
+        ]
+      },
+      "artifactCompletedPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "artifact_id",
+          "kind",
+          "provenance",
+          "status",
+          "ordinal",
+          "media_type",
+          "size_bytes",
+          "sha256",
+          "content_href"
+        ],
+        "properties": {
+          "artifact_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/artifactKind"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/artifactProvenance"
+          },
+          "status": {
+            "const": "ready"
+          },
+          "ordinal": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "display_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "pattern": "^[^/\\\\]+$"
+          },
+          "media_type": {
+            "enum": [
+              "image/png",
+              "image/jpeg",
+              "image/webp",
+              "video/mp4",
+              "text/plain",
+              "text/csv",
+              "application/json",
+              "application/pdf",
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              "application/vnd.yijie.report+json;version=1"
+            ]
+          },
+          "size_bytes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 67108864
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "content_href": {
+            "type": "string",
+            "pattern": "^/v3/agent-sessions/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}/artifacts/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}/content$"
+          },
+          "poster_href": {
+            "type": "string",
+            "pattern": "^/v3/agent-sessions/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}/artifacts/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}/poster$"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "image"
+                }
+              },
+              "required": [
+                "kind"
+              ]
+            },
+            "then": {
+              "properties": {
+                "media_type": {
+                  "enum": [
+                    "image/png",
+                    "image/jpeg",
+                    "image/webp"
+                  ]
+                },
+                "size_bytes": {
+                  "type": "integer",
+                  "maximum": 20971520
+                },
+                "poster_href": false
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "video"
+                }
+              },
+              "required": [
+                "kind"
+              ]
+            },
+            "then": {
+              "properties": {
+                "media_type": {
+                  "const": "video/mp4"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "file"
+                }
+              },
+              "required": [
+                "kind"
+              ]
+            },
+            "then": {
+              "properties": {
+                "media_type": {
+                  "enum": [
+                    "text/plain",
+                    "text/csv",
+                    "application/json",
+                    "application/pdf",
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  ]
+                },
+                "poster_href": false
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "report"
+                }
+              },
+              "required": [
+                "kind"
+              ]
+            },
+            "then": {
+              "properties": {
+                "media_type": {
+                  "const": "application/vnd.yijie.report+json;version=1"
+                },
+                "poster_href": false
+              }
+            }
+          }
+        ]
+      },
+      "artifactFailedPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "artifact_id",
+          "kind",
+          "provenance",
+          "status",
+          "ordinal",
+          "error_code",
+          "retryable"
+        ],
+        "properties": {
+          "artifact_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/artifactKind"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/artifactProvenance"
+          },
+          "status": {
+            "const": "failed"
+          },
+          "ordinal": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "error_code": {
+            "enum": [
+              "generation_failed",
+              "unsupported_provider",
+              "resource_unavailable",
+              "limit_exceeded",
+              "integrity_failed",
+              "protocol_error",
+              "turn_interrupted",
+              "host_shutdown"
+            ]
+          },
+          "retryable": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          }
+        }
+      },
+      "threadStartedEventV3": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/noTurnOrItem"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "event_type": {
+                "const": "thread.started"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/threadStartedPayload"
+              }
+            }
+          }
+        ]
+      },
+      "turnStartedEventV3": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/turnWithoutItem"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "event_type": {
+                "const": "turn.started"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/turnStartedPayload"
+              }
+            }
+          }
+        ]
+      },
+      "itemStartedEventV3": {
+        "type": "object",
+        "required": [
+          "turn_id",
+          "item_id"
+        ],
+        "properties": {
+          "turn_id": {},
+          "item_id": {},
+          "event_type": {
+            "const": "item.started"
+          },
+          "terminal": {
+            "const": false
+          },
+          "payload": {
+            "$ref": "#/components/schemas/itemLifecyclePayload"
+          }
+        }
+      },
+      "agentMessageDeltaEventV3": {
+        "type": "object",
+        "required": [
+          "turn_id",
+          "item_id"
+        ],
+        "properties": {
+          "turn_id": {},
+          "item_id": {},
+          "event_type": {
+            "const": "item.agent_message.delta"
+          },
+          "terminal": {
+            "const": false
+          },
+          "payload": {
+            "$ref": "#/components/schemas/agentMessageDeltaPayload"
+          }
+        }
+      },
+      "reasoningTextDeltaEventV3": {
+        "type": "object",
+        "required": [
+          "turn_id",
+          "item_id"
+        ],
+        "properties": {
+          "turn_id": {},
+          "item_id": {},
+          "event_type": {
+            "const": "item.reasoning_text.delta"
+          },
+          "terminal": {
+            "const": false
+          },
+          "payload": {
+            "$ref": "#/components/schemas/reasoningTextDeltaPayloadV3"
+          }
+        }
+      },
+      "reasoningTextFinalizedEventV3": {
+        "type": "object",
+        "required": [
+          "turn_id",
+          "item_id"
+        ],
+        "properties": {
+          "turn_id": {},
+          "item_id": {},
+          "event_type": {
+            "const": "item.reasoning_text.finalized"
+          },
+          "terminal": {
+            "const": false
+          },
+          "payload": {
+            "$ref": "#/components/schemas/reasoningTextFinalizedPayloadV3"
+          }
+        }
+      },
+      "itemCompletedEventV3": {
+        "type": "object",
+        "required": [
+          "turn_id",
+          "item_id"
+        ],
+        "properties": {
+          "turn_id": {},
+          "item_id": {},
+          "event_type": {
+            "const": "item.completed"
+          },
+          "terminal": {
+            "const": false
+          },
+          "payload": {
+            "$ref": "#/components/schemas/itemLifecyclePayload"
+          }
+        }
+      },
+      "turnCompletedEventV3": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/turnWithoutItem"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "event_type": {
+                "const": "turn.completed"
+              },
+              "terminal": {
+                "const": true
+              },
+              "payload": {
+                "$ref": "#/components/schemas/turnCompletedPayloadV3"
+              }
+            }
+          }
+        ]
+      },
+      "agentErrorEventV3": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/turnWithoutItem"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "event_type": {
+                "const": "error"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/agentProblemPayload"
+              }
+            }
+          }
+        ]
+      },
+      "agentWarningEventV3": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/noTurnOrItem"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "event_type": {
+                "const": "warning"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/agentWarningPayload"
+              }
+            }
+          }
+        ]
+      },
+      "artifactStartedEvent": {
+        "type": "object",
+        "required": [
+          "turn_id"
+        ],
+        "properties": {
+          "turn_id": {},
+          "event_type": {
+            "const": "item.artifact.started"
+          },
+          "terminal": {
+            "const": false
+          },
+          "payload": {
+            "$ref": "#/components/schemas/artifactStartedPayload"
+          }
+        }
+      },
+      "artifactProgressEvent": {
+        "type": "object",
+        "required": [
+          "turn_id"
+        ],
+        "properties": {
+          "turn_id": {},
+          "event_type": {
+            "const": "item.artifact.progress"
+          },
+          "terminal": {
+            "const": false
+          },
+          "payload": {
+            "$ref": "#/components/schemas/artifactProgressPayload"
+          }
+        }
+      },
+      "artifactCompletedEvent": {
+        "type": "object",
+        "required": [
+          "turn_id"
+        ],
+        "properties": {
+          "turn_id": {},
+          "event_type": {
+            "const": "item.artifact.completed"
+          },
+          "terminal": {
+            "const": false
+          },
+          "payload": {
+            "$ref": "#/components/schemas/artifactCompletedPayload"
+          }
+        }
+      },
+      "artifactFailedEvent": {
+        "type": "object",
+        "required": [
+          "turn_id"
+        ],
+        "properties": {
+          "turn_id": {},
+          "event_type": {
+            "const": "item.artifact.failed"
+          },
+          "terminal": {
+            "const": false
+          },
+          "payload": {
+            "$ref": "#/components/schemas/artifactFailedPayload"
+          }
+        }
+      },
+      "session-event-v3.schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://contracts.yijie.ai/agent/session-event-v3.schema.json",
+        "title": "AgentSessionEventV3",
+        "description": "Explicitly negotiated v3 Agent Host event. It preserves v2 lifecycle and reasoning semantics and adds sanitized structured-artifact lifecycle events. Ordering is monotonic only within stream_id and delivery is at least once.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema_version",
+          "event_id",
+          "stream_id",
+          "sequence",
+          "occurred_at",
+          "task_id",
+          "agent_session_id",
+          "codex_thread_id",
+          "event_type",
+          "terminal",
+          "payload"
+        ],
+        "properties": {
+          "schema_version": {
+            "const": 3
+          },
+          "event_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "stream_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "occurred_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "trace_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "request_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "tenant_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "user_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "task_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "agent_session_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "codex_thread_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "turn_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "item_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "event_type": {
+            "type": "string"
+          },
+          "terminal": {
+            "type": "boolean"
+          },
+          "payload": {
+            "type": "object"
+          }
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/threadStartedEventV3"
+          },
+          {
+            "$ref": "#/components/schemas/turnStartedEventV3"
+          },
+          {
+            "$ref": "#/components/schemas/itemStartedEventV3"
+          },
+          {
+            "$ref": "#/components/schemas/agentMessageDeltaEventV3"
+          },
+          {
+            "$ref": "#/components/schemas/reasoningTextDeltaEventV3"
+          },
+          {
+            "$ref": "#/components/schemas/reasoningTextFinalizedEventV3"
+          },
+          {
+            "$ref": "#/components/schemas/itemCompletedEventV3"
+          },
+          {
+            "$ref": "#/components/schemas/turnCompletedEventV3"
+          },
+          {
+            "$ref": "#/components/schemas/agentErrorEventV3"
+          },
+          {
+            "$ref": "#/components/schemas/agentWarningEventV3"
+          },
+          {
+            "$ref": "#/components/schemas/artifactStartedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/artifactProgressEvent"
+          },
+          {
+            "$ref": "#/components/schemas/artifactCompletedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/artifactFailedEvent"
+          }
+        ],
+        "definitions": {
+          "noTurnOrItem": {
+            "type": "object",
+            "not": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "turn_id": {}
+                  },
+                  "required": [
+                    "turn_id"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "item_id": {}
+                  },
+                  "required": [
+                    "item_id"
+                  ]
+                }
+              ]
+            }
+          },
+          "turnWithoutItem": {
+            "type": "object",
+            "properties": {
+              "turn_id": {},
+              "item_id": {}
+            },
+            "required": [
+              "turn_id"
+            ],
+            "not": {
+              "type": "object",
+              "properties": {
+                "item_id": {}
+              },
+              "required": [
+                "item_id"
+              ]
+            }
+          },
+          "threadStartedEventV3": {
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/noTurnOrItem"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "event_type": {
+                    "const": "thread.started"
+                  },
+                  "terminal": {
+                    "const": false
+                  },
+                  "payload": {
+                    "$ref": "#/components/schemas/threadStartedPayload"
+                  }
+                }
+              }
+            ]
+          },
+          "turnStartedEventV3": {
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/turnWithoutItem"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "event_type": {
+                    "const": "turn.started"
+                  },
+                  "terminal": {
+                    "const": false
+                  },
+                  "payload": {
+                    "$ref": "#/components/schemas/turnStartedPayload"
+                  }
+                }
+              }
+            ]
+          },
+          "itemStartedEventV3": {
+            "type": "object",
+            "required": [
+              "turn_id",
+              "item_id"
+            ],
+            "properties": {
+              "turn_id": {},
+              "item_id": {},
+              "event_type": {
+                "const": "item.started"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/itemLifecyclePayload"
+              }
+            }
+          },
+          "agentMessageDeltaEventV3": {
+            "type": "object",
+            "required": [
+              "turn_id",
+              "item_id"
+            ],
+            "properties": {
+              "turn_id": {},
+              "item_id": {},
+              "event_type": {
+                "const": "item.agent_message.delta"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/agentMessageDeltaPayload"
+              }
+            }
+          },
+          "reasoningTextDeltaEventV3": {
+            "type": "object",
+            "required": [
+              "turn_id",
+              "item_id"
+            ],
+            "properties": {
+              "turn_id": {},
+              "item_id": {},
+              "event_type": {
+                "const": "item.reasoning_text.delta"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/reasoningTextDeltaPayloadV3"
+              }
+            }
+          },
+          "reasoningTextFinalizedEventV3": {
+            "type": "object",
+            "required": [
+              "turn_id",
+              "item_id"
+            ],
+            "properties": {
+              "turn_id": {},
+              "item_id": {},
+              "event_type": {
+                "const": "item.reasoning_text.finalized"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/reasoningTextFinalizedPayloadV3"
+              }
+            }
+          },
+          "itemCompletedEventV3": {
+            "type": "object",
+            "required": [
+              "turn_id",
+              "item_id"
+            ],
+            "properties": {
+              "turn_id": {},
+              "item_id": {},
+              "event_type": {
+                "const": "item.completed"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/itemLifecyclePayload"
+              }
+            }
+          },
+          "turnCompletedEventV3": {
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/turnWithoutItem"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "event_type": {
+                    "const": "turn.completed"
+                  },
+                  "terminal": {
+                    "const": true
+                  },
+                  "payload": {
+                    "$ref": "#/components/schemas/turnCompletedPayloadV3"
+                  }
+                }
+              }
+            ]
+          },
+          "agentErrorEventV3": {
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/turnWithoutItem"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "event_type": {
+                    "const": "error"
+                  },
+                  "terminal": {
+                    "const": false
+                  },
+                  "payload": {
+                    "$ref": "#/components/schemas/agentProblemPayload"
+                  }
+                }
+              }
+            ]
+          },
+          "agentWarningEventV3": {
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/noTurnOrItem"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "event_type": {
+                    "const": "warning"
+                  },
+                  "terminal": {
+                    "const": false
+                  },
+                  "payload": {
+                    "$ref": "#/components/schemas/agentWarningPayload"
+                  }
+                }
+              }
+            ]
+          },
+          "artifactStartedEvent": {
+            "type": "object",
+            "required": [
+              "turn_id"
+            ],
+            "properties": {
+              "turn_id": {},
+              "event_type": {
+                "const": "item.artifact.started"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/artifactStartedPayload"
+              }
+            }
+          },
+          "artifactProgressEvent": {
+            "type": "object",
+            "required": [
+              "turn_id"
+            ],
+            "properties": {
+              "turn_id": {},
+              "event_type": {
+                "const": "item.artifact.progress"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/artifactProgressPayload"
+              }
+            }
+          },
+          "artifactCompletedEvent": {
+            "type": "object",
+            "required": [
+              "turn_id"
+            ],
+            "properties": {
+              "turn_id": {},
+              "event_type": {
+                "const": "item.artifact.completed"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/artifactCompletedPayload"
+              }
+            }
+          },
+          "artifactFailedEvent": {
+            "type": "object",
+            "required": [
+              "turn_id"
+            ],
+            "properties": {
+              "turn_id": {},
+              "event_type": {
+                "const": "item.artifact.failed"
+              },
+              "terminal": {
+                "const": false
+              },
+              "payload": {
+                "$ref": "#/components/schemas/artifactFailedPayload"
+              }
+            }
+          },
+          "threadStartedPayload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "model",
+              "model_provider"
+            ],
+            "properties": {
+              "model": {
+                "type": "string",
+                "minLength": 1
+              },
+              "model_provider": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "turnStartedPayload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "const": "in_progress"
+              }
+            }
+          },
+          "turnCompletedPayloadV3": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "enum": [
+                  "completed",
+                  "interrupted",
+                  "failed"
+                ]
+              },
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            }
+          },
+          "itemLifecyclePayload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "item_type"
+            ],
+            "properties": {
+              "item_type": {
+                "type": "string",
+                "minLength": 1
+              },
+              "text": {
+                "type": "string"
+              }
+            }
+          },
+          "agentMessageDeltaPayload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "delta"
+            ],
+            "properties": {
+              "delta": {
+                "type": "string"
+              }
+            }
+          },
+          "reasoningTextDeltaPayloadV3": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "content_index",
+              "delta"
+            ],
+            "properties": {
+              "content_index": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 7
+              },
+              "delta": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              }
+            }
+          },
+          "reasoningContentPartV3": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "content_index",
+              "text"
+            ],
+            "properties": {
+              "content_index": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 7
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 65536
+              }
+            }
+          },
+          "reasoningReasonCodeV3": {
+            "enum": [
+              "reasoning_not_emitted",
+              "turn_interrupted",
+              "stream_gap",
+              "runtime_error",
+              "limit_exceeded",
+              "protocol_error",
+              "host_shutdown"
+            ]
+          },
+          "reasoningTextFinalizedPayloadV3": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "status",
+              "contents"
+            ],
+            "properties": {
+              "status": {
+                "enum": [
+                  "complete",
+                  "incomplete",
+                  "unavailable"
+                ]
+              },
+              "contents": {
+                "type": "array",
+                "maxItems": 8,
+                "items": {
+                  "$ref": "#/components/schemas/reasoningContentPartV3"
+                }
+              },
+              "reason_code": {
+                "$ref": "#/components/schemas/reasoningReasonCodeV3"
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "status": {
+                      "const": "complete"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "contents": {
+                      "type": "array",
+                      "minItems": 1
+                    },
+                    "reason_code": false
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "status": {
+                      "const": "incomplete"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "reason_code"
+                  ],
+                  "properties": {
+                    "contents": {
+                      "type": "array",
+                      "minItems": 1
+                    },
+                    "reason_code": {}
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "status": {
+                      "const": "unavailable"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "reason_code"
+                  ],
+                  "properties": {
+                    "contents": {
+                      "type": "array",
+                      "maxItems": 0
+                    },
+                    "reason_code": {}
+                  }
+                }
+              }
+            ]
+          },
+          "agentProblemPayload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "message",
+              "will_retry"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "will_retry": {
+                "type": "boolean"
+              }
+            }
+          },
+          "agentWarningPayload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "message",
+              "will_retry"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "will_retry": {
+                "const": false
+              }
+            }
+          },
+          "artifactKind": {
+            "enum": [
+              "image",
+              "video",
+              "file",
+              "report"
+            ]
+          },
+          "artifactProvenance": {
+            "enum": [
+              "synthetic",
+              "provider",
+              "tool"
+            ]
+          },
+          "artifactStartedPayload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "artifact_id",
+              "kind",
+              "provenance",
+              "status",
+              "ordinal"
+            ],
+            "properties": {
+              "artifact_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "kind": {
+                "$ref": "#/components/schemas/artifactKind"
+              },
+              "provenance": {
+                "$ref": "#/components/schemas/artifactProvenance"
+              },
+              "status": {
+                "const": "in_progress"
+              },
+              "ordinal": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "display_name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 255,
+                "pattern": "^[^/\\\\]+$"
+              }
+            }
+          },
+          "artifactProgressPayload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "artifact_id",
+              "kind",
+              "provenance",
+              "status",
+              "ordinal"
+            ],
+            "properties": {
+              "artifact_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "kind": {
+                "$ref": "#/components/schemas/artifactKind"
+              },
+              "provenance": {
+                "$ref": "#/components/schemas/artifactProvenance"
+              },
+              "status": {
+                "const": "in_progress"
+              },
+              "ordinal": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "stage": {
+                "enum": [
+                  "generating",
+                  "processing",
+                  "finalizing"
+                ]
+              },
+              "progress_percent": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              }
+            },
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "stage": {}
+                },
+                "required": [
+                  "stage"
+                ]
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "progress_percent": {}
+                },
+                "required": [
+                  "progress_percent"
+                ]
+              }
+            ]
+          },
+          "artifactCompletedPayload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "artifact_id",
+              "kind",
+              "provenance",
+              "status",
+              "ordinal",
+              "media_type",
+              "size_bytes",
+              "sha256",
+              "content_href"
+            ],
+            "properties": {
+              "artifact_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "kind": {
+                "$ref": "#/components/schemas/artifactKind"
+              },
+              "provenance": {
+                "$ref": "#/components/schemas/artifactProvenance"
+              },
+              "status": {
+                "const": "ready"
+              },
+              "ordinal": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "display_name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 255,
+                "pattern": "^[^/\\\\]+$"
+              },
+              "media_type": {
+                "enum": [
+                  "image/png",
+                  "image/jpeg",
+                  "image/webp",
+                  "video/mp4",
+                  "text/plain",
+                  "text/csv",
+                  "application/json",
+                  "application/pdf",
+                  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                  "application/vnd.yijie.report+json;version=1"
+                ]
+              },
+              "size_bytes": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 67108864
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "content_href": {
+                "type": "string",
+                "pattern": "^/v3/agent-sessions/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}/artifacts/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}/content$"
+              },
+              "poster_href": {
+                "type": "string",
+                "pattern": "^/v3/agent-sessions/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}/artifacts/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}/poster$"
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "kind": {
+                      "const": "image"
+                    }
+                  },
+                  "required": [
+                    "kind"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "media_type": {
+                      "enum": [
+                        "image/png",
+                        "image/jpeg",
+                        "image/webp"
+                      ]
+                    },
+                    "size_bytes": {
+                      "type": "integer",
+                      "maximum": 20971520
+                    },
+                    "poster_href": false
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "kind": {
+                      "const": "video"
+                    }
+                  },
+                  "required": [
+                    "kind"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "media_type": {
+                      "const": "video/mp4"
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "kind": {
+                      "const": "file"
+                    }
+                  },
+                  "required": [
+                    "kind"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "media_type": {
+                      "enum": [
+                        "text/plain",
+                        "text/csv",
+                        "application/json",
+                        "application/pdf",
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                      ]
+                    },
+                    "poster_href": false
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "kind": {
+                      "const": "report"
+                    }
+                  },
+                  "required": [
+                    "kind"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "media_type": {
+                      "const": "application/vnd.yijie.report+json;version=1"
+                    },
+                    "poster_href": false
+                  }
+                }
+              }
+            ]
+          },
+          "artifactFailedPayload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "artifact_id",
+              "kind",
+              "provenance",
+              "status",
+              "ordinal",
+              "error_code",
+              "retryable"
+            ],
+            "properties": {
+              "artifact_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "kind": {
+                "$ref": "#/components/schemas/artifactKind"
+              },
+              "provenance": {
+                "$ref": "#/components/schemas/artifactProvenance"
+              },
+              "status": {
+                "const": "failed"
+              },
+              "ordinal": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "error_code": {
+                "enum": [
+                  "generation_failed",
+                  "unsupported_provider",
+                  "resource_unavailable",
+                  "limit_exceeded",
+                  "integrity_failed",
+                  "protocol_error",
+                  "turn_interrupted",
+                  "host_shutdown"
+                ]
+              },
+              "retryable": {
+                "type": "boolean"
+              },
+              "message": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
               }
             }
           }

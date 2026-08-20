@@ -1,0 +1,203 @@
+syntax = "proto3";
+
+package yijie.events.v3;
+
+import "google/protobuf/timestamp.proto";
+import "yijie/common/v1/common.proto";
+
+option go_package = "github.com/36Dge/yijie-contracts/sdks/go/protobuf/yijie/events/v3;eventsv3";
+
+enum AgentEventType {
+  AGENT_EVENT_TYPE_UNSPECIFIED = 0;
+  AGENT_EVENT_TYPE_THREAD_STARTED = 1;
+  AGENT_EVENT_TYPE_TURN_STARTED = 2;
+  AGENT_EVENT_TYPE_ITEM_STARTED = 3;
+  AGENT_EVENT_TYPE_ITEM_AGENT_MESSAGE_DELTA = 4;
+  AGENT_EVENT_TYPE_ITEM_COMPLETED = 5;
+  AGENT_EVENT_TYPE_TURN_COMPLETED = 6;
+  AGENT_EVENT_TYPE_ERROR = 7;
+  AGENT_EVENT_TYPE_WARNING = 8;
+  AGENT_EVENT_TYPE_ITEM_REASONING_TEXT_DELTA = 9;
+  AGENT_EVENT_TYPE_ITEM_REASONING_TEXT_FINALIZED = 10;
+  AGENT_EVENT_TYPE_ITEM_ARTIFACT_STARTED = 11;
+  AGENT_EVENT_TYPE_ITEM_ARTIFACT_PROGRESS = 12;
+  AGENT_EVENT_TYPE_ITEM_ARTIFACT_COMPLETED = 13;
+  AGENT_EVENT_TYPE_ITEM_ARTIFACT_FAILED = 14;
+}
+
+enum AgentTurnStatus {
+  AGENT_TURN_STATUS_UNSPECIFIED = 0;
+  AGENT_TURN_STATUS_IN_PROGRESS = 1;
+  AGENT_TURN_STATUS_COMPLETED = 2;
+  AGENT_TURN_STATUS_INTERRUPTED = 3;
+  AGENT_TURN_STATUS_FAILED = 4;
+}
+
+enum ReasoningFinalizationStatus {
+  REASONING_FINALIZATION_STATUS_UNSPECIFIED = 0;
+  REASONING_FINALIZATION_STATUS_COMPLETE = 1;
+  REASONING_FINALIZATION_STATUS_INCOMPLETE = 2;
+  REASONING_FINALIZATION_STATUS_UNAVAILABLE = 3;
+}
+
+enum ReasoningReasonCode {
+  REASONING_REASON_CODE_UNSPECIFIED = 0;
+  REASONING_REASON_CODE_REASONING_NOT_EMITTED = 1;
+  REASONING_REASON_CODE_TURN_INTERRUPTED = 2;
+  REASONING_REASON_CODE_STREAM_GAP = 3;
+  REASONING_REASON_CODE_RUNTIME_ERROR = 4;
+  REASONING_REASON_CODE_LIMIT_EXCEEDED = 5;
+  REASONING_REASON_CODE_PROTOCOL_ERROR = 6;
+  REASONING_REASON_CODE_HOST_SHUTDOWN = 7;
+}
+
+enum ArtifactKind {
+  ARTIFACT_KIND_UNSPECIFIED = 0;
+  ARTIFACT_KIND_IMAGE = 1;
+  ARTIFACT_KIND_VIDEO = 2;
+  ARTIFACT_KIND_FILE = 3;
+  ARTIFACT_KIND_REPORT = 4;
+}
+
+enum ArtifactProvenance {
+  ARTIFACT_PROVENANCE_UNSPECIFIED = 0;
+  ARTIFACT_PROVENANCE_SYNTHETIC = 1;
+  ARTIFACT_PROVENANCE_PROVIDER = 2;
+  ARTIFACT_PROVENANCE_TOOL = 3;
+}
+
+enum ArtifactProgressStage {
+  ARTIFACT_PROGRESS_STAGE_UNSPECIFIED = 0;
+  ARTIFACT_PROGRESS_STAGE_GENERATING = 1;
+  ARTIFACT_PROGRESS_STAGE_PROCESSING = 2;
+  ARTIFACT_PROGRESS_STAGE_FINALIZING = 3;
+}
+
+enum ArtifactErrorCode {
+  ARTIFACT_ERROR_CODE_UNSPECIFIED = 0;
+  ARTIFACT_ERROR_CODE_GENERATION_FAILED = 1;
+  ARTIFACT_ERROR_CODE_UNSUPPORTED_PROVIDER = 2;
+  ARTIFACT_ERROR_CODE_RESOURCE_UNAVAILABLE = 3;
+  ARTIFACT_ERROR_CODE_LIMIT_EXCEEDED = 4;
+  ARTIFACT_ERROR_CODE_INTEGRITY_FAILED = 5;
+  ARTIFACT_ERROR_CODE_PROTOCOL_ERROR = 6;
+  ARTIFACT_ERROR_CODE_TURN_INTERRUPTED = 7;
+  ARTIFACT_ERROR_CODE_HOST_SHUTDOWN = 8;
+}
+
+message ThreadStartedPayload {
+  string model = 1;
+  string model_provider = 2;
+}
+
+message TurnLifecyclePayload {
+  AgentTurnStatus status = 1;
+  string error_code = 2;
+  string error_message = 3;
+}
+
+message ItemLifecyclePayload {
+  string item_type = 1;
+  string text = 2;
+}
+
+message AgentMessageDeltaPayload {
+  string delta = 1;
+}
+
+message ReasoningTextDeltaPayload {
+  uint32 content_index = 1;
+  string delta = 2;
+}
+
+message ReasoningContentPart {
+  uint32 content_index = 1;
+  string text = 2;
+}
+
+message ReasoningTextFinalizedPayload {
+  ReasoningFinalizationStatus status = 1;
+  repeated ReasoningContentPart contents = 2;
+  optional ReasoningReasonCode reason_code = 3;
+}
+
+message AgentProblemPayload {
+  string code = 1;
+  string message = 2;
+  bool will_retry = 3;
+}
+
+message ArtifactStartedPayload {
+  string artifact_id = 1;
+  ArtifactKind kind = 2;
+  ArtifactProvenance provenance = 3;
+  uint32 ordinal = 4;
+  optional string display_name = 5;
+}
+
+message ArtifactProgressPayload {
+  string artifact_id = 1;
+  ArtifactKind kind = 2;
+  ArtifactProvenance provenance = 3;
+  optional ArtifactProgressStage stage = 4;
+  optional double progress_percent = 5;
+  uint32 ordinal = 6;
+}
+
+message ArtifactCompletedPayload {
+  string artifact_id = 1;
+  ArtifactKind kind = 2;
+  ArtifactProvenance provenance = 3;
+  string media_type = 4;
+  uint64 size_bytes = 5;
+  string sha256 = 6;
+  string content_href = 7;
+  optional string poster_href = 8;
+  uint32 ordinal = 9;
+  optional string display_name = 10;
+}
+
+message ArtifactFailedPayload {
+  string artifact_id = 1;
+  ArtifactKind kind = 2;
+  ArtifactProvenance provenance = 3;
+  ArtifactErrorCode error_code = 4;
+  bool retryable = 5;
+  optional string message = 6;
+  uint32 ordinal = 7;
+}
+
+message AgentSessionEvent {
+  // Always 3. Consumers negotiate v3 before the Host emits this message.
+  uint32 schema_version = 1;
+  string event_id = 2;
+  string stream_id = 3;
+  uint64 sequence = 4;
+  google.protobuf.Timestamp occurred_at = 5;
+  yijie.common.v1.TraceContext trace = 6;
+  string task_id = 7;
+  string agent_session_id = 8;
+  string codex_thread_id = 9;
+  string turn_id = 10;
+  string item_id = 11;
+  AgentEventType event_type = 12;
+  // True only for turn_completed. Artifact terminal events are not turn terminal.
+  bool terminal = 13;
+
+  oneof payload {
+    ThreadStartedPayload thread_started = 20;
+    TurnLifecyclePayload turn_started = 21;
+    ItemLifecyclePayload item_started = 22;
+    AgentMessageDeltaPayload agent_message_delta = 23;
+    ItemLifecyclePayload item_completed = 24;
+    TurnLifecyclePayload turn_completed = 25;
+    AgentProblemPayload error = 26;
+    AgentProblemPayload warning = 27;
+    ReasoningTextDeltaPayload reasoning_text_delta = 28;
+    ReasoningTextFinalizedPayload reasoning_text_finalized = 29;
+    ArtifactStartedPayload artifact_started = 30;
+    ArtifactProgressPayload artifact_progress = 31;
+    ArtifactCompletedPayload artifact_completed = 32;
+    ArtifactFailedPayload artifact_failed = 33;
+  }
+}

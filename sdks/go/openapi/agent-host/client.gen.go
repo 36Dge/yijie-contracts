@@ -167,6 +167,84 @@ func (e AgentSessionState) Valid() bool {
 	}
 }
 
+// Defines values for ArtifactAcknowledgementV3ResponseCleanupStatus.
+const (
+	Completed ArtifactAcknowledgementV3ResponseCleanupStatus = "completed"
+	Pending   ArtifactAcknowledgementV3ResponseCleanupStatus = "pending"
+)
+
+// Valid indicates whether the value is a known member of the ArtifactAcknowledgementV3ResponseCleanupStatus enum.
+func (e ArtifactAcknowledgementV3ResponseCleanupStatus) Valid() bool {
+	switch e {
+	case Completed:
+		return true
+	case Pending:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ArtifactAcknowledgementV3ResponseStatus.
+const (
+	Acknowledged ArtifactAcknowledgementV3ResponseStatus = "acknowledged"
+)
+
+// Valid indicates whether the value is a known member of the ArtifactAcknowledgementV3ResponseStatus enum.
+func (e ArtifactAcknowledgementV3ResponseStatus) Valid() bool {
+	switch e {
+	case Acknowledged:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ArtifactErrorResponseV3ErrorCode.
+const (
+	ArtifactErrorResponseV3ErrorCodeArtifactAckConflict         ArtifactErrorResponseV3ErrorCode = "artifact_ack_conflict"
+	ArtifactErrorResponseV3ErrorCodeArtifactExpired             ArtifactErrorResponseV3ErrorCode = "artifact_expired"
+	ArtifactErrorResponseV3ErrorCodeArtifactManifestMismatch    ArtifactErrorResponseV3ErrorCode = "artifact_manifest_mismatch"
+	ArtifactErrorResponseV3ErrorCodeArtifactNotFound            ArtifactErrorResponseV3ErrorCode = "artifact_not_found"
+	ArtifactErrorResponseV3ErrorCodeArtifactNotReady            ArtifactErrorResponseV3ErrorCode = "artifact_not_ready"
+	ArtifactErrorResponseV3ErrorCodeArtifactRangeNotSatisfiable ArtifactErrorResponseV3ErrorCode = "artifact_range_not_satisfiable"
+	ArtifactErrorResponseV3ErrorCodeArtifactResourceUnavailable ArtifactErrorResponseV3ErrorCode = "artifact_resource_unavailable"
+	ArtifactErrorResponseV3ErrorCodeInternalError               ArtifactErrorResponseV3ErrorCode = "internal_error"
+	ArtifactErrorResponseV3ErrorCodeInvalidRange                ArtifactErrorResponseV3ErrorCode = "invalid_range"
+	ArtifactErrorResponseV3ErrorCodeInvalidRequest              ArtifactErrorResponseV3ErrorCode = "invalid_request"
+	ArtifactErrorResponseV3ErrorCodeUnauthorized                ArtifactErrorResponseV3ErrorCode = "unauthorized"
+)
+
+// Valid indicates whether the value is a known member of the ArtifactErrorResponseV3ErrorCode enum.
+func (e ArtifactErrorResponseV3ErrorCode) Valid() bool {
+	switch e {
+	case ArtifactErrorResponseV3ErrorCodeArtifactAckConflict:
+		return true
+	case ArtifactErrorResponseV3ErrorCodeArtifactExpired:
+		return true
+	case ArtifactErrorResponseV3ErrorCodeArtifactManifestMismatch:
+		return true
+	case ArtifactErrorResponseV3ErrorCodeArtifactNotFound:
+		return true
+	case ArtifactErrorResponseV3ErrorCodeArtifactNotReady:
+		return true
+	case ArtifactErrorResponseV3ErrorCodeArtifactRangeNotSatisfiable:
+		return true
+	case ArtifactErrorResponseV3ErrorCodeArtifactResourceUnavailable:
+		return true
+	case ArtifactErrorResponseV3ErrorCodeInternalError:
+		return true
+	case ArtifactErrorResponseV3ErrorCodeInvalidRange:
+		return true
+	case ArtifactErrorResponseV3ErrorCodeInvalidRequest:
+		return true
+	case ArtifactErrorResponseV3ErrorCodeUnauthorized:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for CleanupAgentSessionV2CompletedResponseOutcome.
 const (
 	CleanupAgentSessionV2CompletedResponseOutcomeComplete CleanupAgentSessionV2CompletedResponseOutcome = "complete"
@@ -881,6 +959,21 @@ func (e EventSchemaVersionV2) Valid() bool {
 	}
 }
 
+// Defines values for EventSchemaVersionV3.
+const (
+	EventSchemaVersionV3N3 EventSchemaVersionV3 = 3
+)
+
+// Valid indicates whether the value is a known member of the EventSchemaVersionV3 enum.
+func (e EventSchemaVersionV3) Valid() bool {
+	switch e {
+	case EventSchemaVersionV3N3:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for StreamAgentSessionEventsV2ParamsEventSchemaVersion.
 const (
 	StreamAgentSessionEventsV2ParamsEventSchemaVersionN2 StreamAgentSessionEventsV2ParamsEventSchemaVersion = 2
@@ -890,6 +983,21 @@ const (
 func (e StreamAgentSessionEventsV2ParamsEventSchemaVersion) Valid() bool {
 	switch e {
 	case StreamAgentSessionEventsV2ParamsEventSchemaVersionN2:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for StreamAgentSessionEventsV3ParamsEventSchemaVersion.
+const (
+	StreamAgentSessionEventsV3ParamsEventSchemaVersionN3 StreamAgentSessionEventsV3ParamsEventSchemaVersion = 3
+)
+
+// Valid indicates whether the value is a known member of the StreamAgentSessionEventsV3ParamsEventSchemaVersion enum.
+func (e StreamAgentSessionEventsV3ParamsEventSchemaVersion) Valid() bool {
+	switch e {
+	case StreamAgentSessionEventsV3ParamsEventSchemaVersionN3:
 		return true
 	default:
 		return false
@@ -945,6 +1053,47 @@ type AgentSessionModelProvider string
 
 // AgentSessionState defines model for AgentSession.State.
 type AgentSessionState string
+
+// ArtifactAcknowledgementV3Request defines model for ArtifactAcknowledgementV3Request.
+type ArtifactAcknowledgementV3Request struct {
+	// AckId Desktop-selected idempotency identifier scoped to this artifact.
+	AckId openapi_types.UUID `json:"ack_id"`
+
+	// LocalCommittedAt UTC timestamp recorded only after Desktop's atomic durable commit succeeds.
+	LocalCommittedAt time.Time `json:"local_committed_at"`
+
+	// Sha256 Lowercase SHA-256 verified against the completed event before local commit.
+	Sha256 string `json:"sha256"`
+
+	// SizeBytes Exact byte length verified at Desktop's atomic local commit boundary.
+	SizeBytes int64 `json:"size_bytes"`
+}
+
+// ArtifactAcknowledgementV3Response defines model for ArtifactAcknowledgementV3Response.
+type ArtifactAcknowledgementV3Response struct {
+	AckId          openapi_types.UUID                             `json:"ack_id"`
+	AcknowledgedAt time.Time                                      `json:"acknowledged_at"`
+	ArtifactId     openapi_types.UUID                             `json:"artifact_id"`
+	CleanupStatus  ArtifactAcknowledgementV3ResponseCleanupStatus `json:"cleanup_status"`
+	Status         ArtifactAcknowledgementV3ResponseStatus        `json:"status"`
+}
+
+// ArtifactAcknowledgementV3ResponseCleanupStatus defines model for ArtifactAcknowledgementV3Response.CleanupStatus.
+type ArtifactAcknowledgementV3ResponseCleanupStatus string
+
+// ArtifactAcknowledgementV3ResponseStatus defines model for ArtifactAcknowledgementV3Response.Status.
+type ArtifactAcknowledgementV3ResponseStatus string
+
+// ArtifactErrorResponseV3 Content-free v3 artifact failure. It never contains a path, URL, token, digest, provider payload, or artifact bytes.
+type ArtifactErrorResponseV3 struct {
+	Error struct {
+		Code    ArtifactErrorResponseV3ErrorCode `json:"code"`
+		Message string                           `json:"message"`
+	} `json:"error"`
+}
+
+// ArtifactErrorResponseV3ErrorCode defines model for ArtifactErrorResponseV3.Error.Code.
+type ArtifactErrorResponseV3ErrorCode string
 
 // CleanupAgentSessionV2CompletedResponse defines model for CleanupAgentSessionV2CompletedResponse.
 type CleanupAgentSessionV2CompletedResponse struct {
@@ -1360,11 +1509,20 @@ type UuidOrEmpty = string
 // AgentSessionId defines model for AgentSessionId.
 type AgentSessionId = openapi_types.UUID
 
+// ArtifactId defines model for ArtifactId.
+type ArtifactId = openapi_types.UUID
+
+// ByteRange defines model for ByteRange.
+type ByteRange = string
+
 // EventAfter defines model for EventAfter.
 type EventAfter = uint64
 
 // EventSchemaVersionV2 defines model for EventSchemaVersionV2.
 type EventSchemaVersionV2 int32
+
+// EventSchemaVersionV3 defines model for EventSchemaVersionV3.
+type EventSchemaVersionV3 int32
 
 // EventStreamId defines model for EventStreamId.
 type EventStreamId = openapi_types.UUID
@@ -1377,6 +1535,24 @@ type TaskId = openapi_types.UUID
 
 // TurnId defines model for TurnId.
 type TurnId = openapi_types.UUID
+
+// ArtifactBadRequest Content-free v3 artifact failure. It never contains a path, URL, token, digest, provider payload, or artifact bytes.
+type ArtifactBadRequest = ArtifactErrorResponseV3
+
+// ArtifactExpired Content-free v3 artifact failure. It never contains a path, URL, token, digest, provider payload, or artifact bytes.
+type ArtifactExpired = ArtifactErrorResponseV3
+
+// ArtifactInternalError Content-free v3 artifact failure. It never contains a path, URL, token, digest, provider payload, or artifact bytes.
+type ArtifactInternalError = ArtifactErrorResponseV3
+
+// ArtifactNotFound Content-free v3 artifact failure. It never contains a path, URL, token, digest, provider payload, or artifact bytes.
+type ArtifactNotFound = ArtifactErrorResponseV3
+
+// ArtifactRangeNotSatisfiable Content-free v3 artifact failure. It never contains a path, URL, token, digest, provider payload, or artifact bytes.
+type ArtifactRangeNotSatisfiable = ArtifactErrorResponseV3
+
+// ArtifactUnauthorized Content-free v3 artifact failure. It never contains a path, URL, token, digest, provider payload, or artifact bytes.
+type ArtifactUnauthorized = ArtifactErrorResponseV3
 
 // BadRequest defines model for BadRequest.
 type BadRequest = ErrorResponse
@@ -1457,6 +1633,42 @@ type StartAgentTurnV2409JSONResponseBody struct {
 	union json.RawMessage
 }
 
+// GetAgentArtifactContentV3Params defines parameters for GetAgentArtifactContentV3.
+type GetAgentArtifactContentV3Params struct {
+	// Range A single inclusive HTTP byte range. Multiple or malformed ranges are rejected.
+	Range *ByteRange `json:"Range,omitempty"`
+}
+
+// GetAgentArtifactPosterV3Params defines parameters for GetAgentArtifactPosterV3.
+type GetAgentArtifactPosterV3Params struct {
+	// Range A single inclusive HTTP byte range. Multiple or malformed ranges are rejected.
+	Range *ByteRange `json:"Range,omitempty"`
+}
+
+// StreamAgentSessionEventsV3Params defines parameters for StreamAgentSessionEventsV3.
+type StreamAgentSessionEventsV3Params struct {
+	// EventSchemaVersion Explicit negotiation guard. Only integer value 3 is accepted on the v3 event stream.
+	EventSchemaVersion StreamAgentSessionEventsV3ParamsEventSchemaVersion `form:"event_schema_version" json:"event_schema_version"`
+
+	// StreamId Expected process-local stream identifier. Required when `after > 0`
+	// unless `Last-Event-ID` supplies the complete cursor. A mismatch returns
+	// `409 event_stream_changed`.
+	StreamId *EventStreamId `form:"stream_id,omitempty" json:"stream_id,omitempty"`
+
+	// After Unsigned 64-bit sequence after which events are replayed. Defaults to
+	// zero. Values greater than zero require a matching stream ID. Ignored when
+	// `Last-Event-ID` is present.
+	After *EventAfter `form:"after,omitempty" json:"after,omitempty"`
+
+	// LastEventID Complete SSE cursor `<stream_id>:<sequence>`. Sequence is a decimal
+	// unsigned 64-bit integer from 1 through 18446744073709551615 with no
+	// leading zero. The header overrides `stream_id` and `after` query parameters.
+	LastEventID *LastEventId `json:"Last-Event-ID,omitempty"`
+}
+
+// StreamAgentSessionEventsV3ParamsEventSchemaVersion defines parameters for StreamAgentSessionEventsV3.
+type StreamAgentSessionEventsV3ParamsEventSchemaVersion int32
+
 // ResumeAgentSessionJSONRequestBody defines body for ResumeAgentSession for application/json ContentType.
 type ResumeAgentSessionJSONRequestBody = TraceRequest
 
@@ -1477,6 +1689,9 @@ type GenerateAgentSessionTitleV2JSONRequestBody = GenerateTitleV2Request
 
 // StartAgentTurnV2JSONRequestBody defines body for StartAgentTurnV2 for application/json ContentType.
 type StartAgentTurnV2JSONRequestBody = StartTurnV2Request
+
+// AcknowledgeAgentArtifactV3JSONRequestBody defines body for AcknowledgeAgentArtifactV3 for application/json ContentType.
+type AcknowledgeAgentArtifactV3JSONRequestBody = ArtifactAcknowledgementV3Request
 
 // AsStartTurnV2TextBlock returns the union data inside the StartTurnV2ContentBlock as a StartTurnV2TextBlock
 func (t StartTurnV2ContentBlock) AsStartTurnV2TextBlock() (StartTurnV2TextBlock, error) {
@@ -1846,6 +2061,26 @@ type ClientInterface interface {
 	StartAgentTurnV2WithBody(ctx context.Context, agentSessionId AgentSessionId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	StartAgentTurnV2(ctx context.Context, agentSessionId AgentSessionId, body StartAgentTurnV2JSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AcknowledgeAgentArtifactV3WithBody request with any body
+	AcknowledgeAgentArtifactV3WithBody(ctx context.Context, agentSessionId AgentSessionId, artifactId ArtifactId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	AcknowledgeAgentArtifactV3(ctx context.Context, agentSessionId AgentSessionId, artifactId ArtifactId, body AcknowledgeAgentArtifactV3JSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetAgentArtifactContentV3 request
+	GetAgentArtifactContentV3(ctx context.Context, agentSessionId AgentSessionId, artifactId ArtifactId, params *GetAgentArtifactContentV3Params, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// HeadAgentArtifactContentV3 request
+	HeadAgentArtifactContentV3(ctx context.Context, agentSessionId AgentSessionId, artifactId ArtifactId, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetAgentArtifactPosterV3 request
+	GetAgentArtifactPosterV3(ctx context.Context, agentSessionId AgentSessionId, artifactId ArtifactId, params *GetAgentArtifactPosterV3Params, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// HeadAgentArtifactPosterV3 request
+	HeadAgentArtifactPosterV3(ctx context.Context, agentSessionId AgentSessionId, artifactId ArtifactId, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// StreamAgentSessionEventsV3 request
+	StreamAgentSessionEventsV3(ctx context.Context, agentSessionId AgentSessionId, params *StreamAgentSessionEventsV3Params, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) GetAgentHostHealth(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -2078,6 +2313,90 @@ func (c *Client) StartAgentTurnV2WithBody(ctx context.Context, agentSessionId Ag
 
 func (c *Client) StartAgentTurnV2(ctx context.Context, agentSessionId AgentSessionId, body StartAgentTurnV2JSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewStartAgentTurnV2Request(c.Server, agentSessionId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AcknowledgeAgentArtifactV3WithBody(ctx context.Context, agentSessionId AgentSessionId, artifactId ArtifactId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAcknowledgeAgentArtifactV3RequestWithBody(c.Server, agentSessionId, artifactId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AcknowledgeAgentArtifactV3(ctx context.Context, agentSessionId AgentSessionId, artifactId ArtifactId, body AcknowledgeAgentArtifactV3JSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAcknowledgeAgentArtifactV3Request(c.Server, agentSessionId, artifactId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetAgentArtifactContentV3(ctx context.Context, agentSessionId AgentSessionId, artifactId ArtifactId, params *GetAgentArtifactContentV3Params, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetAgentArtifactContentV3Request(c.Server, agentSessionId, artifactId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) HeadAgentArtifactContentV3(ctx context.Context, agentSessionId AgentSessionId, artifactId ArtifactId, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewHeadAgentArtifactContentV3Request(c.Server, agentSessionId, artifactId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetAgentArtifactPosterV3(ctx context.Context, agentSessionId AgentSessionId, artifactId ArtifactId, params *GetAgentArtifactPosterV3Params, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetAgentArtifactPosterV3Request(c.Server, agentSessionId, artifactId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) HeadAgentArtifactPosterV3(ctx context.Context, agentSessionId AgentSessionId, artifactId ArtifactId, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewHeadAgentArtifactPosterV3Request(c.Server, agentSessionId, artifactId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) StreamAgentSessionEventsV3(ctx context.Context, agentSessionId AgentSessionId, params *StreamAgentSessionEventsV3Params, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewStreamAgentSessionEventsV3Request(c.Server, agentSessionId, params)
 	if err != nil {
 		return nil, err
 	}
@@ -2723,6 +3042,350 @@ func NewStartAgentTurnV2RequestWithBody(server string, agentSessionId AgentSessi
 	return req, nil
 }
 
+// NewAcknowledgeAgentArtifactV3Request calls the generic AcknowledgeAgentArtifactV3 builder with application/json body
+func NewAcknowledgeAgentArtifactV3Request(server string, agentSessionId AgentSessionId, artifactId ArtifactId, body AcknowledgeAgentArtifactV3JSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewAcknowledgeAgentArtifactV3RequestWithBody(server, agentSessionId, artifactId, "application/json", bodyReader)
+}
+
+// NewAcknowledgeAgentArtifactV3RequestWithBody generates requests for AcknowledgeAgentArtifactV3 with any type of body
+func NewAcknowledgeAgentArtifactV3RequestWithBody(server string, agentSessionId AgentSessionId, artifactId ArtifactId, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "agent_session_id", agentSessionId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "artifact_id", artifactId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v3/agent-sessions/%s/artifacts/%s/ack", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetAgentArtifactContentV3Request generates requests for GetAgentArtifactContentV3
+func NewGetAgentArtifactContentV3Request(server string, agentSessionId AgentSessionId, artifactId ArtifactId, params *GetAgentArtifactContentV3Params) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "agent_session_id", agentSessionId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "artifact_id", artifactId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v3/agent-sessions/%s/artifacts/%s/content", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.Range != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Range", *params.Range, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: ""})
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Range", headerParam0)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewHeadAgentArtifactContentV3Request generates requests for HeadAgentArtifactContentV3
+func NewHeadAgentArtifactContentV3Request(server string, agentSessionId AgentSessionId, artifactId ArtifactId) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "agent_session_id", agentSessionId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "artifact_id", artifactId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v3/agent-sessions/%s/artifacts/%s/content", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodHead, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetAgentArtifactPosterV3Request generates requests for GetAgentArtifactPosterV3
+func NewGetAgentArtifactPosterV3Request(server string, agentSessionId AgentSessionId, artifactId ArtifactId, params *GetAgentArtifactPosterV3Params) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "agent_session_id", agentSessionId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "artifact_id", artifactId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v3/agent-sessions/%s/artifacts/%s/poster", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.Range != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Range", *params.Range, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: ""})
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Range", headerParam0)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewHeadAgentArtifactPosterV3Request generates requests for HeadAgentArtifactPosterV3
+func NewHeadAgentArtifactPosterV3Request(server string, agentSessionId AgentSessionId, artifactId ArtifactId) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "agent_session_id", agentSessionId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "artifact_id", artifactId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v3/agent-sessions/%s/artifacts/%s/poster", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodHead, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewStreamAgentSessionEventsV3Request generates requests for StreamAgentSessionEventsV3
+func NewStreamAgentSessionEventsV3Request(server string, agentSessionId AgentSessionId, params *StreamAgentSessionEventsV3Params) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "agent_session_id", agentSessionId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v3/agent-sessions/%s/events", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "event_schema_version", params.EventSchemaVersion, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+			return nil, err
+		} else {
+			for _, qp := range strings.Split(queryFrag, "&") {
+				rawQueryFragments = append(rawQueryFragments, qp)
+			}
+		}
+
+		if params.StreamId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "stream_id", *params.StreamId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: "uuid"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.After != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "after", *params.After, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "uint64"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.LastEventID != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Last-Event-ID", *params.LastEventID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: ""})
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Last-Event-ID", headerParam0)
+		}
+
+	}
+
+	return req, nil
+}
+
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -2818,6 +3481,26 @@ type ClientWithResponsesInterface interface {
 	StartAgentTurnV2WithBodyWithResponse(ctx context.Context, agentSessionId AgentSessionId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*StartAgentTurnV2Response, error)
 
 	StartAgentTurnV2WithResponse(ctx context.Context, agentSessionId AgentSessionId, body StartAgentTurnV2JSONRequestBody, reqEditors ...RequestEditorFn) (*StartAgentTurnV2Response, error)
+
+	// AcknowledgeAgentArtifactV3WithBodyWithResponse request with any body
+	AcknowledgeAgentArtifactV3WithBodyWithResponse(ctx context.Context, agentSessionId AgentSessionId, artifactId ArtifactId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AcknowledgeAgentArtifactV3Response, error)
+
+	AcknowledgeAgentArtifactV3WithResponse(ctx context.Context, agentSessionId AgentSessionId, artifactId ArtifactId, body AcknowledgeAgentArtifactV3JSONRequestBody, reqEditors ...RequestEditorFn) (*AcknowledgeAgentArtifactV3Response, error)
+
+	// GetAgentArtifactContentV3WithResponse request
+	GetAgentArtifactContentV3WithResponse(ctx context.Context, agentSessionId AgentSessionId, artifactId ArtifactId, params *GetAgentArtifactContentV3Params, reqEditors ...RequestEditorFn) (*GetAgentArtifactContentV3Response, error)
+
+	// HeadAgentArtifactContentV3WithResponse request
+	HeadAgentArtifactContentV3WithResponse(ctx context.Context, agentSessionId AgentSessionId, artifactId ArtifactId, reqEditors ...RequestEditorFn) (*HeadAgentArtifactContentV3Response, error)
+
+	// GetAgentArtifactPosterV3WithResponse request
+	GetAgentArtifactPosterV3WithResponse(ctx context.Context, agentSessionId AgentSessionId, artifactId ArtifactId, params *GetAgentArtifactPosterV3Params, reqEditors ...RequestEditorFn) (*GetAgentArtifactPosterV3Response, error)
+
+	// HeadAgentArtifactPosterV3WithResponse request
+	HeadAgentArtifactPosterV3WithResponse(ctx context.Context, agentSessionId AgentSessionId, artifactId ArtifactId, reqEditors ...RequestEditorFn) (*HeadAgentArtifactPosterV3Response, error)
+
+	// StreamAgentSessionEventsV3WithResponse request
+	StreamAgentSessionEventsV3WithResponse(ctx context.Context, agentSessionId AgentSessionId, params *StreamAgentSessionEventsV3Params, reqEditors ...RequestEditorFn) (*StreamAgentSessionEventsV3Response, error)
 }
 
 type GetAgentHostHealthResponse struct {
@@ -3261,6 +3944,214 @@ func (r StartAgentTurnV2Response) ContentType() string {
 	return ""
 }
 
+type AcknowledgeAgentArtifactV3Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ArtifactAcknowledgementV3Response
+	JSON400      *ArtifactBadRequest
+	JSON401      *ArtifactUnauthorized
+	JSON404      *ArtifactNotFound
+	JSON409      *ArtifactErrorResponseV3
+	JSON410      *ArtifactExpired
+	JSON500      *ArtifactInternalError
+}
+
+// Status returns HTTPResponse.Status
+func (r AcknowledgeAgentArtifactV3Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r AcknowledgeAgentArtifactV3Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r AcknowledgeAgentArtifactV3Response) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetAgentArtifactContentV3Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *ArtifactBadRequest
+	JSON401      *ArtifactUnauthorized
+	JSON404      *ArtifactNotFound
+	JSON410      *ArtifactExpired
+	JSON416      *ArtifactRangeNotSatisfiable
+	JSON500      *ArtifactInternalError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetAgentArtifactContentV3Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetAgentArtifactContentV3Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetAgentArtifactContentV3Response) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type HeadAgentArtifactContentV3Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *ArtifactBadRequest
+	JSON401      *ArtifactUnauthorized
+	JSON404      *ArtifactNotFound
+	JSON410      *ArtifactExpired
+	JSON500      *ArtifactInternalError
+}
+
+// Status returns HTTPResponse.Status
+func (r HeadAgentArtifactContentV3Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r HeadAgentArtifactContentV3Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r HeadAgentArtifactContentV3Response) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetAgentArtifactPosterV3Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *ArtifactBadRequest
+	JSON401      *ArtifactUnauthorized
+	JSON404      *ArtifactNotFound
+	JSON410      *ArtifactExpired
+	JSON416      *ArtifactRangeNotSatisfiable
+	JSON500      *ArtifactInternalError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetAgentArtifactPosterV3Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetAgentArtifactPosterV3Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetAgentArtifactPosterV3Response) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type HeadAgentArtifactPosterV3Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *ArtifactBadRequest
+	JSON401      *ArtifactUnauthorized
+	JSON404      *ArtifactNotFound
+	JSON410      *ArtifactExpired
+	JSON500      *ArtifactInternalError
+}
+
+// Status returns HTTPResponse.Status
+func (r HeadAgentArtifactPosterV3Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r HeadAgentArtifactPosterV3Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r HeadAgentArtifactPosterV3Response) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type StreamAgentSessionEventsV3Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *ErrorResponse
+	JSON401      *Unauthorized
+	JSON404      *SessionNotFound
+	JSON409      *ErrorResponse
+	JSON500      *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r StreamAgentSessionEventsV3Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r StreamAgentSessionEventsV3Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r StreamAgentSessionEventsV3Response) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 // GetAgentHostHealthWithResponse request returning *GetAgentHostHealthResponse
 func (c *ClientWithResponses) GetAgentHostHealthWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetAgentHostHealthResponse, error) {
 	rsp, err := c.GetAgentHostHealth(ctx, reqEditors...)
@@ -3432,6 +4323,68 @@ func (c *ClientWithResponses) StartAgentTurnV2WithResponse(ctx context.Context, 
 		return nil, err
 	}
 	return ParseStartAgentTurnV2Response(rsp)
+}
+
+// AcknowledgeAgentArtifactV3WithBodyWithResponse request with arbitrary body returning *AcknowledgeAgentArtifactV3Response
+func (c *ClientWithResponses) AcknowledgeAgentArtifactV3WithBodyWithResponse(ctx context.Context, agentSessionId AgentSessionId, artifactId ArtifactId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AcknowledgeAgentArtifactV3Response, error) {
+	rsp, err := c.AcknowledgeAgentArtifactV3WithBody(ctx, agentSessionId, artifactId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAcknowledgeAgentArtifactV3Response(rsp)
+}
+
+func (c *ClientWithResponses) AcknowledgeAgentArtifactV3WithResponse(ctx context.Context, agentSessionId AgentSessionId, artifactId ArtifactId, body AcknowledgeAgentArtifactV3JSONRequestBody, reqEditors ...RequestEditorFn) (*AcknowledgeAgentArtifactV3Response, error) {
+	rsp, err := c.AcknowledgeAgentArtifactV3(ctx, agentSessionId, artifactId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAcknowledgeAgentArtifactV3Response(rsp)
+}
+
+// GetAgentArtifactContentV3WithResponse request returning *GetAgentArtifactContentV3Response
+func (c *ClientWithResponses) GetAgentArtifactContentV3WithResponse(ctx context.Context, agentSessionId AgentSessionId, artifactId ArtifactId, params *GetAgentArtifactContentV3Params, reqEditors ...RequestEditorFn) (*GetAgentArtifactContentV3Response, error) {
+	rsp, err := c.GetAgentArtifactContentV3(ctx, agentSessionId, artifactId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetAgentArtifactContentV3Response(rsp)
+}
+
+// HeadAgentArtifactContentV3WithResponse request returning *HeadAgentArtifactContentV3Response
+func (c *ClientWithResponses) HeadAgentArtifactContentV3WithResponse(ctx context.Context, agentSessionId AgentSessionId, artifactId ArtifactId, reqEditors ...RequestEditorFn) (*HeadAgentArtifactContentV3Response, error) {
+	rsp, err := c.HeadAgentArtifactContentV3(ctx, agentSessionId, artifactId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseHeadAgentArtifactContentV3Response(rsp)
+}
+
+// GetAgentArtifactPosterV3WithResponse request returning *GetAgentArtifactPosterV3Response
+func (c *ClientWithResponses) GetAgentArtifactPosterV3WithResponse(ctx context.Context, agentSessionId AgentSessionId, artifactId ArtifactId, params *GetAgentArtifactPosterV3Params, reqEditors ...RequestEditorFn) (*GetAgentArtifactPosterV3Response, error) {
+	rsp, err := c.GetAgentArtifactPosterV3(ctx, agentSessionId, artifactId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetAgentArtifactPosterV3Response(rsp)
+}
+
+// HeadAgentArtifactPosterV3WithResponse request returning *HeadAgentArtifactPosterV3Response
+func (c *ClientWithResponses) HeadAgentArtifactPosterV3WithResponse(ctx context.Context, agentSessionId AgentSessionId, artifactId ArtifactId, reqEditors ...RequestEditorFn) (*HeadAgentArtifactPosterV3Response, error) {
+	rsp, err := c.HeadAgentArtifactPosterV3(ctx, agentSessionId, artifactId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseHeadAgentArtifactPosterV3Response(rsp)
+}
+
+// StreamAgentSessionEventsV3WithResponse request returning *StreamAgentSessionEventsV3Response
+func (c *ClientWithResponses) StreamAgentSessionEventsV3WithResponse(ctx context.Context, agentSessionId AgentSessionId, params *StreamAgentSessionEventsV3Params, reqEditors ...RequestEditorFn) (*StreamAgentSessionEventsV3Response, error) {
+	rsp, err := c.StreamAgentSessionEventsV3(ctx, agentSessionId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseStreamAgentSessionEventsV3Response(rsp)
 }
 
 // ParseGetAgentHostHealthResponse parses an HTTP response from a GetAgentHostHealthWithResponse call
@@ -4123,6 +5076,358 @@ func ParseStartAgentTurnV2Response(rsp *http.Response) (*StartAgentTurnV2Respons
 			return nil, err
 		}
 		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseAcknowledgeAgentArtifactV3Response parses an HTTP response from a AcknowledgeAgentArtifactV3WithResponse call
+func ParseAcknowledgeAgentArtifactV3Response(rsp *http.Response) (*AcknowledgeAgentArtifactV3Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &AcknowledgeAgentArtifactV3Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ArtifactAcknowledgementV3Response
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ArtifactBadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ArtifactUnauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ArtifactNotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ArtifactErrorResponseV3
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 410:
+		var dest ArtifactExpired
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON410 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ArtifactInternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetAgentArtifactContentV3Response parses an HTTP response from a GetAgentArtifactContentV3WithResponse call
+func ParseGetAgentArtifactContentV3Response(rsp *http.Response) (*GetAgentArtifactContentV3Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetAgentArtifactContentV3Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ArtifactBadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ArtifactUnauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ArtifactNotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 410:
+		var dest ArtifactExpired
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON410 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 416:
+		var dest ArtifactRangeNotSatisfiable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON416 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ArtifactInternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseHeadAgentArtifactContentV3Response parses an HTTP response from a HeadAgentArtifactContentV3WithResponse call
+func ParseHeadAgentArtifactContentV3Response(rsp *http.Response) (*HeadAgentArtifactContentV3Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &HeadAgentArtifactContentV3Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ArtifactBadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ArtifactUnauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ArtifactNotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 410:
+		var dest ArtifactExpired
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON410 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ArtifactInternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetAgentArtifactPosterV3Response parses an HTTP response from a GetAgentArtifactPosterV3WithResponse call
+func ParseGetAgentArtifactPosterV3Response(rsp *http.Response) (*GetAgentArtifactPosterV3Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetAgentArtifactPosterV3Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ArtifactBadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ArtifactUnauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ArtifactNotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 410:
+		var dest ArtifactExpired
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON410 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 416:
+		var dest ArtifactRangeNotSatisfiable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON416 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ArtifactInternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseHeadAgentArtifactPosterV3Response parses an HTTP response from a HeadAgentArtifactPosterV3WithResponse call
+func ParseHeadAgentArtifactPosterV3Response(rsp *http.Response) (*HeadAgentArtifactPosterV3Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &HeadAgentArtifactPosterV3Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ArtifactBadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ArtifactUnauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ArtifactNotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 410:
+		var dest ArtifactExpired
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON410 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ArtifactInternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseStreamAgentSessionEventsV3Response parses an HTTP response from a StreamAgentSessionEventsV3WithResponse call
+func ParseStreamAgentSessionEventsV3Response(rsp *http.Response) (*StreamAgentSessionEventsV3Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &StreamAgentSessionEventsV3Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest SessionNotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
 
 	}
 
