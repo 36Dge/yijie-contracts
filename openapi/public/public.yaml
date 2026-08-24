@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Yijie Public API
-  version: 0.3.0
+  version: 0.4.0
   description: Public HTTP contract for Yijie clients.
 servers:
   - url: https://api.yijie.ai
@@ -572,6 +572,7 @@ components:
       pattern: '^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+$'
       x-yijie-initial-values:
         - knowledge.read
+        - plugin.manage
         - plugin.read
         - schedule.read
         - store.read

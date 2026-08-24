@@ -506,6 +506,152 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/skills": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the bundled catalog and current managed Skill state
+         * @description Returns a content-free projection of the bundled catalog, the managed
+         *     installation directory, and the current Runtime visibility state. It
+         *     never returns an archive path, App Data path, SKILL.md content, token, or
+         *     arbitrary filesystem metadata. Unknown Runtime Skills outside the
+         *     Desktop-managed root are not included.
+         *
+         *     `plugin.read` is required in addition to the owner-only local bearer.
+         *     The capability is an allow-only local profile decision and is never
+         *     inferred from possession of the bearer token.
+         */
+        get: operations["listManagedSkills"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/skills/scan-operations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reconcile the managed Skill directory with the bundled catalog
+         * @description Performs an idempotent bounded scan of the preconfigured Desktop-managed
+         *     Skill root. The request accepts no path. Host canonicalizes its configured
+         *     root, ignores unknown directories, rejects invalid receipts, stops
+         *     projecting missing or corrupt Skills, and refreshes Runtime state through
+         *     the pinned Skills API. The same `operation_id` and reason may return the
+         *     completed result; reuse with different canonical input is a conflict.
+         */
+        post: operations["scanManagedSkills"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/skills/{skill_id}/install-operations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Stable catalog identifier. It is resolved through the signed-in bundle manifest and is never interpreted as a path. */
+                skill_id: components["parameters"]["SkillId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Install one catalog Skill from the preconfigured bundled resource root
+         * @description Installs only the exact catalog entry named by `skill_id`. Desktop binds
+         *     the request to its catalog view with the expected version, archive digest,
+         *     and catalog revision; it never supplies an archive or destination path.
+         *     Host must require a manifest entry whose provenance and redistribution
+         *     reviews are verified and whose catalog status is `installable`, validate
+         *     SHA-256, file count, expanded size, relative ZIP entries, regular-file
+         *     types, and the required SKILL.md, then commit through a same-volume staging
+         *     directory and atomic rename. A failure leaves no registered partial copy
+         *     and preserves any previously usable version. Successful first install is
+         *     enabled by default and becomes visible from the next Runtime Skill snapshot.
+         *
+         *     The same canonical request and `operation_id` is idempotent. Reuse with
+         *     different input returns `skill_operation_conflict`.
+         */
+        post: operations["installManagedSkill"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/skills/{skill_id}/enabled": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Stable catalog identifier. It is resolved through the signed-in bundle manifest and is never interpreted as a path. */
+                skill_id: components["parameters"]["SkillId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Enable or disable one installed Skill
+         * @description Persists the desired enabled state in the Desktop-managed root and maps
+         *     the exact canonical SKILL.md to Runtime `skills/config/write`. Disabling
+         *     keeps files installed but removes the Skill from the next model-visible
+         *     snapshot; enabling restores visibility from the next snapshot. The state
+         *     must be replayable after Desktop, Host, or Runtime restart. The request
+         *     contains no path and cannot target a Skill outside the managed catalog.
+         *     The same canonical enabled value and `operation_id` is idempotent; reuse
+         *     with a different value returns `skill_operation_conflict`.
+         */
+        put: operations["setManagedSkillEnabled"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/skills/{skill_id}/uninstall-operations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Stable catalog identifier. It is resolved through the signed-in bundle manifest and is never interpreted as a path. */
+                skill_id: components["parameters"]["SkillId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Uninstall one managed Skill copy
+         * @description Stops Runtime projection, then removes only the exact canonical managed
+         *     installation directory and its receipt/disabled marker. It never deletes
+         *     the bundled read-only archive, source repository, arbitrary symlink target,
+         *     or path supplied by Desktop. The same canonical request and `operation_id`
+         *     is idempotent; a missing installation returns the converged not-installed
+         *     result while an unknown catalog ID remains `skill_not_found`.
+         */
+        post: operations["uninstallManagedSkill"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -857,6 +1003,86 @@ export interface components {
                 message: string;
             };
         };
+        SkillListResponse: {
+            /**
+             * Format: int32
+             * @enum {integer}
+             */
+            schema_version: 1;
+            catalog_revision: components["schemas"]["Sha256"];
+            /** Format: date-time */
+            scanned_at: string;
+            skills: components["schemas"]["ManagedSkill"][];
+        };
+        SkillScanResponse: {
+            /** Format: uuid */
+            operation_id: string;
+            /** @enum {string} */
+            outcome: "complete";
+            catalog_revision: components["schemas"]["Sha256"];
+            /** Format: date-time */
+            scanned_at: string;
+            skills: components["schemas"]["ManagedSkill"][];
+        };
+        SkillMutationResponse: {
+            /** Format: uuid */
+            operation_id: string;
+            /** @enum {string} */
+            outcome: "complete";
+            skill: components["schemas"]["ManagedSkill"];
+        };
+        ManagedSkill: {
+            id: components["schemas"]["SkillIdValue"];
+            runtime_name: string;
+            version: components["schemas"]["SemanticVersion"];
+            /** @enum {string} */
+            catalog_status: "installable" | "blocked";
+            /** @enum {string} */
+            maintenance_status: "maintained" | "unmaintained";
+            /** @enum {string} */
+            capability_readiness: "ready" | "degraded" | "blocked";
+            /** @enum {string} */
+            installation_status: "not_installed" | "installing" | "installed" | "uninstalling" | "error";
+            /** @description False when not installed or explicitly disabled. */
+            enabled: boolean;
+            /** @description True only after Runtime confirms the exact installed and enabled Skill in its current projection. */
+            runtime_visible: boolean;
+            /** @enum {string} */
+            failure_code: "" | "bundle_missing" | "bundle_manifest_invalid" | "archive_checksum_mismatch" | "archive_unsafe" | "archive_too_large" | "install_receipt_invalid" | "installed_files_missing" | "installed_files_corrupt" | "capability_unavailable" | "runtime_unavailable" | "runtime_sync_failed" | "install_failed" | "uninstall_failed" | "scan_failed";
+        };
+        SkillScanRequest: {
+            /** Format: uuid */
+            operation_id: string;
+            /** @enum {string} */
+            reason: "startup" | "page_open" | "app_upgrade" | "window_resume" | "directory_changed" | "user_retry";
+        };
+        SkillInstallRequest: {
+            /** Format: uuid */
+            operation_id: string;
+            expected_version: components["schemas"]["SemanticVersion"];
+            expected_archive_sha256: components["schemas"]["Sha256"];
+            catalog_revision: components["schemas"]["Sha256"];
+        };
+        SkillEnabledRequest: {
+            /** Format: uuid */
+            operation_id: string;
+            enabled: boolean;
+        };
+        SkillUninstallRequest: {
+            /** Format: uuid */
+            operation_id: string;
+        };
+        SkillIdValue: string;
+        SemanticVersion: string;
+        Sha256: string;
+        /** @description Content-free Skill management failure. It never contains a path, token, archive bytes, Skill instructions, or Runtime payload. */
+        SkillErrorResponse: {
+            error: {
+                /** @enum {string} */
+                code: "unauthorized" | "capability_denied" | "invalid_request" | "skill_not_found" | "skill_not_installable" | "skill_operation_conflict" | "skill_busy" | "bundle_missing" | "bundle_manifest_invalid" | "archive_checksum_mismatch" | "archive_unsafe" | "archive_too_large" | "install_failed" | "uninstall_failed" | "scan_failed" | "runtime_unavailable" | "runtime_sync_failed" | "internal_error";
+                message: string;
+            };
+        };
         SessionResponse: {
             session: components["schemas"]["AgentSession"];
         };
@@ -985,6 +1211,92 @@ export interface components {
                  *     }
                  */
                 "application/json": components["schemas"]["ErrorResponse"];
+            };
+        };
+        /** @description `invalid_request`: the operation ID, Skill ID, version, digest, catalog revision, or closed request body is invalid. */
+        SkillBadRequest: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["SkillErrorResponse"];
+            };
+        };
+        /** @description `unauthorized`: a valid owner-only local Agent Host bearer token is required. */
+        SkillUnauthorized: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["SkillErrorResponse"];
+            };
+        };
+        /** @description `capability_denied`: the exact local identity does not have the operation's declared plugin capability. */
+        SkillForbidden: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["SkillErrorResponse"];
+            };
+        };
+        /** @description `skill_not_found`: the stable Skill ID is absent from the loaded bundle catalog. */
+        SkillNotFound: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["SkillErrorResponse"];
+            };
+        };
+        /** @description `skill_operation_conflict` or `skill_busy`: the idempotency key was reused with different input or another mutation is active. */
+        SkillConflict: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["SkillErrorResponse"];
+            };
+        };
+        /**
+         * @description The catalog item cannot be installed safely: `skill_not_installable`,
+         *     `bundle_missing`, `bundle_manifest_invalid`, `archive_checksum_mismatch`,
+         *     `archive_unsafe`, or `archive_too_large`.
+         */
+        SkillUnprocessable: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["SkillErrorResponse"];
+            };
+        };
+        /** @description `runtime_unavailable` or `runtime_sync_failed`: Runtime projection cannot currently converge. */
+        SkillUnavailable: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                /** @description Optional bounded delay before retrying the same idempotent operation. */
+                "Retry-After"?: number;
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["SkillErrorResponse"];
+            };
+        };
+        /** @description `install_failed`, `uninstall_failed`, `scan_failed`, or `internal_error` without any local path or archive content. */
+        SkillInternalError: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["SkillErrorResponse"];
             };
         };
         /** @description `title_operation_conflict`: the operation ID was already used with different canonical input. */
@@ -1120,6 +1432,8 @@ export interface components {
         AgentSessionId: string;
         /** @description Host-generated structured-artifact identifier scoped to the Agent session. */
         ArtifactId: string;
+        /** @description Stable catalog identifier. It is resolved through the signed-in bundle manifest and is never interpreted as a path. */
+        SkillId: string;
         /** @description Codex Runtime-generated turn identifier. */
         TurnId: string;
         /**
@@ -2073,6 +2387,168 @@ export interface operations {
             };
             410: components["responses"]["ArtifactExpired"];
             500: components["responses"]["ArtifactInternalError"];
+        };
+    };
+    listManagedSkills: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Current bounded Skill catalog and state projection. */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillListResponse"];
+                };
+            };
+            401: components["responses"]["SkillUnauthorized"];
+            403: components["responses"]["SkillForbidden"];
+            500: components["responses"]["SkillInternalError"];
+            503: components["responses"]["SkillUnavailable"];
+        };
+    };
+    scanManagedSkills: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SkillScanRequest"];
+            };
+        };
+        responses: {
+            /** @description Scan completed and the response reflects the converged managed state. */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillScanResponse"];
+                };
+            };
+            400: components["responses"]["SkillBadRequest"];
+            401: components["responses"]["SkillUnauthorized"];
+            403: components["responses"]["SkillForbidden"];
+            409: components["responses"]["SkillConflict"];
+            500: components["responses"]["SkillInternalError"];
+            503: components["responses"]["SkillUnavailable"];
+        };
+    };
+    installManagedSkill: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Stable catalog identifier. It is resolved through the signed-in bundle manifest and is never interpreted as a path. */
+                skill_id: components["parameters"]["SkillId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SkillInstallRequest"];
+            };
+        };
+        responses: {
+            /** @description Installation and Runtime projection completed. */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillMutationResponse"];
+                };
+            };
+            400: components["responses"]["SkillBadRequest"];
+            401: components["responses"]["SkillUnauthorized"];
+            403: components["responses"]["SkillForbidden"];
+            404: components["responses"]["SkillNotFound"];
+            409: components["responses"]["SkillConflict"];
+            422: components["responses"]["SkillUnprocessable"];
+            500: components["responses"]["SkillInternalError"];
+            503: components["responses"]["SkillUnavailable"];
+        };
+    };
+    setManagedSkillEnabled: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Stable catalog identifier. It is resolved through the signed-in bundle manifest and is never interpreted as a path. */
+                skill_id: components["parameters"]["SkillId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SkillEnabledRequest"];
+            };
+        };
+        responses: {
+            /** @description Enabled state and Runtime projection converged. */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillMutationResponse"];
+                };
+            };
+            400: components["responses"]["SkillBadRequest"];
+            401: components["responses"]["SkillUnauthorized"];
+            403: components["responses"]["SkillForbidden"];
+            404: components["responses"]["SkillNotFound"];
+            409: components["responses"]["SkillConflict"];
+            500: components["responses"]["SkillInternalError"];
+            503: components["responses"]["SkillUnavailable"];
+        };
+    };
+    uninstallManagedSkill: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Stable catalog identifier. It is resolved through the signed-in bundle manifest and is never interpreted as a path. */
+                skill_id: components["parameters"]["SkillId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SkillUninstallRequest"];
+            };
+        };
+        responses: {
+            /** @description The managed copy is absent and no longer projected to Runtime. */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillMutationResponse"];
+                };
+            };
+            400: components["responses"]["SkillBadRequest"];
+            401: components["responses"]["SkillUnauthorized"];
+            403: components["responses"]["SkillForbidden"];
+            404: components["responses"]["SkillNotFound"];
+            409: components["responses"]["SkillConflict"];
+            500: components["responses"]["SkillInternalError"];
+            503: components["responses"]["SkillUnavailable"];
         };
     };
 }

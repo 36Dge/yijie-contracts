@@ -18,5 +18,6 @@ export * from "./jsonschema/chat-message.gen.js";
 export * from "./jsonschema/compatibility-agent-host-runtime.gen.js";
 export * from "./jsonschema/ecommerce-listing.gen.js";
 export * as ReportDocumentSchemaV1 from "./jsonschema/report-report-document-v1.gen.js";
+export * from "./jsonschema/skills-skill-bundle-manifest-v1.gen.js";
 export * from "./jsonschema/skills-skill-manifest.gen.js";
 export * from "./jsonschema/task-task.gen.js";

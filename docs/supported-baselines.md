@@ -1,6 +1,6 @@
 # Supported Contract Baselines
 
-## 当前状态（2026-08-20）
+## 当前状态（2026-08-25）
 
 ### 已发布支持基线
 
@@ -20,6 +20,28 @@
 - 兼容窗口：在明确登记 deprecation/unsupported 条件前持续支持
 - 回滚：回退 Host 的契约 snapshot 并禁用 Baseline 2 对外接口；这是首个支持版本，
   没有更早的已发布 contracts tag 可回退
+
+### FEAT-129 当前候选
+
+- 版本：`0.5.0 candidate`
+- 状态：`candidate`；不是 supported/release-ready，未授权 tag、publish 或部署
+- contract impact：`additive`
+- 权威源：Skill Bundle Manifest v1、Agent Host Skills v1 OpenAPI、Public capability
+  初始值以及固定 Runtime Skills compatibility projection
+- producer：`yijie-skills` 确定性本地包；已知后续 consumers 为
+  `yijie-agent-host` 与 `yijie-desktop`
+- 本地身份：精确 `YIJIE_ENV=local` + `YIJIE_LOCAL_PROFILE=demo_fast` 由 Desktop 自动建立
+  固定身份并透明携带 owner-only bearer，用户无需登录；Host 内部仍要求 bearer 与
+  `plugin.read`/`plugin.manage`，public/production 不适用
+- 许可边界：重写的 `yijie.content-marketing.copywriting@0.1.0` 只获准用于
+  `local-development` 候选；Accio 上游候选未被打包，`desktop-release` 继续等待产品/法务证明
+- breaking baseline：同时相对当前工作基线 `HEAD` 与已发布
+  `f16a497e1377f45747f8ff9292b4b60cf2027f88` 验证
+- 尚未完成：不可变 contracts commit/digest、Host/Desktop 精确 consumer pin、真实 Runtime
+  conformance、正式客户端许可与 D4 fresh process
+- 回滚：禁用 Desktop consumer 且不注册受管 Skill root，保持既有接口可用
+
+详见 [`releases/contracts-v0.5.0.md`](releases/contracts-v0.5.0.md)。
 
 ### FEAT-128 当前候选
 

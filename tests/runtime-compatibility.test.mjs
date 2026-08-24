@@ -10,12 +10,21 @@ import addFormats from "ajv-formats";
 
 const compatibilityPath = "compatibility/agent-host-runtime-v1.json";
 const compatibilitySchemaPath = "jsonschema/compatibility/agent-host-runtime.schema.json";
-const expectedMethods = ["thread/resume", "thread/start", "turn/interrupt", "turn/start"];
+const expectedMethods = [
+  "skills/config/write",
+  "skills/extraRoots/set",
+  "skills/list",
+  "thread/resume",
+  "thread/start",
+  "turn/interrupt",
+  "turn/start",
+];
 const expectedNotifications = [
   "error",
   "item/agentMessage/delta",
   "item/completed",
   "item/started",
+  "skills/changed",
   "thread/started",
   "turn/completed",
   "turn/started",

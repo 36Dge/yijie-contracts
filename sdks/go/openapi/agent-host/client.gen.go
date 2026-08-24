@@ -491,6 +491,147 @@ func (e HealthResponseStatus) Valid() bool {
 	}
 }
 
+// Defines values for ManagedSkillCapabilityReadiness.
+const (
+	ManagedSkillCapabilityReadinessBlocked  ManagedSkillCapabilityReadiness = "blocked"
+	ManagedSkillCapabilityReadinessDegraded ManagedSkillCapabilityReadiness = "degraded"
+	ManagedSkillCapabilityReadinessReady    ManagedSkillCapabilityReadiness = "ready"
+)
+
+// Valid indicates whether the value is a known member of the ManagedSkillCapabilityReadiness enum.
+func (e ManagedSkillCapabilityReadiness) Valid() bool {
+	switch e {
+	case ManagedSkillCapabilityReadinessBlocked:
+		return true
+	case ManagedSkillCapabilityReadinessDegraded:
+		return true
+	case ManagedSkillCapabilityReadinessReady:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ManagedSkillCatalogStatus.
+const (
+	ManagedSkillCatalogStatusBlocked     ManagedSkillCatalogStatus = "blocked"
+	ManagedSkillCatalogStatusInstallable ManagedSkillCatalogStatus = "installable"
+)
+
+// Valid indicates whether the value is a known member of the ManagedSkillCatalogStatus enum.
+func (e ManagedSkillCatalogStatus) Valid() bool {
+	switch e {
+	case ManagedSkillCatalogStatusBlocked:
+		return true
+	case ManagedSkillCatalogStatusInstallable:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ManagedSkillFailureCode.
+const (
+	ManagedSkillFailureCodeArchiveChecksumMismatch ManagedSkillFailureCode = "archive_checksum_mismatch"
+	ManagedSkillFailureCodeArchiveTooLarge         ManagedSkillFailureCode = "archive_too_large"
+	ManagedSkillFailureCodeArchiveUnsafe           ManagedSkillFailureCode = "archive_unsafe"
+	ManagedSkillFailureCodeBundleManifestInvalid   ManagedSkillFailureCode = "bundle_manifest_invalid"
+	ManagedSkillFailureCodeBundleMissing           ManagedSkillFailureCode = "bundle_missing"
+	ManagedSkillFailureCodeCapabilityUnavailable   ManagedSkillFailureCode = "capability_unavailable"
+	ManagedSkillFailureCodeEmpty                   ManagedSkillFailureCode = ""
+	ManagedSkillFailureCodeInstallFailed           ManagedSkillFailureCode = "install_failed"
+	ManagedSkillFailureCodeInstallReceiptInvalid   ManagedSkillFailureCode = "install_receipt_invalid"
+	ManagedSkillFailureCodeInstalledFilesCorrupt   ManagedSkillFailureCode = "installed_files_corrupt"
+	ManagedSkillFailureCodeInstalledFilesMissing   ManagedSkillFailureCode = "installed_files_missing"
+	ManagedSkillFailureCodeRuntimeSyncFailed       ManagedSkillFailureCode = "runtime_sync_failed"
+	ManagedSkillFailureCodeRuntimeUnavailable      ManagedSkillFailureCode = "runtime_unavailable"
+	ManagedSkillFailureCodeScanFailed              ManagedSkillFailureCode = "scan_failed"
+	ManagedSkillFailureCodeUninstallFailed         ManagedSkillFailureCode = "uninstall_failed"
+)
+
+// Valid indicates whether the value is a known member of the ManagedSkillFailureCode enum.
+func (e ManagedSkillFailureCode) Valid() bool {
+	switch e {
+	case ManagedSkillFailureCodeArchiveChecksumMismatch:
+		return true
+	case ManagedSkillFailureCodeArchiveTooLarge:
+		return true
+	case ManagedSkillFailureCodeArchiveUnsafe:
+		return true
+	case ManagedSkillFailureCodeBundleManifestInvalid:
+		return true
+	case ManagedSkillFailureCodeBundleMissing:
+		return true
+	case ManagedSkillFailureCodeCapabilityUnavailable:
+		return true
+	case ManagedSkillFailureCodeEmpty:
+		return true
+	case ManagedSkillFailureCodeInstallFailed:
+		return true
+	case ManagedSkillFailureCodeInstallReceiptInvalid:
+		return true
+	case ManagedSkillFailureCodeInstalledFilesCorrupt:
+		return true
+	case ManagedSkillFailureCodeInstalledFilesMissing:
+		return true
+	case ManagedSkillFailureCodeRuntimeSyncFailed:
+		return true
+	case ManagedSkillFailureCodeRuntimeUnavailable:
+		return true
+	case ManagedSkillFailureCodeScanFailed:
+		return true
+	case ManagedSkillFailureCodeUninstallFailed:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ManagedSkillInstallationStatus.
+const (
+	Error        ManagedSkillInstallationStatus = "error"
+	Installed    ManagedSkillInstallationStatus = "installed"
+	Installing   ManagedSkillInstallationStatus = "installing"
+	NotInstalled ManagedSkillInstallationStatus = "not_installed"
+	Uninstalling ManagedSkillInstallationStatus = "uninstalling"
+)
+
+// Valid indicates whether the value is a known member of the ManagedSkillInstallationStatus enum.
+func (e ManagedSkillInstallationStatus) Valid() bool {
+	switch e {
+	case Error:
+		return true
+	case Installed:
+		return true
+	case Installing:
+		return true
+	case NotInstalled:
+		return true
+	case Uninstalling:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ManagedSkillMaintenanceStatus.
+const (
+	Maintained   ManagedSkillMaintenanceStatus = "maintained"
+	Unmaintained ManagedSkillMaintenanceStatus = "unmaintained"
+)
+
+// Valid indicates whether the value is a known member of the ManagedSkillMaintenanceStatus enum.
+func (e ManagedSkillMaintenanceStatus) Valid() bool {
+	switch e {
+	case Maintained:
+		return true
+	case Unmaintained:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for NotReadyResponseStatus.
 const (
 	NotReady NotReadyResponseStatus = "not_ready"
@@ -652,13 +793,13 @@ func (e RuntimeStatusModel) Valid() bool {
 
 // Defines values for RuntimeStatusModelProvider.
 const (
-	RuntimeStatusModelProviderMinimax RuntimeStatusModelProvider = "minimax"
+	Minimax RuntimeStatusModelProvider = "minimax"
 )
 
 // Valid indicates whether the value is a known member of the RuntimeStatusModelProvider enum.
 func (e RuntimeStatusModelProvider) Valid() bool {
 	switch e {
-	case RuntimeStatusModelProviderMinimax:
+	case Minimax:
 		return true
 	default:
 		return false
@@ -719,6 +860,147 @@ const (
 func (e RuntimeStatusUpstreamTag) Valid() bool {
 	switch e {
 	case RustV01446:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SkillErrorResponseErrorCode.
+const (
+	SkillErrorResponseErrorCodeArchiveChecksumMismatch SkillErrorResponseErrorCode = "archive_checksum_mismatch"
+	SkillErrorResponseErrorCodeArchiveTooLarge         SkillErrorResponseErrorCode = "archive_too_large"
+	SkillErrorResponseErrorCodeArchiveUnsafe           SkillErrorResponseErrorCode = "archive_unsafe"
+	SkillErrorResponseErrorCodeBundleManifestInvalid   SkillErrorResponseErrorCode = "bundle_manifest_invalid"
+	SkillErrorResponseErrorCodeBundleMissing           SkillErrorResponseErrorCode = "bundle_missing"
+	SkillErrorResponseErrorCodeCapabilityDenied        SkillErrorResponseErrorCode = "capability_denied"
+	SkillErrorResponseErrorCodeInstallFailed           SkillErrorResponseErrorCode = "install_failed"
+	SkillErrorResponseErrorCodeInternalError           SkillErrorResponseErrorCode = "internal_error"
+	SkillErrorResponseErrorCodeInvalidRequest          SkillErrorResponseErrorCode = "invalid_request"
+	SkillErrorResponseErrorCodeRuntimeSyncFailed       SkillErrorResponseErrorCode = "runtime_sync_failed"
+	SkillErrorResponseErrorCodeRuntimeUnavailable      SkillErrorResponseErrorCode = "runtime_unavailable"
+	SkillErrorResponseErrorCodeScanFailed              SkillErrorResponseErrorCode = "scan_failed"
+	SkillErrorResponseErrorCodeSkillBusy               SkillErrorResponseErrorCode = "skill_busy"
+	SkillErrorResponseErrorCodeSkillNotFound           SkillErrorResponseErrorCode = "skill_not_found"
+	SkillErrorResponseErrorCodeSkillNotInstallable     SkillErrorResponseErrorCode = "skill_not_installable"
+	SkillErrorResponseErrorCodeSkillOperationConflict  SkillErrorResponseErrorCode = "skill_operation_conflict"
+	SkillErrorResponseErrorCodeUnauthorized            SkillErrorResponseErrorCode = "unauthorized"
+	SkillErrorResponseErrorCodeUninstallFailed         SkillErrorResponseErrorCode = "uninstall_failed"
+)
+
+// Valid indicates whether the value is a known member of the SkillErrorResponseErrorCode enum.
+func (e SkillErrorResponseErrorCode) Valid() bool {
+	switch e {
+	case SkillErrorResponseErrorCodeArchiveChecksumMismatch:
+		return true
+	case SkillErrorResponseErrorCodeArchiveTooLarge:
+		return true
+	case SkillErrorResponseErrorCodeArchiveUnsafe:
+		return true
+	case SkillErrorResponseErrorCodeBundleManifestInvalid:
+		return true
+	case SkillErrorResponseErrorCodeBundleMissing:
+		return true
+	case SkillErrorResponseErrorCodeCapabilityDenied:
+		return true
+	case SkillErrorResponseErrorCodeInstallFailed:
+		return true
+	case SkillErrorResponseErrorCodeInternalError:
+		return true
+	case SkillErrorResponseErrorCodeInvalidRequest:
+		return true
+	case SkillErrorResponseErrorCodeRuntimeSyncFailed:
+		return true
+	case SkillErrorResponseErrorCodeRuntimeUnavailable:
+		return true
+	case SkillErrorResponseErrorCodeScanFailed:
+		return true
+	case SkillErrorResponseErrorCodeSkillBusy:
+		return true
+	case SkillErrorResponseErrorCodeSkillNotFound:
+		return true
+	case SkillErrorResponseErrorCodeSkillNotInstallable:
+		return true
+	case SkillErrorResponseErrorCodeSkillOperationConflict:
+		return true
+	case SkillErrorResponseErrorCodeUnauthorized:
+		return true
+	case SkillErrorResponseErrorCodeUninstallFailed:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SkillListResponseSchemaVersion.
+const (
+	N1 SkillListResponseSchemaVersion = 1
+)
+
+// Valid indicates whether the value is a known member of the SkillListResponseSchemaVersion enum.
+func (e SkillListResponseSchemaVersion) Valid() bool {
+	switch e {
+	case N1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SkillMutationResponseOutcome.
+const (
+	SkillMutationResponseOutcomeComplete SkillMutationResponseOutcome = "complete"
+)
+
+// Valid indicates whether the value is a known member of the SkillMutationResponseOutcome enum.
+func (e SkillMutationResponseOutcome) Valid() bool {
+	switch e {
+	case SkillMutationResponseOutcomeComplete:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SkillScanRequestReason.
+const (
+	AppUpgrade       SkillScanRequestReason = "app_upgrade"
+	DirectoryChanged SkillScanRequestReason = "directory_changed"
+	PageOpen         SkillScanRequestReason = "page_open"
+	Startup          SkillScanRequestReason = "startup"
+	UserRetry        SkillScanRequestReason = "user_retry"
+	WindowResume     SkillScanRequestReason = "window_resume"
+)
+
+// Valid indicates whether the value is a known member of the SkillScanRequestReason enum.
+func (e SkillScanRequestReason) Valid() bool {
+	switch e {
+	case AppUpgrade:
+		return true
+	case DirectoryChanged:
+		return true
+	case PageOpen:
+		return true
+	case Startup:
+		return true
+	case UserRetry:
+		return true
+	case WindowResume:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SkillScanResponseOutcome.
+const (
+	SkillScanResponseOutcomeComplete SkillScanResponseOutcome = "complete"
+)
+
+// Valid indicates whether the value is a known member of the SkillScanResponseOutcome enum.
+func (e SkillScanResponseOutcome) Valid() bool {
+	switch e {
+	case SkillScanResponseOutcomeComplete:
 		return true
 	default:
 		return false
@@ -1224,6 +1506,39 @@ type HealthResponseService string
 // HealthResponseStatus defines model for HealthResponse.Status.
 type HealthResponseStatus string
 
+// ManagedSkill defines model for ManagedSkill.
+type ManagedSkill struct {
+	CapabilityReadiness ManagedSkillCapabilityReadiness `json:"capability_readiness"`
+	CatalogStatus       ManagedSkillCatalogStatus       `json:"catalog_status"`
+
+	// Enabled False when not installed or explicitly disabled.
+	Enabled            bool                           `json:"enabled"`
+	FailureCode        ManagedSkillFailureCode        `json:"failure_code"`
+	Id                 SkillIdValue                   `json:"id"`
+	InstallationStatus ManagedSkillInstallationStatus `json:"installation_status"`
+	MaintenanceStatus  ManagedSkillMaintenanceStatus  `json:"maintenance_status"`
+	RuntimeName        string                         `json:"runtime_name"`
+
+	// RuntimeVisible True only after Runtime confirms the exact installed and enabled Skill in its current projection.
+	RuntimeVisible bool            `json:"runtime_visible"`
+	Version        SemanticVersion `json:"version"`
+}
+
+// ManagedSkillCapabilityReadiness defines model for ManagedSkill.CapabilityReadiness.
+type ManagedSkillCapabilityReadiness string
+
+// ManagedSkillCatalogStatus defines model for ManagedSkill.CatalogStatus.
+type ManagedSkillCatalogStatus string
+
+// ManagedSkillFailureCode defines model for ManagedSkill.FailureCode.
+type ManagedSkillFailureCode string
+
+// ManagedSkillInstallationStatus defines model for ManagedSkill.InstallationStatus.
+type ManagedSkillInstallationStatus string
+
+// ManagedSkillMaintenanceStatus defines model for ManagedSkill.MaintenanceStatus.
+type ManagedSkillMaintenanceStatus string
+
 // NotReadyResponse defines model for NotReadyResponse.
 type NotReadyResponse struct {
 	RuntimeState RuntimeState           `json:"runtime_state"`
@@ -1286,9 +1601,90 @@ type RuntimeStatusUpstreamCommit string
 // RuntimeStatusUpstreamTag defines model for RuntimeStatus.UpstreamTag.
 type RuntimeStatusUpstreamTag string
 
+// SemanticVersion defines model for SemanticVersion.
+type SemanticVersion = string
+
 // SessionResponse defines model for SessionResponse.
 type SessionResponse struct {
 	Session AgentSession `json:"session"`
+}
+
+// Sha256 defines model for Sha256.
+type Sha256 = string
+
+// SkillEnabledRequest defines model for SkillEnabledRequest.
+type SkillEnabledRequest struct {
+	Enabled     bool               `json:"enabled"`
+	OperationId openapi_types.UUID `json:"operation_id"`
+}
+
+// SkillErrorResponse Content-free Skill management failure. It never contains a path, token, archive bytes, Skill instructions, or Runtime payload.
+type SkillErrorResponse struct {
+	Error struct {
+		Code    SkillErrorResponseErrorCode `json:"code"`
+		Message string                      `json:"message"`
+	} `json:"error"`
+}
+
+// SkillErrorResponseErrorCode defines model for SkillErrorResponse.Error.Code.
+type SkillErrorResponseErrorCode string
+
+// SkillIdValue defines model for SkillIdValue.
+type SkillIdValue = string
+
+// SkillInstallRequest defines model for SkillInstallRequest.
+type SkillInstallRequest struct {
+	CatalogRevision       Sha256             `json:"catalog_revision"`
+	ExpectedArchiveSha256 Sha256             `json:"expected_archive_sha256"`
+	ExpectedVersion       SemanticVersion    `json:"expected_version"`
+	OperationId           openapi_types.UUID `json:"operation_id"`
+}
+
+// SkillListResponse defines model for SkillListResponse.
+type SkillListResponse struct {
+	CatalogRevision Sha256                         `json:"catalog_revision"`
+	ScannedAt       time.Time                      `json:"scanned_at"`
+	SchemaVersion   SkillListResponseSchemaVersion `json:"schema_version"`
+	Skills          []ManagedSkill                 `json:"skills"`
+}
+
+// SkillListResponseSchemaVersion defines model for SkillListResponse.SchemaVersion.
+type SkillListResponseSchemaVersion int32
+
+// SkillMutationResponse defines model for SkillMutationResponse.
+type SkillMutationResponse struct {
+	OperationId openapi_types.UUID           `json:"operation_id"`
+	Outcome     SkillMutationResponseOutcome `json:"outcome"`
+	Skill       ManagedSkill                 `json:"skill"`
+}
+
+// SkillMutationResponseOutcome defines model for SkillMutationResponse.Outcome.
+type SkillMutationResponseOutcome string
+
+// SkillScanRequest defines model for SkillScanRequest.
+type SkillScanRequest struct {
+	OperationId openapi_types.UUID     `json:"operation_id"`
+	Reason      SkillScanRequestReason `json:"reason"`
+}
+
+// SkillScanRequestReason defines model for SkillScanRequest.Reason.
+type SkillScanRequestReason string
+
+// SkillScanResponse defines model for SkillScanResponse.
+type SkillScanResponse struct {
+	CatalogRevision Sha256                   `json:"catalog_revision"`
+	OperationId     openapi_types.UUID       `json:"operation_id"`
+	Outcome         SkillScanResponseOutcome `json:"outcome"`
+	ScannedAt       time.Time                `json:"scanned_at"`
+	Skills          []ManagedSkill           `json:"skills"`
+}
+
+// SkillScanResponseOutcome defines model for SkillScanResponse.Outcome.
+type SkillScanResponseOutcome string
+
+// SkillUninstallRequest defines model for SkillUninstallRequest.
+type SkillUninstallRequest struct {
+	OperationId openapi_types.UUID `json:"operation_id"`
 }
 
 // StartSessionRequest defines model for StartSessionRequest.
@@ -1530,6 +1926,9 @@ type EventStreamId = openapi_types.UUID
 // LastEventId defines model for LastEventId.
 type LastEventId = string
 
+// SkillId defines model for SkillId.
+type SkillId = string
+
 // TaskId defines model for TaskId.
 type TaskId = openapi_types.UUID
 
@@ -1565,6 +1964,30 @@ type RuntimeRequestFailed = ErrorResponse
 
 // SessionNotFound defines model for SessionNotFound.
 type SessionNotFound = ErrorResponse
+
+// SkillBadRequest Content-free Skill management failure. It never contains a path, token, archive bytes, Skill instructions, or Runtime payload.
+type SkillBadRequest = SkillErrorResponse
+
+// SkillConflict Content-free Skill management failure. It never contains a path, token, archive bytes, Skill instructions, or Runtime payload.
+type SkillConflict = SkillErrorResponse
+
+// SkillForbidden Content-free Skill management failure. It never contains a path, token, archive bytes, Skill instructions, or Runtime payload.
+type SkillForbidden = SkillErrorResponse
+
+// SkillInternalError Content-free Skill management failure. It never contains a path, token, archive bytes, Skill instructions, or Runtime payload.
+type SkillInternalError = SkillErrorResponse
+
+// SkillNotFound Content-free Skill management failure. It never contains a path, token, archive bytes, Skill instructions, or Runtime payload.
+type SkillNotFound = SkillErrorResponse
+
+// SkillUnauthorized Content-free Skill management failure. It never contains a path, token, archive bytes, Skill instructions, or Runtime payload.
+type SkillUnauthorized = SkillErrorResponse
+
+// SkillUnavailable Content-free Skill management failure. It never contains a path, token, archive bytes, Skill instructions, or Runtime payload.
+type SkillUnavailable = SkillErrorResponse
+
+// SkillUnprocessable Content-free Skill management failure. It never contains a path, token, archive bytes, Skill instructions, or Runtime payload.
+type SkillUnprocessable = SkillErrorResponse
 
 // TitleGenerationUnavailable defines model for TitleGenerationUnavailable.
 type TitleGenerationUnavailable = TitleGenerationUnavailableError
@@ -1677,6 +2100,18 @@ type StartAgentTurnJSONRequestBody = StartTurnRequest
 
 // InterruptAgentTurnJSONRequestBody defines body for InterruptAgentTurn for application/json ContentType.
 type InterruptAgentTurnJSONRequestBody = TraceRequest
+
+// ScanManagedSkillsJSONRequestBody defines body for ScanManagedSkills for application/json ContentType.
+type ScanManagedSkillsJSONRequestBody = SkillScanRequest
+
+// SetManagedSkillEnabledJSONRequestBody defines body for SetManagedSkillEnabled for application/json ContentType.
+type SetManagedSkillEnabledJSONRequestBody = SkillEnabledRequest
+
+// InstallManagedSkillJSONRequestBody defines body for InstallManagedSkill for application/json ContentType.
+type InstallManagedSkillJSONRequestBody = SkillInstallRequest
+
+// UninstallManagedSkillJSONRequestBody defines body for UninstallManagedSkill for application/json ContentType.
+type UninstallManagedSkillJSONRequestBody = SkillUninstallRequest
 
 // StartAgentSessionJSONRequestBody defines body for StartAgentSession for application/json ContentType.
 type StartAgentSessionJSONRequestBody = StartSessionRequest
@@ -2036,6 +2471,29 @@ type ClientInterface interface {
 
 	InterruptAgentTurn(ctx context.Context, agentSessionId AgentSessionId, turnId TurnId, body InterruptAgentTurnJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ListManagedSkills request
+	ListManagedSkills(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ScanManagedSkillsWithBody request with any body
+	ScanManagedSkillsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	ScanManagedSkills(ctx context.Context, body ScanManagedSkillsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// SetManagedSkillEnabledWithBody request with any body
+	SetManagedSkillEnabledWithBody(ctx context.Context, skillId SkillId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	SetManagedSkillEnabled(ctx context.Context, skillId SkillId, body SetManagedSkillEnabledJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// InstallManagedSkillWithBody request with any body
+	InstallManagedSkillWithBody(ctx context.Context, skillId SkillId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	InstallManagedSkill(ctx context.Context, skillId SkillId, body InstallManagedSkillJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UninstallManagedSkillWithBody request with any body
+	UninstallManagedSkillWithBody(ctx context.Context, skillId SkillId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UninstallManagedSkill(ctx context.Context, skillId SkillId, body UninstallManagedSkillJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetAgentHostStatus request
 	GetAgentHostStatus(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -2193,6 +2651,114 @@ func (c *Client) InterruptAgentTurnWithBody(ctx context.Context, agentSessionId 
 
 func (c *Client) InterruptAgentTurn(ctx context.Context, agentSessionId AgentSessionId, turnId TurnId, body InterruptAgentTurnJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewInterruptAgentTurnRequest(c.Server, agentSessionId, turnId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListManagedSkills(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListManagedSkillsRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ScanManagedSkillsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewScanManagedSkillsRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ScanManagedSkills(ctx context.Context, body ScanManagedSkillsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewScanManagedSkillsRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SetManagedSkillEnabledWithBody(ctx context.Context, skillId SkillId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSetManagedSkillEnabledRequestWithBody(c.Server, skillId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SetManagedSkillEnabled(ctx context.Context, skillId SkillId, body SetManagedSkillEnabledJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSetManagedSkillEnabledRequest(c.Server, skillId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) InstallManagedSkillWithBody(ctx context.Context, skillId SkillId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewInstallManagedSkillRequestWithBody(c.Server, skillId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) InstallManagedSkill(ctx context.Context, skillId SkillId, body InstallManagedSkillJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewInstallManagedSkillRequest(c.Server, skillId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UninstallManagedSkillWithBody(ctx context.Context, skillId SkillId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUninstallManagedSkillRequestWithBody(c.Server, skillId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UninstallManagedSkill(ctx context.Context, skillId SkillId, body UninstallManagedSkillJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUninstallManagedSkillRequest(c.Server, skillId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -2712,6 +3278,214 @@ func NewInterruptAgentTurnRequestWithBody(server string, agentSessionId AgentSes
 	}
 
 	operationPath := fmt.Sprintf("/v1/agent-sessions/%s/turns/%s/interrupt", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewListManagedSkillsRequest generates requests for ListManagedSkills
+func NewListManagedSkillsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/skills")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewScanManagedSkillsRequest calls the generic ScanManagedSkills builder with application/json body
+func NewScanManagedSkillsRequest(server string, body ScanManagedSkillsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewScanManagedSkillsRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewScanManagedSkillsRequestWithBody generates requests for ScanManagedSkills with any type of body
+func NewScanManagedSkillsRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/skills/scan-operations")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewSetManagedSkillEnabledRequest calls the generic SetManagedSkillEnabled builder with application/json body
+func NewSetManagedSkillEnabledRequest(server string, skillId SkillId, body SetManagedSkillEnabledJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewSetManagedSkillEnabledRequestWithBody(server, skillId, "application/json", bodyReader)
+}
+
+// NewSetManagedSkillEnabledRequestWithBody generates requests for SetManagedSkillEnabled with any type of body
+func NewSetManagedSkillEnabledRequestWithBody(server string, skillId SkillId, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "skill_id", skillId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/skills/%s/enabled", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewInstallManagedSkillRequest calls the generic InstallManagedSkill builder with application/json body
+func NewInstallManagedSkillRequest(server string, skillId SkillId, body InstallManagedSkillJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewInstallManagedSkillRequestWithBody(server, skillId, "application/json", bodyReader)
+}
+
+// NewInstallManagedSkillRequestWithBody generates requests for InstallManagedSkill with any type of body
+func NewInstallManagedSkillRequestWithBody(server string, skillId SkillId, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "skill_id", skillId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/skills/%s/install-operations", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewUninstallManagedSkillRequest calls the generic UninstallManagedSkill builder with application/json body
+func NewUninstallManagedSkillRequest(server string, skillId SkillId, body UninstallManagedSkillJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUninstallManagedSkillRequestWithBody(server, skillId, "application/json", bodyReader)
+}
+
+// NewUninstallManagedSkillRequestWithBody generates requests for UninstallManagedSkill with any type of body
+func NewUninstallManagedSkillRequestWithBody(server string, skillId SkillId, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "skill_id", skillId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/skills/%s/uninstall-operations", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3456,6 +4230,29 @@ type ClientWithResponsesInterface interface {
 
 	InterruptAgentTurnWithResponse(ctx context.Context, agentSessionId AgentSessionId, turnId TurnId, body InterruptAgentTurnJSONRequestBody, reqEditors ...RequestEditorFn) (*InterruptAgentTurnResponse, error)
 
+	// ListManagedSkillsWithResponse request
+	ListManagedSkillsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListManagedSkillsResponse, error)
+
+	// ScanManagedSkillsWithBodyWithResponse request with any body
+	ScanManagedSkillsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ScanManagedSkillsResponse, error)
+
+	ScanManagedSkillsWithResponse(ctx context.Context, body ScanManagedSkillsJSONRequestBody, reqEditors ...RequestEditorFn) (*ScanManagedSkillsResponse, error)
+
+	// SetManagedSkillEnabledWithBodyWithResponse request with any body
+	SetManagedSkillEnabledWithBodyWithResponse(ctx context.Context, skillId SkillId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SetManagedSkillEnabledResponse, error)
+
+	SetManagedSkillEnabledWithResponse(ctx context.Context, skillId SkillId, body SetManagedSkillEnabledJSONRequestBody, reqEditors ...RequestEditorFn) (*SetManagedSkillEnabledResponse, error)
+
+	// InstallManagedSkillWithBodyWithResponse request with any body
+	InstallManagedSkillWithBodyWithResponse(ctx context.Context, skillId SkillId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*InstallManagedSkillResponse, error)
+
+	InstallManagedSkillWithResponse(ctx context.Context, skillId SkillId, body InstallManagedSkillJSONRequestBody, reqEditors ...RequestEditorFn) (*InstallManagedSkillResponse, error)
+
+	// UninstallManagedSkillWithBodyWithResponse request with any body
+	UninstallManagedSkillWithBodyWithResponse(ctx context.Context, skillId SkillId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UninstallManagedSkillResponse, error)
+
+	UninstallManagedSkillWithResponse(ctx context.Context, skillId SkillId, body UninstallManagedSkillJSONRequestBody, reqEditors ...RequestEditorFn) (*UninstallManagedSkillResponse, error)
+
 	// GetAgentHostStatusWithResponse request
 	GetAgentHostStatusWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetAgentHostStatusResponse, error)
 
@@ -3733,6 +4530,188 @@ func (r InterruptAgentTurnResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r InterruptAgentTurnResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type ListManagedSkillsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SkillListResponse
+	JSON401      *SkillUnauthorized
+	JSON403      *SkillForbidden
+	JSON500      *SkillInternalError
+	JSON503      *SkillUnavailable
+}
+
+// Status returns HTTPResponse.Status
+func (r ListManagedSkillsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListManagedSkillsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListManagedSkillsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type ScanManagedSkillsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SkillScanResponse
+	JSON400      *SkillBadRequest
+	JSON401      *SkillUnauthorized
+	JSON403      *SkillForbidden
+	JSON409      *SkillConflict
+	JSON500      *SkillInternalError
+	JSON503      *SkillUnavailable
+}
+
+// Status returns HTTPResponse.Status
+func (r ScanManagedSkillsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ScanManagedSkillsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ScanManagedSkillsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type SetManagedSkillEnabledResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SkillMutationResponse
+	JSON400      *SkillBadRequest
+	JSON401      *SkillUnauthorized
+	JSON403      *SkillForbidden
+	JSON404      *SkillNotFound
+	JSON409      *SkillConflict
+	JSON500      *SkillInternalError
+	JSON503      *SkillUnavailable
+}
+
+// Status returns HTTPResponse.Status
+func (r SetManagedSkillEnabledResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SetManagedSkillEnabledResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r SetManagedSkillEnabledResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type InstallManagedSkillResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SkillMutationResponse
+	JSON400      *SkillBadRequest
+	JSON401      *SkillUnauthorized
+	JSON403      *SkillForbidden
+	JSON404      *SkillNotFound
+	JSON409      *SkillConflict
+	JSON422      *SkillUnprocessable
+	JSON500      *SkillInternalError
+	JSON503      *SkillUnavailable
+}
+
+// Status returns HTTPResponse.Status
+func (r InstallManagedSkillResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r InstallManagedSkillResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r InstallManagedSkillResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type UninstallManagedSkillResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SkillMutationResponse
+	JSON400      *SkillBadRequest
+	JSON401      *SkillUnauthorized
+	JSON403      *SkillForbidden
+	JSON404      *SkillNotFound
+	JSON409      *SkillConflict
+	JSON500      *SkillInternalError
+	JSON503      *SkillUnavailable
+}
+
+// Status returns HTTPResponse.Status
+func (r UninstallManagedSkillResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UninstallManagedSkillResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r UninstallManagedSkillResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -4237,6 +5216,83 @@ func (c *ClientWithResponses) InterruptAgentTurnWithResponse(ctx context.Context
 		return nil, err
 	}
 	return ParseInterruptAgentTurnResponse(rsp)
+}
+
+// ListManagedSkillsWithResponse request returning *ListManagedSkillsResponse
+func (c *ClientWithResponses) ListManagedSkillsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListManagedSkillsResponse, error) {
+	rsp, err := c.ListManagedSkills(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListManagedSkillsResponse(rsp)
+}
+
+// ScanManagedSkillsWithBodyWithResponse request with arbitrary body returning *ScanManagedSkillsResponse
+func (c *ClientWithResponses) ScanManagedSkillsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ScanManagedSkillsResponse, error) {
+	rsp, err := c.ScanManagedSkillsWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseScanManagedSkillsResponse(rsp)
+}
+
+func (c *ClientWithResponses) ScanManagedSkillsWithResponse(ctx context.Context, body ScanManagedSkillsJSONRequestBody, reqEditors ...RequestEditorFn) (*ScanManagedSkillsResponse, error) {
+	rsp, err := c.ScanManagedSkills(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseScanManagedSkillsResponse(rsp)
+}
+
+// SetManagedSkillEnabledWithBodyWithResponse request with arbitrary body returning *SetManagedSkillEnabledResponse
+func (c *ClientWithResponses) SetManagedSkillEnabledWithBodyWithResponse(ctx context.Context, skillId SkillId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SetManagedSkillEnabledResponse, error) {
+	rsp, err := c.SetManagedSkillEnabledWithBody(ctx, skillId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSetManagedSkillEnabledResponse(rsp)
+}
+
+func (c *ClientWithResponses) SetManagedSkillEnabledWithResponse(ctx context.Context, skillId SkillId, body SetManagedSkillEnabledJSONRequestBody, reqEditors ...RequestEditorFn) (*SetManagedSkillEnabledResponse, error) {
+	rsp, err := c.SetManagedSkillEnabled(ctx, skillId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSetManagedSkillEnabledResponse(rsp)
+}
+
+// InstallManagedSkillWithBodyWithResponse request with arbitrary body returning *InstallManagedSkillResponse
+func (c *ClientWithResponses) InstallManagedSkillWithBodyWithResponse(ctx context.Context, skillId SkillId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*InstallManagedSkillResponse, error) {
+	rsp, err := c.InstallManagedSkillWithBody(ctx, skillId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseInstallManagedSkillResponse(rsp)
+}
+
+func (c *ClientWithResponses) InstallManagedSkillWithResponse(ctx context.Context, skillId SkillId, body InstallManagedSkillJSONRequestBody, reqEditors ...RequestEditorFn) (*InstallManagedSkillResponse, error) {
+	rsp, err := c.InstallManagedSkill(ctx, skillId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseInstallManagedSkillResponse(rsp)
+}
+
+// UninstallManagedSkillWithBodyWithResponse request with arbitrary body returning *UninstallManagedSkillResponse
+func (c *ClientWithResponses) UninstallManagedSkillWithBodyWithResponse(ctx context.Context, skillId SkillId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UninstallManagedSkillResponse, error) {
+	rsp, err := c.UninstallManagedSkillWithBody(ctx, skillId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUninstallManagedSkillResponse(rsp)
+}
+
+func (c *ClientWithResponses) UninstallManagedSkillWithResponse(ctx context.Context, skillId SkillId, body UninstallManagedSkillJSONRequestBody, reqEditors ...RequestEditorFn) (*UninstallManagedSkillResponse, error) {
+	rsp, err := c.UninstallManagedSkill(ctx, skillId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUninstallManagedSkillResponse(rsp)
 }
 
 // GetAgentHostStatusWithResponse request returning *GetAgentHostStatusResponse
@@ -4745,6 +5801,360 @@ func ParseInterruptAgentTurnResponse(rsp *http.Response) (*InterruptAgentTurnRes
 			return nil, err
 		}
 		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListManagedSkillsResponse parses an HTTP response from a ListManagedSkillsWithResponse call
+func ParseListManagedSkillsResponse(rsp *http.Response) (*ListManagedSkillsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListManagedSkillsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SkillListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest SkillUnauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest SkillForbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest SkillInternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest SkillUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseScanManagedSkillsResponse parses an HTTP response from a ScanManagedSkillsWithResponse call
+func ParseScanManagedSkillsResponse(rsp *http.Response) (*ScanManagedSkillsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ScanManagedSkillsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SkillScanResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest SkillBadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest SkillUnauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest SkillForbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest SkillConflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest SkillInternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest SkillUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseSetManagedSkillEnabledResponse parses an HTTP response from a SetManagedSkillEnabledWithResponse call
+func ParseSetManagedSkillEnabledResponse(rsp *http.Response) (*SetManagedSkillEnabledResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SetManagedSkillEnabledResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SkillMutationResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest SkillBadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest SkillUnauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest SkillForbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest SkillNotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest SkillConflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest SkillInternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest SkillUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseInstallManagedSkillResponse parses an HTTP response from a InstallManagedSkillWithResponse call
+func ParseInstallManagedSkillResponse(rsp *http.Response) (*InstallManagedSkillResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &InstallManagedSkillResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SkillMutationResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest SkillBadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest SkillUnauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest SkillForbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest SkillNotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest SkillConflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest SkillUnprocessable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest SkillInternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest SkillUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUninstallManagedSkillResponse parses an HTTP response from a UninstallManagedSkillWithResponse call
+func ParseUninstallManagedSkillResponse(rsp *http.Response) (*UninstallManagedSkillResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UninstallManagedSkillResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SkillMutationResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest SkillBadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest SkillUnauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest SkillForbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest SkillNotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest SkillConflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest SkillInternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest SkillUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
 
 	}
 

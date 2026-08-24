@@ -10,6 +10,7 @@ const accessFixtureRoot = "tests/fixtures/public/access";
 
 const expectedInitialCapabilities = [
   "knowledge.read",
+  "plugin.manage",
   "plugin.read",
   "schedule.read",
   "store.read",
