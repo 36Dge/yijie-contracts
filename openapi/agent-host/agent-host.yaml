@@ -2557,6 +2557,7 @@ components:
       type: string
       pattern: "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$"
     Sha256:
+      description: Lowercase SHA-256. When this schema is used by a property named `catalog_revision`, the digest is over the exact raw validated `bundle-manifest.json` bytes; install compares it in constant time without re-serialization or normalization.
       type: string
       pattern: "^[a-f0-9]{64}$"
     SkillErrorResponse:

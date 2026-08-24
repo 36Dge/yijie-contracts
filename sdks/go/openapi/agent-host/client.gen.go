@@ -1609,7 +1609,7 @@ type SessionResponse struct {
 	Session AgentSession `json:"session"`
 }
 
-// Sha256 defines model for Sha256.
+// Sha256 Lowercase SHA-256. When this schema is used by a property named `catalog_revision`, the digest is over the exact raw validated `bundle-manifest.json` bytes; install compares it in constant time without re-serialization or normalization.
 type Sha256 = string
 
 // SkillEnabledRequest defines model for SkillEnabledRequest.
@@ -1634,7 +1634,10 @@ type SkillIdValue = string
 
 // SkillInstallRequest defines model for SkillInstallRequest.
 type SkillInstallRequest struct {
-	CatalogRevision       Sha256             `json:"catalog_revision"`
+	// CatalogRevision Lowercase SHA-256. When this schema is used by a property named `catalog_revision`, the digest is over the exact raw validated `bundle-manifest.json` bytes; install compares it in constant time without re-serialization or normalization.
+	CatalogRevision Sha256 `json:"catalog_revision"`
+
+	// ExpectedArchiveSha256 Lowercase SHA-256. When this schema is used by a property named `catalog_revision`, the digest is over the exact raw validated `bundle-manifest.json` bytes; install compares it in constant time without re-serialization or normalization.
 	ExpectedArchiveSha256 Sha256             `json:"expected_archive_sha256"`
 	ExpectedVersion       SemanticVersion    `json:"expected_version"`
 	OperationId           openapi_types.UUID `json:"operation_id"`
@@ -1642,6 +1645,7 @@ type SkillInstallRequest struct {
 
 // SkillListResponse defines model for SkillListResponse.
 type SkillListResponse struct {
+	// CatalogRevision Lowercase SHA-256. When this schema is used by a property named `catalog_revision`, the digest is over the exact raw validated `bundle-manifest.json` bytes; install compares it in constant time without re-serialization or normalization.
 	CatalogRevision Sha256                         `json:"catalog_revision"`
 	ScannedAt       time.Time                      `json:"scanned_at"`
 	SchemaVersion   SkillListResponseSchemaVersion `json:"schema_version"`
@@ -1672,6 +1676,7 @@ type SkillScanRequestReason string
 
 // SkillScanResponse defines model for SkillScanResponse.
 type SkillScanResponse struct {
+	// CatalogRevision Lowercase SHA-256. When this schema is used by a property named `catalog_revision`, the digest is over the exact raw validated `bundle-manifest.json` bytes; install compares it in constant time without re-serialization or normalization.
 	CatalogRevision Sha256                   `json:"catalog_revision"`
 	OperationId     openapi_types.UUID       `json:"operation_id"`
 	Outcome         SkillScanResponseOutcome `json:"outcome"`

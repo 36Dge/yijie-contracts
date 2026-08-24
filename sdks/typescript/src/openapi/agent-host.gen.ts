@@ -1074,6 +1074,7 @@ export interface components {
         };
         SkillIdValue: string;
         SemanticVersion: string;
+        /** @description Lowercase SHA-256. When this schema is used by a property named `catalog_revision`, the digest is over the exact raw validated `bundle-manifest.json` bytes; install compares it in constant time without re-serialization or normalization. */
         Sha256: string;
         /** @description Content-free Skill management failure. It never contains a path, token, archive bytes, Skill instructions, or Runtime payload. */
         SkillErrorResponse: {

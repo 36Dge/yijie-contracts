@@ -45,6 +45,8 @@ For the exact `YIJIE_ENV=local` + `YIJIE_LOCAL_PROFILE=demo_fast` Desktop profil
 
 Mutation requests use a Desktop-generated UUID `operation_id`. Install also binds expected semantic version, archive digest, and catalog revision. Requests never carry App Resource, App Data, archive, source, destination, or SKILL.md paths. Reusing an operation ID with different canonical input is `skill_operation_conflict`.
 
+`catalog_revision` is the lowercase SHA-256 of the exact raw `bundle-manifest.json` bytes after those bytes pass schema and semantic validation. List and scan return that value; install compares the supplied value in constant time before reading or writing an archive. Re-serialization, whitespace normalization, or hashing only selected fields is not compatible.
+
 ## Filesystem and lifecycle semantics
 
 Host is configured at process launch with the canonical read-only bundle root and canonical managed installation root. Wire callers cannot change either root.

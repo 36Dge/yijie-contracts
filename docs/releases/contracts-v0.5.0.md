@@ -38,7 +38,7 @@ Structural green checks do not replace the Host/Desktop semantic and security re
 
 Reviewed source digests for the immutable candidate commit:
 
-- Agent Host OpenAPI: `253a649d2ecd05a7a039a241d4dfd7a356b22261b0ed65a0a9f9f9fac627bc10`;
+- Agent Host OpenAPI: `406b55dad02d5a3d489955bcf29c973b94252c3e300f8ff853709a71d6874431`;
 - Public OpenAPI: `f70a88bab6f8fa6e813a828ed58f8559edeb3651812c601f31e2b8a516086518`;
 - Skill Bundle Manifest v1: `d86185a1d5f4d9a136c88b679d50ac3e83bcc2b722eee39cba674c5be3b88469`;
 - Runtime compatibility projection: `6b7662d4237486300456f16abd0305fe1ea267b70a85e497ba7ab15a654939ee`.
