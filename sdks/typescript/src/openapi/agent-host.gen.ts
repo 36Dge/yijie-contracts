@@ -515,7 +515,8 @@ export interface paths {
         };
         /**
          * List the bundled catalog and current managed Skill state
-         * @description Returns a content-free projection of the bundled catalog, the managed
+         * @description Returns a content-free projection of the bundled and catalog-only
+         *     entries, the managed
          *     installation directory, and the current Runtime visibility state. It
          *     never returns an archive path, App Data path, SKILL.md content, token, or
          *     arbitrary filesystem metadata. Unknown Runtime Skills outside the
@@ -576,7 +577,9 @@ export interface paths {
          * @description Installs only the exact catalog entry named by `skill_id`. Desktop binds
          *     the request to its catalog view with the expected version, archive digest,
          *     and catalog revision; it never supplies an archive or destination path.
-         *     Host must require a manifest entry whose provenance and redistribution
+         *     A `catalog-only` entry has no archive and must be rejected as
+         *     `skill_not_installable` before any digest or archive access. For a
+         *     bundled entry, Host must require a manifest entry whose provenance and redistribution
          *     reviews are verified and whose catalog status is `installable`, validate
          *     SHA-256, file count, expanded size, relative ZIP entries, regular-file
          *     types, and the required SKILL.md, then commit through a same-volume staging
@@ -1037,6 +1040,14 @@ export interface components {
             version: components["schemas"]["SemanticVersion"];
             /** @enum {string} */
             catalog_status: "installable" | "blocked";
+            /**
+             * @description Required by the Skills v1 semantic contract for every blocked catalog
+             *     projection and omitted for an installable entry. It exposes exactly
+             *     one stable primary reason and never includes source text, archive
+             *     metadata, filesystem locations, or free-form upstream failure details.
+             * @enum {string}
+             */
+            catalog_blocked_reason?: "source_unverified" | "license_unverified" | "distribution_not_authorized" | "security_review_pending" | "capability_unavailable" | "maintenance_ended";
             /** @enum {string} */
             maintenance_status: "maintained" | "unmaintained";
             /** @enum {string} */
@@ -1265,7 +1276,8 @@ export interface components {
             };
         };
         /**
-         * @description The catalog item cannot be installed safely: `skill_not_installable`,
+         * @description The catalog item cannot be installed safely: `skill_not_installable`
+         *     (including every catalog-only or blocked entry),
          *     `bundle_missing`, `bundle_manifest_invalid`, `archive_checksum_mismatch`,
          *     `archive_unsafe`, or `archive_too_large`.
          */

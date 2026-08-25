@@ -23,6 +23,35 @@
 
 ### FEAT-129 当前候选
 
+- 版本：`0.5.1 candidate`
+- 状态：`candidate`；不是 supported/release-ready，未授权 tag、publish 或部署
+- contract impact：`semantic`；保留所有 `0.5.0` 有效 bundled manifest/response，新增由
+  consumers 先接收的 catalog-only manifest 与 optional blocked-reason response 投影
+- 权威源：保持不变的 Skill Bundle Manifest v1、版本化 Skill Bundle Manifest v2 Catalog First
+  expansion、Agent Host Skills v1 OpenAPI、
+  Public capability 初始值以及固定 Runtime Skills compatibility projection
+- producer：`yijie-skills` 确定性 catalog/package；已知 consumers 为
+  `yijie-agent-host` 与 `yijie-desktop`
+- 目录基线：38 项合成 fixture，五类严格为 `5/9/7/9/8`；1 项 bundled/installable、
+  37 项 catalog-only/blocked，blocked 项无归档和入口
+- 本地身份：精确 `YIJIE_ENV=local` + `YIJIE_LOCAL_PROFILE=demo_fast` 由 Desktop 自动建立
+  固定身份并透明携带 owner-only bearer，用户无需登录；Host 内部 bearer 与
+  `plugin.read`/`plugin.manage` 不变
+- 许可边界：38 项 fixture 全部为合成数据；产品 `copywriting@0.1.0` 仍只有
+  `local-development` 授权，`desktop-distribution` 许可/来源证明继续并行确认
+- breaking baseline：前一候选完整 commit
+  `d6dff903e0c12b6a5e69599df1e33ef46d8bea6b` 与已发布
+  `f16a497e1377f45747f8ff9292b4b60cf2027f88`
+- 发布顺序：Contracts → Skills draft → Host → Desktop；真正发出 optional blocked reason
+  和 38 项 manifest 时采用 Desktop/Host consumer-first 激活
+- 尚未完成：最终不可变 `0.5.1` commit/digest、三个下游精确 repin/conformance、产品 Skill
+  再分发许可、38 卡片真实 UI 与 D4
+- 回滚：继续消费 `0.5.0` 单 bundled 条目，不发出 catalog-only entry 或 blocked reason
+
+详见 [`releases/contracts-v0.5.1.md`](releases/contracts-v0.5.1.md)。
+
+### FEAT-129 前一候选
+
 - 版本：`0.5.0 candidate`
 - 状态：`candidate`；不是 supported/release-ready，未授权 tag、publish 或部署
 - contract impact：`additive`
@@ -35,10 +64,10 @@
   `plugin.read`/`plugin.manage`，public/production 不适用
 - 许可边界：重写的 `yijie.content-marketing.copywriting@0.1.0` 只获准用于
   `local-development` 候选；Accio 上游候选未被打包，`desktop-release` 继续等待产品/法务证明
-- breaking baseline：同时相对当前工作基线 `HEAD` 与已发布
+- breaking baseline：同时相对当时工作基线与已发布
   `f16a497e1377f45747f8ff9292b4b60cf2027f88` 验证
-- 尚未完成：不可变 contracts commit/digest、Host/Desktop 精确 consumer pin、真实 Runtime
-  conformance、正式客户端许可与 D4 fresh process
+- 不可变 candidate commit：`d6dff903e0c12b6a5e69599df1e33ef46d8bea6b`；Host/Desktop
+  已完成该 checkpoint 的精确 pin，后续由 `0.5.1` Catalog First candidate 取代
 - 回滚：禁用 Desktop consumer 且不注册受管 Skill root，保持既有接口可用
 
 详见 [`releases/contracts-v0.5.0.md`](releases/contracts-v0.5.0.md)。

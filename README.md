@@ -35,11 +35,12 @@ content/poster GET/HEAD、幂等 Desktop commit ACK，以及 closed ReportDocume
 G2A 保持 Pending。范围和证据要求见
 [`docs/releases/contracts-v0.4.0.md`](docs/releases/contracts-v0.4.0.md)。
 
-当前 `0.5.0` local candidate 增加 FEAT-129 Desktop Skill Bundle Manifest、owner-only
-Skill 管理 API、`plugin.manage` 治理值和固定 Runtime Skills 投影。它只包含合成契约
-fixture，不授权打包许可未核实的产品 Skill，也不授权 Host/Desktop 实现、tag、publish 或
-生产启用。范围与顺序见
-[`docs/releases/contracts-v0.5.0.md`](docs/releases/contracts-v0.5.0.md) 和
+当前 `0.5.1` local candidate 在 FEAT-129 `0.5.0` 基础上增加 Catalog First 语义：
+`catalog-only + blocked` 条目可只携带合规元数据和稳定阻断原因，不能携带归档或入口；
+installable 条目的来源、许可、摘要和归档要求保持不变。38 项合成 fixture 固定五类
+`5/9/7/9/8` 目录与 Host 查询投影，但不授权打包许可未核实的产品 Skill，也不授权
+tag、publish 或生产启用。范围与顺序见
+[`docs/releases/contracts-v0.5.1.md`](docs/releases/contracts-v0.5.1.md) 和
 [`docs/agent-host-skills-v1.md`](docs/agent-host-skills-v1.md)。
 
 跨仓契约变更必须遵循

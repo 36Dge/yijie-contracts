@@ -31,6 +31,8 @@ async function collectJsonSchemas(dir) {
   return schemas.sort((a, b) => a.relativePath.localeCompare(b.relativePath));
 }
 
+await run("node", ["scripts/generate-skill-bundle-fixtures.mjs"]);
+
 for (const dir of [
   "sdks/go/openapi",
   "sdks/go/protobuf",
@@ -105,7 +107,8 @@ for (const { relativePath, schema } of schemas) {
   if (
     outputName === "agent-session-event-v2" ||
     outputName === "agent-session-event-v3" ||
-    outputName === "report-report-document-v1"
+    outputName === "report-report-document-v1" ||
+    outputName === "skills-skill-bundle-manifest-v2"
   ) {
     // Versioned event/report schemas intentionally reuse protocol concept names.
     // Namespace exports keep additions from making the existing root SDK
@@ -114,6 +117,7 @@ for (const { relativePath, schema } of schemas) {
       "agent-session-event-v2": "AgentSessionEventSchemaV2",
       "agent-session-event-v3": "AgentSessionEventSchemaV3",
       "report-report-document-v1": "ReportDocumentSchemaV1",
+      "skills-skill-bundle-manifest-v2": "SkillBundleManifestSchemaV2",
     }[outputName];
     schemaExports.push(
       `export * as ${namespace} from "./jsonschema/${outputName}.gen.js";`,

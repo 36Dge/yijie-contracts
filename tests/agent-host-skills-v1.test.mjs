@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import Ajv2020 from "ajv/dist/2020.js";
@@ -101,6 +102,7 @@ test("Agent Host Skill operations are owner-only, capability-scoped, pathless, a
   assert.match(operations.install.description, /same-volume staging/);
   assert.match(operations.install.description, /atomic rename/);
   assert.match(operations.install.description, /redistribution/);
+  assert.match(operations.install.description, /catalog-only[\s\S]*skill_not_installable/);
   assert.match(operations.enabled.description, /skills\/config\/write/);
   assert.match(operations.uninstall.description, /never deletes[\s\S]*bundled read-only archive/);
 });
@@ -132,6 +134,15 @@ test("Agent Host Skill responses keep state bounded and failures content-free", 
     "error",
   ]);
   assert.equal(managedSkill.properties.runtime_visible.type, "boolean");
+  assert.deepEqual(managedSkill.properties.catalog_blocked_reason.enum, [
+    "source_unverified",
+    "license_unverified",
+    "distribution_not_authorized",
+    "security_review_pending",
+    "capability_unavailable",
+    "maintenance_ended",
+  ]);
+  assert.ok(!managedSkill.required.includes("catalog_blocked_reason"));
   assert.doesNotMatch(JSON.stringify(managedSkill), /path|content|token/i);
 
   const error = spec.components.schemas.SkillErrorResponse;
@@ -152,6 +163,7 @@ test("Agent Host Skill canonical request, response, and failure fixtures validat
     ["SkillListResponse", "list-response.json"],
     ["SkillMutationResponse", "mutation-response.json"],
     ["SkillErrorResponse", "error-archive-unsafe.json"],
+    ["SkillErrorResponse", "error-skill-not-installable.json"],
   ];
   for (const [schemaName, fixtureName] of cases) {
     const validate = compileSchema(schemaName);
@@ -163,4 +175,66 @@ test("Agent Host Skill canonical request, response, and failure fixtures validat
   const validateInstall = compileSchema("SkillInstallRequest");
   assert.equal(validateInstall({ ...install, archive_path: "/tmp/skill.zip" }), false);
   assert.equal(validateInstall({ ...install, operation_id: "not-a-uuid" }), false);
+});
+
+test("Agent Host list fixture is the exact 38-Skill catalog projection", async () => {
+  const manifestBytes = await readFile(
+    "tests/fixtures/skills/bundle-v2/manifest-catalog-38.json",
+  );
+  const manifest = JSON.parse(manifestBytes);
+  const list = JSON.parse(
+    await readFile("tests/fixtures/agent/host-skills-v1/list-response.json", "utf8"),
+  );
+  const install = JSON.parse(
+    await readFile("tests/fixtures/agent/host-skills-v1/install-request.json", "utf8"),
+  );
+  assert.equal(list.skills.length, 38);
+  assert.equal(
+    list.catalog_revision,
+    createHash("sha256").update(manifestBytes).digest("hex"),
+  );
+  assert.deepEqual(
+    list.skills.map(({ id, runtime_name, version, catalog_status }) => ({
+      id,
+      runtime_name,
+      version,
+      catalog_status,
+    })),
+    manifest.skills.map(({ id, runtime_name, version, release }) => ({
+      id,
+      runtime_name,
+      version,
+      catalog_status: release.catalog_status,
+    })),
+  );
+
+  for (const [index, skill] of list.skills.entries()) {
+    const source = manifest.skills[index];
+    if (source.release.catalog_status === "blocked") {
+      assert.equal(skill.catalog_blocked_reason, source.release.blocked_reason, source.id);
+      assert.equal(skill.installation_status, "not_installed", source.id);
+      assert.equal(skill.enabled, false, source.id);
+      assert.equal(skill.runtime_visible, false, source.id);
+    } else {
+      assert.equal(skill.catalog_blocked_reason, undefined, source.id);
+    }
+  }
+
+  const copywriting = manifest.skills.find(
+    ({ id }) => id === "yijie.content-marketing.copywriting",
+  );
+  assert.equal(install.expected_version, copywriting.version);
+  assert.equal(install.expected_archive_sha256, copywriting.archive.sha256);
+  assert.equal(install.catalog_revision, list.catalog_revision);
+
+  const blockedError = JSON.parse(
+    await readFile(
+      "tests/fixtures/agent/host-skills-v1/error-skill-not-installable.json",
+      "utf8",
+    ),
+  );
+  assert.equal(blockedError.error.code, "skill_not_installable");
+  assert.ok(responseFor(spec.paths["/v1/skills/{skill_id}/install-operations"].post, "422")[
+    "x-yijie-error-codes"
+  ].includes(blockedError.error.code));
 });
