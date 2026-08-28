@@ -23,10 +23,12 @@ const expectedNotifications = [
   "error",
   "item/agentMessage/delta",
   "item/completed",
+  "item/reasoning/textDelta",
   "item/started",
   "skills/changed",
   "thread/started",
   "turn/completed",
+  "turn/plan/updated",
   "turn/started",
   "warning",
 ];

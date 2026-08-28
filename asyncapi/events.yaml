@@ -1,7 +1,7 @@
 asyncapi: 3.0.0
 info:
   title: Yijie Events
-  version: 0.4.0
+  version: 0.6.0
   description: Event contracts exchanged by Yijie services.
 channels:
   task.events:
@@ -39,6 +39,15 @@ channels:
     messages:
       agentSessionEventV3:
         $ref: "#/components/messages/AgentSessionEventV3"
+  agentSessionEventsV4:
+    address: agent.session.events.v4
+    description: >-
+      Explicitly negotiated v4 Agent Host events. This stream preserves every
+      v3 variant and adds AgentMessage phase metadata plus authoritative stable
+      plan snapshots. Body text is never a durable telemetry surface.
+    messages:
+      agentSessionEventV4:
+        $ref: "#/components/messages/AgentSessionEventV4"
 operations:
   receiveTaskEvents:
     action: receive
@@ -75,6 +84,17 @@ operations:
       $ref: "#/channels/agentSessionEventsV3"
     messages:
       - $ref: "#/channels/agentSessionEventsV3/messages/agentSessionEventV3"
+  receiveAgentSessionEventsV4:
+    action: receive
+    description: >-
+      Receive one AgentSessionEventV4 after explicit schema-version-4
+      negotiation. A plan event is one complete authoritative snapshot; a
+      stream_id change starts a new ordering domain. Delivery is at least once
+      and consumers deduplicate by event_id.
+    channel:
+      $ref: "#/channels/agentSessionEventsV4"
+    messages:
+      - $ref: "#/channels/agentSessionEventsV4/messages/agentSessionEventV4"
 components:
   messages:
     AgentSessionEvent:
@@ -121,3 +141,18 @@ components:
         location: $message.payload#/agent_session_id
       payload:
         $ref: ../jsonschema/agent/session-event-v3.schema.json
+    AgentSessionEventV4:
+      name: AgentSessionEventV4
+      title: Ordered Agent Host session event v4
+      summary: V3 events plus AgentMessage phase and stable plan snapshots.
+      description: >-
+        JSON payload semantics are authoritative in the referenced JSON Schema.
+        Protobuf message yijie.events.v4.AgentSessionEvent carries the equivalent
+        service and asynchronous-consumer model. Producers emit v4 only after the
+        consumer explicitly negotiates schema version 4.
+      contentType: application/json
+      correlationId:
+        description: Agent Host session that owns the ordered event stream.
+        location: $message.payload#/agent_session_id
+      payload:
+        $ref: ../jsonschema/agent/session-event-v4.schema.json

@@ -1,6 +1,6 @@
 # Supported Contract Baselines
 
-## 当前状态（2026-08-25）
+## 当前状态（2026-08-28）
 
 ### 已发布支持基线
 
@@ -20,6 +20,36 @@
 - 兼容窗口：在明确登记 deprecation/unsupported 条件前持续支持
 - 回滚：回退 Host 的契约 snapshot 并禁用 Baseline 2 对外接口；这是首个支持版本，
   没有更早的已发布 contracts tag 可回退
+
+### FEAT-134 当前候选
+
+- 版本：`0.6.0 candidate`
+- 状态：`candidate`；不是 supported/release-ready，未授权 tag、push、publish、部署或
+  public/production 激活
+- contract impact：`semantic`；v1–v3 权威源保持有效，新增显式协商的 v4 输出 union
+- 权威源：AgentSessionEventV4 JSON Schema、Protobuf v4、AsyncAPI v4 channel/message、
+  Agent Host `/v4/.../events` OpenAPI 和 Runtime stable compatibility projection
+- producer：`yijie-agent-host`；consumer：`yijie-desktop`；外部 Runtime 权威固定为
+  `yijie-codex@0ce5902ed400866be0196886bb78f693a004d68d`
+- 新语义：AgentMessage started/completed 要求 `text` 和
+  `phase=commentary|final_answer|null`；delta 仍只有文本；`turn.plan.updated` 是按序完整替换
+  快照，空数组清空计划，omitted/null explanation 清空解释
+- Runtime 边界：`0.144.6`、upstream `rust-v0.144.6`、`experimentalApi=false`；只登记现有
+  stable `item/reasoning/textDelta` 与 `turn/plan/updated` 投影，不修改、升级或重编译 Runtime
+- 激活边界：仅 exact `YIJIE_ENV=local` + `YIJIE_LOCAL_PROFILE=demo_fast` + FEAT-134 gate；
+  managed provider 固定 high/raw 由 Host 私有策略负责，协议与 UI 均不新增推理强度字段
+- 数据边界：不得把 prompt、reasoning、plan 或 final 正文写入 Host durable storage、日志、
+  metrics、trace、audit 或错误体；Desktop 既有本地正文 authority 不由本契约改变
+- breaking baseline：前一候选完整 commit
+  `164b14f609537d727a52326832da04430aecc4ab` 与已发布
+  `f16a497e1377f45747f8ff9292b4b60cf2027f88`
+- 发布顺序：Contracts 不可变 commit → Host gated producer/Runtime mapper → Desktop consumer
+  与 native gate；仅在 consumer ready 后启用 exact-local gate
+- 尚未完成：最终不可变 Contracts commit/digest、Host/Desktop 精确 pin 与 conformance、
+  canonical content-free smoke、FEAT-134 D4
+- 回滚：关闭 FEAT-134 exact-local gate并继续协商 v3；v1–v3 与 public/production 保持不变
+
+详见 [`releases/contracts-v0.6.0.md`](releases/contracts-v0.6.0.md)。
 
 ### FEAT-129 当前候选
 

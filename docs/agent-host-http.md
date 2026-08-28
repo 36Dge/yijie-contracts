@@ -75,3 +75,8 @@ are an unpublished G2A candidate, not part of this supported v1 contract. See
 [`agent-host-operations-v2.md`](agent-host-operations-v2.md) and
 [`agent-session-events-v2.md`](agent-session-events-v2.md); no v2 route is enabled
 or consumable until an immutable candidate pin and the required approvals exist.
+
+FEAT-134 v4 AgentMessage phase and stable plan snapshots are likewise an unpublished,
+exact-local candidate. V4 is available only through its own path and required schema-version
+guard; it does not widen the supported v1 stream or enable a public/production listener. See
+[`agent-session-events-v4.md`](agent-session-events-v4.md).

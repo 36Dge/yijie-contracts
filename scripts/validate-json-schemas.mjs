@@ -21,10 +21,12 @@ for (const keyword of [
   "x-yijie-max-total-utf8-bytes",
   "x-yijie-max-utf8-bytes",
   "x-yijie-max-json-depth",
+  "x-yijie-max-sse-data-utf8-bytes",
 ]) {
   ajv.addKeyword({ keyword, schemaType: "number" });
 }
 ajv.addKeyword({ keyword: "x-yijie-content-index-rule", schemaType: "string" });
+ajv.addKeyword({ keyword: "x-yijie-projection-limit-policy", schemaType: "object" });
 const files = await findSchemas("jsonschema");
 for (const file of files) {
   const schema = JSON.parse(await readFile(file, "utf8"));

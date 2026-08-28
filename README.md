@@ -43,6 +43,15 @@ tag、publish 或生产启用。范围与顺序见
 [`docs/releases/contracts-v0.5.1.md`](docs/releases/contracts-v0.5.1.md) 和
 [`docs/agent-host-skills-v1.md`](docs/agent-host-skills-v1.md)。
 
+当前 `0.6.0` local candidate 为 FEAT-134 增加显式协商的 AgentSessionEventV4：
+AgentMessage lifecycle 携带 closed `commentary | final_answer | null` phase，稳定
+`turn/plan/updated` 以完整有序快照表达计划，v3 的 reasoning/artifact 表面原样保留。
+候选只允许 exact `demo_fast/local` Feature gate；Runtime 仍固定 `0.144.6`、
+`experimentalApi=false`，不修改/升级/重编译 Runtime，不增加推理强度 UI，也不影响
+public/production。范围、顺序和语义见
+[`docs/releases/contracts-v0.6.0.md`](docs/releases/contracts-v0.6.0.md) 与
+[`docs/agent-session-events-v4.md`](docs/agent-session-events-v4.md)。
+
 跨仓契约变更必须遵循
 [`docs/contract-change-policy.md`](docs/contract-change-policy.md)：先分类影响、修改权威
 源并完成生成/兼容评审，形成不可变引用；每个下游 PR 在自身合并前完成精确 pin 和

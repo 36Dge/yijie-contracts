@@ -420,6 +420,67 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v4/agent-sessions/{agent_session_id}/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Replay and stream explicitly negotiated Agent session events v4
+         * @description Opens the v4 Server-Sent Events stream. The required
+         *     `event_schema_version=4` query parameter prevents accidental v4 output to
+         *     an older consumer. V4 preserves every v3 lifecycle, reasoning, and
+         *     structured-artifact variant. It additionally carries the stable Runtime
+         *     AgentMessage `phase` on AgentMessage lifecycle events and authoritative
+         *     `turn.plan.updated` snapshots.
+         *
+         *     Every plan update replaces the prior plan for its turn in presentation
+         *     order; an empty plan clears it. Missing or null explanation clears the
+         *     prior explanation. AgentMessage delta events remain text-only and are
+         *     correlated to lifecycle metadata by `item_id`. The Host must not persist
+         *     prompt, reasoning, plan, or final-response body text in logs, metrics,
+         *     traces, audit, or error bodies.
+         *
+         *     Before process-memory retention or SSE write, the compact JSON `data`
+         *     value must be at most 1 MiB in UTF-8 bytes. The Host never truncates an
+         *     AgentMessage, plan snapshot, or authoritative lifecycle payload. Existing
+         *     reasoning-specific limits continue to finalize reasoning as unavailable
+         *     with `limit_exceeded`. If another turn-scoped Runtime notification cannot
+         *     be represented within the v4 structural, field-byte, or aggregate limit,
+         *     the Host rejects that source event, emits one sanitized non-retryable
+         *     `error` with code `limit_exceeded`, and marks the projection failed. Its
+         *     eventual turn terminal is `failed` with the same code; if the rejected
+         *     source is already `turn.completed`, the Host emits that sanitized failed
+         *     terminal directly. Rejected content is absent from the problem event,
+         *     terminal event, logs, telemetry, and error bodies.
+         *
+         *     No-turn sources also fail content-free. Managed model/provider identity
+         *     is validated against v4 bounds before `thread.started` is retained; a
+         *     violation fails session start with sanitized HTTP `500 internal_error`
+         *     and emits no invalid thread event. An oversized thread-scoped Runtime
+         *     warning is replaced by one sanitized `warning` with
+         *     `code=limit_exceeded`, the same constant message, and
+         *     `will_retry=false`; it does not invent a Turn or a terminal.
+         *
+         *     The authoritative resume query is `after`; `after_sequence` is not an
+         *     alias and must be rejected as an unknown parameter. `Last-Event-ID`
+         *     overrides `stream_id` and `after`. Delivery is at least once and consumers
+         *     deduplicate by `event_id` inside the current `stream_id` ordering domain.
+         */
+        get: operations["streamAgentSessionEventsV4"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v3/agent-sessions/{agent_session_id}/artifacts/{artifact_id}/content": {
         parameters: {
             query?: never;
@@ -1471,6 +1532,8 @@ export interface components {
         EventSchemaVersionV2: 2;
         /** @description Explicit negotiation guard. Only integer value 3 is accepted on the v3 event stream. */
         EventSchemaVersionV3: 3;
+        /** @description Explicit negotiation guard. Only integer value 4 is accepted on the v4 event stream. */
+        EventSchemaVersionV4: 4;
         /** @description A single inclusive HTTP byte range. Multiple or malformed ranges are rejected. */
         ByteRange: string;
     };
@@ -2248,6 +2311,90 @@ export interface operations {
                 };
             };
             /** @description `streaming_unsupported` or `internal_error`: the v3 stream cannot be served safely. */
+            500: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    streamAgentSessionEventsV4: {
+        parameters: {
+            query: {
+                /** @description Explicit negotiation guard. Only integer value 4 is accepted on the v4 event stream. */
+                event_schema_version: components["parameters"]["EventSchemaVersionV4"];
+                /**
+                 * @description Expected process-local stream identifier. Required when `after > 0`
+                 *     unless `Last-Event-ID` supplies the complete cursor. A mismatch returns
+                 *     `409 event_stream_changed`.
+                 */
+                stream_id?: components["parameters"]["EventStreamId"];
+                /**
+                 * @description Unsigned 64-bit sequence after which events are replayed. Defaults to
+                 *     zero. Values greater than zero require a matching stream ID. Ignored when
+                 *     `Last-Event-ID` is present.
+                 */
+                after?: components["parameters"]["EventAfter"];
+            };
+            header?: {
+                /**
+                 * @description Complete SSE cursor `<stream_id>:<sequence>`. Sequence is a decimal
+                 *     unsigned 64-bit integer from 1 through 18446744073709551615 with no
+                 *     leading zero. The header overrides `stream_id` and `after` query parameters.
+                 */
+                "Last-Event-ID"?: components["parameters"]["LastEventId"];
+            };
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Retained v4 events were replayed and the connection is subscribed for live v4 events. */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    /** @description Disables reverse-proxy response buffering. */
+                    "X-Accel-Buffering": "no";
+                    /** @description Actual process-local stream identifier used by every returned SSE event ID. */
+                    "X-Yijie-Event-Stream-ID": string;
+                    /** @description Confirms that every returned data event uses AgentSessionEventV4. */
+                    "X-Yijie-Event-Schema-Version": 4;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": string;
+                };
+            };
+            /** @description `invalid_request` or `invalid_event_cursor`: schema negotiation, identifier, or cursor is invalid. */
+            400: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            404: components["responses"]["SessionNotFound"];
+            /** @description `event_stream_changed` or `event_replay_unavailable`: the requested v4 cursor cannot be resumed safely. */
+            409: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `streaming_unsupported` or `internal_error`: the v4 stream cannot be served safely. */
             500: {
                 headers: {
                     "Cache-Control": components["headers"]["NoStore"];
