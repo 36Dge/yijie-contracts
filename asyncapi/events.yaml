@@ -1,7 +1,7 @@
 asyncapi: 3.0.0
 info:
   title: Yijie Events
-  version: 0.6.0
+  version: 0.7.0
   description: Event contracts exchanged by Yijie services.
 channels:
   task.events:
@@ -48,6 +48,17 @@ channels:
     messages:
       agentSessionEventV4:
         $ref: "#/components/messages/AgentSessionEventV4"
+  agentSessionEventsV5:
+    address: agent.session.events.v5
+    description: >-
+      Explicitly negotiated v5 Agent Host events. This stream keeps the named v4
+      event families, closes generic Item kinds to a stable allowlist, and adds
+      bounded Command lifecycle/output and generic MCP Tool lifecycle/progress
+      projections. V1-v4 remain unchanged. It does not add approval, FileChange,
+      Diff, experimental, or unknown generic Item capabilities.
+    messages:
+      agentSessionEventV5:
+        $ref: "#/components/messages/AgentSessionEventV5"
 operations:
   receiveTaskEvents:
     action: receive
@@ -95,6 +106,17 @@ operations:
       $ref: "#/channels/agentSessionEventsV4"
     messages:
       - $ref: "#/channels/agentSessionEventsV4/messages/agentSessionEventV4"
+  receiveAgentSessionEventsV5:
+    action: receive
+    description: >-
+      Receive one AgentSessionEventV5 after explicit schema-version-5
+      negotiation. A stream_id change starts a new ordering domain. Delivery is
+      at least once, consumers deduplicate only by event_id, and equal output
+      text carried by distinct events remains distinct.
+    channel:
+      $ref: "#/channels/agentSessionEventsV5"
+    messages:
+      - $ref: "#/channels/agentSessionEventsV5/messages/agentSessionEventV5"
 components:
   messages:
     AgentSessionEvent:
@@ -156,3 +178,23 @@ components:
         location: $message.payload#/agent_session_id
       payload:
         $ref: ../jsonschema/agent/session-event-v4.schema.json
+    AgentSessionEventV5:
+      name: AgentSessionEventV5
+      title: Ordered Agent Host session event v5
+      summary: Named v4 event families plus safe Command output and generic MCP Tool progress.
+      description: >-
+        JSON payload semantics are authoritative in the referenced JSON Schema.
+        Protobuf message yijie.events.v5.AgentSessionEvent is a typed transport
+        projection, not an independent validity authority. Protobuf adapters must
+        reject every message that would fail the referenced JSON Schema before
+        apply or persistence. Producers emit v5 only after the consumer explicitly
+        negotiates schema version 5. The pinned Runtime schema defines MCP Tool
+        in-progress, completed, and failed states; this contract does not assert a
+        registered product Tool producer, and consumers must not infer a declined
+        producer status.
+      contentType: application/json
+      correlationId:
+        description: Agent Host session that owns the ordered event stream.
+        location: $message.payload#/agent_session_id
+      payload:
+        $ref: ../jsonschema/agent/session-event-v5.schema.json

@@ -22,7 +22,9 @@ const expectedMethods = [
 const expectedNotifications = [
   "error",
   "item/agentMessage/delta",
+  "item/commandExecution/outputDelta",
   "item/completed",
+  "item/mcpToolCall/progress",
   "item/reasoning/textDelta",
   "item/started",
   "skills/changed",
@@ -133,6 +135,11 @@ test("pinned projection exists in a neighboring yijie-codex checkout when availa
   const serverMethods = new Set(methodsFromSchema(serverNotification));
   for (const method of expectedMethods) assert.equal(clientMethods.has(method), true, method);
   for (const method of expectedNotifications) assert.equal(serverMethods.has(method), true, method);
+  assert.deepEqual(
+    serverNotification.definitions?.McpToolCallStatus?.enum,
+    ["inProgress", "completed", "failed"],
+    "the pinned Runtime does not produce a declined MCP tool status",
+  );
 
   assert.equal(
     await schemaTreeSha256(schemas, schemaFiles),

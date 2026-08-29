@@ -52,6 +52,22 @@ public/production。范围、顺序和语义见
 [`docs/releases/contracts-v0.6.0.md`](docs/releases/contracts-v0.6.0.md) 与
 [`docs/agent-session-events-v4.md`](docs/agent-session-events-v4.md)。
 
+当前 `0.7.0` local candidate 为 FEAT-136 增加显式协商的 AgentSessionEventV5：复用
+`item.started`/`item.completed` 承载 closed Command/Tool typed snapshots，并新增 bounded
+`item.command_output.delta` 与 `item.tool.progress`。V5 只允许 safe summary、结构化
+relative/redacted cwd、stable status/error/truncation 和 completed authoritative snapshot；缺失
+Command aggregate 显式映射为 unavailable，unknown Tool identity 使用固定 sentinel，generic Item
+使用 closed stable allowlist，并按 `event_id` 而非字符串内容去重。Raw command、absolute cwd、
+Tool arguments/result/meta、token、secret 和 Runtime wire 均不进入 Desktop contract。Contracts
+冻结的是字段/形状与脱敏顺序；实际 Host sanitizer/conformance 留待下一批。JSON Schema 是
+validity authority；Proto3 仅是 typed transport，adapter 必须拒绝所有不符合 JSON 语义的可解码
+message。V1-v4 保持不变，Runtime 仍固定
+`0.144.6`/267 schemas/`experimentalApi=false`。本候选只完成 Contracts 边界：不注册
+MCP/Connector，不建立真实 Tool producer，不实现 Host/Desktop 或 D4，也不包含已排除的
+FileChange/Diff/approval。范围与语义见
+[`docs/releases/contracts-v0.7.0.md`](docs/releases/contracts-v0.7.0.md) 与
+[`docs/agent-session-events-v5.md`](docs/agent-session-events-v5.md)。
+
 跨仓契约变更必须遵循
 [`docs/contract-change-policy.md`](docs/contract-change-policy.md)：先分类影响、修改权威
 源并完成生成/兼容评审，形成不可变引用；每个下游 PR 在自身合并前完成精确 pin 和

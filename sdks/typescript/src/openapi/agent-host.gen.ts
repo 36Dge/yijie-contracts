@@ -481,6 +481,61 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v5/agent-sessions/{agent_session_id}/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Replay and stream explicitly negotiated Agent session events v5
+         * @description Opens the v5 Server-Sent Events stream. The required
+         *     `event_schema_version=5` query parameter prevents accidental v5 output to
+         *     an older consumer. V5 keeps the named v4 event families, closes generic
+         *     Item kinds to an explicit stable allowlist, and adds bounded Command and
+         *     generic MCP Tool projections. V1-v4 paths and schemas remain unchanged.
+         *     Command and Tool lifecycle metadata is carried by the authoritative Item
+         *     lifecycle events; live incremental content uses
+         *     `item.command_output.delta` and `item.tool.progress`.
+         *
+         *     Consumers deduplicate at-least-once delivery only by `event_id`. Equal
+         *     output text in distinct events is valid and must not be content-deduped.
+         *     Item completion remains non-terminal for the Turn; only `turn.completed`
+         *     is the authoritative Turn terminal. The pinned Runtime schema defines MCP
+         *     Tool in-progress, completed, and failed states; this contract does not
+         *     assert a registered product Tool producer. A declined Tool status is
+         *     reserved for Yijie conformance and must not be inferred by the Host.
+         *
+         *     All Command and Tool fields are allowlisted and bounded. Before a future
+         *     Host may emit v5, its mapper must redact the allowed text fields and pass
+         *     conformance; the schema alone cannot identify a secret inside free text.
+         *     The compact JSON `data` value is measured as serialized UTF-8 and remains
+         *     limited to 1 MiB. A missing Runtime Command aggregate maps to the explicit
+         *     `output.retention=unavailable` branch, never fabricated empty output. A
+         *     Runtime MCP `is_error` result maps to failed plus a safe `result_summary`
+         *     and normalized `tool_failed` error. Raw commands, canonical paths, process
+         *     metadata, MCP arguments/results, secrets, and Runtime wire payloads are
+         *     never exposed. Approval, FileChange, Diff, experimental/unknown generic
+         *     Items, and Artifact-merging capabilities are not added by v5.
+         *
+         *     The authoritative resume query is `after`; `after_sequence` is not an
+         *     alias and must be rejected as an unknown parameter. `Last-Event-ID`
+         *     overrides `stream_id` and `after`. A stream change starts a new ordering
+         *     domain and does not imply replay from an earlier Host process.
+         */
+        get: operations["streamAgentSessionEventsV5"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v3/agent-sessions/{agent_session_id}/artifacts/{artifact_id}/content": {
         parameters: {
             query?: never;
@@ -1534,6 +1589,8 @@ export interface components {
         EventSchemaVersionV3: 3;
         /** @description Explicit negotiation guard. Only integer value 4 is accepted on the v4 event stream. */
         EventSchemaVersionV4: 4;
+        /** @description Explicit negotiation guard. Only integer value 5 is accepted on the v5 event stream. */
+        EventSchemaVersionV5: 5;
         /** @description A single inclusive HTTP byte range. Multiple or malformed ranges are rejected. */
         ByteRange: string;
     };
@@ -2395,6 +2452,90 @@ export interface operations {
                 };
             };
             /** @description `streaming_unsupported` or `internal_error`: the v4 stream cannot be served safely. */
+            500: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    streamAgentSessionEventsV5: {
+        parameters: {
+            query: {
+                /** @description Explicit negotiation guard. Only integer value 5 is accepted on the v5 event stream. */
+                event_schema_version: components["parameters"]["EventSchemaVersionV5"];
+                /**
+                 * @description Expected process-local stream identifier. Required when `after > 0`
+                 *     unless `Last-Event-ID` supplies the complete cursor. A mismatch returns
+                 *     `409 event_stream_changed`.
+                 */
+                stream_id?: components["parameters"]["EventStreamId"];
+                /**
+                 * @description Unsigned 64-bit sequence after which events are replayed. Defaults to
+                 *     zero. Values greater than zero require a matching stream ID. Ignored when
+                 *     `Last-Event-ID` is present.
+                 */
+                after?: components["parameters"]["EventAfter"];
+            };
+            header?: {
+                /**
+                 * @description Complete SSE cursor `<stream_id>:<sequence>`. Sequence is a decimal
+                 *     unsigned 64-bit integer from 1 through 18446744073709551615 with no
+                 *     leading zero. The header overrides `stream_id` and `after` query parameters.
+                 */
+                "Last-Event-ID"?: components["parameters"]["LastEventId"];
+            };
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Retained v5 events were replayed and the connection is subscribed for live v5 events. */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    /** @description Disables reverse-proxy response buffering. */
+                    "X-Accel-Buffering": "no";
+                    /** @description Actual process-local stream identifier used by every returned SSE event ID. */
+                    "X-Yijie-Event-Stream-ID": string;
+                    /** @description Confirms that every returned data event uses AgentSessionEventV5. */
+                    "X-Yijie-Event-Schema-Version": 5;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": string;
+                };
+            };
+            /** @description `invalid_request` or `invalid_event_cursor`: schema negotiation, identifier, or cursor is invalid. */
+            400: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            404: components["responses"]["SessionNotFound"];
+            /** @description `event_stream_changed` or `event_replay_unavailable`: the requested v5 cursor cannot be resumed safely. */
+            409: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `streaming_unsupported` or `internal_error`: the v5 stream cannot be served safely. */
             500: {
                 headers: {
                     "Cache-Control": components["headers"]["NoStore"];

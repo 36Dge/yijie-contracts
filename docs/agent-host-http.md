@@ -16,10 +16,14 @@ envelopes, status codes, response headers, and SSE framing.
 - content policy: Host persists recovery mappings and status, but not turn input,
   message deltas, completed messages, provider payloads, or HTTP bearer content.
 
-`jsonschema/agent/session-event.schema.json` remains authoritative for the JSON
-object in each SSE `data` line. OpenAPI deliberately describes only the streaming
-wire framing and points to that schema. Protobuf represents the same stable event
-semantics for typed non-HTTP consumers; it does not override JSON/SSE encoding.
+`jsonschema/agent/session-event.schema.json` remains authoritative for the v1 JSON
+object in each SSE `data` line. Each explicitly negotiated versioned stream points
+to its matching `session-event-vN.schema.json`; an older path is never widened by a
+newer schema. OpenAPI deliberately describes only the streaming wire framing and
+points to the selected JSON authority. Protobuf is a typed transport projection for
+non-HTTP consumers; it does not override JSON/SSE encoding or version-specific JSON
+validity rules. In particular, a decodable v5 Proto3 message still requires the
+JSON-equivalent semantic gate before apply or persistence.
 
 ## Authentication and parsing
 
@@ -80,3 +84,24 @@ FEAT-134 v4 AgentMessage phase and stable plan snapshots are likewise an unpubli
 exact-local candidate. V4 is available only through its own path and required schema-version
 guard; it does not widen the supported v1 stream or enable a public/production listener. See
 [`agent-session-events-v4.md`](agent-session-events-v4.md).
+
+FEAT-136 v5 Command/Tool projection is also an unpublished exact-local candidate.
+It is available only through `GET /v5/agent-sessions/{agent_session_id}/events`
+with required `event_schema_version=5`. V5 keeps the established session/thread/
+turn/item identity and replay envelope, reuses typed `item.started` and
+`item.completed` snapshots, and adds bounded `item.command_output.delta` and
+`item.tool.progress`. Consumers deduplicate at-least-once delivery by `event_id`,
+not content; completed is the Item reconciliation authority, while only
+`turn.completed` is Turn-terminal.
+
+The v5 contract permits only sanitized display summaries, structured relative or
+redacted cwd, stable statuses/errors, explicit truncation, and bounded output/
+progress/result data. Missing Command output has an explicit unavailable branch;
+unknown Tool identity uses fixed sentinels; generic Item kinds use a closed stable
+allowlist. A conforming Host must never carry raw Runtime command, absolute cwd,
+Tool arguments/result/meta/context, token, secret, or raw wire. Schema validation
+does not prove arbitrary allowed text was sanitized, so the actual Host sanitizer
+and conformance remain next-batch work. V5 does not register a Tool, enable an
+experimental API, add an approval action, or widen Runtime sandbox or permissions.
+FileChange/Diff remain excluded and Artifact remains independently governed. See
+[`agent-session-events-v5.md`](agent-session-events-v5.md).

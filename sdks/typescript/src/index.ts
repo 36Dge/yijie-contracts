@@ -8,12 +8,14 @@ export * as AgentSessionEventsV1 from "./protobuf/yijie/events/v1/agent_session_
 export * as AgentSessionEventsV2 from "./protobuf/yijie/events/v2/agent_session_pb.js";
 export * as AgentSessionEventsV3 from "./protobuf/yijie/events/v3/agent_session_pb.js";
 export * as AgentSessionEventsV4 from "./protobuf/yijie/events/v4/agent_session_pb.js";
+export * as AgentSessionEventsV5 from "./protobuf/yijie/events/v5/agent_session_pb.js";
 export * as TaskEventsV1 from "./protobuf/yijie/events/v1/task_pb.js";
 export * as AgentHostV1 from "./protobuf/yijie/services/agent_host/v1/agent_host_pb.js";
 export * from "./jsonschema/agent-event.gen.js";
 export * as AgentSessionEventSchemaV2 from "./jsonschema/agent-session-event-v2.gen.js";
 export * as AgentSessionEventSchemaV3 from "./jsonschema/agent-session-event-v3.gen.js";
 export * as AgentSessionEventSchemaV4 from "./jsonschema/agent-session-event-v4.gen.js";
+export * as AgentSessionEventSchemaV5 from "./jsonschema/agent-session-event-v5.gen.js";
 export * from "./jsonschema/agent-session-event.gen.js";
 export * from "./jsonschema/audit-audit-log.gen.js";
 export * from "./jsonschema/chat-message.gen.js";

@@ -108,6 +108,7 @@ for (const { relativePath, schema } of schemas) {
     outputName === "agent-session-event-v2" ||
     outputName === "agent-session-event-v3" ||
     outputName === "agent-session-event-v4" ||
+    outputName === "agent-session-event-v5" ||
     outputName === "report-report-document-v1" ||
     outputName === "skills-skill-bundle-manifest-v2"
   ) {
@@ -118,6 +119,7 @@ for (const { relativePath, schema } of schemas) {
       "agent-session-event-v2": "AgentSessionEventSchemaV2",
       "agent-session-event-v3": "AgentSessionEventSchemaV3",
       "agent-session-event-v4": "AgentSessionEventSchemaV4",
+      "agent-session-event-v5": "AgentSessionEventSchemaV5",
       "report-report-document-v1": "ReportDocumentSchemaV1",
       "skills-skill-bundle-manifest-v2": "SkillBundleManifestSchemaV2",
     }[outputName];
@@ -142,6 +144,7 @@ await writeFile(
     'export * as AgentSessionEventsV2 from "./protobuf/yijie/events/v2/agent_session_pb.js";',
     'export * as AgentSessionEventsV3 from "./protobuf/yijie/events/v3/agent_session_pb.js";',
     'export * as AgentSessionEventsV4 from "./protobuf/yijie/events/v4/agent_session_pb.js";',
+    'export * as AgentSessionEventsV5 from "./protobuf/yijie/events/v5/agent_session_pb.js";',
     'export * as TaskEventsV1 from "./protobuf/yijie/events/v1/task_pb.js";',
     'export * as AgentHostV1 from "./protobuf/yijie/services/agent_host/v1/agent_host_pb.js";',
     ...schemaExports,

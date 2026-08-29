@@ -1,6 +1,6 @@
 # Supported Contract Baselines
 
-## 当前状态（2026-08-28）
+## 当前状态（2026-08-29）
 
 ### 已发布支持基线
 
@@ -20,6 +20,52 @@
 - 兼容窗口：在明确登记 deprecation/unsupported 条件前持续支持
 - 回滚：回退 Host 的契约 snapshot 并禁用 Baseline 2 对外接口；这是首个支持版本，
   没有更早的已发布 contracts tag 可回退
+
+### FEAT-136 当前候选
+
+- 版本：`0.7.0 candidate`
+- 状态：`candidate`；不是 supported/release-ready，未授权 tag、push、publish、部署或
+  public/production 激活
+- contract impact：`semantic`；v4 是 closed output/event union，因此新增显式协商的 v5，
+  v1-v4 权威源、packages 与 routes 保持有效
+- 权威源：AgentSessionEventV5 JSON Schema、Protobuf v5、AsyncAPI v5 channel/message、Agent
+  Host `/v5/.../events` OpenAPI 和 Runtime stable compatibility projection
+- Proto 边界：JSON Schema 是 semantic validity authority；Proto3 仅是 typed transport，adapter
+  必须拒绝 unset oneof/message、unknown/unspecified enum、错误 lifecycle/status/result/error 组合、
+  progress index 与 scalar/UTF-8/aggregate/SSE 超限，不能把可解码 message 当成有效状态
+- producer：`yijie-agent-host`；known consumer：`yijie-desktop`；外部 Runtime 固定为
+  `yijie-codex@0ce5902ed400866be0196886bb78f693a004d68d`
+- 新语义：`item.started`/`item.completed` 含 closed Command/Tool typed snapshots，新增
+  `item.command_output.delta` 与 `item.tool.progress`；按 `event_id` 去重，相同文本不同事件
+  合法，completed 是 Item 的权威封口快照，缺失 Command aggregate 映射为显式 unavailable，
+  Runtime Tool `is_error=true` 可保留 bounded result summary 并同时归一化 stable error；只有
+  `turn.completed` 是 Turn terminal
+- caps：SSE 1 MiB；Command summary/cwd/delta/aggregate 分别 4 KiB/1 KiB/16 KiB/256 KiB，
+  overflow 保留 UTF-8 head/tail 各 128 KiB；Tool identity/args/progress/result 分别
+  256 B each/8 KiB/4 KiB each（32 条、64 KiB total）/64 KiB；error 4 KiB；SSE cap 按 compact
+  JSON `data` value 计数，cwd aggregate 包含 `/` 分隔符
+- 数据边界：契约要求先脱敏后按 UTF-8 截断；只允许安全 summary、结构化 relative/redacted cwd、
+  stable status/error/truncation；禁止 raw command/cwd、Tool args/result/meta/context、token、
+  secret、absolute path 和 raw Runtime wire；schema 只能证明 closed fields/path shapes，实际
+  Host secret/path/content sanitizer 与 conformance 尚未执行
+- Runtime 边界：`0.144.6`、upstream `rust-v0.144.6`、267 stable schemas、tree SHA-256
+  `82ee9de771cf1d41bac16d87380f1121e7794107aa3aa526ad702d5d1bf7afe1`、
+  `experimentalApi=false`；不修改、升级或重编译 Runtime，不改变 read-only/never
+- Tool gap：generic Tool contract 不注册 MCP/Connector、不产生真实 Tool；Runtime MCP status
+  没有 declined，v5 的 Tool declined 仅 Yijie 预留/synthetic-only；CAP-017 Owner/product 与
+  real-producer decision 继续 pending，但不阻塞 Command contract；unknown identity 固定为
+  `unknown` sentinels，不保留源标签
+- exclusions：generic Item 为 closed stable allowlist；无 FileChange、Diff、patch、approval/write
+  gate 或任意 unknown/experimental generic kind；Artifact authority 保持独立
+- breaking baseline：FEAT-134 candidate
+  `3832a6c5e99b2a6365f193280fdb887c8fdbc2de` 与 published supported
+  `f16a497e1377f45747f8ff9292b4b60cf2027f88`
+- 发布顺序：Contracts immutable commit → Host gated mapper/redactor → Desktop closed consumer；
+  consumer ready 前不得发出 v5，rollback 为关闭 FEAT-136 并继续协商 v4
+- 尚未完成：Host/Desktop 实现及 exact pin/conformance、真实 Command vertical、真实 Tool、
+  D4、不可移动 tag、publish、supported 晋升和 production activation
+
+详见 [`releases/contracts-v0.7.0.md`](releases/contracts-v0.7.0.md)。
 
 ### FEAT-134 当前候选
 

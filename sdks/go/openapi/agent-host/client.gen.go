@@ -1301,6 +1301,21 @@ func (e EventSchemaVersionV4) Valid() bool {
 	}
 }
 
+// Defines values for EventSchemaVersionV5.
+const (
+	EventSchemaVersionV5N5 EventSchemaVersionV5 = 5
+)
+
+// Valid indicates whether the value is a known member of the EventSchemaVersionV5 enum.
+func (e EventSchemaVersionV5) Valid() bool {
+	switch e {
+	case EventSchemaVersionV5N5:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for StreamAgentSessionEventsV2ParamsEventSchemaVersion.
 const (
 	StreamAgentSessionEventsV2ParamsEventSchemaVersionN2 StreamAgentSessionEventsV2ParamsEventSchemaVersion = 2
@@ -1340,6 +1355,21 @@ const (
 func (e StreamAgentSessionEventsV4ParamsEventSchemaVersion) Valid() bool {
 	switch e {
 	case StreamAgentSessionEventsV4ParamsEventSchemaVersionN4:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for StreamAgentSessionEventsV5ParamsEventSchemaVersion.
+const (
+	StreamAgentSessionEventsV5ParamsEventSchemaVersionN5 StreamAgentSessionEventsV5ParamsEventSchemaVersion = 5
+)
+
+// Valid indicates whether the value is a known member of the StreamAgentSessionEventsV5ParamsEventSchemaVersion enum.
+func (e StreamAgentSessionEventsV5ParamsEventSchemaVersion) Valid() bool {
+	switch e {
+	case StreamAgentSessionEventsV5ParamsEventSchemaVersionN5:
 		return true
 	default:
 		return false
@@ -2000,6 +2030,9 @@ type EventSchemaVersionV3 int32
 // EventSchemaVersionV4 defines model for EventSchemaVersionV4.
 type EventSchemaVersionV4 int32
 
+// EventSchemaVersionV5 defines model for EventSchemaVersionV5.
+type EventSchemaVersionV5 int32
+
 // EventStreamId defines model for EventStreamId.
 type EventStreamId = openapi_types.UUID
 
@@ -2195,6 +2228,30 @@ type StreamAgentSessionEventsV4Params struct {
 
 // StreamAgentSessionEventsV4ParamsEventSchemaVersion defines parameters for StreamAgentSessionEventsV4.
 type StreamAgentSessionEventsV4ParamsEventSchemaVersion int32
+
+// StreamAgentSessionEventsV5Params defines parameters for StreamAgentSessionEventsV5.
+type StreamAgentSessionEventsV5Params struct {
+	// EventSchemaVersion Explicit negotiation guard. Only integer value 5 is accepted on the v5 event stream.
+	EventSchemaVersion StreamAgentSessionEventsV5ParamsEventSchemaVersion `form:"event_schema_version" json:"event_schema_version"`
+
+	// StreamId Expected process-local stream identifier. Required when `after > 0`
+	// unless `Last-Event-ID` supplies the complete cursor. A mismatch returns
+	// `409 event_stream_changed`.
+	StreamId *EventStreamId `form:"stream_id,omitempty" json:"stream_id,omitempty"`
+
+	// After Unsigned 64-bit sequence after which events are replayed. Defaults to
+	// zero. Values greater than zero require a matching stream ID. Ignored when
+	// `Last-Event-ID` is present.
+	After *EventAfter `form:"after,omitempty" json:"after,omitempty"`
+
+	// LastEventID Complete SSE cursor `<stream_id>:<sequence>`. Sequence is a decimal
+	// unsigned 64-bit integer from 1 through 18446744073709551615 with no
+	// leading zero. The header overrides `stream_id` and `after` query parameters.
+	LastEventID *LastEventId `json:"Last-Event-ID,omitempty"`
+}
+
+// StreamAgentSessionEventsV5ParamsEventSchemaVersion defines parameters for StreamAgentSessionEventsV5.
+type StreamAgentSessionEventsV5ParamsEventSchemaVersion int32
 
 // ResumeAgentSessionJSONRequestBody defines body for ResumeAgentSession for application/json ContentType.
 type ResumeAgentSessionJSONRequestBody = TraceRequest
@@ -2646,6 +2703,9 @@ type ClientInterface interface {
 
 	// StreamAgentSessionEventsV4 request
 	StreamAgentSessionEventsV4(ctx context.Context, agentSessionId AgentSessionId, params *StreamAgentSessionEventsV4Params, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// StreamAgentSessionEventsV5 request
+	StreamAgentSessionEventsV5(ctx context.Context, agentSessionId AgentSessionId, params *StreamAgentSessionEventsV5Params, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) GetAgentHostHealth(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -3082,6 +3142,18 @@ func (c *Client) StreamAgentSessionEventsV3(ctx context.Context, agentSessionId 
 
 func (c *Client) StreamAgentSessionEventsV4(ctx context.Context, agentSessionId AgentSessionId, params *StreamAgentSessionEventsV4Params, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewStreamAgentSessionEventsV4Request(c.Server, agentSessionId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) StreamAgentSessionEventsV5(ctx context.Context, agentSessionId AgentSessionId, params *StreamAgentSessionEventsV5Params, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewStreamAgentSessionEventsV5Request(c.Server, agentSessionId, params)
 	if err != nil {
 		return nil, err
 	}
@@ -4375,6 +4447,102 @@ func NewStreamAgentSessionEventsV4Request(server string, agentSessionId AgentSes
 	return req, nil
 }
 
+// NewStreamAgentSessionEventsV5Request generates requests for StreamAgentSessionEventsV5
+func NewStreamAgentSessionEventsV5Request(server string, agentSessionId AgentSessionId, params *StreamAgentSessionEventsV5Params) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "agent_session_id", agentSessionId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v5/agent-sessions/%s/events", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "event_schema_version", params.EventSchemaVersion, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+			return nil, err
+		} else {
+			for _, qp := range strings.Split(queryFrag, "&") {
+				rawQueryFragments = append(rawQueryFragments, qp)
+			}
+		}
+
+		if params.StreamId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "stream_id", *params.StreamId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: "uuid"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.After != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "after", *params.After, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "uint64"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.LastEventID != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Last-Event-ID", *params.LastEventID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: ""})
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Last-Event-ID", headerParam0)
+		}
+
+	}
+
+	return req, nil
+}
+
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -4516,6 +4684,9 @@ type ClientWithResponsesInterface interface {
 
 	// StreamAgentSessionEventsV4WithResponse request
 	StreamAgentSessionEventsV4WithResponse(ctx context.Context, agentSessionId AgentSessionId, params *StreamAgentSessionEventsV4Params, reqEditors ...RequestEditorFn) (*StreamAgentSessionEventsV4Response, error)
+
+	// StreamAgentSessionEventsV5WithResponse request
+	StreamAgentSessionEventsV5WithResponse(ctx context.Context, agentSessionId AgentSessionId, params *StreamAgentSessionEventsV5Params, reqEditors ...RequestEditorFn) (*StreamAgentSessionEventsV5Response, error)
 }
 
 type GetAgentHostHealthResponse struct {
@@ -5383,6 +5554,40 @@ func (r StreamAgentSessionEventsV4Response) ContentType() string {
 	return ""
 }
 
+type StreamAgentSessionEventsV5Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *ErrorResponse
+	JSON401      *Unauthorized
+	JSON404      *SessionNotFound
+	JSON409      *ErrorResponse
+	JSON500      *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r StreamAgentSessionEventsV5Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r StreamAgentSessionEventsV5Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r StreamAgentSessionEventsV5Response) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 // GetAgentHostHealthWithResponse request returning *GetAgentHostHealthResponse
 func (c *ClientWithResponses) GetAgentHostHealthWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetAgentHostHealthResponse, error) {
 	rsp, err := c.GetAgentHostHealth(ctx, reqEditors...)
@@ -5702,6 +5907,15 @@ func (c *ClientWithResponses) StreamAgentSessionEventsV4WithResponse(ctx context
 		return nil, err
 	}
 	return ParseStreamAgentSessionEventsV4Response(rsp)
+}
+
+// StreamAgentSessionEventsV5WithResponse request returning *StreamAgentSessionEventsV5Response
+func (c *ClientWithResponses) StreamAgentSessionEventsV5WithResponse(ctx context.Context, agentSessionId AgentSessionId, params *StreamAgentSessionEventsV5Params, reqEditors ...RequestEditorFn) (*StreamAgentSessionEventsV5Response, error) {
+	rsp, err := c.StreamAgentSessionEventsV5(ctx, agentSessionId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseStreamAgentSessionEventsV5Response(rsp)
 }
 
 // ParseGetAgentHostHealthResponse parses an HTTP response from a GetAgentHostHealthWithResponse call
@@ -7114,6 +7328,60 @@ func ParseStreamAgentSessionEventsV4Response(rsp *http.Response) (*StreamAgentSe
 	}
 
 	response := &StreamAgentSessionEventsV4Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest SessionNotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseStreamAgentSessionEventsV5Response parses an HTTP response from a StreamAgentSessionEventsV5WithResponse call
+func ParseStreamAgentSessionEventsV5Response(rsp *http.Response) (*StreamAgentSessionEventsV5Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &StreamAgentSessionEventsV5Response{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
