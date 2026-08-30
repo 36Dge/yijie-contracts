@@ -105,3 +105,16 @@ and conformance remain next-batch work. V5 does not register a Tool, enable an
 experimental API, add an approval action, or widen Runtime sandbox or permissions.
 FileChange/Diff remain excluded and Artifact remains independently governed. See
 [`agent-session-events-v5.md`](agent-session-events-v5.md).
+
+FEAT-137 v6 local Command approval is a source-first-only extension on the same unpublished
+`0.7.0` candidate. It is isolated behind `GET /v6/agent-sessions/{agent_session_id}/events` with
+`event_schema_version=6`, plus owner-only pending snapshot and one-shot decision endpoints. V6 keeps
+all v5 events and adds only `approval.requested/resolved` with a Host-minted opaque identity, fixed
+Git repository-check action, fixed primary `accept_once` and secondary `cancel_current_turn`,
+120-second Host-monotonic TTL, revision 1→2, generation-scoped Runtime replay identity, correlated
+decision response, and status-specific fixed-message errors. Replayed events and SQLCipher are not
+pending authority; after reconnect the Desktop must read the Host memory snapshot before enabling an
+action. HTTP 200 follows exact stable `serverRequest/resolved`; generated types do not replace the
+closed semantic decoder. The current Host projection remains `read-only/never` until a later
+implementation batch. See
+[`agent-session-events-v6.md`](agent-session-events-v6.md).

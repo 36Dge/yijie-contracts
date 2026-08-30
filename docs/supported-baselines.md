@@ -21,6 +21,40 @@
 - 回滚：回退 Host 的契约 snapshot 并禁用 Baseline 2 对外接口；这是首个支持版本，
   没有更早的已发布 contracts tag 可回退
 
+### FEAT-137 v6 source-first 当前候选
+
+- 版本：继续使用未发布 `0.7.0 candidate`；不创建新 tag、不发布，且所有下游必须固定完整
+  commit/digest，不能只按版本号消费
+- 状态：Contracts source candidate；Host/Desktop implementation、conformance、真实调用与 D4
+  均 `NOT RUN`
+- contract impact：`semantic`；v5 是 closed union，因此新增显式协商 v6，v1-v5 保持不变
+- 权威源：AgentSessionEventV6 JSON Schema、Protobuf v6、AsyncAPI v6 channel/message/operation、
+  Agent Host `/v6/.../events`、owner-only pending snapshot 与 one-shot decision OpenAPI
+- producer/consumer：`yijie-agent-host` → `yijie-desktop`；Host 是唯一 Runtime mapper、pending
+  和 decision authority
+- Runtime：继续冻结 `yijie-codex@b2b20e2fc4a0c94834f34d8cc459e488a1b56277` / `0.144.6` / 267
+  schemas / `experimentalApi=false`；`agent-host-runtime-v1.json` 保持逐字节不变并继续描述当前
+  `read-only/never` 实现；新增独立 `agent-host-runtime-approval-v6.json` 仅冻结未来 mapper，状态
+  为 `source_first_not_implemented`
+- 新语义：固定 `git_repository_check`、Host opaque approval identity、primary `accept_once` /
+  secondary `cancel_current_turn`、120 秒 TTL、Host memory pending snapshot、revision 1→2、
+  generation-bound decision、Runtime replay reuse 与 closed requested/resolved outcomes/errors
+- Runtime 映射：accept once 只发送 stable `accept`；cancel current turn 与 TTL 只发送 stable
+  `cancel`；Runtime/Item/Turn cleanup 先胜时 `resolved_elsewhere` 且不再响应；HTTP 200 等待相同
+  generation/RequestId/thread 的 stable `serverRequest/resolved`
+- 数据边界：禁止 Runtime RequestId/approvalId、command/cwd/reason/actions、permission/amendment、
+  `availableDecisions`、secret、path 和 raw wire；Desktop 仅按 fixed action ID 本地化
+- compatibility baseline：前一 Contracts candidate
+  `87f94c9aa6d4848cb67aa8a1265bd21474edb0bb` 与 published supported
+  `f16a497e1377f45747f8ff9292b4b60cf2027f88`
+- 发布顺序：Contracts immutable candidate → Host exact pin/mapper/pending authority → Desktop
+  exact pin/closed consumer → conformance → Owner separately-authorized D4；consumer ready 前不得发出 v6
+- 回滚：关闭 FEAT-137 并协商 v5，保持现有 `read-only/never`；不修改 Runtime
+- exclusions：FileChange/Diff、一般权限/MCP/requestUserInput、decline/session approval、
+  network/write/sandbox expansion、Runtime patch 与 production approval
+
+详见 [`agent-session-events-v6.md`](agent-session-events-v6.md)。
+
 ### FEAT-136 当前候选
 
 - 版本：`0.7.0 candidate`

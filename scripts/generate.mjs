@@ -31,7 +31,130 @@ async function collectJsonSchemas(dir) {
   return schemas.sort((a, b) => a.relativePath.localeCompare(b.relativePath));
 }
 
-await run("node", ["scripts/generate-skill-bundle-fixtures.mjs"]);
+function splitAgentHostGoV6Interface(source, legacyName, extensionName) {
+  const declaration = `type ${legacyName} interface {`;
+  const start = source.indexOf(declaration);
+  if (start < 0) throw new Error(`missing generated ${legacyName}`);
+  const bodyStart = start + declaration.length;
+  const end = source.indexOf("\n}\n", bodyStart);
+  if (end < 0) throw new Error(`unterminated generated ${legacyName}`);
+  const groups = source
+    .slice(bodyStart, end)
+    .split("\n\n")
+    .map((group) => group.replace(/^\n+|\n+$/g, ""))
+    .filter(Boolean);
+  const v6Groups = groups.filter((group) => group.includes("V6"));
+  const legacyGroups = groups.filter((group) => !group.includes("V6"));
+  const v6MethodCount = v6Groups
+    .flatMap((group) => group.split("\n"))
+    .map((line) => line.trim())
+    .filter((line) => /^[A-Z]/.test(line) && line.includes("(")).length;
+  if (v6MethodCount !== 4) {
+    throw new Error(`expected four FEAT-137 methods in generated ${legacyName}, found ${v6MethodCount}`);
+  }
+  const replacement = [
+    declaration,
+    legacyGroups.join("\n\n"),
+    "}",
+    "",
+    `// ${extensionName} is the opt-in FEAT-137 v6 extension. The legacy ${legacyName}`,
+    "// intentionally remains source-compatible for existing mocks and adapters.",
+    `type ${extensionName} interface {`,
+    `\t${legacyName}`,
+    "",
+    v6Groups.join("\n\n"),
+    "}",
+    "",
+  ].join("\n");
+  return source.slice(0, start) + replacement + source.slice(end + 3);
+}
+
+function addAgentHostGoV6ResponseClient(source) {
+  const marker = "\n// WithBaseURL overrides the baseURL.";
+  if (!source.includes(marker)) throw new Error("missing Agent Host response-client insertion point");
+  const responseClient = `
+// ClientWithResponsesV6 is the opt-in FEAT-137 response wrapper. It promotes
+// every legacy response method without widening ClientWithResponses.
+type ClientWithResponsesV6 struct {
+\t*ClientWithResponses
+\tv6 ClientV6Interface
+}
+
+// NewClientWithResponsesV6 creates the opt-in FEAT-137 response wrapper.
+func NewClientWithResponsesV6(server string, opts ...ClientOption) (*ClientWithResponsesV6, error) {
+\tclient, err := NewClient(server, opts...)
+\tif err != nil {
+\t\treturn nil, err
+\t}
+\treturn WithResponsesV6(client), nil
+}
+
+// WithResponsesV6 wraps an implementation of the opt-in FEAT-137 client interface.
+func WithResponsesV6(client ClientV6Interface) *ClientWithResponsesV6 {
+\treturn &ClientWithResponsesV6{
+\t\tClientWithResponses: &ClientWithResponses{ClientInterface: client},
+\t\tv6:                  client,
+\t}
+}
+`;
+  let compatible = source.replace(marker, `\n${responseClient}${marker}`);
+  const methods = [
+    ["GetPendingAgentApprovalsV6WithResponse", "GetPendingAgentApprovalsV6"],
+    ["DecideAgentApprovalV6WithBodyWithResponse", "DecideAgentApprovalV6WithBody"],
+    ["DecideAgentApprovalV6WithResponse", "DecideAgentApprovalV6"],
+    ["StreamAgentSessionEventsV6WithResponse", "StreamAgentSessionEventsV6"],
+  ];
+  for (const [responseMethod, rawMethod] of methods) {
+    const receiver = `func (c *ClientWithResponses) ${responseMethod}(`;
+    const v6Receiver = `func (c *ClientWithResponsesV6) ${responseMethod}(`;
+    const call = `\trsp, err := c.${rawMethod}(`;
+    const v6Call = `\trsp, err := c.v6.${rawMethod}(`;
+    if (!compatible.includes(receiver) || !compatible.includes(call)) {
+      throw new Error(`missing generated FEAT-137 response method ${responseMethod}`);
+    }
+    compatible = compatible.replace(receiver, v6Receiver).replace(call, v6Call);
+  }
+  return `${compatible}
+var (
+\t_ ClientInterface                = (*Client)(nil)
+\t_ ClientV6Interface              = (*Client)(nil)
+\t_ ClientWithResponsesInterface   = (*ClientWithResponses)(nil)
+\t_ ClientWithResponsesV6Interface = (*ClientWithResponsesV6)(nil)
+)
+`;
+}
+
+async function preserveAgentHostGoCompatibility(goOutput) {
+  const generated = await readFile(goOutput, "utf8");
+  const typeName = "StreamAgentSessionEventsV2ParamsEventSchemaVersion";
+  const stableName = `${typeName}N2`;
+  const unstableDeclaration = `\tN2 ${typeName} = 2`;
+  const stableDeclaration = `\t${stableName} ${typeName} = 2`;
+  let compatible = generated;
+  if (compatible.includes(unstableDeclaration) && compatible.includes("\tcase N2:")) {
+    compatible = compatible
+      .replace(unstableDeclaration, stableDeclaration)
+      .replace("\tcase N2:", `\tcase ${stableName}:`);
+  } else if (!compatible.includes(stableDeclaration)) {
+    throw new Error(`cannot preserve the published Agent Host Go enum symbol in ${goOutput}`);
+  }
+  compatible = splitAgentHostGoV6Interface(
+    compatible,
+    "ClientInterface",
+    "ClientV6Interface",
+  );
+  compatible = splitAgentHostGoV6Interface(
+    compatible,
+    "ClientWithResponsesInterface",
+    "ClientWithResponsesV6Interface",
+  );
+  compatible = addAgentHostGoV6ResponseClient(compatible);
+  await writeFile(goOutput, compatible);
+}
+
+if (!process.argv.includes("--skip-skill-fixture-generation")) {
+  await run("node", ["scripts/generate-skill-bundle-fixtures.mjs"]);
+}
 
 for (const dir of [
   "sdks/go/openapi",
@@ -76,6 +199,12 @@ for (const [name, goPackage, spec] of openapiSpecs) {
     goOutput,
     spec,
   ]);
+  if (name === "agent-host") {
+    // Preserve the published v2 enum identifier and keep legacy client interfaces
+    // source-compatible while exposing v6 through explicit extension interfaces.
+    await preserveAgentHostGoCompatibility(path.join(root, goOutput));
+    await run("gofmt", ["-w", goOutput]);
+  }
 }
 
 await run("pnpm", ["exec", "buf", "generate"]);
@@ -109,6 +238,7 @@ for (const { relativePath, schema } of schemas) {
     outputName === "agent-session-event-v3" ||
     outputName === "agent-session-event-v4" ||
     outputName === "agent-session-event-v5" ||
+    outputName === "agent-session-event-v6" ||
     outputName === "report-report-document-v1" ||
     outputName === "skills-skill-bundle-manifest-v2"
   ) {
@@ -120,6 +250,7 @@ for (const { relativePath, schema } of schemas) {
       "agent-session-event-v3": "AgentSessionEventSchemaV3",
       "agent-session-event-v4": "AgentSessionEventSchemaV4",
       "agent-session-event-v5": "AgentSessionEventSchemaV5",
+      "agent-session-event-v6": "AgentSessionEventSchemaV6",
       "report-report-document-v1": "ReportDocumentSchemaV1",
       "skills-skill-bundle-manifest-v2": "SkillBundleManifestSchemaV2",
     }[outputName];
@@ -145,6 +276,7 @@ await writeFile(
     'export * as AgentSessionEventsV3 from "./protobuf/yijie/events/v3/agent_session_pb.js";',
     'export * as AgentSessionEventsV4 from "./protobuf/yijie/events/v4/agent_session_pb.js";',
     'export * as AgentSessionEventsV5 from "./protobuf/yijie/events/v5/agent_session_pb.js";',
+    'export * as AgentSessionEventsV6 from "./protobuf/yijie/events/v6/agent_session_pb.js";',
     'export * as TaskEventsV1 from "./protobuf/yijie/events/v1/task_pb.js";',
     'export * as AgentHostV1 from "./protobuf/yijie/services/agent_host/v1/agent_host_pb.js";',
     ...schemaExports,

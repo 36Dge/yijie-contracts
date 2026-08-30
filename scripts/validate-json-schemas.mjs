@@ -34,6 +34,24 @@ ajv.addKeyword({
 ajv.addKeyword({ keyword: "x-yijie-content-index-rule", schemaType: "string" });
 ajv.addKeyword({ keyword: "x-yijie-projection-limit-policy", schemaType: "object" });
 ajv.addKeyword({ keyword: "x-yijie-command-tool-projection-policy", schemaType: "object" });
+ajv.addKeyword({ keyword: "x-yijie-command-approval-policy", schemaType: "object" });
+ajv.addKeyword({
+  keyword: "x-yijie-approval-time-window",
+  schemaType: "object",
+  type: "object",
+  errors: false,
+  validate: (policy, value) => {
+    const requestedAt = Date.parse(value[policy.requested_at_field]);
+    const expiresAt = Date.parse(value[policy.expires_at_field]);
+    if (!Number.isFinite(requestedAt) || !Number.isFinite(expiresAt)) return false;
+    if (expiresAt - requestedAt !== policy.ttl_seconds * 1000) return false;
+    if (!policy.resolved_at_field) return true;
+    const resolvedAt = Date.parse(value[policy.resolved_at_field]);
+    if (!Number.isFinite(resolvedAt) || resolvedAt < requestedAt) return false;
+    const isDeadlineOutcome = value[policy.outcome_field] === policy.deadline_outcome;
+    return isDeadlineOutcome ? resolvedAt >= expiresAt : resolvedAt < expiresAt;
+  },
+});
 const files = await findSchemas("jsonschema");
 for (const file of files) {
   const schema = JSON.parse(await readFile(file, "utf8"));

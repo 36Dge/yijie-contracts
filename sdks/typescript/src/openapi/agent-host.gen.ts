@@ -536,6 +536,125 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v6/agent-sessions/{agent_session_id}/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Replay and stream explicitly negotiated Agent session events v6
+         * @description Opens the v6 Server-Sent Events stream. The required
+         *     `event_schema_version=6` query parameter prevents accidental v6 output to
+         *     an older consumer. V6 preserves every v5 event family and adds only the
+         *     closed FEAT-137 `approval.requested` and `approval.resolved` lifecycle.
+         *     V1-v5 paths, schemas, event unions, and semantics remain unchanged.
+         *
+         *     Approval events bind the Host-minted opaque `approval_request_id` to the
+         *     enclosing task/session/thread/turn/item identity. They expose only the
+         *     fixed `git_repository_check` action, `current_workspace` scope, exact
+         *     `accept_once` then `cancel_current_turn` decisions, timestamps, revision,
+         *     and stable resolution. Runtime RequestId/approvalId, command, cwd, reason,
+         *     permissions, amendments, availableDecisions, and raw Runtime wire are
+         *     forbidden. Approval events alone are not action authority: after a normal
+         *     reconnect the Desktop must read the owner-only pending snapshot before
+         *     enabling a decision.
+         *
+         *     Pending lifetime is exactly 120 seconds measured from Host receive time.
+         *     TTL winning the first-writer-wins race maps once to the same Runtime
+         *     reverse request as decision `cancel` and emits `expired`. If Runtime,
+         *     Item, or Turn cleanup wins first, Host emits `resolved_elsewhere` and does
+         *     not respond again. At-least-once SSE delivery is deduplicated only by
+         *     `event_id`; only `turn.completed` is terminal for the Turn.
+         */
+        get: operations["streamAgentSessionEventsV6"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v6/agent-sessions/{agent_session_id}/approvals/pending": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Read the current Host-authoritative pending approval snapshot
+         * @description Returns the process-local, memory-only pending FEAT-137 approval snapshot.
+         *     The Desktop must read this snapshot after reconnect before enabling an
+         *     approval action. An empty array is authoritative for the current Host
+         *     `stream_id`; SQLCipher or replayed SSE history cannot restore a clickable
+         *     approval. A pending row is revision 1 and its requested/expires timestamps
+         *     are exactly 120 seconds apart; `snapshot_at` must be inside that live
+         *     interval. The response never contains Runtime identity, startedAtMs,
+         *     command/actions, cwd, environment identity, reason, network context,
+         *     permission, amendment, secret, or raw wire fields.
+         */
+        get: operations["getPendingAgentApprovalsV6"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v6/agent-sessions/{agent_session_id}/approvals/{approval_request_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+                /** @description Host-minted opaque approval UUID; never a Runtime RequestId or Runtime approvalId. */
+                approval_request_id: components["parameters"]["ApprovalRequestIdV6"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit one closed decision to the current pending approval
+         * @description Submits exactly one `accept_once` or `cancel_current_turn` decision for a
+         *     Host-authoritative pending approval. `expected_stream_id` and
+         *     `expected_revision` fail closed across Host restart, replay, expiry, and
+         *     stale UI. The first valid writer wins. While the content-free resolved
+         *     record remains in the bounded 128-record session audit, repeating the same
+         *     `decision_id` and identical body returns the identical original 200
+         *     response; reusing it with different content returns
+         *     `approval_decision_conflict`. After eviction, retry returns
+         *     `approval_not_found` and can never reopen authority. The Desktop does not
+         *     automatically retry an unknown transport result and first reconciles
+         *     through the pending snapshot.
+         *
+         *     `accept_once` maps only to Runtime decision `accept` under the existing
+         *     read-only sandbox. `cancel_current_turn`, including Host TTL expiry, maps
+         *     only to Runtime decision `cancel`; malformed, decline, session approval,
+         *     policy/network amendment, permission expansion, and unsandboxed retry are
+         *     not representable. HTTP 200 is returned only after Host observes the
+         *     stable Runtime `serverRequest/resolved` notification for the exact
+         *     Runtime generation, RequestId, and thread; otherwise it returns a closed
+         *     error and Desktop reconciles by snapshot.
+         */
+        post: operations["decideAgentApprovalV6"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v3/agent-sessions/{agent_session_id}/artifacts/{artifact_id}/content": {
         parameters: {
             query?: never;
@@ -1236,6 +1355,205 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        /** @enum {string} */
+        ApprovalDecisionNameV6: "accept_once" | "cancel_current_turn";
+        /** @description Fixed presentation order. `accept_once` is primary and `cancel_current_turn` is secondary; no Runtime-provided decision widens this set. */
+        ApprovalDecisionSetV6: {
+            /** @enum {string} */
+            primary: "accept_once";
+            /** @enum {string} */
+            secondary: "cancel_current_turn";
+        };
+        PendingApprovalV6: {
+            /**
+             * Format: uuid
+             * @description Host-minted opaque identity; never the Runtime RequestId or nullable Runtime approvalId.
+             */
+            approval_request_id: string;
+            /**
+             * Format: int64
+             * @enum {integer}
+             */
+            revision: 1;
+            /** Format: uuid */
+            task_id: string;
+            /** Format: uuid */
+            agent_session_id: string;
+            /** Format: uuid */
+            codex_thread_id: string;
+            /** Format: uuid */
+            turn_id: string;
+            item_id: string;
+            /** @enum {string} */
+            action_id: "git_repository_check";
+            /** @enum {string} */
+            workspace_scope: "current_workspace";
+            decisions: components["schemas"]["ApprovalDecisionSetV6"];
+            /** Format: date-time */
+            requested_at: string;
+            /** Format: date-time */
+            expires_at: string;
+            /** @enum {integer} */
+            ttl_seconds: 120;
+        };
+        PendingApprovalSnapshotV6: {
+            /** @enum {integer} */
+            schema_version: 6;
+            /**
+             * Format: uuid
+             * @description Current Host process event-stream identity; a Host restart produces a different value.
+             */
+            stream_id: string;
+            /** Format: date-time */
+            snapshot_at: string;
+            /** @description Memory-only action authority. Empty means no approval is actionable in this Host generation. */
+            pending: components["schemas"]["PendingApprovalV6"][];
+        };
+        ApprovalDecisionV6Request: {
+            /** @enum {integer} */
+            schema_version: 6;
+            /**
+             * Format: uuid
+             * @description Desktop-minted idempotency identity for this single decision attempt.
+             */
+            decision_id: string;
+            /**
+             * Format: uuid
+             * @description Must equal the Host generation that produced the pending snapshot.
+             */
+            expected_stream_id: string;
+            /**
+             * Format: int64
+             * @enum {integer}
+             */
+            expected_revision: 1;
+            decision: components["schemas"]["ApprovalDecisionNameV6"];
+        };
+        ApprovalDecisionV6Response: {
+            /** @enum {integer} */
+            schema_version: 6;
+            /** Format: uuid */
+            approval_request_id: string;
+            /** Format: uuid */
+            decision_id: string;
+            /** Format: uuid */
+            stream_id: string;
+            /**
+             * Format: int64
+             * @enum {integer}
+             */
+            revision: 2;
+            decision: components["schemas"]["ApprovalDecisionNameV6"];
+            /** @enum {string} */
+            outcome: "accepted_once" | "cancelled_current_turn";
+            /** Format: date-time */
+            resolved_at: string;
+        } & ({
+            /** @enum {string} */
+            decision: "accept_once";
+            /** @enum {string} */
+            outcome: "accepted_once";
+        } | {
+            /** @enum {string} */
+            decision: "cancel_current_turn";
+            /** @enum {string} */
+            outcome: "cancelled_current_turn";
+        });
+        ApprovalBadRequestErrorResponseV6: components["schemas"]["ApprovalInvalidRequestErrorV6"] | components["schemas"]["ApprovalVersionMismatchErrorV6"];
+        ApprovalUnauthorizedErrorResponseV6: components["schemas"]["ApprovalUnauthorizedErrorV6"];
+        ApprovalSessionNotFoundErrorResponseV6: components["schemas"]["ApprovalSessionNotFoundErrorV6"];
+        ApprovalNotFoundErrorResponseV6: components["schemas"]["ApprovalSessionNotFoundErrorV6"] | components["schemas"]["ApprovalNotFoundErrorV6"];
+        ApprovalConflictErrorResponseV6: components["schemas"]["ApprovalStaleErrorV6"] | components["schemas"]["ApprovalExpiredErrorV6"] | components["schemas"]["ApprovalAlreadyResolvedErrorV6"] | components["schemas"]["ApprovalDecisionConflictErrorV6"];
+        ApprovalUnavailableErrorResponseV6: components["schemas"]["ApprovalUnavailableErrorV6"];
+        ApprovalInternalErrorResponseV6: components["schemas"]["ApprovalInternalErrorV6"];
+        ApprovalUnauthorizedErrorV6: {
+            error: {
+                /** @enum {string} */
+                code: "unauthorized";
+                /** @enum {string} */
+                message: "valid Agent Host bearer token required";
+            };
+        };
+        ApprovalInvalidRequestErrorV6: {
+            error: {
+                /** @enum {string} */
+                code: "invalid_approval_request";
+                /** @enum {string} */
+                message: "approval request is invalid";
+            };
+        };
+        ApprovalVersionMismatchErrorV6: {
+            error: {
+                /** @enum {string} */
+                code: "approval_version_mismatch";
+                /** @enum {string} */
+                message: "approval schema version does not match";
+            };
+        };
+        ApprovalSessionNotFoundErrorV6: {
+            error: {
+                /** @enum {string} */
+                code: "session_not_found";
+                /** @enum {string} */
+                message: "agent session was not found";
+            };
+        };
+        ApprovalNotFoundErrorV6: {
+            error: {
+                /** @enum {string} */
+                code: "approval_not_found";
+                /** @enum {string} */
+                message: "approval request was not found";
+            };
+        };
+        ApprovalStaleErrorV6: {
+            error: {
+                /** @enum {string} */
+                code: "approval_stale";
+                /** @enum {string} */
+                message: "approval request is stale";
+            };
+        };
+        ApprovalExpiredErrorV6: {
+            error: {
+                /** @enum {string} */
+                code: "approval_expired";
+                /** @enum {string} */
+                message: "approval request expired";
+            };
+        };
+        ApprovalAlreadyResolvedErrorV6: {
+            error: {
+                /** @enum {string} */
+                code: "approval_already_resolved";
+                /** @enum {string} */
+                message: "approval request was already resolved";
+            };
+        };
+        ApprovalDecisionConflictErrorV6: {
+            error: {
+                /** @enum {string} */
+                code: "approval_decision_conflict";
+                /** @enum {string} */
+                message: "approval decision conflicts with the existing decision";
+            };
+        };
+        ApprovalUnavailableErrorV6: {
+            error: {
+                /** @enum {string} */
+                code: "approval_unavailable";
+                /** @enum {string} */
+                message: "approval authority is unavailable";
+            };
+        };
+        ApprovalInternalErrorV6: {
+            error: {
+                /** @enum {string} */
+                code: "internal_error";
+                /** @enum {string} */
+                message: "approval processing failed";
+            };
+        };
         /** @description A UUID when bound, otherwise the empty string. */
         UuidOrEmpty: string;
         StartTurnResponse: {
@@ -1339,6 +1657,76 @@ export interface components {
                  *     }
                  */
                 "application/json": components["schemas"]["ErrorResponse"];
+            };
+        };
+        /** @description `invalid_approval_request` or `approval_version_mismatch`: the closed v6 request, identifier, or schema version is invalid. */
+        ApprovalBadRequestV6: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ApprovalBadRequestErrorResponseV6"];
+            };
+        };
+        /** @description `unauthorized`: a valid owner-only local Agent Host bearer token is required. */
+        ApprovalUnauthorizedV6: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ApprovalUnauthorizedErrorResponseV6"];
+            };
+        };
+        /** @description `session_not_found`: the scoped Agent session does not exist. */
+        ApprovalSessionNotFoundV6: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ApprovalSessionNotFoundErrorResponseV6"];
+            };
+        };
+        /** @description `session_not_found` or `approval_not_found`: the scoped session or opaque approval does not exist. */
+        ApprovalNotFoundV6: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ApprovalNotFoundErrorResponseV6"];
+            };
+        };
+        /** @description The pending authority rejected a stale, expired, duplicate, already-resolved, or conflicting decision. */
+        ApprovalConflictV6: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ApprovalConflictErrorResponseV6"];
+            };
+        };
+        /** @description `approval_unavailable`: Runtime or Host pending authority cannot safely accept a decision. The Desktop reconciles by snapshot and does not automatically retry. */
+        ApprovalUnavailableV6: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ApprovalUnavailableErrorResponseV6"];
+            };
+        };
+        /** @description `internal_error`: approval processing failed without exposing Runtime wire, command, cwd, reason, path, or secret. */
+        ApprovalInternalErrorV6: {
+            headers: {
+                "Cache-Control": components["headers"]["NoStore"];
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ApprovalInternalErrorResponseV6"];
             };
         };
         /** @description `invalid_request`: the operation ID, Skill ID, version, digest, catalog revision, or closed request body is invalid. */
@@ -1591,6 +1979,10 @@ export interface components {
         EventSchemaVersionV4: 4;
         /** @description Explicit negotiation guard. Only integer value 5 is accepted on the v5 event stream. */
         EventSchemaVersionV5: 5;
+        /** @description Explicit negotiation guard. Only integer value 6 is accepted on the v6 event stream. */
+        EventSchemaVersionV6: 6;
+        /** @description Host-minted opaque approval UUID; never a Runtime RequestId or Runtime approvalId. */
+        ApprovalRequestIdV6: string;
         /** @description A single inclusive HTTP byte range. Multiple or malformed ranges are rejected. */
         ByteRange: string;
     };
@@ -2545,6 +2937,154 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
+        };
+    };
+    streamAgentSessionEventsV6: {
+        parameters: {
+            query: {
+                /** @description Explicit negotiation guard. Only integer value 6 is accepted on the v6 event stream. */
+                event_schema_version: components["parameters"]["EventSchemaVersionV6"];
+                /**
+                 * @description Expected process-local stream identifier. Required when `after > 0`
+                 *     unless `Last-Event-ID` supplies the complete cursor. A mismatch returns
+                 *     `409 event_stream_changed`.
+                 */
+                stream_id?: components["parameters"]["EventStreamId"];
+                /**
+                 * @description Unsigned 64-bit sequence after which events are replayed. Defaults to
+                 *     zero. Values greater than zero require a matching stream ID. Ignored when
+                 *     `Last-Event-ID` is present.
+                 */
+                after?: components["parameters"]["EventAfter"];
+            };
+            header?: {
+                /**
+                 * @description Complete SSE cursor `<stream_id>:<sequence>`. Sequence is a decimal
+                 *     unsigned 64-bit integer from 1 through 18446744073709551615 with no
+                 *     leading zero. The header overrides `stream_id` and `after` query parameters.
+                 */
+                "Last-Event-ID"?: components["parameters"]["LastEventId"];
+            };
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Retained v6 events were replayed and the connection is subscribed for live v6 events. */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    /** @description Disables reverse-proxy response buffering. */
+                    "X-Accel-Buffering": "no";
+                    /** @description Actual process-local stream identifier used by every returned SSE event ID. */
+                    "X-Yijie-Event-Stream-ID": string;
+                    /** @description Confirms that every returned data event uses AgentSessionEventV6. */
+                    "X-Yijie-Event-Schema-Version": 6;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": string;
+                };
+            };
+            /** @description `invalid_request` or `invalid_event_cursor`: schema negotiation, identifier, or cursor is invalid. */
+            400: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            404: components["responses"]["SessionNotFound"];
+            /** @description `event_stream_changed` or `event_replay_unavailable`: the requested v6 cursor cannot be resumed safely. */
+            409: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `streaming_unsupported` or `internal_error`: the v6 stream cannot be served safely. */
+            500: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getPendingAgentApprovalsV6: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Current memory-only pending approval snapshot. */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PendingApprovalSnapshotV6"];
+                };
+            };
+            400: components["responses"]["ApprovalBadRequestV6"];
+            401: components["responses"]["ApprovalUnauthorizedV6"];
+            404: components["responses"]["ApprovalSessionNotFoundV6"];
+            500: components["responses"]["ApprovalInternalErrorV6"];
+        };
+    };
+    decideAgentApprovalV6: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Agent Host-generated session identifier. */
+                agent_session_id: components["parameters"]["AgentSessionId"];
+                /** @description Host-minted opaque approval UUID; never a Runtime RequestId or Runtime approvalId. */
+                approval_request_id: components["parameters"]["ApprovalRequestIdV6"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApprovalDecisionV6Request"];
+            };
+        };
+        responses: {
+            /** @description The decision was accepted or an identical idempotent response was returned. */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["NoStore"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApprovalDecisionV6Response"];
+                };
+            };
+            400: components["responses"]["ApprovalBadRequestV6"];
+            401: components["responses"]["ApprovalUnauthorizedV6"];
+            404: components["responses"]["ApprovalNotFoundV6"];
+            409: components["responses"]["ApprovalConflictV6"];
+            500: components["responses"]["ApprovalInternalErrorV6"];
+            503: components["responses"]["ApprovalUnavailableV6"];
         };
     };
     getAgentArtifactContentV3: {

@@ -1,0 +1,526 @@
+syntax = "proto3";
+
+package yijie.events.v6;
+
+import "google/protobuf/timestamp.proto";
+import "yijie/common/v1/common.proto";
+
+option go_package = "github.com/36Dge/yijie-contracts/sdks/go/protobuf/yijie/events/v6;eventsv6";
+
+enum AgentEventType {
+  AGENT_EVENT_TYPE_UNSPECIFIED = 0;
+  AGENT_EVENT_TYPE_THREAD_STARTED = 1;
+  AGENT_EVENT_TYPE_TURN_STARTED = 2;
+  AGENT_EVENT_TYPE_ITEM_STARTED = 3;
+  AGENT_EVENT_TYPE_ITEM_AGENT_MESSAGE_DELTA = 4;
+  AGENT_EVENT_TYPE_ITEM_COMPLETED = 5;
+  AGENT_EVENT_TYPE_TURN_COMPLETED = 6;
+  AGENT_EVENT_TYPE_ERROR = 7;
+  AGENT_EVENT_TYPE_WARNING = 8;
+  AGENT_EVENT_TYPE_ITEM_REASONING_TEXT_DELTA = 9;
+  AGENT_EVENT_TYPE_ITEM_REASONING_TEXT_FINALIZED = 10;
+  AGENT_EVENT_TYPE_ITEM_ARTIFACT_STARTED = 11;
+  AGENT_EVENT_TYPE_ITEM_ARTIFACT_PROGRESS = 12;
+  AGENT_EVENT_TYPE_ITEM_ARTIFACT_COMPLETED = 13;
+  AGENT_EVENT_TYPE_ITEM_ARTIFACT_FAILED = 14;
+  AGENT_EVENT_TYPE_TURN_PLAN_UPDATED = 15;
+  AGENT_EVENT_TYPE_ITEM_COMMAND_OUTPUT_DELTA = 16;
+  AGENT_EVENT_TYPE_ITEM_TOOL_PROGRESS = 17;
+  AGENT_EVENT_TYPE_APPROVAL_REQUESTED = 18;
+  AGENT_EVENT_TYPE_APPROVAL_RESOLVED = 19;
+}
+
+enum AgentTurnStatus {
+  AGENT_TURN_STATUS_UNSPECIFIED = 0;
+  AGENT_TURN_STATUS_IN_PROGRESS = 1;
+  AGENT_TURN_STATUS_COMPLETED = 2;
+  AGENT_TURN_STATUS_INTERRUPTED = 3;
+  AGENT_TURN_STATUS_FAILED = 4;
+}
+
+enum AgentMessagePhase {
+  AGENT_MESSAGE_PHASE_UNSPECIFIED = 0;
+  AGENT_MESSAGE_PHASE_COMMENTARY = 1;
+  AGENT_MESSAGE_PHASE_FINAL_ANSWER = 2;
+}
+
+enum TurnPlanStepStatus {
+  TURN_PLAN_STEP_STATUS_UNSPECIFIED = 0;
+  TURN_PLAN_STEP_STATUS_PENDING = 1;
+  TURN_PLAN_STEP_STATUS_IN_PROGRESS = 2;
+  TURN_PLAN_STEP_STATUS_COMPLETED = 3;
+}
+
+enum ReasoningFinalizationStatus {
+  REASONING_FINALIZATION_STATUS_UNSPECIFIED = 0;
+  REASONING_FINALIZATION_STATUS_COMPLETE = 1;
+  REASONING_FINALIZATION_STATUS_INCOMPLETE = 2;
+  REASONING_FINALIZATION_STATUS_UNAVAILABLE = 3;
+}
+
+enum ReasoningReasonCode {
+  REASONING_REASON_CODE_UNSPECIFIED = 0;
+  REASONING_REASON_CODE_REASONING_NOT_EMITTED = 1;
+  REASONING_REASON_CODE_TURN_INTERRUPTED = 2;
+  REASONING_REASON_CODE_STREAM_GAP = 3;
+  REASONING_REASON_CODE_RUNTIME_ERROR = 4;
+  REASONING_REASON_CODE_LIMIT_EXCEEDED = 5;
+  REASONING_REASON_CODE_PROTOCOL_ERROR = 6;
+  REASONING_REASON_CODE_HOST_SHUTDOWN = 7;
+}
+
+enum GenericItemType {
+  GENERIC_ITEM_TYPE_UNSPECIFIED = 0;
+  GENERIC_ITEM_TYPE_USER_MESSAGE = 1;
+  GENERIC_ITEM_TYPE_HOOK_PROMPT = 2;
+  GENERIC_ITEM_TYPE_REASONING = 3;
+  GENERIC_ITEM_TYPE_COLLAB_AGENT_TOOL_CALL = 4;
+  GENERIC_ITEM_TYPE_SUB_AGENT_ACTIVITY = 5;
+  GENERIC_ITEM_TYPE_WEB_SEARCH = 6;
+  GENERIC_ITEM_TYPE_IMAGE_VIEW = 7;
+  GENERIC_ITEM_TYPE_SLEEP = 8;
+  GENERIC_ITEM_TYPE_IMAGE_GENERATION = 9;
+  GENERIC_ITEM_TYPE_ENTERED_REVIEW_MODE = 10;
+  GENERIC_ITEM_TYPE_EXITED_REVIEW_MODE = 11;
+  GENERIC_ITEM_TYPE_CONTEXT_COMPACTION = 12;
+}
+
+enum CommandStatus {
+  COMMAND_STATUS_UNSPECIFIED = 0;
+  COMMAND_STATUS_RUNNING = 1;
+  COMMAND_STATUS_COMPLETED = 2;
+  COMMAND_STATUS_FAILED = 3;
+  COMMAND_STATUS_DECLINED = 4;
+}
+
+enum ToolStatus {
+  TOOL_STATUS_UNSPECIFIED = 0;
+  TOOL_STATUS_IN_PROGRESS = 1;
+  TOOL_STATUS_COMPLETED = 2;
+  TOOL_STATUS_FAILED = 3;
+  // Reserved by Yijie. Runtime 0.144.6 has no stable declined producer.
+  TOOL_STATUS_DECLINED = 4;
+}
+
+enum ApprovalAction {
+  APPROVAL_ACTION_UNSPECIFIED = 0;
+  APPROVAL_ACTION_GIT_REPOSITORY_CHECK = 1;
+}
+
+enum ApprovalWorkspaceScope {
+  APPROVAL_WORKSPACE_SCOPE_UNSPECIFIED = 0;
+  APPROVAL_WORKSPACE_SCOPE_CURRENT_WORKSPACE = 1;
+}
+
+enum ApprovalDecision {
+  APPROVAL_DECISION_UNSPECIFIED = 0;
+  APPROVAL_DECISION_ACCEPT_ONCE = 1;
+  APPROVAL_DECISION_CANCEL_CURRENT_TURN = 2;
+}
+
+enum ApprovalOutcome {
+  APPROVAL_OUTCOME_UNSPECIFIED = 0;
+  APPROVAL_OUTCOME_ACCEPTED_ONCE = 1;
+  APPROVAL_OUTCOME_CANCELLED_CURRENT_TURN = 2;
+  APPROVAL_OUTCOME_EXPIRED = 3;
+  APPROVAL_OUTCOME_RESOLVED_ELSEWHERE = 4;
+}
+
+enum TruncationReason {
+  TRUNCATION_REASON_UNSPECIFIED = 0;
+  TRUNCATION_REASON_UTF8_BYTE_LIMIT = 1;
+  TRUNCATION_REASON_UPSTREAM_TRUNCATED = 2;
+}
+
+enum CommandCwdKind {
+  COMMAND_CWD_KIND_UNSPECIFIED = 0;
+  COMMAND_CWD_KIND_WORKSPACE_ROOT = 1;
+  COMMAND_CWD_KIND_WORKSPACE_RELATIVE = 2;
+  COMMAND_CWD_KIND_REDACTED = 3;
+}
+
+enum CommandOutputUnavailableReason {
+  COMMAND_OUTPUT_UNAVAILABLE_REASON_UNSPECIFIED = 0;
+  COMMAND_OUTPUT_UNAVAILABLE_REASON_NOT_AVAILABLE = 1;
+}
+
+enum CommandErrorCode {
+  COMMAND_ERROR_CODE_UNSPECIFIED = 0;
+  COMMAND_ERROR_CODE_COMMAND_FAILED = 1;
+  COMMAND_ERROR_CODE_COMMAND_DECLINED = 2;
+  COMMAND_ERROR_CODE_PROJECTION_LIMIT_EXCEEDED = 3;
+  COMMAND_ERROR_CODE_PROJECTION_REDACTION_FAILED = 4;
+  COMMAND_ERROR_CODE_PROTOCOL_ERROR = 5;
+}
+
+enum ToolErrorCode {
+  TOOL_ERROR_CODE_UNSPECIFIED = 0;
+  TOOL_ERROR_CODE_TOOL_FAILED = 1;
+  TOOL_ERROR_CODE_TOOL_DECLINED = 2;
+  TOOL_ERROR_CODE_UNKNOWN_TOOL = 3;
+  TOOL_ERROR_CODE_PROJECTION_LIMIT_EXCEEDED = 4;
+  TOOL_ERROR_CODE_PROJECTION_REDACTION_FAILED = 5;
+  TOOL_ERROR_CODE_PROTOCOL_ERROR = 6;
+}
+
+enum ArtifactKind {
+  ARTIFACT_KIND_UNSPECIFIED = 0;
+  ARTIFACT_KIND_IMAGE = 1;
+  ARTIFACT_KIND_VIDEO = 2;
+  ARTIFACT_KIND_FILE = 3;
+  ARTIFACT_KIND_REPORT = 4;
+}
+
+enum ArtifactProvenance {
+  ARTIFACT_PROVENANCE_UNSPECIFIED = 0;
+  ARTIFACT_PROVENANCE_SYNTHETIC = 1;
+  ARTIFACT_PROVENANCE_PROVIDER = 2;
+  ARTIFACT_PROVENANCE_TOOL = 3;
+}
+
+enum ArtifactProgressStage {
+  ARTIFACT_PROGRESS_STAGE_UNSPECIFIED = 0;
+  ARTIFACT_PROGRESS_STAGE_GENERATING = 1;
+  ARTIFACT_PROGRESS_STAGE_PROCESSING = 2;
+  ARTIFACT_PROGRESS_STAGE_FINALIZING = 3;
+}
+
+enum ArtifactErrorCode {
+  ARTIFACT_ERROR_CODE_UNSPECIFIED = 0;
+  ARTIFACT_ERROR_CODE_GENERATION_FAILED = 1;
+  ARTIFACT_ERROR_CODE_UNSUPPORTED_PROVIDER = 2;
+  ARTIFACT_ERROR_CODE_RESOURCE_UNAVAILABLE = 3;
+  ARTIFACT_ERROR_CODE_LIMIT_EXCEEDED = 4;
+  ARTIFACT_ERROR_CODE_INTEGRITY_FAILED = 5;
+  ARTIFACT_ERROR_CODE_PROTOCOL_ERROR = 6;
+  ARTIFACT_ERROR_CODE_TURN_INTERRUPTED = 7;
+  ARTIFACT_ERROR_CODE_HOST_SHUTDOWN = 8;
+}
+
+message ThreadStartedPayload {
+  string model = 1;
+  string model_provider = 2;
+}
+
+message TurnLifecyclePayload {
+  AgentTurnStatus status = 1;
+  string error_code = 2;
+  string error_message = 3;
+}
+
+message AgentMessageLifecyclePayload {
+  string text = 1;
+  // Present only for agentMessage. Absence represents JSON null.
+  optional AgentMessagePhase phase = 2;
+}
+
+message GenericItemLifecyclePayload {
+  // Closed stable allowlist; experimental, unknown, FileChange, and approval-like
+  // Item kinds cannot be encoded by this v6 branch.
+  GenericItemType item_type = 1;
+}
+
+message CommandSummary {
+  // Redacted before UTF-8 measurement; at most 4 KiB.
+  string text = 1;
+  bool truncated = 2;
+  optional TruncationReason truncation_reason = 3;
+}
+
+message CommandCwd {
+  // Absolute paths are never projected. WORKSPACE_RELATIVE uses safe segments.
+  CommandCwdKind kind = 1;
+  repeated string segments = 2;
+}
+
+message CommandOutputComplete {
+  // At most 256 KiB. This branch implies truncated=false.
+  string text = 1;
+}
+
+message CommandOutputHeadTail {
+  // At most 128 KiB each. This branch implies truncated=true.
+  string head = 1;
+  string tail = 2;
+  TruncationReason truncation_reason = 3;
+}
+
+message CommandOutputUnavailable {
+  CommandOutputUnavailableReason reason = 1;
+}
+
+message CommandOutputSnapshot {
+  // MUST be set. Proto3 unset oneof is rejected by the JSON-equivalent semantic gate.
+  oneof retention {
+    CommandOutputComplete complete = 1;
+    CommandOutputHeadTail head_tail = 2;
+    CommandOutputUnavailable unavailable = 3;
+  }
+}
+
+message CommandError {
+  CommandErrorCode code = 1;
+  // Redacted summary; at most 4 KiB.
+  string summary = 2;
+}
+
+message CommandStartedPayload {
+  CommandStatus status = 1;
+  CommandSummary command_summary = 2;
+  CommandCwd cwd = 3;
+}
+
+message CommandOutputDeltaPayload {
+  // Redacted delta; at most 16 KiB.
+  string delta = 1;
+  bool truncated = 2;
+  optional TruncationReason truncation_reason = 3;
+}
+
+message CommandCompletedPayload {
+  CommandStatus status = 1;
+  CommandSummary command_summary = 2;
+  CommandCwd cwd = 3;
+  optional uint64 duration_ms = 4;
+  optional sint32 exit_code = 5;
+  CommandOutputSnapshot output = 6;
+  optional CommandError error = 7;
+}
+
+message KnownToolIdentity {
+  // Safe display identity, at most 256 bytes per part.
+  string server_name = 1;
+  string tool_name = 2;
+}
+
+message UnknownToolIdentity {}
+
+message ToolIdentity {
+  // MUST be set. Unknown/unset oneof and unrecognized enum-like states are rejected.
+  oneof resolution {
+    KnownToolIdentity known = 1;
+    // This branch carries no source identity. JSON uses fixed "unknown" sentinels.
+    UnknownToolIdentity unknown = 2;
+  }
+}
+
+message ToolArgumentsSummary {
+  // Metadata-only and redacted; at most 8 KiB.
+  string text = 1;
+  bool truncated = 2;
+  optional TruncationReason truncation_reason = 3;
+}
+
+message ToolProgressSummary {
+  // Metadata-only and redacted; at most 4 KiB.
+  string text = 1;
+  bool truncated = 2;
+  optional TruncationReason truncation_reason = 3;
+}
+
+message ToolResultSummary {
+  // Metadata-only and redacted; at most 64 KiB.
+  string text = 1;
+  bool truncated = 2;
+  optional TruncationReason truncation_reason = 3;
+}
+
+message ToolError {
+  ToolErrorCode code = 1;
+  // Redacted summary; at most 4 KiB.
+  string summary = 2;
+}
+
+message ToolStartedPayload {
+  ToolStatus status = 1;
+  ToolIdentity identity = 2;
+  ToolArgumentsSummary arguments_summary = 3;
+}
+
+message ToolProgressPayload {
+  ToolStatus status = 1;
+  ToolIdentity identity = 2;
+  // Zero-based; values above 31 are rejected. At most 32 progress events per item and 64 KiB total.
+  uint32 progress_index = 3;
+  ToolProgressSummary summary = 4;
+}
+
+message ToolCompletedPayload {
+  ToolStatus status = 1;
+  ToolIdentity identity = 2;
+  ToolArgumentsSummary arguments_summary = 3;
+  optional uint64 duration_ms = 4;
+  optional ToolResultSummary result_summary = 5;
+  optional ToolError error = 6;
+}
+
+message ApprovalDecisionSet {
+  // MUST be ACCEPT_ONCE. The JSON equivalent is the fixed primary decision.
+  ApprovalDecision primary = 1;
+  // MUST be CANCEL_CURRENT_TURN. The JSON equivalent is the fixed secondary decision.
+  ApprovalDecision secondary = 2;
+}
+
+message ApprovalRequestedPayload {
+  // Host-minted opaque UUID. Runtime RequestId and nullable approvalId stay private.
+  string approval_request_id = 1;
+  // Always 1 for the single phase-one pending state.
+  uint64 revision = 2;
+  ApprovalAction action_id = 3;
+  ApprovalWorkspaceScope workspace_scope = 4;
+  ApprovalDecisionSet decisions = 5;
+  google.protobuf.Timestamp requested_at = 6;
+  google.protobuf.Timestamp expires_at = 7;
+  // Always 120 for FEAT-137 phase 1.
+  uint32 ttl_seconds = 8;
+}
+
+message ApprovalResolvedPayload {
+  string approval_request_id = 1;
+  // Always 2 for the single phase-one resolution transition.
+  uint64 revision = 2;
+  ApprovalAction action_id = 3;
+  ApprovalWorkspaceScope workspace_scope = 4;
+  ApprovalOutcome outcome = 5;
+  // Present only for accepted_once or cancelled_current_turn.
+  optional string decision_id = 6;
+  optional ApprovalDecision decision = 7;
+  google.protobuf.Timestamp requested_at = 8;
+  google.protobuf.Timestamp expires_at = 9;
+  google.protobuf.Timestamp resolved_at = 10;
+}
+
+message AgentMessageDeltaPayload {
+  string delta = 1;
+}
+
+message TurnPlanStep {
+  string step = 1;
+  TurnPlanStepStatus status = 2;
+}
+
+message TurnPlanUpdatedPayload {
+  // A complete authoritative snapshot in presentation order; empty clears it.
+  repeated TurnPlanStep plan = 1;
+  // Absence and JSON null both clear the prior explanation.
+  optional string explanation = 2;
+}
+
+message ReasoningTextDeltaPayload {
+  uint32 content_index = 1;
+  string delta = 2;
+}
+
+message ReasoningContentPart {
+  uint32 content_index = 1;
+  string text = 2;
+}
+
+message ReasoningTextFinalizedPayload {
+  ReasoningFinalizationStatus status = 1;
+  repeated ReasoningContentPart contents = 2;
+  optional ReasoningReasonCode reason_code = 3;
+}
+
+message AgentProblemPayload {
+  string code = 1;
+  string message = 2;
+  bool will_retry = 3;
+}
+
+message ArtifactStartedPayload {
+  string artifact_id = 1;
+  ArtifactKind kind = 2;
+  ArtifactProvenance provenance = 3;
+  uint32 ordinal = 4;
+  optional string display_name = 5;
+}
+
+message ArtifactProgressPayload {
+  string artifact_id = 1;
+  ArtifactKind kind = 2;
+  ArtifactProvenance provenance = 3;
+  optional ArtifactProgressStage stage = 4;
+  optional double progress_percent = 5;
+  uint32 ordinal = 6;
+}
+
+message ArtifactCompletedPayload {
+  string artifact_id = 1;
+  ArtifactKind kind = 2;
+  ArtifactProvenance provenance = 3;
+  string media_type = 4;
+  uint64 size_bytes = 5;
+  string sha256 = 6;
+  string content_href = 7;
+  optional string poster_href = 8;
+  uint32 ordinal = 9;
+  optional string display_name = 10;
+}
+
+message ArtifactFailedPayload {
+  string artifact_id = 1;
+  ArtifactKind kind = 2;
+  ArtifactProvenance provenance = 3;
+  ArtifactErrorCode error_code = 4;
+  bool retryable = 5;
+  optional string message = 6;
+  uint32 ordinal = 7;
+}
+
+// JSON Schema agent/session-event-v6 is the semantic validity authority. Proto3
+// decoding alone is insufficient: adapters MUST reject unset required
+// messages/oneofs, UNSPECIFIED or unrecognized enums, wrong lifecycle/status
+// combinations, progress_index > 31, scalar/UTF-8/aggregate/SSE cap violations,
+// Command completion without output, and Tool completion status/result/error
+// combinations, approval fixed action/decision/TTL/revision/outcome rules, and
+// forbidden raw approval fields that the JSON authority rejects before
+// apply/render/persistence.
+message AgentSessionEvent {
+  // Always 6. Consumers negotiate v6 before the Host emits this message.
+  uint32 schema_version = 1;
+  string event_id = 2;
+  string stream_id = 3;
+  uint64 sequence = 4;
+  google.protobuf.Timestamp occurred_at = 5;
+  // For approval_requested/resolved, trace.request_id MUST be empty so a
+  // Runtime RequestId cannot enter the public envelope.
+  yijie.common.v1.TraceContext trace = 6;
+  string task_id = 7;
+  string agent_session_id = 8;
+  string codex_thread_id = 9;
+  string turn_id = 10;
+  string item_id = 11;
+  AgentEventType event_type = 12;
+  // True only for turn_completed. Plan and item terminal events are not turn terminal.
+  bool terminal = 13;
+
+  oneof payload {
+    ThreadStartedPayload thread_started = 20;
+    TurnLifecyclePayload turn_started = 21;
+    AgentMessageLifecyclePayload agent_message_started = 22;
+    AgentMessageDeltaPayload agent_message_delta = 23;
+    AgentMessageLifecyclePayload agent_message_completed = 24;
+    TurnLifecyclePayload turn_completed = 25;
+    AgentProblemPayload error = 26;
+    AgentProblemPayload warning = 27;
+    ReasoningTextDeltaPayload reasoning_text_delta = 28;
+    ReasoningTextFinalizedPayload reasoning_text_finalized = 29;
+    ArtifactStartedPayload artifact_started = 30;
+    ArtifactProgressPayload artifact_progress = 31;
+    ArtifactCompletedPayload artifact_completed = 32;
+    ArtifactFailedPayload artifact_failed = 33;
+    TurnPlanUpdatedPayload turn_plan_updated = 34;
+    // These typed branches use ITEM_STARTED or ITEM_COMPLETED as event_type.
+    CommandStartedPayload command_started = 35;
+    CommandOutputDeltaPayload command_output_delta = 36;
+    CommandCompletedPayload command_completed = 37;
+    ToolStartedPayload tool_started = 38;
+    ToolProgressPayload tool_progress = 39;
+    ToolCompletedPayload tool_completed = 40;
+    GenericItemLifecyclePayload generic_item_started = 41;
+    GenericItemLifecyclePayload generic_item_completed = 42;
+    ApprovalRequestedPayload approval_requested = 43;
+    ApprovalResolvedPayload approval_resolved = 44;
+  }
+}

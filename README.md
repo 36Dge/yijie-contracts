@@ -72,6 +72,17 @@ FileChange/Diff/approval。范围与语义见
 [`docs/releases/contracts-v0.7.0.md`](docs/releases/contracts-v0.7.0.md) 与
 [`docs/agent-session-events-v5.md`](docs/agent-session-events-v5.md)。
 
+同一未发布 `0.7.0` candidate 的 FEAT-137 source-first 修订新增独立协商的
+AgentSessionEventV6、owner-only pending snapshot 与 one-shot decision API。V6 完整保留 v1-v5，
+只增加固定 `git_repository_check` 的 `approval.requested/resolved`、Host opaque identity、
+`accept_once/cancel_current_turn`、120 秒 TTL 与 closed stable errors；Runtime RequestId、command、
+cwd、reason、permission/amendment、`availableDecisions` 和 raw wire 不进入 Yijie contract。当前
+Runtime compatibility manifest 仍逐字节保持 `read-only/never`，Host/Desktop 实现与 D4 尚未开始。
+独立的 `compatibility/agent-host-runtime-approval-v6.json` 只冻结未来 Host mapper 的 exact
+eligibility、generation-scoped replay、120 秒 Host-monotonic TTL、accept/cancel 与
+`serverRequest/resolved` 语义，不改变当前实现 manifest。见
+[`docs/agent-session-events-v6.md`](docs/agent-session-events-v6.md)。
+
 跨仓契约变更必须遵循
 [`docs/contract-change-policy.md`](docs/contract-change-policy.md)：先分类影响、修改权威
 源并完成生成/兼容评审，形成不可变引用；每个下游 PR 在自身合并前完成精确 pin 和

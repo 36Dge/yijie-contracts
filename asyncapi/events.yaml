@@ -59,6 +59,17 @@ channels:
     messages:
       agentSessionEventV5:
         $ref: "#/components/messages/AgentSessionEventV5"
+  agentSessionEventsV6:
+    address: agent.session.events.v6
+    description: >-
+      Explicitly negotiated v6 Agent Host events. This stream preserves every
+      v5 event family and adds only the closed FEAT-137 local Command
+      approval.requested/resolved lifecycle. Approval events expose a Host-minted
+      opaque identity and fixed safe metadata, never Runtime identity, command,
+      cwd, reason, permission/amendment fields, availableDecisions, or raw wire.
+    messages:
+      agentSessionEventV6:
+        $ref: "#/components/messages/AgentSessionEventV6"
 operations:
   receiveTaskEvents:
     action: receive
@@ -117,6 +128,17 @@ operations:
       $ref: "#/channels/agentSessionEventsV5"
     messages:
       - $ref: "#/channels/agentSessionEventsV5/messages/agentSessionEventV5"
+  receiveAgentSessionEventsV6:
+    action: receive
+    description: >-
+      Receive one AgentSessionEventV6 after explicit schema-version-6
+      negotiation. Delivery is at least once and deduplicated only by event_id.
+      Replayed approval events are historical state; the owner-only Host pending
+      snapshot is the sole authority for enabling an approval action after reconnect.
+    channel:
+      $ref: "#/channels/agentSessionEventsV6"
+    messages:
+      - $ref: "#/channels/agentSessionEventsV6/messages/agentSessionEventV6"
 components:
   messages:
     AgentSessionEvent:
@@ -198,3 +220,21 @@ components:
         location: $message.payload#/agent_session_id
       payload:
         $ref: ../jsonschema/agent/session-event-v5.schema.json
+    AgentSessionEventV6:
+      name: AgentSessionEventV6
+      title: Ordered Agent Host session event v6
+      summary: V5 events plus closed local Command approval requested/resolved lifecycle.
+      description: >-
+        JSON payload semantics are authoritative in the referenced JSON Schema.
+        Protobuf message yijie.events.v6.AgentSessionEvent is a typed transport
+        projection, not an independent validity authority. Protobuf adapters must
+        reject every message that would fail the JSON authority, including wrong
+        action/decision/TTL/revision/outcome combinations and forbidden raw fields.
+        Producers emit v6 only after the consumer explicitly negotiates schema
+        version 6 and the exact local FEAT-137 gate is enabled.
+      contentType: application/json
+      correlationId:
+        description: Agent Host session that owns the ordered event stream.
+        location: $message.payload#/agent_session_id
+      payload:
+        $ref: ../jsonschema/agent/session-event-v6.schema.json

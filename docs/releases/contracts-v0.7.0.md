@@ -1,8 +1,34 @@
 # Contracts v0.7.0 candidate
 
-Status: FEAT-136 v0.7.0 exact-local candidate with Owner-authorized Runtime provenance repair; not
+Status: unpublished local candidate. FEAT-136 v5 and its Owner-authorized Runtime provenance repair
+remain intact; FEAT-137 adds an isolated source-first v6 approval surface. This candidate is not
 tagged, pushed, published, deployed, promoted to a supported baseline, or enabled for
-public/production. Host/Desktop exact repin/conformance and fresh Command D4 remain separate gates.
+public/production. FEAT-137 Host/Desktop implementation, exact repin/conformance, and D4 remain
+separate gates.
+
+## FEAT-137 v6 source-first addendum
+
+The untagged `0.7.0` candidate may accumulate reviewed compatible revisions under
+`docs/versioning.md`; therefore this batch keeps the package/OpenAPI/AsyncAPI version and the frozen
+Runtime compatibility manifest unchanged. V6 is isolated because v5 is a closed event/SDK surface.
+It adds `jsonschema/agent/session-event-v6.schema.json`, `yijie.events.v6`, an explicitly negotiated
+v6 SSE route, owner-only Host memory pending snapshot, one-shot decision endpoint, and the independent
+`compatibility/agent-host-runtime-approval-v6.json` source-first mapper projection. V1-v5 sources and
+the current `agent-host-runtime-v1.json` remain byte-identical to Contracts baseline
+`87f94c9aa6d4848cb67aa8a1265bd21474edb0bb`.
+
+The only action is fixed `git_repository_check`, with fixed primary `accept_once`, secondary
+`cancel_current_turn`, a 120-second Host-monotonic TTL, revision 1→2, and closed
+`accepted_once/cancelled_current_turn/expired/resolved_elsewhere` outcomes. Host-minted opaque
+approval identity, stream generation, and revision are the only decision correlation exposed to
+Desktop. Runtime RequestId/startedAtMs/approvalId, command/actions, cwd, environment, reason,
+network/permissions/amendments, `availableDecisions`, secrets, paths, and raw wire are forbidden.
+Status-specific errors use fixed content-free messages, and a decision 200 is correlated to stable
+Runtime `serverRequest/resolved` for the same generation, RequestId, and thread.
+
+This addendum is Contracts source only. The existing compatibility manifest truthfully remains
+`read-only/never`; Host/Desktop implementation and fresh real D4 are `NOT RUN`. Details are in
+[`../agent-session-events-v6.md`](../agent-session-events-v6.md).
 
 ## Impact, authorities, and ownership
 

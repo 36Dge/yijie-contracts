@@ -28,7 +28,11 @@ async function snapshotAll() {
 }
 
 const before = await snapshotAll();
-await exec("node", ["scripts/generate.mjs"], { maxBuffer: 20_000_000 });
+const generateArgs = ["scripts/generate.mjs"];
+if (process.argv.includes("--skip-skill-fixture-generation")) {
+  generateArgs.push("--skip-skill-fixture-generation");
+}
+await exec("node", generateArgs, { maxBuffer: 20_000_000 });
 const after = await snapshotAll();
 const changed = new Set([...before.keys(), ...after.keys()]);
 for (const file of changed) {

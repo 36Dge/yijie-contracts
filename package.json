@@ -23,14 +23,17 @@
   },
   "scripts": {
     "generate": "node scripts/generate.mjs",
+    "generate:safe": "node scripts/generate.mjs --skip-skill-fixture-generation",
     "validate:api": "redocly lint",
     "validate:schemas": "node scripts/validate-json-schemas.mjs",
     "validate:proto": "buf lint",
     "lint": "pnpm validate:api && pnpm validate:schemas && pnpm validate:proto && tsc -p tsconfig.json --noEmit && go vet ./...",
     "test": "node scripts/check-generated.mjs && node --test tests/*.test.mjs && go test ./...",
+    "check-generated:safe": "node scripts/check-generated.mjs --skip-skill-fixture-generation",
     "breaking": "./scripts/check-breaking.sh",
     "check:v1-wire": "node scripts/check-v1-wire-equality.mjs",
     "build": "pnpm generate && tsc -p tsconfig.json",
+    "build:safe": "pnpm generate:safe && tsc -p tsconfig.json",
     "pack:sdk": "pnpm build && pnpm pack --pack-destination .artifacts"
   },
   "devDependencies": {
