@@ -1,6 +1,6 @@
 # Supported Contract Baselines
 
-## 当前状态（2026-08-29）
+## 当前状态（2026-08-30）
 
 ### 已发布支持基线
 
@@ -34,7 +34,7 @@
   必须拒绝 unset oneof/message、unknown/unspecified enum、错误 lifecycle/status/result/error 组合、
   progress index 与 scalar/UTF-8/aggregate/SSE 超限，不能把可解码 message 当成有效状态
 - producer：`yijie-agent-host`；known consumer：`yijie-desktop`；外部 Runtime 固定为
-  `yijie-codex@0ce5902ed400866be0196886bb78f693a004d68d`
+  `yijie-codex@b2b20e2fc4a0c94834f34d8cc459e488a1b56277`
 - 新语义：`item.started`/`item.completed` 含 closed Command/Tool typed snapshots，新增
   `item.command_output.delta` 与 `item.tool.progress`；按 `event_id` 去重，相同文本不同事件
   合法，completed 是 Item 的权威封口快照，缺失 Command aggregate 映射为显式 unavailable，
@@ -47,10 +47,13 @@
 - 数据边界：契约要求先脱敏后按 UTF-8 截断；只允许安全 summary、结构化 relative/redacted cwd、
   stable status/error/truncation；禁止 raw command/cwd、Tool args/result/meta/context、token、
   secret、absolute path 和 raw Runtime wire；schema 只能证明 closed fields/path shapes，实际
-  Host secret/path/content sanitizer 与 conformance 尚未执行
+  Host reviewed draft 已覆盖 secret/path/content sanitizer；针对本次新 provenance 的 exact
+  repin 与 fresh cross-repository conformance 尚未执行
 - Runtime 边界：`0.144.6`、upstream `rust-v0.144.6`、267 stable schemas、tree SHA-256
   `82ee9de771cf1d41bac16d87380f1121e7794107aa3aa526ad702d5d1bf7afe1`、
-  `experimentalApi=false`；不修改、升级或重编译 Runtime，不改变 read-only/never
+  `experimentalApi=false`；严格应用 FEAT-126 `0001` → FEAT-136 `0002`，后者只补 early
+  sandbox-denial 的 canonical same-identity started/failed completed；隔离 build、Schema 零差异、
+  normal-EOF smoke 和 Runtime→Contracts 双向检查通过，不改变 read-only/never
 - Tool gap：generic Tool contract 不注册 MCP/Connector、不产生真实 Tool；Runtime MCP status
   没有 declined，v5 的 Tool declined 仅 Yijie 预留/synthetic-only；CAP-017 Owner/product 与
   real-producer decision 继续 pending，但不阻塞 Command contract；unknown identity 固定为
@@ -60,10 +63,14 @@
 - breaking baseline：FEAT-134 candidate
   `3832a6c5e99b2a6365f193280fdb887c8fdbc2de` 与 published supported
   `f16a497e1377f45747f8ff9292b4b60cf2027f88`
-- 发布顺序：Contracts immutable commit → Host gated mapper/redactor → Desktop closed consumer；
-  consumer ready 前不得发出 v5，rollback 为关闭 FEAT-136 并继续协商 v4
-- 尚未完成：Host/Desktop 实现及 exact pin/conformance、真实 Command vertical、真实 Tool、
-  D4、不可移动 tag、publish、supported 晋升和 production activation
+- 发布顺序：Runtime immutable candidate → Contracts repin → Host exact artifact/pin 与 mapper
+  conformance → Desktop exact pin/closed consumer conformance → fresh Command D4；consumer ready 前
+  不得发出 v5
+- 回滚：成对恢复 Runtime `0ce5902ed400866be0196886bb78f693a004d68d` 与其匹配 Contracts
+  provenance，关闭 FEAT-136 并继续协商 v4
+- 尚未完成：新的 Contracts immutable commit、Host/Desktop exact repin 与 fresh cross-repo
+  conformance、真实 Command D4、真实 Tool、不可移动 tag、publish、supported 晋升和
+  production activation
 
 详见 [`releases/contracts-v0.7.0.md`](releases/contracts-v0.7.0.md)。
 

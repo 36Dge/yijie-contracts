@@ -59,11 +59,15 @@ relative/redacted cwd、stable status/error/truncation 和 completed authoritati
 Command aggregate 显式映射为 unavailable，unknown Tool identity 使用固定 sentinel，generic Item
 使用 closed stable allowlist，并按 `event_id` 而非字符串内容去重。Raw command、absolute cwd、
 Tool arguments/result/meta、token、secret 和 Runtime wire 均不进入 Desktop contract。Contracts
-冻结的是字段/形状与脱敏顺序；实际 Host sanitizer/conformance 留待下一批。JSON Schema 是
+冻结的是字段/形状与脱敏顺序；Host/Desktop 已有 reviewed draft，但仍需按本次新 provenance
+精确 repin 和复跑 conformance。JSON Schema 是
 validity authority；Proto3 仅是 typed transport，adapter 必须拒绝所有不符合 JSON 语义的可解码
-message。V1-v4 保持不变，Runtime 仍固定
-`0.144.6`/267 schemas/`experimentalApi=false`。本候选只完成 Contracts 边界：不注册
-MCP/Connector，不建立真实 Tool producer，不实现 Host/Desktop 或 D4，也不包含已排除的
+message。V1-v4 保持不变；Runtime 固定为
+`yijie-codex@b2b20e2fc4a0c94834f34d8cc459e488a1b56277`、`0.144.6`、267 schemas、
+`experimentalApi=false`，并按 `0001` → `0002` 补齐 early sandbox-denial 的 canonical Command
+started/failed lifecycle。隔离 release build、Schema 零差异比较和 Runtime→Contracts 双向检查已通过。
+本候选不注册 MCP/Connector、不建立真实 Tool producer、不把 Host/Desktop 或 D4 冒充为 Contracts
+自身能力，也不包含已排除的
 FileChange/Diff/approval。范围与语义见
 [`docs/releases/contracts-v0.7.0.md`](docs/releases/contracts-v0.7.0.md) 与
 [`docs/agent-session-events-v5.md`](docs/agent-session-events-v5.md)。

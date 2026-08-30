@@ -1,8 +1,8 @@
 # Contracts v0.7.0 candidate
 
-Status: FEAT-136 D0 + Contracts exact-local candidate; not tagged, pushed, published, deployed,
-promoted to a supported baseline, or enabled for public/production. Host/Desktop implementation and
-D4 are outside this candidate.
+Status: FEAT-136 v0.7.0 exact-local candidate with Owner-authorized Runtime provenance repair; not
+tagged, pushed, published, deployed, promoted to a supported baseline, or enabled for
+public/production. Host/Desktop exact repin/conformance and fresh Command D4 remain separate gates.
 
 ## Impact, authorities, and ownership
 
@@ -16,7 +16,8 @@ D4 are outside this candidate.
 - Runtime stable-subset identity: `compatibility/agent-host-runtime-v1.json`.
 - Producer/Owner: `yijie-agent-host` / Agent Runtime Team.
 - Known consumer: `yijie-desktop`.
-- External protocol authority: pinned `yijie-codex` Runtime, which remains unmodified.
+- External protocol authority and Command lifecycle producer: pinned `yijie-codex` Runtime; Host
+  remains the normalized, bounded SSE projector and does not invent missing producer events.
 
 V5 is version-isolated because v4 has a closed event union and closed lifecycle payloads. Adding
 typed Command/Tool snapshots plus new delta/progress variants to v4 would change what a strict v4
@@ -100,25 +101,33 @@ or `redacted`. Absolute/canonical paths and traversal segments cannot be represe
 wire also excludes raw command, process ID, source/actions, raw aggregate, Tool arguments/result,
 MCP content/structured content/`_meta`, app/resource/plugin/connector identity, token, secret, and raw
 wire payload. Schema validation proves the closed field/path shapes and limit policy, not the contents
-of arbitrary allowed strings; actual secret/path/content sanitization remains a Host conformance
-requirement for the next batch.
+of arbitrary allowed strings; actual secret/path/content sanitization remains a separate Host
+conformance responsibility. The reviewed Host draft covers it, but fresh exact repin/conformance is
+still required for this provenance revision.
 
 ## Runtime, activation, and capability gap
 
-Runtime identity remains repository commit
-`0ce5902ed400866be0196886bb78f693a004d68d`, upstream tag `rust-v0.144.6`, version
+Runtime identity is repository commit
+`b2b20e2fc4a0c94834f34d8cc459e488a1b56277`, upstream tag `rust-v0.144.6`, version
 `0.144.6`, stdio transport, and `experimentalApi=false`. The stable generated schema remains 267
 files with tree SHA-256
 `82ee9de771cf1d41bac16d87380f1121e7794107aa3aa526ad702d5d1bf7afe1`.
-No Runtime source, binary, schema, build, installation, sandbox, or approval-policy change is part of
-this candidate.
+The Runtime candidate applies the exact ordered patches
+`0001-feat-126-filter-persistent-diagnostics.patch` and
+`0002-feat-136-unified-exec-pre-emitter-command-lifecycle.patch`. `0002` is a semantic producer repair:
+when final early sandbox denial previously returned before emitter creation, it emits one canonical
+started followed by one failed completed for the same Command identity, preserving exit code,
+duration and aggregate, then returns the original error. It does not change retry/approval,
+`sandbox=read-only`, `approvalPolicy=never`, transport, experimental API, or Tool production. A fresh
+isolated release build and schema regeneration confirmed no stable Schema diff.
 
 Activation is limited to `YIJIE_ENV=local` + `YIJIE_LOCAL_PROFILE=demo_fast` plus a dedicated
-FEAT-136 gate after Host and Desktop pin the immutable Contracts commit. Command is the Feature Must,
-but its Host/Desktop implementation and real safe read-only Runtime vertical remain pending. The Tool
-schema is only a generic stable boundary: no new MCP/Connector is registered, no experimental API is
-enabled, and no real Tool producer or Tool D4 is claimed. CAP-017 remains an Owner/product capability
-gap without blocking the Command contract.
+FEAT-136 gate after Host and Desktop pin the new immutable Contracts commit and exact Runtime
+artifact. Reviewed Host/Desktop drafts exist, but their new pins and end-to-end conformance remain
+pending. Command is the Feature Must; a fresh safe read-only real vertical has not yet run after this
+repair. The Tool schema is only a generic stable boundary: no new MCP/Connector is registered, no
+experimental API is enabled, and no real Tool producer or Tool D4 is claimed. CAP-017 remains an
+Owner/product capability gap without blocking the Command contract.
 
 ## Explicit exclusions
 
@@ -131,13 +140,16 @@ creating excluded-capability fixtures.
 
 ## Rollout and rollback
 
-Development order is Contracts immutable candidate → Host gated mapper/redactor → Desktop closed
-consumer, persistence/reducer, and UI. Activation is consumer-first: Host must not emit v5 until the
-Desktop consumer is pinned and ready. Rollback disables FEAT-136 and negotiates v4. V1-v4 and
-public/production behavior remain unchanged; there is no Runtime or durable-data migration in this
-Contracts slice.
+Development order is Runtime immutable candidate → Contracts provenance repin → Host exact
+Runtime/Contracts artifact pin plus mapper conformance → Desktop exact Host/Contracts pin plus closed
+consumer conformance → fresh Command D4. Activation remains consumer-first: Host must not emit v5
+until the Desktop consumer is pinned and ready. Rollback restores Runtime
+`0ce5902ed400866be0196886bb78f693a004d68d` together with its matching Contracts provenance, disables
+FEAT-136, and negotiates v4. V1-v4 and public/production behavior remain unchanged; there is no
+durable-data migration in this Contracts revision.
 
-Required safe checks before the Contracts candidate can be committed:
+The initial D0 + Contracts source candidate used these safety-compliant checks before commit
+`3c3000a6fbe2f08ab2131a463a1691e867d661b1`:
 
 ```bash
 pnpm install --frozen-lockfile
@@ -165,7 +177,31 @@ The first explicit breaking baseline is the FEAT-134 candidate from which v5 bra
 the published `contracts-v0.2.0` supported baseline. Structural green checks do not replace the
 directional semantic/security review or later Host/Desktop conformance.
 
+The Runtime provenance reconciliation additionally passed, without any Provider/model call:
+
+- final Runtime commit `b2b20e2fc4a0c94834f34d8cc459e488a1b56277` and exact ordered patch replay;
+- focused Runtime lifecycle/protocol tests, 4/4 safe fake exec-server scenarios, fmt and scoped
+  clippy;
+- isolated Rust `1.95.0` `aarch64-apple-darwin` release build;
+- 267-file stable Schema regeneration, tree SHA-256
+  `82ee9de771cf1d41bac16d87380f1121e7794107aa3aa526ad702d5d1bf7afe1`, with zero tracked diff;
+- normal-EOF stdio initialize/initialized smoke, a two-patch Runtime artifact manifest, and
+  Runtime→Contracts bidirectional compatibility.
+
+The Contracts-only reconciliation then passed focused v4/v5/runtime compatibility tests (22/22),
+all non-archive Node tests (63/63), lint, Go tests/vet, TypeScript compilation, legacy v1 wire
+equality, both registered breaking baselines, and `git diff --check`. No wire source or generated SDK
+file changed.
+
+The final fresh artifact manifest records binary SHA-256
+`4efe16d2848680752cf9aacf4c17741ab2eeb7415894a66c2bb03652b00a322d`, size `355676760`, and manifest
+SHA-256 `1cfa2e0a139b2213f4d29b1efeed71d4810110ac865f0bcbd931ff33b0062c1b`.
+These build-specific values must be copied into the Host artifact lock; they are not wire fields.
+
 The immutable candidate commit cannot truthfully be embedded before commit creation. The FEAT-136
 governance package records the final full commit after creation. Reviewed pre-commit source/generated
 digests and gate results are recorded in
-[`../reviews/FEAT-136-semantic-review.md`](../reviews/FEAT-136-semantic-review.md).
+[`../reviews/FEAT-136-semantic-review.md`](../reviews/FEAT-136-semantic-review.md). The later Runtime
+repair and provenance evidence is recorded separately in
+[`../reviews/FEAT-136-runtime-provenance-review.md`](../reviews/FEAT-136-runtime-provenance-review.md),
+so the original `3c3000a6...` review remains immutable historical evidence rather than being rewritten.

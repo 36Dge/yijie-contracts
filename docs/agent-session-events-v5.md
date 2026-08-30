@@ -207,17 +207,22 @@ embedded in a Command or Tool result.
 
 ## Runtime and activation boundary
 
-Runtime remains `yijie-codex@0ce5902ed400866be0196886bb78f693a004d68d`, upstream
+Runtime is pinned to `yijie-codex@b2b20e2fc4a0c94834f34d8cc459e488a1b56277`, upstream
 `rust-v0.144.6`, version `0.144.6`, with `experimentalApi=false`. Its stable schema set remains 267
 files with tree SHA-256
 `82ee9de771cf1d41bac16d87380f1121e7794107aa3aa526ad702d5d1bf7afe1`.
-FEAT-136 does not modify, upgrade, rebuild, replace, or patch Runtime and does not change
-`approvalPolicy=never` or `sandbox=read-only`.
+The exact Runtime overlay order is FEAT-126 `0001` followed by Owner-authorized FEAT-136 `0002`.
+`0002` supplies the missing canonical same-identity started/failed completed pair on final early
+sandbox denial while preserving exit code, duration, aggregate and the original error. It does not
+change retry/approval, `approvalPolicy=never`, `sandbox=read-only`, experimental API, or Tool
+production. A fresh isolated build confirmed that this semantic lifecycle repair makes no stable
+Schema shape change.
 
 The contract candidate is restricted to the exact `demo_fast/local` Feature gate. Contracts fixtures
-use synthetic, non-sensitive examples, but that does not validate a future Host sanitizer. Host
-mapping/redaction, Desktop reducer/persistence/UI, a real Runtime Command vertical, Tool
-availability, and D4 are separate later work and are not established by this contract.
+use synthetic, non-sensitive examples and do not by themselves validate Host sanitization. Reviewed
+Host/Desktop drafts have separate failed-lifecycle tests, but exact repin and fresh cross-repository
+conformance remain required. A fresh real Runtime Command vertical, Tool availability, and D4 are not
+established by this contract.
 
 ## Conformance
 
@@ -228,8 +233,8 @@ completed reconciliation, fixed unknown Tool identity, unknown variant handling,
 redaction policy, v1-v4 isolation, and cross-format alignment. It verifies that the legacy open
 generic Item branch remains v4-only and that v5 uses a closed stable allowlist. The absence of
 excluded FileChange/Diff/approval variants is established by static closed allowlist inspection; no
-excluded-capability fixture or producer is created. Actual Host content sanitization remains
-unimplemented and untested in this batch.
+excluded-capability fixture or producer is created. Actual Host content sanitization is a separate
+producer-conformance responsibility and is not proven by these Contracts fixtures.
 
 Generated TypeScript declarations are compile-time convenience and are not a runtime validator.
 Host and Desktop must use the v5 JSON authority or an explicit closed parser with the same positive
