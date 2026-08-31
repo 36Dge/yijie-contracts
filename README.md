@@ -78,10 +78,10 @@ AgentSessionEventV6、owner-only pending snapshot 与 one-shot decision API。V6
 `accept_once/cancel_current_turn`、120 秒 TTL 与 closed stable errors；Runtime RequestId、command、
 cwd、reason、permission/amendment、`availableDecisions` 和 raw wire 不进入 Yijie contract。当前
 Runtime v1 compatibility manifest 仍逐字节保持 `read-only/never`。独立的
-`compatibility/agent-host-runtime-approval-v6-v2.json` 冻结一个不提升权限的 Runtime-owned
+`compatibility/agent-host-runtime-approval-v6-v3.json` 冻结一个不提升权限的 Runtime-owned
 exec-policy `Prompt` producer、pinned `/bin/zsh -lc` transport wrapper、唯一 allowlisted
 `commandAction` business authority、bounded validate-then-discard `reason`、generation-scoped
-replay、120 秒 Host-monotonic TTL、accept/cancel 与
+replay、stable 必填 `sandboxPermissions=use_default`、120 秒 Host-monotonic TTL、accept/cancel 与
 `serverRequest/resolved` 语义，不改变当前实现 manifest。见
 [`docs/agent-session-events-v6.md`](docs/agent-session-events-v6.md)。
 

@@ -1,7 +1,7 @@
 import { execFile } from "node:child_process";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
-import { promisify } from "node:util";
+import { isDeepStrictEqual, promisify } from "node:util";
 
 const exec = promisify(execFile);
 const baseRef = process.argv[2] ?? "main";
@@ -65,7 +65,7 @@ function compareSchema(oldSchema, newSchema, location, errors) {
     );
   }
 
-  if (newSchema.const !== undefined && oldSchema.const !== newSchema.const) {
+  if (newSchema.const !== undefined && !isDeepStrictEqual(oldSchema.const, newSchema.const)) {
     errors.push(`${location}: const changed from ${JSON.stringify(oldSchema.const)} to ${JSON.stringify(newSchema.const)}`);
   }
   if (Array.isArray(newSchema.enum)) {

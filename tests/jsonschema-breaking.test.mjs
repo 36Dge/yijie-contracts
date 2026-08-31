@@ -51,6 +51,7 @@ function baselineSchema() {
       id: { type: "string" },
       state: { type: "string", enum: ["draft", "running"] },
       values: { type: "array" },
+      frozen_tuple: { const: ["alpha", "beta"] },
     },
   };
 }

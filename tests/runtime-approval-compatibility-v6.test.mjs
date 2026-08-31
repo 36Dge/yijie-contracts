@@ -8,8 +8,8 @@ import test from "node:test";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 
-const manifestPath = "compatibility/agent-host-runtime-approval-v6-v2.json";
-const schemaPath = "jsonschema/compatibility/agent-host-runtime-approval-v6-v2.schema.json";
+const manifestPath = "compatibility/agent-host-runtime-approval-v6-v3.json";
+const schemaPath = "jsonschema/compatibility/agent-host-runtime-approval-v6-v3.schema.json";
 const runtimeRoot = process.env.YIJIE_CODEX_REPO ?? path.resolve("../yijie-codex");
 const runtimeSchemaRoot = path.join(runtimeRoot, ".yijie/schemas/app-server/generated-json-schema");
 const execFileAsync = promisify(execFile);
@@ -86,6 +86,7 @@ function eligibleRuntimeRequest(request, host) {
     return false;
   }
   if (!Number.isSafeInteger(params.startedAtMs)) return false;
+  if (params.sandboxPermissions !== policy.sandboxPermissions) return false;
   if (params.command !== policy.commandWire || host.canonicalizeCwd(params.cwd) !== host.workspaceRoot) {
     return false;
   }
@@ -129,6 +130,7 @@ function runtimeReplayFingerprint(request, host) {
     ],
     cwd: host.workspaceIdentity,
     environmentId: host.localEnvironmentIdentity,
+    sandboxPermissions: request.params.sandboxPermissions,
     approvalId: null,
     startedAtMs: request.params.startedAtMs,
   });
@@ -189,6 +191,10 @@ test("the independent FEAT-137 Runtime approval projection is closed and exact",
     ["approval id", (value) => (value.reverse_request.eligibility.approval_id = "required_null")],
     ["cwd", (value) => (value.reverse_request.eligibility.cwd = "runtime_supplied")],
     ["environment", (value) => (value.reverse_request.eligibility.environment_id = "any")],
+    [
+      "sandbox provenance",
+      (value) => (value.reverse_request.eligibility.sandbox_permissions.eligible_value = "require_escalated"),
+    ],
     ["reason bound", (value) => (value.reverse_request.eligibility.reason.max_utf8_bytes = 513)],
     ["producer", (value) => (value.activation.producer.sandbox_permissions = "require_escalated")],
     ["producer scope", (value) => (value.activation.producer.installation_scope = "local")],
@@ -267,6 +273,10 @@ test("the frozen Runtime schemas and stable reverse-request shape match the proj
   assert.equal(params.properties.command.type.includes("null"), true);
   assert.equal(params.properties.cwd.anyOf.some((entry) => entry.type === "null"), true);
   assert.equal(params.properties.commandActions.type.includes("null"), true);
+  assert.deepEqual(
+    params.definitions.SandboxPermissions.oneOf.flatMap((branch) => branch.enum ?? []),
+    ["use_default", "require_escalated", "with_additional_permissions"],
+  );
   assert.equal(params.properties.availableDecisions, undefined);
   assert.equal(params.properties.additionalPermissions, undefined);
 
@@ -307,6 +317,7 @@ test("canonical request eligibility is exact while availableDecisions is tolerat
       method: manifest.reverse_request.method,
       commandWire: manifest.reverse_request.eligibility.command.wire,
       actionCommand: manifest.reverse_request.eligibility.command_actions.command,
+      sandboxPermissions: manifest.reverse_request.eligibility.sandbox_permissions.eligible_value,
       maxReasonUtf8Bytes: manifest.reverse_request.eligibility.reason.max_utf8_bytes,
       mustBeAbsent: Object.values(manifest.reverse_request.eligibility.must_be_absent),
       wireShape: manifest.reverse_request.wire_shape,
@@ -319,6 +330,7 @@ test("canonical request eligibility is exact while availableDecisions is tolerat
       threadId: "thread-1",
       turnId: "turn-1",
       itemId: "item-1",
+      sandboxPermissions: host.policy.sandboxPermissions,
       startedAtMs: 1,
       approvalId: null,
       environmentId: host.environmentId,
@@ -348,6 +360,10 @@ test("canonical request eligibility is exact while availableDecisions is tolerat
     (value) => (value.params.environmentId = "remote-environment"),
     (value) => delete value.params.environmentId,
     (value) => (value.params.environmentId = null),
+    (value) => delete value.params.sandboxPermissions,
+    (value) => (value.params.sandboxPermissions = "require_escalated"),
+    (value) => (value.params.sandboxPermissions = "with_additional_permissions"),
+    (value) => (value.params.sandboxPermissions = "future_permission"),
     (value) => (value.params.commandActions = []),
     (value) => value.params.commandActions.push(structuredClone(value.params.commandActions[0])),
     (value) => (value.params.commandActions[0].type = "read"),
@@ -428,6 +444,13 @@ test("canonical request eligibility is exact while availableDecisions is tolerat
     response: "cancel_once",
     outcome: "resolved_elsewhere",
   });
+  const widenedSandbox = structuredClone(canonical);
+  widenedSandbox.params.sandboxPermissions = "require_escalated";
+  assert.deepEqual(classifyRuntimeReplay(existing, "runtime-process-1", widenedSandbox, host), {
+    kind: "same_key_conflict",
+    response: "cancel_once",
+    outcome: "resolved_elsewhere",
+  });
   for (const field of ["threadId", "turnId", "itemId"]) {
     const identityDrift = structuredClone(canonical);
     identityDrift.params[field] += "-drift";
@@ -490,6 +513,11 @@ test("Runtime replay keys are generation-scoped and preserve same-key pending au
   assert.equal(
     manifest.reverse_request.correlation.replay_payload_equivalence.canonical_fields.started_at_ms,
     "exact_integer_value",
+  );
+  assert.equal(
+    manifest.reverse_request.correlation.replay_payload_equivalence.canonical_fields
+      .sandbox_permissions,
+    "exact_use_default_runtime_provenance",
   );
   assert.equal(manifest.lifecycle.max_pending_per_session, 1);
   assert.equal(

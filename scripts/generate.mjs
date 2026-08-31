@@ -241,7 +241,8 @@ for (const { relativePath, schema } of schemas) {
     outputName === "agent-session-event-v6" ||
     outputName === "report-report-document-v1" ||
     outputName === "skills-skill-bundle-manifest-v2" ||
-    outputName === "compatibility-agent-host-runtime-approval-v6-v2"
+    outputName === "compatibility-agent-host-runtime-approval-v6-v2" ||
+    outputName === "compatibility-agent-host-runtime-approval-v6-v3"
   ) {
     // Versioned event/report/compatibility schemas intentionally reuse protocol concept names.
     // Namespace exports keep additions from making the existing root SDK
@@ -256,6 +257,8 @@ for (const { relativePath, schema } of schemas) {
       "skills-skill-bundle-manifest-v2": "SkillBundleManifestSchemaV2",
       "compatibility-agent-host-runtime-approval-v6-v2":
         "AgentHostRuntimeApprovalCompatibilityV6V2",
+      "compatibility-agent-host-runtime-approval-v6-v3":
+        "AgentHostRuntimeApprovalCompatibilityV6V3",
     }[outputName];
     schemaExports.push(
       `export * as ${namespace} from "./jsonschema/${outputName}.gen.js";`,

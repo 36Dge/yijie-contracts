@@ -1,6 +1,6 @@
 # Agent session events and approvals v6
 
-Status: FEAT-137 authority-repair candidate on the unpublished `0.7.0` package. Reviewed Host and
+Status: FEAT-137 stable-sandbox-provenance candidate on the unpublished `0.7.0` package. Reviewed Host and
 Desktop candidates exist, but this revised source must be immutably frozen and exactly repinned
 before cross-repository conformance or a fresh D4. It is not tagged/pushed/published or enabled for
 any public or production entrypoint.
@@ -16,7 +16,7 @@ v6 negotiation. The authorities are:
 - HTTP framing, pending snapshot, and decision API: `openapi/agent-host/agent-host.yaml`;
 - asynchronous consumer projection: `asyncapi/events.yaml` v6 channel/message/operation;
 - external Runtime request/response source: frozen `yijie-codex` commit
-  `b2b20e2fc4a0c94834f34d8cc459e488a1b56277`, version `0.144.6`, stable API,
+  `acf2da55d8a53175343aaf112e03368dfef9922a`, version `0.144.6`, stable API,
   `experimentalApi=false`.
 
 Producer is `yijie-agent-host`; known consumer is `yijie-desktop`. The Host is the only Runtime
@@ -27,11 +27,12 @@ The existing `compatibility/agent-host-runtime-v1.json` remains byte-identical a
 describe the default `read-only/never` Host projection. V6 separately activates `on-request` only
 inside the exact local/demo_fast FEAT-134/136/137 gate.
 
-The separate `compatibility/agent-host-runtime-approval-v6-v2.json` is the machine-readable source for
-the repaired mapper. The original `agent-host-runtime-approval-v6.json` and its schema remain
+The separate `compatibility/agent-host-runtime-approval-v6-v3.json` is the machine-readable source for
+the repaired mapper. The original `agent-host-runtime-approval-v6.json`, v2 projection, and their schemas remain
 byte-identical as the superseded source-first compatibility record, so the unpublished candidate
-does not narrow an existing schema. V2 freezes eligibility, replay identity, response mapping, raw-field exclusions,
-and the stable `serverRequest/resolved` acknowledgement without changing the current v1 manifest.
+does not narrow an existing schema. V3 adds the Runtime stable required `sandboxPermissions`
+provenance to v2 eligibility and replay identity while keeping response mapping, public v6 shape,
+raw-field exclusions, and the stable `serverRequest/resolved` acknowledgement unchanged.
 The acknowledgement requires Runtime `requestId` and `threadId`; Host additionally binds the
 notification to the same Runtime process generation and compares RequestId by exact JSON type and
 value. A normal connection change within that process does not create a new identity generation.
@@ -66,9 +67,12 @@ The only eligible Runtime request is stable `item/commandExecution/requestApprov
 - absent network context, additional permission, exec-policy amendment, and network-policy
   amendment; Runtime approvalId may be absent or null only;
 - present environment identity exactly equal to `local`.
+- present stable `sandboxPermissions` exactly equal to `use_default`; `require_escalated`,
+  `with_additional_permissions`, unknown, or missing values are cancelled once without Desktop
+  projection.
 
 The outer Runtime request has exactly `id`, `method`, and `params`. Eligible params have exactly the
-required identity/time/command/action/cwd fields plus schema-optional `approvalId`, `environmentId`,
+required identity/time/command/action/cwd/`sandboxPermissions` fields plus schema-optional `approvalId`, `environmentId`,
 bounded `reason`, and ignored `availableDecisions`. Eligibility further requires the actual pinned
 wire's `environmentId=local`; every other top-level or params field fails closed even if a future
 Runtime schema would otherwise tolerate it. Before fingerprinting or projection, `threadId` must
@@ -88,9 +92,10 @@ eligibility. Thread, Turn, and Item identities are binding/fingerprint fields, n
 parts. An identical replay reuses the same Host `approval_request_id`, revision, requested/deadline values, and remaining
 TTL; it never creates another event or resets the clock. For same-key comparison, Host canonicalizes
 the exact bound thread/turn/item, the normalized single command action, canonical workspace identity, absent/null approvalId to `none`, and
-exact `local` environment identity; `startedAtMs` remains
+exact `local` environment identity and exact `use_default` sandbox provenance; `startedAtMs` remains
 an exact integer fingerprint field while never becoming the TTL clock. Experimental
-`availableDecisions` and validated `reason` are excluded from the fingerprint. Same-key identity/fingerprint drift sends one
+`availableDecisions` and validated `reason` are excluded from the fingerprint. A changed or widened
+`sandboxPermissions` value is not equivalent replay. Same-key identity/fingerprint drift sends one
 Runtime `cancel`, atomically resolves the existing pending approval as `resolved_elsewhere`, and
 never emits a second requested projection. A distinct second request while the session already has
 one pending is cancelled once without projection and leaves the original pending authority intact.

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
-import { access, readFile, readdir } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import test from "node:test";
@@ -46,7 +46,16 @@ function methodsFromSchema(schema) {
     .sort();
 }
 
-async function schemaTreeSha256(directory, files) {
+async function readGitBlob(repository, commit, relativePath) {
+  const { stdout } = await execFileAsync(
+    "git",
+    ["-C", repository, "show", `${commit}:${relativePath}`],
+    { encoding: "buffer", maxBuffer: 16 * 1024 * 1024 },
+  );
+  return stdout;
+}
+
+async function schemaTreeSha256FromGit(repository, commit, schemaRoot, files) {
   const digest = createHash("sha256");
   for (const relative of [...files].sort()) {
     const encodedPath = Buffer.from(relative, "utf8");
@@ -54,7 +63,8 @@ async function schemaTreeSha256(directory, files) {
     length.writeBigUInt64BE(BigInt(encodedPath.length));
     digest.update(length);
     digest.update(encodedPath);
-    digest.update(createHash("sha256").update(await readFile(path.join(directory, relative))).digest());
+    const content = await readGitBlob(repository, commit, path.posix.join(schemaRoot, relative));
+    digest.update(createHash("sha256").update(content).digest());
   }
   return digest.digest("hex");
 }
@@ -66,16 +76,6 @@ async function directoryExists(directory) {
   } catch {
     return false;
   }
-}
-
-async function findJsonFiles(directory, relative = "") {
-  const files = [];
-  for (const entry of await readdir(path.join(directory, relative), { withFileTypes: true })) {
-    const child = path.posix.join(relative, entry.name);
-    if (entry.isDirectory()) files.push(...(await findJsonFiles(directory, child)));
-    else if (entry.name.endsWith(".json")) files.push(child);
-  }
-  return files.sort();
 }
 
 test("runtime compatibility manifest is valid and pins the stable projection", async () => {
@@ -97,27 +97,26 @@ test("runtime compatibility manifest is valid and pins the stable projection", a
   assert.deepEqual(manifest.host_projection.runtime_notifications, expectedNotifications);
 });
 
-test("pinned projection exists in a neighboring yijie-codex checkout when available", async (t) => {
+test("pinned v1 projection is verified from its immutable Runtime Git object", async (t) => {
   const runtimeRepo = process.env.YIJIE_CODEX_REPO ?? path.resolve("../yijie-codex");
-  const schemas = path.join(runtimeRepo, ".yijie/schemas/app-server/generated-json-schema");
-  if (!(await directoryExists(schemas))) {
-    t.skip(`runtime schema checkout is unavailable at ${runtimeRepo}`);
+  if (!(await directoryExists(path.join(runtimeRepo, ".git")))) {
+    t.skip(`runtime Git checkout is unavailable at ${runtimeRepo}`);
     return;
   }
 
   const manifest = await loadCompatibility();
-  const { stdout: runtimeHead } = await execFileAsync(
+  const { stdout: pinnedCommit } = await execFileAsync(
     "git",
-    ["-C", runtimeRepo, "rev-parse", "HEAD"],
+    ["-C", runtimeRepo, "rev-parse", `${manifest.runtime.repository_commit}^{commit}`],
     { encoding: "utf8" },
   );
-  assert.equal(
-    runtimeHead.trim(),
-    manifest.runtime.repository_commit,
-    "compatibility manifest must pin the neighboring Runtime checkout exactly",
-  );
+  assert.equal(pinnedCommit.trim(), manifest.runtime.repository_commit);
   const baseline = JSON.parse(
-    await readFile(path.join(runtimeRepo, ".yijie/schemas/app-server/baseline.json"), "utf8"),
+    (await readGitBlob(
+      runtimeRepo,
+      manifest.runtime.repository_commit,
+      ".yijie/schemas/app-server/baseline.json",
+    )).toString("utf8"),
   );
   assert.equal(baseline.runtimeVersion, manifest.runtime.version);
   assert.equal(baseline.upstreamTag, manifest.runtime.upstream_tag);
@@ -125,11 +124,32 @@ test("pinned projection exists in a neighboring yijie-codex checkout when availa
   assert.equal(baseline.transport, manifest.runtime.transport);
   assert.equal(baseline.experimentalApi, manifest.runtime.experimental_api);
 
-  const schemaFiles = await findJsonFiles(schemas);
+  const schemaRoot = ".yijie/schemas/app-server/generated-json-schema";
+  const { stdout: schemaListing } = await execFileAsync(
+    "git",
+    ["-C", runtimeRepo, "ls-tree", "-r", "--name-only", manifest.runtime.repository_commit, "--", schemaRoot],
+    { encoding: "utf8", maxBuffer: 16 * 1024 * 1024 },
+  );
+  const schemaFiles = schemaListing
+    .trim()
+    .split("\n")
+    .filter((entry) => entry.endsWith(".json"))
+    .map((entry) => entry.slice(schemaRoot.length + 1))
+    .sort();
   assert.equal(schemaFiles.length, manifest.runtime.schema_file_count);
-  const clientRequest = JSON.parse(await readFile(path.join(schemas, "ClientRequest.json"), "utf8"));
+  const clientRequest = JSON.parse(
+    (await readGitBlob(
+      runtimeRepo,
+      manifest.runtime.repository_commit,
+      `${schemaRoot}/ClientRequest.json`,
+    )).toString("utf8"),
+  );
   const serverNotification = JSON.parse(
-    await readFile(path.join(schemas, "ServerNotification.json"), "utf8"),
+    (await readGitBlob(
+      runtimeRepo,
+      manifest.runtime.repository_commit,
+      `${schemaRoot}/ServerNotification.json`,
+    )).toString("utf8"),
   );
   const clientMethods = new Set(methodsFromSchema(clientRequest));
   const serverMethods = new Set(methodsFromSchema(serverNotification));
@@ -142,7 +162,12 @@ test("pinned projection exists in a neighboring yijie-codex checkout when availa
   );
 
   assert.equal(
-    await schemaTreeSha256(schemas, schemaFiles),
+    await schemaTreeSha256FromGit(
+      runtimeRepo,
+      manifest.runtime.repository_commit,
+      schemaRoot,
+      schemaFiles,
+    ),
     manifest.runtime.schema_tree_sha256,
   );
 });

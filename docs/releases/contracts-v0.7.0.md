@@ -13,7 +13,7 @@ The untagged `0.7.0` candidate may accumulate reviewed compatible revisions unde
 Runtime compatibility manifest unchanged. V6 is isolated because v5 is a closed event/SDK surface.
 It adds `jsonschema/agent/session-event-v6.schema.json`, `yijie.events.v6`, an explicitly negotiated
 v6 SSE route, owner-only Host memory pending snapshot, one-shot decision endpoint, and the independent
-`compatibility/agent-host-runtime-approval-v6-v2.json` real-wire mapper projection. V1-v5 sources and
+`compatibility/agent-host-runtime-approval-v6-v3.json` stable-sandbox-provenance mapper projection. V1-v5 sources and
 the current `agent-host-runtime-v1.json` remain byte-identical to Contracts baseline
 `87f94c9aa6d4848cb67aa8a1265bd21474edb0bb`.
 The prior approval-v6 source-first projection/schema also remains byte-identical; the additive v2
@@ -155,6 +155,13 @@ duration and aggregate, then returns the original error. It does not change retr
 `sandbox=read-only`, `approvalPolicy=never`, transport, experimental API, or Tool production. A fresh
 isolated release build and schema regeneration confirmed no stable Schema diff.
 
+FEAT-137 approval uses a separate additive authority: Runtime
+`acf2da55d8a53175343aaf112e03368dfef9922a` adds required stable
+`sandboxPermissions` without changing execution/decision semantics. The active versioned
+`agent-host-runtime-approval-v6-v3.json` pins the 267-file Schema tree
+`d82a33f683e554c10dd056a0101c26fd24477928e3f98ee3d9ef250b97395228`, admits only
+`use_default`, rejects both permission-widening enum values, and keeps the field out of public v6.
+
 Activation is limited to `YIJIE_ENV=local` + `YIJIE_LOCAL_PROFILE=demo_fast` plus a dedicated
 FEAT-136 gate after Host and Desktop pin the new immutable Contracts commit and exact Runtime
 artifact. Reviewed Host/Desktop drafts exist, but their new pins and end-to-end conformance remain
@@ -221,6 +228,12 @@ The Runtime provenance reconciliation additionally passed, without any Provider/
   `82ee9de771cf1d41bac16d87380f1121e7794107aa3aa526ad702d5d1bf7afe1`, with zero tracked diff;
 - normal-EOF stdio initialize/initialized smoke, a two-patch Runtime artifact manifest, and
   Runtime→Contracts bidirectional compatibility.
+
+The later FEAT-137 provenance reconciliation passed separately on the three-patch Runtime at
+`acf2da55d8a53175343aaf112e03368dfef9922a`: focused core/projection/wire tests each passed 1/1,
+Rust `1.95.0` release build and normal-EOF smoke passed, and canonical Schema generation produced
+267 files with tree SHA-256 `d82a33f683e554c10dd056a0101c26fd24477928e3f98ee3d9ef250b97395228`.
+D4 remained `NOT RUN`; real calls were 0.
 
 The Contracts-only reconciliation then passed focused v4/v5/runtime compatibility tests (22/22),
 all non-archive Node tests (63/63), lint, Go tests/vet, TypeScript compilation, legacy v1 wire

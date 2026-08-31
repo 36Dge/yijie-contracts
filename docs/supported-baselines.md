@@ -33,11 +33,11 @@
   Agent Host `/v6/.../events`、owner-only pending snapshot 与 one-shot decision OpenAPI
 - producer/consumer：`yijie-agent-host` → `yijie-desktop`；Host 是唯一 Runtime mapper、pending
   和 decision authority
-- Runtime：继续冻结 `yijie-codex@b2b20e2fc4a0c94834f34d8cc459e488a1b56277` / `0.144.6` / 267
+- Runtime：approval compatibility 冻结 `yijie-codex@acf2da55d8a53175343aaf112e03368dfef9922a` / `0.144.6` / 267
   schemas / `experimentalApi=false`；`agent-host-runtime-v1.json` 保持逐字节不变并继续描述当前
-  `read-only/never` 默认投影；独立 `agent-host-runtime-approval-v6-v2.json` 冻结 exact-gated
-  `on-request` approval mapper，不改变 Runtime source/schema/artifact；原 approval-v6 source-first
-  manifest/schema 保持逐字节不变，v2 为 additive authority repair
+  `read-only/never` 默认投影；独立 `agent-host-runtime-approval-v6-v3.json` 冻结 exact-gated
+  `on-request` approval mapper和 stable `sandboxPermissions=use_default` admission；原 approval-v6
+  与 v2 manifest/schema 保持逐字节不变，v3 为 additive provenance authority
 - 新语义：固定 `git_repository_check`、Host opaque approval identity、primary `accept_once` /
   secondary `cancel_current_turn`、120 秒 TTL、Host memory pending snapshot、revision 1→2、
   generation-bound decision、Runtime replay reuse 与 closed requested/resolved outcomes/errors
@@ -49,6 +49,8 @@
   `/bin/zsh -lc` wrapper 与唯一 allowlisted Unknown `commandAction` 执行 closed admission
 - real wire：`environmentId` 必须为精确 `local`；`reason` 只允许 absent/null 或不含 NUL、
   最多 512 UTF-8 bytes，并在 Host 校验后立即丢弃，不进入 fingerprint/log/storage/projection
+- sandbox provenance：stable wire 必须带 `sandboxPermissions`；只接收 `use_default`，拒绝
+  `require_escalated`、`with_additional_permissions`、未知或缺失值，并把该值纳入 replay fingerprint
 - 数据边界：禁止 Runtime RequestId/approvalId、command/cwd/reason/actions、permission/amendment、
   `availableDecisions`、secret、path 和 raw wire；Desktop 仅按 fixed action ID 本地化
 - compatibility baseline：前一 Contracts candidate
