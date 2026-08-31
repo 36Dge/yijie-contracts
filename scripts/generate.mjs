@@ -240,9 +240,10 @@ for (const { relativePath, schema } of schemas) {
     outputName === "agent-session-event-v5" ||
     outputName === "agent-session-event-v6" ||
     outputName === "report-report-document-v1" ||
-    outputName === "skills-skill-bundle-manifest-v2"
+    outputName === "skills-skill-bundle-manifest-v2" ||
+    outputName === "compatibility-agent-host-runtime-approval-v6-v2"
   ) {
-    // Versioned event/report schemas intentionally reuse protocol concept names.
+    // Versioned event/report/compatibility schemas intentionally reuse protocol concept names.
     // Namespace exports keep additions from making the existing root SDK
     // exports ambiguous or forcing wire concepts to be renamed for TypeScript.
     const namespace = {
@@ -253,6 +254,8 @@ for (const { relativePath, schema } of schemas) {
       "agent-session-event-v6": "AgentSessionEventSchemaV6",
       "report-report-document-v1": "ReportDocumentSchemaV1",
       "skills-skill-bundle-manifest-v2": "SkillBundleManifestSchemaV2",
+      "compatibility-agent-host-runtime-approval-v6-v2":
+        "AgentHostRuntimeApprovalCompatibilityV6V2",
     }[outputName];
     schemaExports.push(
       `export * as ${namespace} from "./jsonschema/${outputName}.gen.js";`,

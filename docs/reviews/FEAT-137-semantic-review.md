@@ -1,22 +1,22 @@
 # FEAT-137 Contracts v6 semantic and security review
 
-Date: 2026-08-30
+Date: 2026-08-31
 
 Impact: `semantic`
 
-Reviewer authority: Codex recorded the Owner-authorized FEAT-137 Contracts v6 source-first batch
-and reviewed the Contracts working tree within the exact local-only, read-only Command approval
-boundary. This review does not authorize a commit, tag, push, publish, Host/Desktop implementation,
-Runtime change, application startup, Provider/model request, or real D4.
+Reviewer authority: Codex recorded the Owner-authorized FEAT-137 real-wire authority repair and
+immutable local freeze within the exact local-only, read-only Command approval boundary. It does not
+authorize a tag, push, publish, Runtime change, application startup, Provider/model request, or real
+D4; Host/Desktop may consume only the resulting full clean-tree commit SHA.
 
 ## Scope and baselines
 
 This review covers the v6 source contracts, generated Go/TypeScript SDKs, closed synthetic fixtures,
 the independent Runtime approval compatibility projection, and deterministic source checks. It does
-not claim an immutable Contracts authority or downstream consumer conformance. Compatibility was
+not claim downstream Host/Desktop conformance before their exact repin. Compatibility was
 checked against:
 
-- current immutable foundation `87f94c9aa6d4848cb67aa8a1265bd21474edb0bb` / unpublished `0.7.0`;
+- current immutable foundation `2e490dea4444ea1e33c2df1a5267b2bff5bfb8e6` / unpublished `0.7.0`;
 - published supported baseline `f16a497e1377f45747f8ff9292b4b60cf2027f88`.
 
 The external Runtime remains frozen at
@@ -37,8 +37,9 @@ describe the currently supported `read-only` / `never` Host projection.
 | Decision idempotency | Same decision identity/body has a bounded identical-200 replay; conflicting reuse fails closed; eviction never reopens an approval | PASS |
 | Errors | Each HTTP status uses a closed code allowlist and each of the eleven stable codes has one fixed content-free message | PASS |
 | TTL and races | Requested/pending timestamps encode an exact 120-second window; Host monotonic receive time is authority; expiry and cleanup outcomes are time-closed and first-writer-wins | PASS |
-| Runtime eligibility | Independent machine-readable projection pins an exact outer/params allowlist, stable method, outer RequestId, session thread/active Turn/expected Item binding, one Unknown command action, exact argv, canonical workspace cwd, absent/null approvalId and permission/network exclusions; unknown fields fail closed | PASS |
-| Runtime replay | Runtime response authority is exactly process generation plus typed RequestId; thread/turn/item stay in the closed canonical fingerprint, absent/null forms normalize, `availableDecisions` is ignored, and `startedAtMs` is compared but never drives TTL. Equivalent replay reuses authority; same-key drift cancels once and closes the existing pending without a second request projection | PASS |
+| Deterministic producer | Pinned Runtime's existing exec-policy `Prompt` plus `UseDefault` creates the approval without `require_escalated` and preserves the read-only sandbox. Runtime prefix matching is only a trigger; Host exact admission is authoritative | PASS |
+| Runtime eligibility | Independent machine-readable projection pins an exact outer/params allowlist, stable method, outer RequestId, session thread/active Turn/expected Item binding, pinned `/bin/zsh -lc` wrapper, one Unknown allowlisted command action as sole business authority, canonical workspace cwd, exact `local`, bounded validate-then-discard reason, absent/null approvalId and permission/network exclusions; unknown fields fail closed | PASS |
+| Runtime replay | Runtime response authority is exactly process generation plus typed RequestId; thread/turn/item and normalized command action stay in the closed canonical fingerprint, absent/null forms normalize, `availableDecisions` and validated reason are ignored, and `startedAtMs` is compared but never drives TTL. Equivalent replay reuses authority; same-key drift cancels once and closes the existing pending without a second request projection | PASS |
 | Runtime response | `accept_once` maps only to Runtime `accept`; `cancel_current_turn` and TTL expiry map only to Runtime `cancel`; forbidden decision families and malformed fallback are closed | PASS |
 | Runtime acknowledgement | Machine-readable authority requires stable `serverRequest/resolved` with `requestId` and `threadId`, plus the same Runtime process generation and exact JSON RequestId type/value; connection changes do not alter generation, while mismatch, duplicate and timeout behavior is fail-closed | PASS |
 | Generated consumers | Generated SDKs expose closed decisions, revision literals, fixed errors and the compatibility object without `never[]`; legacy Go client interface method sets retain their exact baseline digests and v6 is opt-in through extension interfaces; downstream still needs runtime validation or an equivalent closed decoder | PASS |
@@ -52,36 +53,42 @@ identity normalization, and the approval-only privacy wording. Final source revi
 restored the published v2 Go constant and preserved both legacy Go client interface method sets,
 while exposing v6 only through opt-in extension interfaces.
 
+The 2026-08-31 real-wire repair additionally reconciled the pinned Runtime's actual shell-joined
+presentation, exact `local` environment, and bounded `reason`. It keeps the unique allowlisted
+`CommandAction` as business authority, validates then discards wrapper/reason, and records that a
+Runtime prefix rule is not itself exact admission. Focused Runtime proof confirmed `Prompt` plus
+`UseDefault` remains in the read-only sandbox with no override or permission elevation.
+
 ## Source/generated identity before immutable commit
 
 | Artifact | SHA-256 |
 |---|---|
-| AgentSessionEventV6 JSON Schema | `2ca5f830a5962fb3be628e7992cb86c69d5d202bc48100fd8e5f83e9e5c17773` |
+| AgentSessionEventV6 JSON Schema | `5cc86a64dfd1253cb2bbd5fd0f7df2493269612a9eb36dd75836f446211925c3` |
 | v6 Protobuf source | `d8abdc1f523b2931d5be984b9a0d27af0724dad88e350ad6cb41b0734e075c5d` |
 | Agent Host OpenAPI source | `8716d11ebae140d7c2cec72f6528bbd39ac5976c898c28e0044bec71fb004083` |
 | AsyncAPI source | `29f544415cad3411f02c3a598fc225ce66c21b4696bd470ea0308d6e43f9c711` |
 | Frozen Runtime v1 compatibility projection | `6cef3f4ac60ec91b9f7f05b188dc677169fc11e0bedf34350f6342a6f50981bb` |
-| FEAT-137 Runtime approval projection | `992d939b7cb7959591c9c74f706ada5224a8b63d8cfa0c88f4aeb28f72639a57` |
-| Runtime approval projection schema | `b7e8c2ef294adf7c7066f23d06cb24192d62d8d2b1c6d9c8134875a88a715e80` |
-| bundled AsyncAPI | `63f16288786c7f71f41db6b83e0587dae90f853f85968aebb974320f908053d5` |
+| FEAT-137 Runtime approval v2 projection | `ab5333f9ff1e76dc06827d72ff81f83701d234f91a2cbf6664f146247f24db60` |
+| Runtime approval v2 projection schema | `55f5984910324446bbf9359c938885b4f1410d3b736aacad47fe3589dac58658` |
+| bundled AsyncAPI | `3a511b644dc2bd85509bd6b3a8ab35b959d4d1c96e3db0c4ef6a2604af5ba02e` |
 | generated Go Agent Host | `21ee4a55681fe24284450ea9f3a350916959ed064296aaad5dffb671b6c3ee3d` |
 | generated Go v6 Protobuf | `9447aaafb3537ea4e52b15f104da67e932d70d4e9a3c50f0d48840bc94722452` |
 | generated TypeScript Agent Host | `30fec0a7b409165f2b316fe422c4227c870dc89263f31c0fc09c517b6cf352b9` |
 | generated TypeScript v6 Protobuf | `35f8964f7cc8a11b061d50ca77c676b0fcb08071fba0ee902356e861a4b9ce0a` |
 | generated TypeScript v6 event schema | `acaa787bcb90bb25762118eef0a59b172f2d15a65328a044470befd99802b01c` |
-| generated TypeScript Runtime approval projection | `f7a243029d40b672951ad795f5591fda3cba716932b3c6bf4d9c46ce5859a1e5` |
+| generated TypeScript Runtime approval v2 projection | `8e339e3cc22030ea407bfd785c815448c74a61a28c8bd8aa9f232c2e9a3ef332` |
 
-These digests identify the reviewed working-tree candidate. HEAD remains
-`87f94c9aa6d4848cb67aa8a1265bd21474edb0bb`; there is no new immutable commit and therefore no SHA
-that Host may pin.
+These digests are refreshed by each reviewed source repair. Before the authorized freeze, HEAD is
+`2e490dea4444ea1e33c2df1a5267b2bff5bfb8e6`; Host may pin only the new full commit produced after all
+gates pass and the Contracts tree is clean.
 
 ## Gate result
 
 - focused v1-v6/HTTP/Runtime compatibility tests: PASS, 25/25.
 - all safety-compliant Node tests except the pre-existing archive-attack suite: PASS, 88/88.
 - `go test ./...`: PASS.
-- `pnpm lint`: PASS; OpenAPI/AsyncAPI, 17 JSON Schemas, Proto, TypeScript and Go vet.
-- `pnpm check-generated:safe`: PASS; 45 generated SDK files current.
+- `pnpm lint`: PASS; OpenAPI/AsyncAPI, 18 JSON Schemas, Proto, TypeScript and Go vet.
+- `pnpm check-generated:safe`: PASS; 46 generated SDK files current.
 - `pnpm build:safe`: PASS.
 - legacy v1 wire equality against both baselines: PASS.
 - OpenAPI, Protobuf, AsyncAPI and JSON Schema breaking checks against both baselines: PASS.
@@ -98,6 +105,6 @@ other listed gates are the safety-compliant substitute.
 
 Contracts working-tree source candidate review: **PASS**.
 
-Immutable Contracts authority and consumer pin: **NOT RUN**. A separately authorized local commit,
-followed by a clean-tree SHA/gate audit, is required before Host may repin or begin implementation.
-Host/Desktop conformance and FEAT-137 D4 remain unperformed. Real calls used: 0.
+The current batch authorizes one local immutable Contracts commit followed by a clean-tree SHA/gate
+audit. Host/Desktop exact repin and cross-repository conformance remain subsequent gates. Fresh
+FEAT-137 D4 remains separately authorized only after those freezes. Real calls used: 0.

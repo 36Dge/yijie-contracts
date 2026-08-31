@@ -29,7 +29,7 @@ const [
     readFile("sdks/typescript/src/jsonschema/agent-session-event-v6.gen.ts", "utf8"),
     readFile("sdks/typescript/src/openapi/agent-host.gen.ts", "utf8"),
     readFile(
-      "sdks/typescript/src/jsonschema/compatibility-agent-host-runtime-approval-v6.gen.ts",
+      "sdks/typescript/src/jsonschema/compatibility-agent-host-runtime-approval-v6-v2.gen.ts",
       "utf8",
     ),
     readFile("package.json", "utf8").then(JSON.parse),
@@ -140,7 +140,7 @@ test("v6 canonical approval fixtures are the complete closed positive set", asyn
 
 test("v6 freezes the exact FEAT-137 action, decisions, TTL, authority, and Runtime mapping", () => {
   assert.deepEqual(schemaV6["x-yijie-command-approval-policy"], {
-    scope: "exact_local_demo_fast_feat_137",
+    scope: "exact_local_demo_fast_feat_134_feat_136_feat_137",
     action_id: "git_repository_check",
     workspace_scope: "current_workspace",
     decisions: ["accept_once", "cancel_current_turn"],
@@ -150,7 +150,7 @@ test("v6 freezes the exact FEAT-137 action, decisions, TTL, authority, and Runti
     runtime_accept_mapping: "accept",
     runtime_cancel_mapping: "cancel",
     runtime_request_identity_exposed: false,
-    runtime_compatibility_authority: "compatibility/agent-host-runtime-approval-v6.json",
+    runtime_compatibility_authority: "compatibility/agent-host-runtime-approval-v6-v2.json",
     runtime_replay_behavior: "reuse_same_opaque_request_without_ttl_reset",
     runtime_replay_conflict_behavior: "cancel_new_request_and_fail_closed_without_projection",
     second_pending_behavior: "cancel_new_request_and_fail_closed_without_projection",
@@ -315,7 +315,11 @@ test("v6 JSON, Proto, OpenAPI, AsyncAPI, package, and SDK authorities align", ()
   );
   assert.match(
     generatedIndex,
-    /export \* from "\.\/jsonschema\/compatibility-agent-host-runtime-approval-v6\.gen\.js";/,
+    /export \* as AgentHostRuntimeApprovalCompatibilityV6V2 from "\.\/jsonschema\/compatibility-agent-host-runtime-approval-v6-v2\.gen\.js";/,
+  );
+  assert.doesNotMatch(
+    generatedIndex,
+    /export \* from "\.\/jsonschema\/compatibility-agent-host-runtime-approval-v6-v2\.gen\.js";/,
   );
   assert.match(generatedEventV6, /request_id\?: never/);
   assert.match(generatedEventV6, /revision: 1/);

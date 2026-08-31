@@ -25,8 +25,9 @@
 
 - 版本：继续使用未发布 `0.7.0 candidate`；不创建新 tag、不发布，且所有下游必须固定完整
   commit/digest，不能只按版本号消费
-- 状态：Contracts source candidate；Host/Desktop implementation、conformance、真实调用与 D4
-  均 `NOT RUN`
+- 状态：Contracts real-wire authority repair candidate；已有 Host/Desktop reviewed candidate 必须在
+  本次新 Contracts immutable SHA 上重新 pin、冻结和完成 cross-repository conformance；fresh D4
+  尚未授权/执行
 - contract impact：`semantic`；v5 是 closed union，因此新增显式协商 v6，v1-v5 保持不变
 - 权威源：AgentSessionEventV6 JSON Schema、Protobuf v6、AsyncAPI v6 channel/message/operation、
   Agent Host `/v6/.../events`、owner-only pending snapshot 与 one-shot decision OpenAPI
@@ -34,14 +35,20 @@
   和 decision authority
 - Runtime：继续冻结 `yijie-codex@b2b20e2fc4a0c94834f34d8cc459e488a1b56277` / `0.144.6` / 267
   schemas / `experimentalApi=false`；`agent-host-runtime-v1.json` 保持逐字节不变并继续描述当前
-  `read-only/never` 实现；新增独立 `agent-host-runtime-approval-v6.json` 仅冻结未来 mapper，状态
-  为 `source_first_not_implemented`
+  `read-only/never` 默认投影；独立 `agent-host-runtime-approval-v6-v2.json` 冻结 exact-gated
+  `on-request` approval mapper，不改变 Runtime source/schema/artifact；原 approval-v6 source-first
+  manifest/schema 保持逐字节不变，v2 为 additive authority repair
 - 新语义：固定 `git_repository_check`、Host opaque approval identity、primary `accept_once` /
   secondary `cancel_current_turn`、120 秒 TTL、Host memory pending snapshot、revision 1→2、
   generation-bound decision、Runtime replay reuse 与 closed requested/resolved outcomes/errors
 - Runtime 映射：accept once 只发送 stable `accept`；cancel current turn 与 TTL 只发送 stable
   `cancel`；Runtime/Item/Turn cleanup 先胜时 `resolved_elsewhere` 且不再响应；HTTP 200 等待相同
   generation/RequestId/thread 的 stable `serverRequest/resolved`
+- producer/admission：使用 pinned Runtime 既有 exec-policy `Prompt` + `UseDefault`，不使用
+  `require_escalated` 且批准后仍为 read-only；Runtime rule 为 prefix trigger，Host 必须用 exact
+  `/bin/zsh -lc` wrapper 与唯一 allowlisted Unknown `commandAction` 执行 closed admission
+- real wire：`environmentId` 必须为精确 `local`；`reason` 只允许 absent/null 或不含 NUL、
+  最多 512 UTF-8 bytes，并在 Host 校验后立即丢弃，不进入 fingerprint/log/storage/projection
 - 数据边界：禁止 Runtime RequestId/approvalId、command/cwd/reason/actions、permission/amendment、
   `availableDecisions`、secret、path 和 raw wire；Desktop 仅按 fixed action ID 本地化
 - compatibility baseline：前一 Contracts candidate

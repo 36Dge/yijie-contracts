@@ -1,7 +1,7 @@
 # Contracts v0.7.0 candidate
 
 Status: unpublished local candidate. FEAT-136 v5 and its Owner-authorized Runtime provenance repair
-remain intact; FEAT-137 adds an isolated source-first v6 approval surface. This candidate is not
+remain intact; FEAT-137 adds an isolated v6 approval surface and a real-wire authority repair. This candidate is not
 tagged, pushed, published, deployed, promoted to a supported baseline, or enabled for
 public/production. FEAT-137 Host/Desktop implementation, exact repin/conformance, and D4 remain
 separate gates.
@@ -13,9 +13,11 @@ The untagged `0.7.0` candidate may accumulate reviewed compatible revisions unde
 Runtime compatibility manifest unchanged. V6 is isolated because v5 is a closed event/SDK surface.
 It adds `jsonschema/agent/session-event-v6.schema.json`, `yijie.events.v6`, an explicitly negotiated
 v6 SSE route, owner-only Host memory pending snapshot, one-shot decision endpoint, and the independent
-`compatibility/agent-host-runtime-approval-v6.json` source-first mapper projection. V1-v5 sources and
+`compatibility/agent-host-runtime-approval-v6-v2.json` real-wire mapper projection. V1-v5 sources and
 the current `agent-host-runtime-v1.json` remain byte-identical to Contracts baseline
 `87f94c9aa6d4848cb67aa8a1265bd21474edb0bb`.
+The prior approval-v6 source-first projection/schema also remains byte-identical; the additive v2
+file carries the repaired real-wire authority without narrowing that earlier schema.
 
 The only action is fixed `git_repository_check`, with fixed primary `accept_once`, secondary
 `cancel_current_turn`, a 120-second Host-monotonic TTL, revision 1→2, and closed
@@ -26,8 +28,14 @@ network/permissions/amendments, `availableDecisions`, secrets, paths, and raw wi
 Status-specific errors use fixed content-free messages, and a decision 200 is correlated to stable
 Runtime `serverRequest/resolved` for the same generation, RequestId, and thread.
 
-This addendum is Contracts source only. The existing compatibility manifest truthfully remains
-`read-only/never`; Host/Desktop implementation and fresh real D4 are `NOT RUN`. Details are in
+The existing v1 compatibility manifest truthfully remains the default `read-only/never` projection.
+The independent approval manifest freezes the exact-gated `on-request` path using the pinned
+Runtime's existing exec-policy `Prompt` with `UseDefault`: no `require_escalated`, no sandbox
+override, and no Runtime patch. Runtime prefix matching only triggers the reverse request; Host exact
+admission requires the pinned `/bin/zsh -lc` wrapper and one Unknown allowlisted `commandAction`.
+Actual `environmentId=local`; bounded `reason` is validated then discarded before authority,
+fingerprinting, logs, persistence, projection, or errors. Host/Desktop must repin this repair before
+fresh real D4. Details are in
 [`../agent-session-events-v6.md`](../agent-session-events-v6.md).
 
 ## Impact, authorities, and ownership

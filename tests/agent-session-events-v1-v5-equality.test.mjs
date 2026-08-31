@@ -16,6 +16,10 @@ const sourceDigests = {
   "protobuf/yijie/events/v4/agent_session.proto": "7130ffad6f7d415bbaaf35a10bc380b2b75ecaaa4762dc871ce0a274472ecdea",
   "protobuf/yijie/events/v5/agent_session.proto": "9d4c0e8ed9d39d7eee0f255401e1a7b40b62ad4ed221f2e0d6b6e514859bc65b",
   "compatibility/agent-host-runtime-v1.json": "6cef3f4ac60ec91b9f7f05b188dc677169fc11e0bedf34350f6342a6f50981bb",
+  "compatibility/agent-host-runtime-approval-v6.json":
+    "992d939b7cb7959591c9c74f706ada5224a8b63d8cfa0c88f4aeb28f72639a57",
+  "jsonschema/compatibility/agent-host-runtime-approval-v6.schema.json":
+    "b7e8c2ef294adf7c7066f23d06cb24192d62d8d2b1c6d9c8134875a88a715e80",
 };
 
 function sha256(value) {
@@ -36,7 +40,7 @@ function goInterfaceMethods(source, name) {
     .filter((line) => /^[A-Z]/.test(line) && line.includes("("));
 }
 
-test("FEAT-137 v6 leaves v1-v5 JSON, Proto, and Runtime compatibility sources byte-identical", async () => {
+test("FEAT-137 v6 leaves v1-v5 and superseded approval authority sources byte-identical", async () => {
   for (const [file, expected] of Object.entries(sourceDigests)) {
     assert.equal(sha256(await readFile(file)), expected, file);
   }

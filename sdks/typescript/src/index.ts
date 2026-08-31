@@ -21,6 +21,7 @@ export * as AgentSessionEventSchemaV6 from "./jsonschema/agent-session-event-v6.
 export * from "./jsonschema/agent-session-event.gen.js";
 export * from "./jsonschema/audit-audit-log.gen.js";
 export * from "./jsonschema/chat-message.gen.js";
+export * as AgentHostRuntimeApprovalCompatibilityV6V2 from "./jsonschema/compatibility-agent-host-runtime-approval-v6-v2.gen.js";
 export * from "./jsonschema/compatibility-agent-host-runtime-approval-v6.gen.js";
 export * from "./jsonschema/compatibility-agent-host-runtime.gen.js";
 export * from "./jsonschema/ecommerce-listing.gen.js";

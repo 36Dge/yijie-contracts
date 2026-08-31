@@ -1,8 +1,9 @@
 # Agent session events and approvals v6
 
-Status: FEAT-137 source-first candidate on the unpublished `0.7.0` package; not implemented by Host
-or Desktop, not tagged/pushed/published, and not enabled for any Runtime, Provider, model, public, or
-production entrypoint.
+Status: FEAT-137 authority-repair candidate on the unpublished `0.7.0` package. Reviewed Host and
+Desktop candidates exist, but this revised source must be immutably frozen and exactly repinned
+before cross-repository conformance or a fresh D4. It is not tagged/pushed/published or enabled for
+any public or production entrypoint.
 
 ## Authority and impact
 
@@ -23,11 +24,13 @@ mapper and pending/decision authority. Desktop never responds directly to Runtim
 an actionable pending request from SQLCipher or replayed SSE history.
 
 The existing `compatibility/agent-host-runtime-v1.json` remains byte-identical and continues to
-describe the currently implemented `read-only/never` Host projection. V6 is source-first only; it
-does not claim that the future exact-local `on-request` gate exists yet.
+describe the default `read-only/never` Host projection. V6 separately activates `on-request` only
+inside the exact local/demo_fast FEAT-134/136/137 gate.
 
-The separate `compatibility/agent-host-runtime-approval-v6.json` is the machine-readable source for
-the future mapper. It freezes eligibility, replay identity, response mapping, raw-field exclusions,
+The separate `compatibility/agent-host-runtime-approval-v6-v2.json` is the machine-readable source for
+the repaired mapper. The original `agent-host-runtime-approval-v6.json` and its schema remain
+byte-identical as the superseded source-first compatibility record, so the unpublished candidate
+does not narrow an existing schema. V2 freezes eligibility, replay identity, response mapping, raw-field exclusions,
 and the stable `serverRequest/resolved` acknowledgement without changing the current v1 manifest.
 The acknowledgement requires Runtime `requestId` and `threadId`; Host additionally binds the
 notification to the same Runtime process generation and compares RequestId by exact JSON type and
@@ -35,30 +38,48 @@ value. A normal connection change within that process does not create a new iden
 
 ## Frozen phase-one policy
 
-V6 approval is usable only after a later Host implementation proves the exact
-`local + demo_fast + FEAT-137 gate` matrix. Sandbox remains `read-only`; default, gate-off, and
-non-local profiles remain `approvalPolicy=never`.
+V6 approval is usable only after Host/Desktop exact-pin conformance proves the
+`local + demo_fast + FEAT-134 + FEAT-136 + FEAT-137` gate matrix. Sandbox remains `read-only`;
+default, gate-off, and non-local profiles remain `approvalPolicy=never`.
+
+The deterministic producer is the pinned Runtime's existing exec-policy `Prompt` mechanism. Host
+manages an exact `rules/default.rules` entry only inside that gate for argv
+`["git", "rev-parse", "--is-inside-work-tree"]`, with `sandbox_permissions=use_default` and no
+sandbox override. Its fixed justification is `Confirm the one read-only repository check.`; the
+load-time match example is the exact argv and non-match examples are `git status` and
+`git show HEAD`. This producer does not elevate permissions, request `require_escalated`, modify
+Runtime, or widen the Host command allowlist. Runtime `prefix_rule` matching is prefix-based;
+`match/not_match` are rule-load examples, not runtime exact-match enforcement. Therefore the Host's
+closed wrapper plus exactly-one `CommandAction` admission remains the sole exact authority and must
+cancel any trailing-argument or otherwise widened request. Gate-off state has no Host-managed rule.
 
 The only eligible Runtime request is stable `item/commandExecution/requestApproval` for:
 
-- exact shell-joined command `git rev-parse --is-inside-work-tree`;
-- exactly one Runtime `CommandAction::Unknown` containing the same command;
+- exact pinned macOS transport string
+  `/bin/zsh -lc 'git rev-parse --is-inside-work-tree'`;
+- exactly one Runtime `CommandAction::Unknown` containing
+  `git rev-parse --is-inside-work-tree`; this action is the sole business authority and the shell
+  wrapper is non-authoritative transport presentation;
 - canonical cwd equal to the Host-known workspace root;
-- absent reason, network context, additional permission, exec-policy amendment, and network-policy
+- absent/null reason, or a valid UTF-8 reason bounded to 512 bytes with NUL forbidden; Host validates
+  it and immediately discards it before fingerprinting, logging, storage, projection, or errors;
+- absent network context, additional permission, exec-policy amendment, and network-policy
   amendment; Runtime approvalId may be absent or null only;
-- absent/null environment identity or an exact Host-known local environment identity.
+- present environment identity exactly equal to `local`.
 
 The outer Runtime request has exactly `id`, `method`, and `params`. Eligible params have exactly the
-required identity/time/command/action/cwd fields plus optional `approvalId`, `environmentId`, and
-ignored `availableDecisions`; every other top-level or params field fails closed even if a future
+required identity/time/command/action/cwd fields plus schema-optional `approvalId`, `environmentId`,
+bounded `reason`, and ignored `availableDecisions`. Eligibility further requires the actual pinned
+wire's `environmentId=local`; every other top-level or params field fails closed even if a future
 Runtime schema would otherwise tolerate it. Before fingerprinting or projection, `threadId` must
 equal the session-bound Runtime thread, `turnId` the Host active Turn, and `itemId` the expected
 Command Item. Any mismatch is cancelled once without a Desktop projection.
 
 Runtime `availableDecisions` is experimental and may appear on actual wire even when omitted from the
 stable generated schema. Host must tolerate and ignore it. It never widens the Yijie decision set.
-Runtime RequestId, `startedAtMs`, nullable approvalId, command/actions, cwd, environment identity,
-reason, network context, permissions, amendments, and raw wire remain in Host pending memory only.
+Runtime RequestId, `startedAtMs`, nullable approvalId, normalized action authority, cwd and
+environment identity remain in Host pending memory only. The wrapper and reason are validated then
+discarded; network context, permissions, amendments, and unknown raw fields are rejected.
 
 Runtime response/replay authority identity is `(runtime_process_generation, exact-typed RequestId)`;
 the Host owns one opaque generation token for each Runtime process lifecycle, independent of client
@@ -66,10 +87,10 @@ connection changes. The key is extracted only after exact outer-shape validation
 eligibility. Thread, Turn, and Item identities are binding/fingerprint fields, not additional key
 parts. An identical replay reuses the same Host `approval_request_id`, revision, requested/deadline values, and remaining
 TTL; it never creates another event or resets the clock. For same-key comparison, Host canonicalizes
-the exact bound thread/turn/item, command/action, canonical workspace identity, absent/null approvalId to `none`, and
-absent/null/exact-local environment identity to the same Host-local identity; `startedAtMs` remains
+the exact bound thread/turn/item, the normalized single command action, canonical workspace identity, absent/null approvalId to `none`, and
+exact `local` environment identity; `startedAtMs` remains
 an exact integer fingerprint field while never becoming the TTL clock. Experimental
-`availableDecisions` is excluded from the fingerprint. Same-key identity/fingerprint drift sends one
+`availableDecisions` and validated `reason` are excluded from the fingerprint. Same-key identity/fingerprint drift sends one
 Runtime `cancel`, atomically resolves the existing pending approval as `resolved_elsewhere`, and
 never emits a second requested projection. A distinct second request while the session already has
 one pending is cancelled once without projection and leaves the original pending authority intact.
@@ -178,7 +199,7 @@ without changing older paths/channels/messages/operations. The package remains t
 `0.7.0` candidate under the repository rule that an untagged candidate may accumulate reviewed
 compatible revisions; exact commit and digest are mandatory for downstream consumption.
 
-Rollout is Contracts immutable candidate → Host exact pin/closed mapper/pending authority → Desktop
+Rollout is revised Contracts immutable candidate → Host exact pin/closed mapper/pending authority → Desktop
 exact pin/closed consumer → Host-to-Desktop conformance → separately authorized fresh real D4.
 Consumer-first activation is mandatory. Rollback disables FEAT-137 and negotiates v5, restoring the
 current `read-only/never` behavior without modifying Runtime.

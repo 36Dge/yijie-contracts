@@ -8,8 +8,8 @@ import test from "node:test";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 
-const manifestPath = "compatibility/agent-host-runtime-approval-v6.json";
-const schemaPath = "jsonschema/compatibility/agent-host-runtime-approval-v6.schema.json";
+const manifestPath = "compatibility/agent-host-runtime-approval-v6-v2.json";
+const schemaPath = "jsonschema/compatibility/agent-host-runtime-approval-v6-v2.schema.json";
 const runtimeRoot = process.env.YIJIE_CODEX_REPO ?? path.resolve("../yijie-codex");
 const runtimeSchemaRoot = path.join(runtimeRoot, ".yijie/schemas/app-server/generated-json-schema");
 const execFileAsync = promisify(execFile);
@@ -86,11 +86,19 @@ function eligibleRuntimeRequest(request, host) {
     return false;
   }
   if (!Number.isSafeInteger(params.startedAtMs)) return false;
-  if (params.command !== policy.command || host.canonicalizeCwd(params.cwd) !== host.workspaceRoot) {
+  if (params.command !== policy.commandWire || host.canonicalizeCwd(params.cwd) !== host.workspaceRoot) {
     return false;
   }
   if (params.approvalId != null) return false;
-  if (params.environmentId != null && params.environmentId !== host.environmentId) return false;
+  if (params.environmentId !== host.environmentId) return false;
+  if (
+    params.reason != null &&
+    (typeof params.reason !== "string" ||
+      Buffer.byteLength(params.reason, "utf8") > policy.maxReasonUtf8Bytes ||
+      params.reason.includes("\0"))
+  ) {
+    return false;
+  }
   if (!Array.isArray(params.commandActions) || params.commandActions.length !== 1) return false;
   const [action] = params.commandActions;
   if (
@@ -99,7 +107,7 @@ function eligibleRuntimeRequest(request, host) {
     Array.isArray(action) ||
     Object.keys(action).sort().join(",") !== "command,type" ||
     action.type !== "unknown" ||
-    action.command !== policy.command
+    action.command !== policy.actionCommand
   ) {
     return false;
   }
@@ -115,7 +123,7 @@ function runtimeReplayFingerprint(request, host) {
     threadId: host.runtimeThreadId,
     turnId: host.activeTurnId,
     itemId: host.expectedCommandItemId,
-    command: request.params.command,
+    command: request.params.commandActions[0].command,
     commandActions: [
       { type: "unknown", command: request.params.commandActions[0].command },
     ],
@@ -169,11 +177,28 @@ test("the independent FEAT-137 Runtime approval projection is closed and exact",
   const mutations = [
     ["method", (value) => (value.reverse_request.method = "item/fileChange/requestApproval")],
     ["runtime pin", (value) => (value.runtime.repository_commit = "0".repeat(40))],
-    ["command", (value) => (value.reverse_request.eligibility.command = "git status")],
+    ["gate composition", (value) => value.activation.required_feature_gates.pop()],
+    ["gate identity", (value) => (value.activation.required_feature_gates[0] = "FEAT-133")],
+    ["gate order", (value) => value.activation.required_feature_gates.reverse()],
+    ["command wire", (value) => (value.reverse_request.eligibility.command.wire = "git status")],
+    [
+      "command authority",
+      (value) => (value.reverse_request.eligibility.command.business_authority = "command"),
+    ],
     ["action count", (value) => (value.reverse_request.eligibility.command_actions.exact_count = 2)],
     ["approval id", (value) => (value.reverse_request.eligibility.approval_id = "required_null")],
     ["cwd", (value) => (value.reverse_request.eligibility.cwd = "runtime_supplied")],
     ["environment", (value) => (value.reverse_request.eligibility.environment_id = "any")],
+    ["reason bound", (value) => (value.reverse_request.eligibility.reason.max_utf8_bytes = 513)],
+    ["producer", (value) => (value.activation.producer.sandbox_permissions = "require_escalated")],
+    ["producer scope", (value) => (value.activation.producer.installation_scope = "local")],
+    [
+      "producer reason",
+      (value) => (value.activation.producer.justification = "Approve elevated access."),
+    ],
+    ["producer example", (value) => value.activation.producer.load_time_examples.not_match.pop()],
+    ["producer match", (value) => (value.activation.producer.runtime_match_semantics = "exact")],
+    ["producer authority", (value) => (value.activation.producer.exact_admission_authority = "runtime_rule")],
     ["available decisions", (value) => (value.reverse_request.eligibility.ignored_if_present = {})],
     ["accept mapping", (value) => (value.runtime_response.accept_once.decision = "decline")],
     ["cancel mapping", (value) => (value.runtime_response.cancel_current_turn.decision = "decline")],
@@ -237,6 +262,8 @@ test("the frozen Runtime schemas and stable reverse-request shape match the proj
   assert.deepEqual(params.required, Object.values(manifest.reverse_request.stable_required_params));
   assert.equal(params.properties.approvalId.type.includes("null"), true);
   assert.equal(params.properties.environmentId.type.includes("null"), true);
+  assert.equal(params.properties.reason.type.includes("null"), true);
+  assert.equal(params.properties.reason.type.includes("string"), true);
   assert.equal(params.properties.command.type.includes("null"), true);
   assert.equal(params.properties.cwd.anyOf.some((entry) => entry.type === "null"), true);
   assert.equal(params.properties.commandActions.type.includes("null"), true);
@@ -267,7 +294,7 @@ test("canonical request eligibility is exact while availableDecisions is tolerat
   const host = {
     workspaceRoot: "/synthetic/workspace",
     workspaceIdentity: "workspace-identity-1",
-    environmentId: "local-environment",
+    environmentId: "local",
     localEnvironmentIdentity: "local-environment-identity-1",
     runtimeThreadId: "thread-1",
     activeTurnId: "turn-1",
@@ -278,7 +305,9 @@ test("canonical request eligibility is exact while availableDecisions is tolerat
         : null,
     policy: {
       method: manifest.reverse_request.method,
-      command: manifest.reverse_request.eligibility.command,
+      commandWire: manifest.reverse_request.eligibility.command.wire,
+      actionCommand: manifest.reverse_request.eligibility.command_actions.command,
+      maxReasonUtf8Bytes: manifest.reverse_request.eligibility.reason.max_utf8_bytes,
       mustBeAbsent: Object.values(manifest.reverse_request.eligibility.must_be_absent),
       wireShape: manifest.reverse_request.wire_shape,
     },
@@ -293,10 +322,10 @@ test("canonical request eligibility is exact while availableDecisions is tolerat
       startedAtMs: 1,
       approvalId: null,
       environmentId: host.environmentId,
-      command: manifest.reverse_request.eligibility.command,
+      command: manifest.reverse_request.eligibility.command.wire,
       cwd: host.workspaceRoot,
       commandActions: [
-        { type: "unknown", command: manifest.reverse_request.eligibility.command },
+        { type: "unknown", command: manifest.reverse_request.eligibility.command_actions.command },
       ],
       availableDecisions: ["acceptForSession", "decline"],
     },
@@ -310,16 +339,23 @@ test("canonical request eligibility is exact while availableDecisions is tolerat
 
   const invalidMutations = [
     (value) => (value.jsonrpc = "2.0"),
-    (value) => (value.params.command = "git status"),
+    (value) => (value.params.command = "git rev-parse --is-inside-work-tree"),
+    (value) => (value.params.command = "/bin/zsh -c 'git rev-parse --is-inside-work-tree'"),
+    (value) => (value.params.command = "/bin/bash -lc 'git rev-parse --is-inside-work-tree'"),
+    (value) => (value.params.command = "/bin/zsh -lc 'git rev-parse --is-inside-work-tree --verify'"),
     (value) => (value.params.cwd = "/synthetic/other"),
     (value) => (value.params.approvalId = "subcommand-callback"),
     (value) => (value.params.environmentId = "remote-environment"),
+    (value) => delete value.params.environmentId,
+    (value) => (value.params.environmentId = null),
     (value) => (value.params.commandActions = []),
     (value) => value.params.commandActions.push(structuredClone(value.params.commandActions[0])),
     (value) => (value.params.commandActions[0].type = "read"),
     (value) => (value.params.commandActions[0].command = "git status"),
     (value) => (value.params.commandActions[0].path = "/private/path"),
-    (value) => (value.params.reason = "retry without sandbox"),
+    (value) => (value.params.reason = 7),
+    (value) => (value.params.reason = `bounded${"x".repeat(506)}\0`),
+    (value) => (value.params.reason = "é".repeat(257)),
     (value) => (value.params.networkApprovalContext = { host: "example.test" }),
     (value) => (value.params.additionalPermissions = { fileSystem: { read: ["/private"] } }),
     (value) => (value.params.proposedExecpolicyAmendment = ["git"]),
@@ -346,13 +382,13 @@ test("canonical request eligibility is exact while availableDecisions is tolerat
 
   const equivalentReplays = [];
   for (const approvalId of [undefined, null]) {
-    for (const environmentId of [undefined, null, host.environmentId]) {
+    for (const reason of [undefined, null, "Confirm the one read-only repository check.", "é".repeat(256)]) {
       for (const availableDecisions of [undefined, [], ["decline"], ["acceptForSession", "cancel"]]) {
         const candidate = structuredClone(canonical);
         if (approvalId === undefined) delete candidate.params.approvalId;
         else candidate.params.approvalId = approvalId;
-        if (environmentId === undefined) delete candidate.params.environmentId;
-        else candidate.params.environmentId = environmentId;
+        if (reason === undefined) delete candidate.params.reason;
+        else candidate.params.reason = reason;
         if (availableDecisions === undefined) delete candidate.params.availableDecisions;
         else candidate.params.availableDecisions = availableDecisions;
         assert.equal(eligibleRuntimeRequest(candidate, host), true);
@@ -373,7 +409,7 @@ test("canonical request eligibility is exact while availableDecisions is tolerat
   }
   const reorderedActionMembers = structuredClone(canonical);
   reorderedActionMembers.params.commandActions = [
-    { command: manifest.reverse_request.eligibility.command, type: "unknown" },
+    { command: manifest.reverse_request.eligibility.command_actions.command, type: "unknown" },
   ];
   assert.equal(eligibleRuntimeRequest(reorderedActionMembers, host), true);
   assert.equal(runtimeReplayFingerprint(reorderedActionMembers, host), canonicalFingerprint);
