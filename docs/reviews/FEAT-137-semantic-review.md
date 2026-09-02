@@ -1,11 +1,13 @@
 # FEAT-137 Contracts v6 semantic and security review
 
-Date: 2026-08-31
+Date: 2026-09-02
 
 Impact: `semantic`
 
-Reviewer authority: Codex recorded the Owner-authorized FEAT-137 stable sandbox provenance repair and
-immutable local freeze within the exact local-only, read-only Command approval boundary. It does not
+Reviewer authority: Codex recorded the Owner-authorized FEAT-137 deterministic D4 producer repair
+target within the exact local-only, read-only Command approval boundary. The v4 semantic slice is
+`candidate/PENDING`: its final clean Runtime identity, stable artifact, regenerated projection, and
+gate evidence do not yet exist. It does not
 authorize a tag, push, publish, further Runtime change, application startup, Provider/model request, or real
 D4; Host/Desktop may consume only the resulting full clean-tree commit SHA.
 
@@ -16,14 +18,18 @@ the independent Runtime approval compatibility projection, and deterministic sou
 not claim downstream Host/Desktop conformance before their exact repin. Compatibility was
 checked against:
 
-- current immutable approval foundation `0acf2a39a505a4ef9fb8757b29cb53efe9e9846f` / unpublished `0.7.0`;
+- current immutable approval foundation `aeccf5d561bd4259389cdb325bae84ce3e0dea86` / unpublished `0.7.0`;
 - original v6 source foundation `2e490dea4444ea1e33c2df1a5267b2bff5bfb8e6`;
 - published supported baseline `f16a497e1377f45747f8ff9292b4b60cf2027f88`.
 
-The external Runtime provenance authority is frozen at
-`yijie-codex@acf2da55d8a53175343aaf112e03368dfef9922a`, upstream `0.144.6`,
-with `experimentalApi=false`. Its third authorized patch adds only the required stable
-`sandboxPermissions` provenance field; Runtime execution permissions and approval decisions are unchanged.
+The external Runtime values currently recorded in v4 are provisional pre-repair placeholders:
+`yijie-codex@9ed24710d73f22a9b269092b8cdf2225199ea222`, tree
+`984e0f5bb48aaa953ed3a329614d00e5905514fb`, upstream `0.144.6`, with
+`experimentalApi=false`. Its third authorized patch adds the required stable
+`sandboxPermissions` provenance field; its fourth adds only a default-off deterministic D4
+producer. These SHA/tree/artifact values are not the final immutable authority and must be replaced
+after the managed-surface/confidentiality/compaction/retry repair is cleanly frozen. Runtime
+execution permissions, approval decisions, stable app-server wire, and public v6 remain unchanged.
 The existing `compatibility/agent-host-runtime-v1.json` remains byte-identical and continues to
 describe the currently supported `read-only` / `never` Host projection.
 
@@ -39,7 +45,12 @@ describe the currently supported `read-only` / `never` Host projection.
 | Decision idempotency | Same decision identity/body has a bounded identical-200 replay; conflicting reuse fails closed; eviction never reopens an approval | PASS |
 | Errors | Each HTTP status uses a closed code allowlist and each of the eleven stable codes has one fixed content-free message | PASS |
 | TTL and races | Requested/pending timestamps encode an exact 120-second window; Host monotonic receive time is authority; expiry and cleanup outcomes are time-closed and first-writer-wins | PASS |
-| Deterministic producer | Pinned Runtime's existing exec-policy `Prompt` plus `UseDefault` creates the approval without `require_escalated` and preserves the read-only sandbox. Runtime prefix matching is only a trigger; Host exact admission is authoritative | PASS |
+| Deterministic producer | Exact Host Owner gate strips ambient values and injects the child-only Runtime gate only after local/demo_fast FEAT-134/136/137 activation. Runtime first exposes one strict zero-argument required/non-parallel `exec_command`, ignores Provider arguments, constructs fixed `UseDefault`, and exposes no tools after the first call | PENDING final Runtime freeze |
+| Layered turn admission | Runtime admits exactly one canonical plain/nonempty-call-id Done per response stream, uses a turn-global Provider-request compare-and-swap to enforce one request for the whole TurnContext, fails post-tool/second-stream completion closed before follow-up, rejects duplicate/hidden/namespaced/invalid tool-like items, replaces Provider arguments before sinks, and requires exact provider/handler terminal lifecycle; Host then applies the exact wire and `CommandAction` allowlist | PENDING final Runtime freeze |
+| Managed Runtime surface | Exact managed config disables hooks/plugins/apps/tool suggestion/shell snapshot; hook/plugin discovery and extension contributors cannot widen the gate-on surface; configured/runtime/effective MCP servers and Connector projection are zero. Runtime private-gate `DisabledEphemeral` is self-contained remote-control authority; Host exact-value `CODEX_INTERNAL_APP_SERVER_REMOTE_CONTROL_DISABLED=1` injection is child-only defense in depth, with ambient and Command-child scrub and no gate-off injection | PENDING final Runtime freeze |
+| Provider confidentiality | SSE/WebSocket wire logs and retained lifecycle telemetry are content-free; payload telemetry and raw tool-input deltas are suppressed; fixed projection precedes materialized/live sinks and fatal errors are closed | PENDING final Runtime freeze |
+| Provider calls and retry | The private gate precedes prewarm/authentication/TurnContext producer side effects and fixes all three counts at zero; the entire gate-on TurnContext, including steer/follow-up, has exactly one Provider request with a hard maximum of one and zero follow-up requests; automatic compaction, post-tool final sampling, and automatic 401 recovery each add zero requests; managed request/stream retries are exactly zero and remain distinct from decision POST no-retry | PENDING final Runtime freeze |
+| Gate-off parity | Startup and remote-control behavior, Provider request cardinality, post-tool sampling, 401 recovery, managed config bytes, Provider tools/choice/parallel/arguments/output, process env/argv/shell, contributors, transport observability, automatic compaction, public/stable v6, permissions, and approval decisions retain their ordinary path | PENDING final Runtime freeze |
 | Runtime eligibility | Independent machine-readable projection pins an exact outer/params allowlist, stable method, outer RequestId, session thread/active Turn/expected Item binding, pinned `/bin/zsh -lc` wrapper, one Unknown allowlisted command action as sole business authority, canonical workspace cwd, exact `local`, required `sandboxPermissions=use_default`, bounded validate-then-discard reason, absent/null approvalId and permission/network exclusions; escalation, additional permission, missing, unknown, and unknown fields fail closed | PASS |
 | Runtime replay | Runtime response authority is exactly process generation plus typed RequestId; thread/turn/item, normalized command action, and exact `use_default` sandbox provenance stay in the closed canonical fingerprint, absent/null forms normalize, `availableDecisions` and validated reason are ignored, and `startedAtMs` is compared but never drives TTL. Equivalent replay reuses authority; same-key drift cancels once and closes the existing pending without a second request projection | PASS |
 | Runtime response | `accept_once` maps only to Runtime `accept`; `cancel_current_turn` and TTL expiry map only to Runtime `cancel`; forbidden decision families and malformed fallback are closed | PASS |
@@ -67,30 +78,49 @@ The v3 compatibility projection admits only `use_default`; `require_escalated` a
 is retained only in Host pending/replay authority and remains structurally forbidden on public v6
 events, SQLCipher projection, copy surfaces, logs, and errors.
 
+The later 2026-09-01 deterministic producer checkpoint addressed Provider tool-argument truncation
+without heuristically completing Provider JSON or elevating permission. Its provisional v4 recorded
+both process gates, the closed zero-argument tool plan, Runtime-owned fixed arguments, first-call
+cardinality, and the then-current four-patch Runtime artifact. These values are retained only as
+superseded placeholders pending the final freeze. Patch 0004 SHA-256 was
+`b66583db09948fda038eaf056310d6116a37930e8b4d08e73d483c7ed1cf74e6`; binary and manifest
+SHA-256 are `896d303658a0978c3628f10e9e78f12139168be9508dd5f2abc658db186a828b`
+and `c428c0d06c9cf578e4bcfe53b328015977578469fc46e9461cb85f8c8bcd66fb`.
+
+The current v4 target additionally closes the managed Runtime surface and extension ordering,
+content-free provider transport boundaries, zero startup producer side effects, exactly one and at
+most one Provider request for the whole gate-on TurnContext, zero follow-up/automatic-compaction/
+post-tool-final-sampling/401-recovery requests, closed remote-control startup, zero request and
+stream retries, layered Runtime/Host admission, and dimension-by-dimension gate-off parity. None of
+those new rows may move from
+`PENDING` until the final Runtime freeze and refreshed evidence exist.
+
 ## Source/generated identity before immutable commit
 
 | Artifact | SHA-256 |
 |---|---|
-| AgentSessionEventV6 JSON Schema | `c71d7eb7a266e5ac7c1b3f09536d536fed2cf36379d49c0007eab792f34a4bee` |
+| AgentSessionEventV6 JSON Schema | `25b345673c392a8edfa1ac08df06a13b70852765e561f49d5c461718179caf12` |
 | v6 Protobuf source | `d8abdc1f523b2931d5be984b9a0d27af0724dad88e350ad6cb41b0734e075c5d` |
 | Agent Host OpenAPI source | `8716d11ebae140d7c2cec72f6528bbd39ac5976c898c28e0044bec71fb004083` |
 | AsyncAPI source | `29f544415cad3411f02c3a598fc225ce66c21b4696bd470ea0308d6e43f9c711` |
 | Frozen Runtime v1 compatibility projection | `6cef3f4ac60ec91b9f7f05b188dc677169fc11e0bedf34350f6342a6f50981bb` |
-| FEAT-137 Runtime approval v3 projection | `9c196a0f6e34dfa917f9c3e6f27400307d991b81d37ba911c0f717d40642c90a` |
-| Runtime approval v3 projection schema | `ef83669eee5ca57597f8bf643f0fb9d6acd7b4f5413ec980f594b5251013d2d1` |
-| bundled AsyncAPI | `d32781d9566c890d09a76c59e83554ecedb91bc5a4be7e3d57622741bddf5a5e` |
+| Superseded Runtime approval v3 projection | `9c196a0f6e34dfa917f9c3e6f27400307d991b81d37ba911c0f717d40642c90a` |
+| Superseded Runtime approval v3 projection schema | `ef83669eee5ca57597f8bf643f0fb9d6acd7b4f5413ec980f594b5251013d2d1` |
+| Superseded pre-repair FEAT-137 Runtime approval v4 projection | `9102e314192ef950bb638044511bc010c41fa0f8b0c3271b413da9016c325747` |
+| Superseded pre-repair Runtime approval v4 projection schema | `7fdd746fc4ff9b43fcde60b85a9fbafad9e19b0723de8eeadc9c0666423e7b77` |
+| bundled AsyncAPI | `429dca0d9b807947a840ce5040c340943fcac55a7590fb04cb7e7c0ceebf9c92` |
 | generated Go Agent Host | `21ee4a55681fe24284450ea9f3a350916959ed064296aaad5dffb671b6c3ee3d` |
 | generated Go v6 Protobuf | `9447aaafb3537ea4e52b15f104da67e932d70d4e9a3c50f0d48840bc94722452` |
 | generated TypeScript Agent Host | `30fec0a7b409165f2b316fe422c4227c870dc89263f31c0fc09c517b6cf352b9` |
 | generated TypeScript v6 Protobuf | `35f8964f7cc8a11b061d50ca77c676b0fcb08071fba0ee902356e861a4b9ce0a` |
 | generated TypeScript v6 event schema | `acaa787bcb90bb25762118eef0a59b172f2d15a65328a044470befd99802b01c` |
-| generated TypeScript Runtime approval v3 projection | `3002ba007889a26f069b2cab21dd7df2ddb8e12502f28e1e137d9059b4d4fdfe` |
+| Superseded generated TypeScript Runtime approval v4 projection | `7ab7933270a8e6faf4ec31071b58099ceaba00a627c1d95e446bc44bb5a36f86` |
 
 These digests are refreshed by each reviewed source repair. The authorized source base is
-`0acf2a39a505a4ef9fb8757b29cb53efe9e9846f`; Host may pin only the new full commit produced after all
+`aeccf5d561bd4259389cdb325bae84ce3e0dea86`; Host may pin only the new full commit produced after all
 gates pass and the Contracts tree is clean.
 
-## Gate result
+## Historical gate result (superseded for the current v4 slice)
 
 - focused v6/Runtime stable-sandbox-provenance tests: PASS, 13/13.
 - all safety-compliant Node tests except the two pre-existing attack-fixture suites: PASS, 80/80.
@@ -108,7 +138,8 @@ the structured-artifact injection-invalid fixture. The default `pnpm test`, `pnp
 fixture path. The `:safe` generation path, 80 non-attack Node tests and all other listed gates are
 the safety-compliant substitute.
 
-Contracts working-tree source candidate review: **PASS**.
+Contracts working-tree source candidate review for the current semantic slice: **PENDING**. No final
+Runtime repin, safe generation, freeze-required artifact validation, or refreshed full gate has run.
 
 The current batch authorizes one local immutable Contracts commit followed by a clean-tree SHA/gate
 audit. Host/Desktop exact repin and cross-repository conformance remain subsequent gates. Fresh

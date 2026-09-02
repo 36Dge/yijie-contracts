@@ -8,10 +8,12 @@ import test from "node:test";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 
-const manifestPath = "compatibility/agent-host-runtime-approval-v6-v3.json";
-const schemaPath = "jsonschema/compatibility/agent-host-runtime-approval-v6-v3.schema.json";
+const manifestPath = "compatibility/agent-host-runtime-approval-v6-v4.json";
+const schemaPath = "jsonschema/compatibility/agent-host-runtime-approval-v6-v4.schema.json";
+const v3ManifestPath = "compatibility/agent-host-runtime-approval-v6-v3.json";
 const runtimeRoot = process.env.YIJIE_CODEX_REPO ?? path.resolve("../yijie-codex");
 const runtimeSchemaRoot = path.join(runtimeRoot, ".yijie/schemas/app-server/generated-json-schema");
+const requireStableArtifact = process.env.YIJIE_REQUIRE_FEAT137_RUNTIME_ARTIFACT === "1";
 const execFileAsync = promisify(execFile);
 
 async function loadJson(file) {
@@ -52,6 +54,15 @@ async function schemaTreeSha256(directory, files) {
 
 async function fileSha256(file) {
   return createHash("sha256").update(await readFile(file)).digest("hex");
+}
+
+async function gitBlobSha256(repository, commit, relativePath) {
+  const { stdout } = await execFileAsync(
+    "git",
+    ["-C", repository, "show", `${commit}:${relativePath}`],
+    { encoding: "buffer", maxBuffer: 16 * 1024 * 1024 },
+  );
+  return createHash("sha256").update(stdout).digest("hex");
 }
 
 function methodsFromSchema(schema) {
@@ -175,8 +186,18 @@ test("the independent FEAT-137 Runtime approval projection is closed and exact",
   const validate = ajv.compile(schema);
   assert.equal(validate(manifest), true, JSON.stringify(validate.errors));
   assert.equal(manifest.contracts_version, packageManifest.version);
+  assert.equal(
+    manifest.status,
+    "deterministic_d4_producer_candidate_pending_runtime_freeze",
+  );
+  assert.equal(
+    manifest.runtime.freeze_status,
+    "pending_final_clean_runtime_commit_tree_and_artifact_repin",
+  );
 
   const mutations = [
+    ["candidate status", (value) => (value.status = "deterministic_d4_producer_authority")],
+    ["freeze status", (value) => (value.runtime.freeze_status = "frozen")],
     ["method", (value) => (value.reverse_request.method = "item/fileChange/requestApproval")],
     ["runtime pin", (value) => (value.runtime.repository_commit = "0".repeat(40))],
     ["gate composition", (value) => value.activation.required_feature_gates.pop()],
@@ -198,6 +219,199 @@ test("the independent FEAT-137 Runtime approval projection is closed and exact",
     ["reason bound", (value) => (value.reverse_request.eligibility.reason.max_utf8_bytes = 513)],
     ["producer", (value) => (value.activation.producer.sandbox_permissions = "require_escalated")],
     ["producer scope", (value) => (value.activation.producer.installation_scope = "local")],
+    [
+      "owner gate",
+      (value) => (value.activation.producer.owner_gate.enabled_value = "1"),
+    ],
+    [
+      "runtime child gate",
+      (value) => (value.activation.producer.runtime_child_gate.enabled_value = "true"),
+    ],
+    [
+      "zero-argument schema",
+      (value) => value.activation.producer.first_sampling_step.tool_schema.required.push("cmd"),
+    ],
+    [
+      "required tool choice",
+      (value) => (value.activation.producer.first_sampling_step.tool_choice = "auto"),
+    ],
+    [
+      "provider arguments",
+      (value) => (value.activation.producer.provider_arguments = "trusted"),
+    ],
+    [
+      "Runtime-owned command",
+      (value) => (value.activation.producer.runtime_owned_arguments.command = "git status"),
+    ],
+    [
+      "post-call tools",
+      (value) => value.activation.producer.after_first_exec_call.tools.push("exec_command"),
+    ],
+    [
+      "post-call sampling",
+      (value) => (value.activation.producer.after_first_exec_call.sampling = "enabled"),
+    ],
+    [
+      "post-call Provider request",
+      (value) => (value.activation.producer.after_first_exec_call.provider_requests = 1),
+    ],
+    ...Object.keys(manifest.activation.producer.turn_admission)
+      .filter((field) => field !== "rejected_items")
+      .map((field) => [
+        `turn admission ${field}`,
+        (value) => (value.activation.producer.turn_admission[field] = "drifted"),
+      ]),
+    [
+      "turn admission rejected items",
+      (value) => value.activation.producer.turn_admission.rejected_items.pop(),
+    ],
+    ...Object.keys(manifest.activation.producer.startup_side_effect_policy).map((field) => [
+      `startup side-effect policy ${field}`,
+      (value) =>
+        (value.activation.producer.startup_side_effect_policy[field] =
+          typeof value.activation.producer.startup_side_effect_policy[field] === "number"
+            ? 1
+            : "drifted"),
+    ]),
+    ...["cloud_config_loader", "otel", "analytics"].flatMap((surface) =>
+      Object.keys(manifest.activation.producer.startup_side_effect_policy[surface]).map((field) => [
+        `startup ${surface} ${field}`,
+        (value) =>
+          (value.activation.producer.startup_side_effect_policy[surface][field] =
+            typeof value.activation.producer.startup_side_effect_policy[surface][field] === "number"
+              ? 1
+              : "drifted"),
+      ]),
+    ),
+    ...Object.keys(manifest.activation.producer.managed_runtime_surface.managed_config_features).map(
+      (feature) => [
+        `managed feature ${feature}`,
+        (value) => (value.activation.producer.managed_runtime_surface.managed_config_features[feature] = true),
+      ],
+    ),
+    [
+      "hook construction",
+      (value) => (value.activation.producer.managed_runtime_surface.hook_construction = "after_discovery"),
+    ],
+    ...["plugin_discovery", "plugin_hooks", "remote_plugins"].map((field) => [
+      `managed surface ${field}`,
+      (value) => (value.activation.producer.managed_runtime_surface[field] = "enabled"),
+    ]),
+    [
+      "extension contributors",
+      (value) => (value.activation.producer.managed_runtime_surface.extension_contributors = "invoked"),
+    ],
+    [
+      "configured MCP servers",
+      (value) => (value.activation.producer.managed_runtime_surface.configured_mcp_servers = 1),
+    ],
+    [
+      "runtime MCP servers",
+      (value) => (value.activation.producer.managed_runtime_surface.runtime_mcp_servers = 1),
+    ],
+    [
+      "effective MCP servers",
+      (value) => (value.activation.producer.managed_runtime_surface.effective_mcp_servers = 1),
+    ],
+    [
+      "connector projections",
+      (value) => (value.activation.producer.managed_runtime_surface.connector_projections = 1),
+    ],
+    [
+      "plugins available",
+      (value) => (value.activation.producer.managed_runtime_surface.plugins_available = true),
+    ],
+    [
+      "snapshot capture",
+      (value) => (value.activation.producer.managed_runtime_surface.shell_snapshot_capture = "enabled"),
+    ],
+    ...Object.keys(
+      manifest.activation.producer.managed_runtime_surface.app_server_remote_control,
+    ).map((field) => [
+      `app-server remote control ${field}`,
+      (value) =>
+        (value.activation.producer.managed_runtime_surface.app_server_remote_control[field] =
+          "drifted"),
+    ]),
+    ...Object.keys(manifest.activation.producer.provider_wire_confidentiality).map((field) => [
+      `wire confidentiality ${field}`,
+      (value) => (value.activation.producer.provider_wire_confidentiality[field] = "payload_bearing"),
+    ]),
+    [
+      "automatic compaction",
+      (value) => (value.activation.producer.provider_call_policy.automatic_pre_sampling_compaction = "enabled"),
+    ],
+    [
+      "automatic compaction Provider call",
+      (value) =>
+        (value.activation.producer.provider_call_policy.automatic_compaction_provider_requests = 1),
+    ],
+    [
+      "Provider request scope",
+      (value) => (value.activation.producer.provider_call_policy.scope = "first_sampling_step"),
+    ],
+    [
+      "exact turn Provider requests",
+      (value) => (value.activation.producer.provider_call_policy.exact_turn_provider_requests = 2),
+    ],
+    [
+      "hard maximum turn Provider requests",
+      (value) => (value.activation.producer.provider_call_policy.hard_max_turn_provider_requests = 2),
+    ],
+    [
+      "follow-up Provider request",
+      (value) => (value.activation.producer.provider_call_policy.follow_up_provider_requests = 1),
+    ],
+    [
+      "post-tool final sampling",
+      (value) => (value.activation.producer.provider_call_policy.post_tool_final_sampling = "enabled"),
+    ],
+    [
+      "post-tool final sampling Provider request",
+      (value) =>
+        (value.activation.producer.provider_call_policy.post_tool_final_sampling_provider_requests =
+          1),
+    ],
+    [
+      "request retry",
+      (value) => (value.activation.producer.managed_provider_retry_policy.request_max_retries = 1),
+    ],
+    [
+      "stream retry",
+      (value) => (value.activation.producer.managed_provider_retry_policy.stream_max_retries = 1),
+    ],
+    [
+      "automatic 401 recovery",
+      (value) =>
+        (value.activation.producer.managed_provider_retry_policy.automatic_401_recovery =
+          "enabled"),
+    ],
+    [
+      "automatic 401 recovery Provider request",
+      (value) =>
+        (value.activation.producer.managed_provider_retry_policy
+          .automatic_401_recovery_provider_requests = 1),
+    ],
+    [
+      "Provider retry authority",
+      (value) => (value.activation.producer.managed_provider_retry_policy.authority = "runtime_default"),
+    ],
+    [
+      "Provider retry validation",
+      (value) => (value.activation.producer.managed_provider_retry_policy.validation = "after_spawn"),
+    ],
+    [
+      "decision retry boundary",
+      (value) => (value.activation.producer.managed_provider_retry_policy.decision_post_retry = "shared"),
+    ],
+    ...Object.keys(manifest.activation.producer.gate_off_parity).map((field) => [
+      `gate-off parity ${field}`,
+      (value) => (value.activation.producer.gate_off_parity[field] = "drifted"),
+    ]),
+    [
+      "layered admission authority",
+      (value) => (value.activation.producer.exact_admission_authority = "host_only"),
+    ],
     [
       "producer reason",
       (value) => (value.activation.producer.justification = "Approve elevated access."),
@@ -240,7 +454,14 @@ test("the independent FEAT-137 Runtime approval projection is closed and exact",
   }
 });
 
-test("the frozen Runtime schemas and stable reverse-request shape match the projection", async (t) => {
+test("v4 producer hardening preserves the v3 mapper, response, and lifecycle authority", async () => {
+  const [v4, v3] = await Promise.all([loadJson(manifestPath), loadJson(v3ManifestPath)]);
+  assert.deepEqual(v4.reverse_request, v3.reverse_request);
+  assert.deepEqual(v4.runtime_response, v3.runtime_response);
+  assert.deepEqual(v4.lifecycle, v3.lifecycle);
+});
+
+test("the candidate Runtime schemas and stable reverse-request shape match after final freeze", async (t) => {
   if (!(await exists(runtimeSchemaRoot))) {
     t.skip(`Runtime schema checkout is unavailable at ${runtimeRoot}`);
     return;
@@ -250,6 +471,20 @@ test("the frozen Runtime schemas and stable reverse-request shape match the proj
     encoding: "utf8",
   });
   assert.equal(stdout.trim(), manifest.runtime.repository_commit);
+  const [{ stdout: runtimeTree }, { stdout: runtimeStatus }] = await Promise.all([
+    execFileAsync("git", ["-C", runtimeRoot, "rev-parse", "HEAD^{tree}"], { encoding: "utf8" }),
+    execFileAsync("git", ["-C", runtimeRoot, "status", "--porcelain"], { encoding: "utf8" }),
+  ]);
+  assert.equal(runtimeTree.trim(), manifest.runtime.repository_tree);
+  assert.equal(runtimeStatus, "", "Runtime source authority must be a clean immutable tree");
+  assert.equal(
+    await gitBlobSha256(
+      runtimeRoot,
+      manifest.runtime.repository_commit,
+      ".yijie/patches/0004-feat-137-deterministic-approval-producer.patch",
+    ),
+    manifest.runtime.artifact_identity.patch_0004_sha256,
+  );
 
   const files = await findJsonFiles(runtimeSchemaRoot);
   assert.equal(files.length, manifest.runtime.schema_file_count);
@@ -297,6 +532,206 @@ test("the frozen Runtime schemas and stable reverse-request shape match the proj
     ["string", "integer"],
   );
   assert.equal(resolved.properties.threadId.type, "string");
+});
+
+test("the deterministic D4 producer composition is default-off, closed, one-shot, and non-escalating", async () => {
+  const producer = (await loadJson(manifestPath)).activation.producer;
+  assert.equal(producer.owner_gate.default_state, "disabled");
+  assert.equal(producer.owner_gate.ambient_handling, "strip_before_exact_authorization");
+  assert.equal(
+    producer.runtime_child_gate.ambient_handling,
+    "always_strip_before_conditional_injection",
+  );
+  assert.deepEqual(producer.first_sampling_step.tools, ["exec_command"]);
+  assert.deepEqual(producer.first_sampling_step.tool_schema, {
+    strict: true,
+    required: [],
+    additional_properties: false,
+  });
+  assert.equal(producer.first_sampling_step.tool_choice, "required");
+  assert.equal(producer.first_sampling_step.parallel_tool_calls, false);
+  assert.equal(producer.provider_arguments, "ignored_only_when_runtime_child_gate_enabled");
+  assert.deepEqual(producer.runtime_owned_arguments, {
+    command: "git rev-parse --is-inside-work-tree",
+    sandbox_permissions: "use_default",
+  });
+  assert.equal(
+    producer.exact_admission_authority,
+    "runtime_turn_scoped_atomic_admission_then_host_wire_and_command_action_allowlist",
+  );
+  assert.deepEqual(producer.turn_admission, {
+    scope: "same_turn_context_including_steer_and_follow_up",
+    accepted_item: "first_exact_plain_exec_command_done_with_nonempty_call_id",
+    rejected_items: [
+      "empty_call_id",
+      "namespaced_exec_command",
+      "hidden_tool_like_item",
+      "duplicate_tool_like_item",
+      "non_exec_command_tool_like_item",
+    ],
+    stream_admission: "exactly_one_canonical_done_per_response_stream",
+    turn_provider_request_admission:
+      "single_winner_compare_and_swap_for_the_entire_turn_context",
+    post_tool_or_second_stream_completion: "fail_closed_before_follow_up_provider_request",
+    sanitization: "replace_provider_arguments_with_runtime_owned_arguments_before_any_sink",
+    provider_terminal: "requires_exactly_one_admitted_done",
+    handler_terminal: "requires_exactly_one_started_and_one_finished_lifecycle",
+    fatal_boundary: "return_before_unpolled_tool_future_can_request_approval_or_execute",
+  });
+  assert.deepEqual(producer.startup_side_effect_policy, {
+    scope: "startup_prewarm_authentication_and_turn_context_construction",
+    prewarm_producer_side_effects: 0,
+    authentication_producer_side_effects: 0,
+    turn_context_producer_side_effects: 0,
+    cloud_config_loader: {
+      installations: 0,
+      spawns: 0,
+      loads: 0,
+      outbound_requests: 0,
+    },
+    otel: {
+      exporter: "None",
+      provider: "None",
+      outbound_requests: 0,
+    },
+    analytics: {
+      client: "disabled",
+      outbound_requests: 0,
+    },
+    total_startup_outbound_requests: 0,
+    enforcement: "runtime_child_gate_checked_before_any_producer_side_effect",
+  });
+  assert.deepEqual(producer.after_first_exec_call, {
+    sampling: "disabled",
+    tools: [],
+    parallel_tool_calls: false,
+    provider_requests: 0,
+  });
+  assert.deepEqual(producer.managed_runtime_surface, {
+    managed_config_features: {
+      hooks: false,
+      plugins: false,
+      apps: false,
+      tool_suggest: false,
+      shell_snapshot: false,
+    },
+    hook_construction: "empty_before_plugin_discovery",
+    plugin_discovery: "not_started",
+    plugin_hooks: "disabled",
+    remote_plugins: "disabled",
+    extension_contributors: "not_invoked_before_empty_mcp_return",
+    configured_mcp_servers: 0,
+    runtime_mcp_servers: 0,
+    effective_mcp_servers: 0,
+    connector_projections: 0,
+    plugins_available: false,
+    shell_snapshot_capture: "disabled_before_file_creation",
+    app_server_remote_control: {
+      runtime_private_gate_authority: "DisabledEphemeral",
+      runtime_closure: "before_initialize_auth_database_and_remote_websocket_resolution",
+      host_defense_in_depth_environment: "CODEX_INTERNAL_APP_SERVER_REMOTE_CONTROL_DISABLED",
+      host_enabled_value: "1",
+      host_ambient_handling: "strip_before_exact_d4_runtime_child_injection",
+      host_injection: "runtime_child_only_exactly_once_after_owner_gate",
+      runtime_environment_consumption: "remove_after_exact_read",
+      command_child_handling: "always_scrub",
+    },
+  });
+  assert.deepEqual(producer.provider_wire_confidentiality, {
+    sse_wire_logging: "content_free",
+    websocket_wire_logging: "content_free",
+    transport_payload_telemetry: "suppressed",
+    lifecycle_telemetry: "content_free_only",
+    live_tool_input_deltas: "suppressed",
+    materialized_projection: "runtime_owned_fixed_item_only",
+    sink_order:
+      "sanitized_before_items_added_last_response_rollout_session_history_hooks_otel_and_dispatch",
+    stable_fatal_errors: "closed_content_free",
+  });
+  assert.deepEqual(producer.provider_call_policy, {
+    scope: "entire_gate_on_turn_context_including_steer_and_follow_up",
+    exact_turn_provider_requests: 1,
+    hard_max_turn_provider_requests: 1,
+    follow_up_provider_requests: 0,
+    automatic_pre_sampling_compaction: "disabled_when_runtime_child_gate_enabled",
+    automatic_compaction_provider_requests: 0,
+    post_tool_final_sampling: "disabled",
+    post_tool_final_sampling_provider_requests: 0,
+  });
+  assert.deepEqual(producer.managed_provider_retry_policy, {
+    authority: "host_managed_minimax_config",
+    request_max_retries: 0,
+    stream_max_retries: 0,
+    automatic_401_recovery: "disabled",
+    automatic_401_recovery_provider_requests: 0,
+    validation: "exact_closed_config_before_runtime_spawn",
+    decision_post_retry: "separate_and_disabled",
+  });
+  assert.equal(producer.sandbox_override, "forbidden");
+  assert.equal(producer.permission_escalation, false);
+  assert.deepEqual(producer.gate_off_parity, {
+    managed_config_bytes: "historical_byte_identical",
+    managed_provider_retry_config: "historical_byte_identical",
+    provider_tools: "byte_identical",
+    tool_choice: "byte_identical",
+    parallel_tool_calls: "byte_identical",
+    provider_arguments: "byte_identical",
+    provider_output_items: "byte_identical",
+    process_environment: "byte_identical",
+    process_argv_and_shell: "byte_identical",
+    extension_contributors: "ordinary_path_unchanged",
+    app_server_remote_control: "historical_path_no_injection_or_change",
+    startup_outbound_surfaces: "ordinary_path_unchanged",
+    sse_websocket_logging_and_telemetry: "ordinary_path_unchanged",
+    startup_prewarm_authentication_and_turn_context: "ordinary_path_unchanged",
+    turn_provider_request_cardinality: "ordinary_path_unchanged",
+    automatic_compaction: "ordinary_path_unchanged",
+    post_tool_final_sampling: "ordinary_path_unchanged",
+    automatic_401_recovery: "ordinary_path_unchanged",
+    public_v6_and_stable_schema: "unchanged",
+    permissions_and_approval_decisions: "unchanged",
+  });
+});
+
+test("the local stable Runtime artifact matches the candidate v4 identity", async (t) => {
+  const manifest = await loadJson(manifestPath);
+  const artifactRoot = path.join(runtimeRoot, ".yijie/build/macos/aarch64-apple-darwin");
+  const runtimeManifestPath = path.join(artifactRoot, "runtime-manifest.json");
+  const runtimeBinaryPath = path.join(artifactRoot, "codex");
+  if (!(await exists(runtimeManifestPath)) || !(await exists(runtimeBinaryPath))) {
+    if (requireStableArtifact) {
+      assert.fail(
+        "YIJIE_REQUIRE_FEAT137_RUNTIME_ARTIFACT=1 requires the stable Runtime binary and manifest",
+      );
+    }
+    t.skip("stable Runtime artifact is unavailable");
+    return;
+  }
+  assert.equal(
+    await fileSha256(runtimeManifestPath),
+    manifest.runtime.artifact_identity.manifest_sha256,
+  );
+  assert.equal(
+    await fileSha256(runtimeBinaryPath),
+    manifest.runtime.artifact_identity.binary_sha256,
+  );
+  const runtimeManifest = await loadJson(runtimeManifestPath);
+  assert.equal(runtimeManifest.runtime.sha256, manifest.runtime.artifact_identity.binary_sha256);
+  assert.deepEqual(
+    runtimeManifest.patches.map(({ path: patchPath }) => patchPath),
+    [
+      ".yijie/patches/0001-feat-126-filter-persistent-diagnostics.patch",
+      ".yijie/patches/0002-feat-136-unified-exec-pre-emitter-command-lifecycle.patch",
+      ".yijie/patches/0003-feat-137-stable-sandbox-provenance.patch",
+      ".yijie/patches/0004-feat-137-deterministic-approval-producer.patch",
+    ],
+  );
+  assert.equal(
+    runtimeManifest.patches.find(({ path: patchPath }) =>
+      patchPath.endsWith("0004-feat-137-deterministic-approval-producer.patch"),
+    ).sha256,
+    manifest.runtime.artifact_identity.patch_0004_sha256,
+  );
 });
 
 test("canonical request eligibility is exact while availableDecisions is tolerated and ignored", async () => {

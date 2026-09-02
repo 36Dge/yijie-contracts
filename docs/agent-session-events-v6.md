@@ -1,6 +1,6 @@
 # Agent session events and approvals v6
 
-Status: FEAT-137 stable-sandbox-provenance candidate on the unpublished `0.7.0` package. Reviewed Host and
+Status: FEAT-137 deterministic-D4-producer candidate on the unpublished `0.7.0` package. Reviewed Host and
 Desktop candidates exist, but this revised source must be immutably frozen and exactly repinned
 before cross-repository conformance or a fresh D4. It is not tagged/pushed/published or enabled for
 any public or production entrypoint.
@@ -15,9 +15,11 @@ v6 negotiation. The authorities are:
   equivalent semantic gate;
 - HTTP framing, pending snapshot, and decision API: `openapi/agent-host/agent-host.yaml`;
 - asynchronous consumer projection: `asyncapi/events.yaml` v6 channel/message/operation;
-- external Runtime request/response source: frozen `yijie-codex` commit
-  `acf2da55d8a53175343aaf112e03368dfef9922a`, version `0.144.6`, stable API,
-  `experimentalApi=false`.
+- external Runtime request/response source: provisional pre-repair `yijie-codex` pin
+  `9ed24710d73f22a9b269092b8cdf2225199ea222`, tree
+  `984e0f5bb48aaa953ed3a329614d00e5905514fb`, version `0.144.6`, stable API,
+  `experimentalApi=false`. This pin and its artifact digests are placeholders until the final clean
+  Runtime repair is frozen and v4 is repinned; they are not current immutable authority.
 
 Producer is `yijie-agent-host`; known consumer is `yijie-desktop`. The Host is the only Runtime
 mapper and pending/decision authority. Desktop never responds directly to Runtime and never restores
@@ -27,32 +29,85 @@ The existing `compatibility/agent-host-runtime-v1.json` remains byte-identical a
 describe the default `read-only/never` Host projection. V6 separately activates `on-request` only
 inside the exact local/demo_fast FEAT-134/136/137 gate.
 
-The separate `compatibility/agent-host-runtime-approval-v6-v3.json` is the machine-readable source for
-the repaired mapper. The original `agent-host-runtime-approval-v6.json`, v2 projection, and their schemas remain
+The separate `compatibility/agent-host-runtime-approval-v6-v4.json` is the machine-readable source for
+the repaired producer and mapper. The original `agent-host-runtime-approval-v6.json`, v2 and v3
+projections, and their schemas remain
 byte-identical as the superseded source-first compatibility record, so the unpublished candidate
-does not narrow an existing schema. V3 adds the Runtime stable required `sandboxPermissions`
-provenance to v2 eligibility and replay identity while keeping response mapping, public v6 shape,
-raw-field exclusions, and the stable `serverRequest/resolved` acknowledgement unchanged.
+does not narrow an existing schema. V4 retains v3 stable `sandboxPermissions` provenance and adds
+only the default-off deterministic D4 producer composition. Response mapping, public v6 payload/API
+shape, raw-field exclusions, and stable `serverRequest/resolved` acknowledgement remain unchanged.
 The acknowledgement requires Runtime `requestId` and `threadId`; Host additionally binds the
 notification to the same Runtime process generation and compares RequestId by exact JSON type and
 value. A normal connection change within that process does not create a new identity generation.
 
-## Frozen phase-one policy
+## Candidate phase-one policy (PENDING Runtime freeze)
 
 V6 approval is usable only after Host/Desktop exact-pin conformance proves the
 `local + demo_fast + FEAT-134 + FEAT-136 + FEAT-137` gate matrix. Sandbox remains `read-only`;
 default, gate-off, and non-local profiles remain `approvalPolicy=never`.
 
-The deterministic producer is the pinned Runtime's existing exec-policy `Prompt` mechanism. Host
-manages an exact `rules/default.rules` entry only inside that gate for argv
+The deterministic producer composes the pinned Runtime's existing exec-policy `Prompt` mechanism
+with two default-off process gates. Host accepts
+`YIJIE_FEAT137_D4_DETERMINISTIC_PRODUCER_ENABLED=true` only after exact
+local/demo_fast FEAT-134/136/137 activation, strips ambient values, and injects child-only
+`YIJIE_FEAT137_DETERMINISTIC_APPROVAL_PRODUCER=1` exactly once. Runtime gate-on exposes only one
+strict, closed, zero-argument `exec_command` on the first sampling step, forces
+`tool_choice=required` and `parallel_tool_calls=false`, ignores Provider arguments, and constructs
+the fixed `use_default` action. After the first call, Runtime disables sampling, exposes no tools,
+and permits zero additional Provider requests for that TurnContext.
+Gate-off preserves the ordinary tools, `tool_choice=auto`, parallel setting, and Provider arguments
+byte-for-byte.
+
+The candidate also closes the managed Runtime surface before any contributor can widen it. Its
+exact MiniMax config disables `hooks`, `plugins`, `apps`, `tool_suggest`, and `shell_snapshot`;
+Runtime additionally prevents hook/plugin discovery and plugin hooks, returns an empty MCP
+composition before extension contributors are invoked, exposes zero configured/runtime/effective
+MCP servers and connector projections, and creates no shell snapshot. Request and stream retries are
+both exactly zero, automatic 401 recovery is disabled and produces zero Provider requests, and all
+four constraints are revalidated with the closed managed config immediately before Runtime spawn.
+These Provider retry/recovery limits are distinct from the already-closed decision POST rule, which
+also has no automatic retry.
+
+Remote-control closure is layered. The private Runtime gate is self-contained authority and forces
+`DisabledEphemeral` before initialize can resolve authentication, database state, or a persisted
+remote WebSocket preference. As defense in depth, Host strips ambient
+`CODEX_INTERNAL_APP_SERVER_REMOTE_CONTROL_DISABLED`, injects its only accepted value `1` exactly once
+into the exact D4 Runtime child, Runtime removes it after reading, and every spawned Command child
+scrubs it. Gate-off never injects this variable and retains the historical remote-control path.
+
+Gate-on provider transport logging is content-free for SSE and WebSocket data, payload telemetry
+callbacks are suppressed, and only content-free lifecycle telemetry remains. Raw tool-input deltas
+are not published; the admitted materialized item is replaced with the fixed Runtime-owned
+projection before `items_added`, LastResponse, rollout/session history, hooks, OTEL, or dispatch.
+Each response stream admits exactly one canonical plain `exec_command` Done with a nonempty call ID,
+while a turn-global compare-and-swap admits only one Provider request for the whole TurnContext,
+including steer/follow-up reuse. Empty IDs, namespaced/hidden/duplicate/non-command tool-like items
+fail closed; a post-tool or second-stream completion cannot start a follow-up request. Provider
+terminal and handler terminal each require the exact admitted lifecycle, and a fatal boundary
+returns before an unpolled tool future can request approval or run.
+
+The private Runtime gate is checked before prewarm, authentication, or TurnContext construction may
+produce side effects; each of those startup producer side-effect counts is exactly zero. Across the
+entire gate-on TurnContext, including steer/follow-up reuse, Provider requests are exactly one and
+have a hard maximum of one. Automatic pre-sampling compaction is disabled and creates zero requests;
+post-tool final-answer sampling is disabled and creates zero requests; automatic 401 recovery is
+also disabled and creates zero requests; follow-up Provider requests are zero. With the gate off,
+startup behavior, Provider request cardinality, post-tool sampling, 401 recovery, historical managed
+config bytes, provider
+tools/choice/parallel/arguments/output items, process environment and argv/shell behavior, extension
+contributors, transport logs/telemetry, automatic compaction, public v6/stable schemas, permissions,
+and approval decisions all retain their ordinary behavior.
+
+Host also manages an exact `rules/default.rules` entry only inside the authority gate for argv
 `["git", "rev-parse", "--is-inside-work-tree"]`, with `sandbox_permissions=use_default` and no
 sandbox override. Its fixed justification is `Confirm the one read-only repository check.`; the
 load-time match example is the exact argv and non-match examples are `git status` and
-`git show HEAD`. This producer does not elevate permissions, request `require_escalated`, modify
-Runtime, or widen the Host command allowlist. Runtime `prefix_rule` matching is prefix-based;
-`match/not_match` are rule-load examples, not runtime exact-match enforcement. Therefore the Host's
-closed wrapper plus exactly-one `CommandAction` admission remains the sole exact authority and must
-cancel any trailing-argument or otherwise widened request. Gate-off state has no Host-managed rule.
+`git show HEAD`. This producer does not elevate permissions, request `require_escalated`, or widen
+the Host command allowlist. Runtime `prefix_rule` matching is prefix-based; `match/not_match` are
+rule-load examples, not runtime exact-match enforcement. Exact authority is layered: Runtime first
+performs the turn-scoped atomic admission and pre-sink fixed replacement; Host then applies the
+closed wrapper plus exactly-one `CommandAction` allowlist and must cancel any trailing-argument or
+otherwise widened request. Neither gate is a public or production entrypoint.
 
 The only eligible Runtime request is stable `item/commandExecution/requestApproval` for:
 
@@ -204,7 +259,13 @@ without changing older paths/channels/messages/operations. The package remains t
 `0.7.0` candidate under the repository rule that an untagged candidate may accumulate reviewed
 compatible revisions; exact commit and digest are mandatory for downstream consumption.
 
-Rollout is revised Contracts immutable candidate → Host exact pin/closed mapper/pending authority → Desktop
+The v4 managed-surface, confidentiality, compaction, retry, layered-admission, and gate-off clauses
+remain `PENDING` until a clean final Runtime commit/tree and stable artifact replace the provisional
+pins and the freeze-required checks pass. Final evidence must run the focused compatibility suite
+with `YIJIE_REQUIRE_FEAT137_RUNTIME_ARTIFACT=1`; in that mode a missing Runtime binary or artifact
+manifest is a failure rather than an optional skip.
+
+Rollout is final Runtime immutable freeze → revised Contracts immutable candidate → Host exact pin/closed mapper/pending authority → Desktop
 exact pin/closed consumer → Host-to-Desktop conformance → separately authorized fresh real D4.
 Consumer-first activation is mandatory. Rollback disables FEAT-137 and negotiates v5, restoring the
 current `read-only/never` behavior without modifying Runtime.

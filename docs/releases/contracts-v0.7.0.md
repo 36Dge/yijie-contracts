@@ -1,9 +1,10 @@
 # Contracts v0.7.0 candidate
 
 Status: unpublished local candidate. FEAT-136 v5 and its Owner-authorized Runtime provenance repair
-remain intact; FEAT-137 adds an isolated v6 approval surface and a real-wire authority repair. This candidate is not
+remain intact; FEAT-137 adds an isolated v6 approval surface and a deterministic D4 producer target.
+The v4 Runtime authority is `candidate/PENDING` until final clean freeze, repin, and refreshed gates. This candidate is not
 tagged, pushed, published, deployed, promoted to a supported baseline, or enabled for
-public/production. FEAT-137 Host/Desktop implementation, exact repin/conformance, and D4 remain
+public/production. FEAT-137 Host/Desktop exact repin/conformance and authorized fresh D4 remain
 separate gates.
 
 ## FEAT-137 v6 source-first addendum
@@ -13,11 +14,11 @@ The untagged `0.7.0` candidate may accumulate reviewed compatible revisions unde
 Runtime compatibility manifest unchanged. V6 is isolated because v5 is a closed event/SDK surface.
 It adds `jsonschema/agent/session-event-v6.schema.json`, `yijie.events.v6`, an explicitly negotiated
 v6 SSE route, owner-only Host memory pending snapshot, one-shot decision endpoint, and the independent
-`compatibility/agent-host-runtime-approval-v6-v3.json` stable-sandbox-provenance mapper projection. V1-v5 sources and
+`compatibility/agent-host-runtime-approval-v6-v4.json` deterministic-producer mapper projection. V1-v5 sources and
 the current `agent-host-runtime-v1.json` remain byte-identical to Contracts baseline
 `87f94c9aa6d4848cb67aa8a1265bd21474edb0bb`.
-The prior approval-v6 source-first projection/schema also remains byte-identical; the additive v2
-file carries the repaired real-wire authority without narrowing that earlier schema.
+The prior approval-v6 source-first, v2, and v3 projection/schema pairs remain byte-identical. V4
+carries the default-off Runtime-owned producer authority without narrowing an earlier schema.
 
 The only action is fixed `git_repository_check`, with fixed primary `accept_once`, secondary
 `cancel_current_turn`, a 120-second Host-monotonic TTL, revision 1→2, and closed
@@ -29,9 +30,12 @@ Status-specific errors use fixed content-free messages, and a decision 200 is co
 Runtime `serverRequest/resolved` for the same generation, RequestId, and thread.
 
 The existing v1 compatibility manifest truthfully remains the default `read-only/never` projection.
-The independent approval manifest freezes the exact-gated `on-request` path using the pinned
-Runtime's existing exec-policy `Prompt` with `UseDefault`: no `require_escalated`, no sandbox
-override, and no Runtime patch. Runtime prefix matching only triggers the reverse request; Host exact
+The independent approval manifest freezes the exact-gated `on-request` path using a default-off
+Host Owner gate and child-only Runtime gate. The first sampling step exposes one strict, closed,
+zero-argument `exec_command` with required/non-parallel tool choice; Runtime ignores Provider
+arguments and constructs the fixed `UseDefault` read-only action, then exposes no tools after the
+first call. Gate-off Provider surfaces and arguments remain unchanged. The existing exec-policy
+`Prompt` still triggers the reverse request: no `require_escalated` or sandbox override. Host exact
 admission requires the pinned `/bin/zsh -lc` wrapper and one Unknown allowlisted `commandAction`.
 Actual `environmentId=local`; bounded `reason` is validated then discarded before authority,
 fingerprinting, logs, persistence, projection, or errors. Host/Desktop must repin this repair before
@@ -162,6 +166,48 @@ FEAT-137 approval uses a separate additive authority: Runtime
 `d82a33f683e554c10dd056a0101c26fd24477928e3f98ee3d9ef250b97395228`, admits only
 `use_default`, rejects both permission-widening enum values, and keeps the field out of public v6.
 
+The provisional pre-repair deterministic-producer pin is Runtime
+`9ed24710d73f22a9b269092b8cdf2225199ea222`, tree
+`984e0f5bb48aaa953ed3a329614d00e5905514fb`. Versioned
+`agent-host-runtime-approval-v6-v4.json` retains the same 267-file stable Schema tree and v3
+admission/replay semantics. The following patch/artifact values describe the superseded placeholder
+and must be replaced after the final clean Runtime freeze; they are not current immutable authority:
+patch 0004 SHA-256
+`b66583db09948fda038eaf056310d6116a37930e8b4d08e73d483c7ed1cf74e6`. Its stable binary and
+manifest SHA-256 values are respectively
+`896d303658a0978c3628f10e9e78f12139168be9508dd5f2abc658db186a828b` and
+`c428c0d06c9cf578e4bcfe53b328015977578469fc46e9461cb85f8c8bcd66fb`.
+
+The v4 semantic target closes five Host-managed Runtime features (`hooks`, `plugins`, `apps`,
+`tool_suggest`, and `shell_snapshot`) and requires Runtime to return an empty MCP/Connector surface
+before extension contributors or plugin/hook discovery. SSE and WebSocket wire logging is
+content-free, payload telemetry and raw tool-input deltas are suppressed, and the fixed admitted
+item is sanitized before all materialized or live sinks. Runtime turn-scoped atomic admission is the
+first layer; Host exact wire/action admission is the second. The final target refines Runtime
+admission into exactly one canonical Done per response stream plus one turn-global Provider-request
+compare-and-swap; post-tool or second-stream completion fails closed before follow-up. Managed
+Provider request and stream retries are both zero, automatic 401 recovery is disabled with zero
+recovery requests, and these closed values are revalidated before spawn.
+
+The Runtime private gate is self-contained remote-control authority and forces `DisabledEphemeral`
+before initialize can resolve authentication, database state, or persisted remote WebSocket
+preferences. Host additionally strips ambient
+`CODEX_INTERNAL_APP_SERVER_REMOTE_CONTROL_DISABLED`, injects exact value `1` only into the exact D4
+Runtime child, and scrubs it from Command children; Runtime removes it after reading. Gate-off does
+not inject it or change the historical path.
+
+The exact private gate is checked before prewarm, authentication, or TurnContext construction can
+produce side effects; each startup producer side-effect count is zero. The entire gate-on
+TurnContext, including steer/follow-up reuse, has exactly one Provider request and a hard maximum of
+one. Automatic pre-sampling compaction and post-tool final-answer sampling are disabled and each
+produces zero Provider requests; follow-up Provider requests are zero. Gate-off preserves historical
+startup behavior, Provider request cardinality, post-tool sampling, 401 recovery, managed config
+bytes, Provider surface and output,
+process environment/argv/shell, contributors, transport observability, automatic compaction,
+stable/public v6, permissions, and approval decisions. All these v4-only conclusions are `PENDING`
+until the final Runtime SHA/tree/artifact is frozen, Contracts is repinned, and the freeze-required
+artifact check passes.
+
 Activation is limited to `YIJIE_ENV=local` + `YIJIE_LOCAL_PROFILE=demo_fast` plus a dedicated
 FEAT-136 gate after Host and Desktop pin the new immutable Contracts commit and exact Runtime
 artifact. Reviewed Host/Desktop drafts exist, but their new pins and end-to-end conformance remain
@@ -235,10 +281,18 @@ Rust `1.95.0` release build and normal-EOF smoke passed, and canonical Schema ge
 267 files with tree SHA-256 `d82a33f683e554c10dd056a0101c26fd24477928e3f98ee3d9ef250b97395228`.
 D4 remained `NOT RUN`; real calls were 0.
 
-The Contracts-only reconciliation then passed focused v4/v5/runtime compatibility tests (22/22),
+The earlier fourth Runtime patch checkpoint added the default-off deterministic producer without
+changing stable app-server Schema or public v6. Its focused checks covered the then-current
+gate-off equality, zero-argument required/non-parallel exposure, Provider argument isolation, and
+one-shot no-tools behavior. That checkpoint is now superseded by the managed-surface,
+confidentiality, compaction, retry, and layered-admission repair; it is not evidence for the final
+v4 authority.
+
+The earlier Contracts-only reconciliation passed focused v4/v5/runtime compatibility tests (22/22),
 all non-archive Node tests (63/63), lint, Go tests/vet, TypeScript compilation, legacy v1 wire
 equality, both registered breaking baselines, and `git diff --check`. No wire source or generated SDK
-file changed.
+file changed. Those results predate this semantic slice and must be rerun after final Runtime repin
+and safe regeneration; the current v4 source status remains `candidate/PENDING`.
 
 The final fresh artifact manifest records binary SHA-256
 `4efe16d2848680752cf9aacf4c17741ab2eeb7415894a66c2bb03652b00a322d`, size `355676760`, and manifest

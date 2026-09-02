@@ -29,7 +29,7 @@ const [
     readFile("sdks/typescript/src/jsonschema/agent-session-event-v6.gen.ts", "utf8"),
     readFile("sdks/typescript/src/openapi/agent-host.gen.ts", "utf8"),
     readFile(
-      "sdks/typescript/src/jsonschema/compatibility-agent-host-runtime-approval-v6-v3.gen.ts",
+      "sdks/typescript/src/jsonschema/compatibility-agent-host-runtime-approval-v6-v4.gen.ts",
       "utf8",
     ),
     readFile("package.json", "utf8").then(JSON.parse),
@@ -150,7 +150,7 @@ test("v6 freezes the exact FEAT-137 action, decisions, TTL, authority, and Runti
     runtime_accept_mapping: "accept",
     runtime_cancel_mapping: "cancel",
     runtime_request_identity_exposed: false,
-    runtime_compatibility_authority: "compatibility/agent-host-runtime-approval-v6-v3.json",
+    runtime_compatibility_authority: "compatibility/agent-host-runtime-approval-v6-v4.json",
     runtime_replay_behavior: "reuse_same_opaque_request_without_ttl_reset",
     runtime_replay_conflict_behavior: "cancel_new_request_and_fail_closed_without_projection",
     second_pending_behavior: "cancel_new_request_and_fail_closed_without_projection",
@@ -317,11 +317,11 @@ test("v6 JSON, Proto, OpenAPI, AsyncAPI, package, and SDK authorities align", ()
   );
   assert.match(
     generatedIndex,
-    /export \* as AgentHostRuntimeApprovalCompatibilityV6V3 from "\.\/jsonschema\/compatibility-agent-host-runtime-approval-v6-v3\.gen\.js";/,
+    /export \* as AgentHostRuntimeApprovalCompatibilityV6V4 from "\.\/jsonschema\/compatibility-agent-host-runtime-approval-v6-v4\.gen\.js";/,
   );
   assert.doesNotMatch(
     generatedIndex,
-    /export \* from "\.\/jsonschema\/compatibility-agent-host-runtime-approval-v6-v3\.gen\.js";/,
+    /export \* from "\.\/jsonschema\/compatibility-agent-host-runtime-approval-v6-v4\.gen\.js";/,
   );
   assert.match(generatedEventV6, /request_id\?: never/);
   assert.match(generatedEventV6, /revision: 1/);

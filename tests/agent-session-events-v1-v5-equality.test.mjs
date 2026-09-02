@@ -24,6 +24,10 @@ const sourceDigests = {
     "ab5333f9ff1e76dc06827d72ff81f83701d234f91a2cbf6664f146247f24db60",
   "jsonschema/compatibility/agent-host-runtime-approval-v6-v2.schema.json":
     "55f5984910324446bbf9359c938885b4f1410d3b736aacad47fe3589dac58658",
+  "compatibility/agent-host-runtime-approval-v6-v3.json":
+    "9c196a0f6e34dfa917f9c3e6f27400307d991b81d37ba911c0f717d40642c90a",
+  "jsonschema/compatibility/agent-host-runtime-approval-v6-v3.schema.json":
+    "ef83669eee5ca57597f8bf643f0fb9d6acd7b4f5413ec980f594b5251013d2d1",
 };
 
 function sha256(value) {

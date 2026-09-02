@@ -1,6 +1,6 @@
 # Supported Contract Baselines
 
-## 当前状态（2026-08-30）
+## 当前状态（2026-09-02）
 
 ### 已发布支持基线
 
@@ -25,28 +25,54 @@
 
 - 版本：继续使用未发布 `0.7.0 candidate`；不创建新 tag、不发布，且所有下游必须固定完整
   commit/digest，不能只按版本号消费
-- 状态：Contracts real-wire authority repair candidate；已有 Host/Desktop reviewed candidate 必须在
+- 状态：Contracts deterministic-producer authority candidate；已有 Host/Desktop reviewed candidate 必须在
   本次新 Contracts immutable SHA 上重新 pin、冻结和完成 cross-repository conformance；fresh D4
-  尚未授权/执行
+  已由 Owner 单独授权但尚未执行，且不得早于下游冻结
 - contract impact：`semantic`；v5 是 closed union，因此新增显式协商 v6，v1-v5 保持不变
 - 权威源：AgentSessionEventV6 JSON Schema、Protobuf v6、AsyncAPI v6 channel/message/operation、
   Agent Host `/v6/.../events`、owner-only pending snapshot 与 one-shot decision OpenAPI
 - producer/consumer：`yijie-agent-host` → `yijie-desktop`；Host 是唯一 Runtime mapper、pending
   和 decision authority
-- Runtime：approval compatibility 冻结 `yijie-codex@acf2da55d8a53175343aaf112e03368dfef9922a` / `0.144.6` / 267
-  schemas / `experimentalApi=false`；`agent-host-runtime-v1.json` 保持逐字节不变并继续描述当前
-  `read-only/never` 默认投影；独立 `agent-host-runtime-approval-v6-v3.json` 冻结 exact-gated
-  `on-request` approval mapper和 stable `sandboxPermissions=use_default` admission；原 approval-v6
-  与 v2 manifest/schema 保持逐字节不变，v3 为 additive provenance authority
+- Runtime：approval compatibility 的旧占位 pin 为
+  `yijie-codex@9ed24710d73f22a9b269092b8cdf2225199ea222` /
+  tree `984e0f5bb48aaa953ed3a329614d00e5905514fb` / `0.144.6` / 267
+  schemas / `experimentalApi=false`；该 SHA/tree/artifact 已不代表最终 repair authority，必须由
+  clean Runtime freeze 后的完整 identity 替换。`agent-host-runtime-v1.json` 保持逐字节不变并继续
+  描述当前 `read-only/never` 默认投影；独立
+  `agent-host-runtime-approval-v6-v4.json` 当前为 `candidate/PENDING`，描述 exact-gated
+  `on-request` deterministic producer、mapper 和 stable `sandboxPermissions=use_default`
+  admission；原 approval-v6、v2 与 v3 manifest/schema 保持逐字节不变
 - 新语义：固定 `git_repository_check`、Host opaque approval identity、primary `accept_once` /
   secondary `cancel_current_turn`、120 秒 TTL、Host memory pending snapshot、revision 1→2、
   generation-bound decision、Runtime replay reuse 与 closed requested/resolved outcomes/errors
 - Runtime 映射：accept once 只发送 stable `accept`；cancel current turn 与 TTL 只发送 stable
   `cancel`；Runtime/Item/Turn cleanup 先胜时 `resolved_elsewhere` 且不再响应；HTTP 200 等待相同
   generation/RequestId/thread 的 stable `serverRequest/resolved`
-- producer/admission：使用 pinned Runtime 既有 exec-policy `Prompt` + `UseDefault`，不使用
-  `require_escalated` 且批准后仍为 read-only；Runtime rule 为 prefix trigger，Host 必须用 exact
-  `/bin/zsh -lc` wrapper 与唯一 allowlisted Unknown `commandAction` 执行 closed admission
+- producer/admission：默认关闭的 Host Owner gate 只在 exact local/demo_fast + FEAT-134/136/137
+  后向 Runtime child 注入私有 gate；首步唯一 strict/closed 零参数 `exec_command`、
+  required/non-parallel，Runtime 忽略 Provider arguments 并构造固定
+  `UseDefault` 只读动作，首 call 后 no-tools/no-sampling。Runtime 每个 response stream 只接纳一个
+  canonical plain/nonempty-call-id Done，并以 turn-global CAS 保证整个 TurnContext 仅有一个
+  Provider request；post-tool/second-stream completion 在 follow-up 前 fail closed。Host 随后校验
+  exact wrapper 与唯一 allowlisted Unknown `commandAction`，三层共同构成 closed admission authority
+- managed surface：Host exact MiniMax config 固定
+  `hooks/plugins/apps/tool_suggest/shell_snapshot=false`，Runtime 在 contributor/discovery 前关闭
+  hook/plugin/MCP/Connector/snapshot 表面；configured/runtime/effective MCP 与 Connector 投影均为
+  0。Runtime private gate 自身强制 `DisabledEphemeral`；Host ambient strip 后只向 exact D4 Runtime
+  child 注入 `CODEX_INTERNAL_APP_SERVER_REMOTE_CONTROL_DISABLED=1`，Runtime 读取后移除且 Command
+  child scrub
+- Provider privacy/retry：gate-on SSE/WebSocket wire logging 与 lifecycle telemetry content-free，
+  transport payload telemetry 和 raw tool-input delta 被抑制；`request_max_retries=0`、
+  `stream_max_retries=0`，automatic 401 recovery 禁用且额外 request 为 0，spawn 前精确重验。
+  这与 decision POST 不自动重试是不同边界
+- Provider call：私有 gate 在 prewarm/authentication/TurnContext producer side effect 前生效，
+  三类 side effect 均为 0；整个 gate-on TurnContext（含 steer/follow-up）Provider request 精确且
+  hard max 为 1，follow-up 为 0，automatic compaction 与 post-tool final sampling 均禁用且各产生
+  0 次额外 request
+- gate-off parity：managed config bytes、Provider tools/choice/parallel/arguments/output、process
+  env/argv/shell、remote-control（不注入）、extension contributors、SSE/WebSocket logs/telemetry、
+  startup producer、Provider cardinality、automatic compaction、post-tool final sampling、401
+  recovery、public v6/stable schema 以及 permissions/approval decisions 均逐维保持普通历史路径
 - real wire：`environmentId` 必须为精确 `local`；`reason` 只允许 absent/null 或不含 NUL、
   最多 512 UTF-8 bytes，并在 Host 校验后立即丢弃，不进入 fingerprint/log/storage/projection
 - sandbox provenance：stable wire 必须带 `sandboxPermissions`；只接收 `use_default`，拒绝
@@ -60,7 +86,7 @@
   exact pin/closed consumer → conformance → Owner separately-authorized D4；consumer ready 前不得发出 v6
 - 回滚：关闭 FEAT-137 并协商 v5，保持现有 `read-only/never`；不修改 Runtime
 - exclusions：FileChange/Diff、一般权限/MCP/requestUserInput、decline/session approval、
-  network/write/sandbox expansion、Runtime patch 与 production approval
+  network/write/sandbox expansion、进一步 Runtime patch 与 production approval
 
 详见 [`agent-session-events-v6.md`](agent-session-events-v6.md)。
 

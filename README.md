@@ -78,11 +78,27 @@ AgentSessionEventV6、owner-only pending snapshot 与 one-shot decision API。V6
 `accept_once/cancel_current_turn`、120 秒 TTL 与 closed stable errors；Runtime RequestId、command、
 cwd、reason、permission/amendment、`availableDecisions` 和 raw wire 不进入 Yijie contract。当前
 Runtime v1 compatibility manifest 仍逐字节保持 `read-only/never`。独立的
-`compatibility/agent-host-runtime-approval-v6-v3.json` 冻结一个不提升权限的 Runtime-owned
-exec-policy `Prompt` producer、pinned `/bin/zsh -lc` transport wrapper、唯一 allowlisted
+`compatibility/agent-host-runtime-approval-v6-v4.json` 当前是等待最终 Runtime clean freeze/repin
+的 `candidate/PENDING`，描述一个默认关闭、仅由 exact Owner-run D4 gate 组成的 Runtime-owned
+zero-argument producer；首步只暴露 strict `exec_command`，由 Runtime 构造固定只读参数，随后
+禁用 sampling。候选在 prewarm、authentication 或 TurnContext 构造产生任何 producer side
+effect 前检查私有 Runtime gate，三类 side effect 均为 0；整个 gate-on TurnContext（含
+steer/follow-up）Provider request 精确且硬上限为 1，automatic compaction、post-tool final
+sampling、follow-up 与 automatic 401 recovery 各产生 0 次额外 request，并固定 Provider request/stream
+retries 为 0。候选进一步关闭 hooks/plugins/apps/tool suggestion/shell snapshot、MCP/Connector 与
+extension contributor 表面；Runtime 私有 gate 自身强制 `DisabledEphemeral`，Host 仅向 exact D4
+Runtime child 注入 `CODEX_INTERNAL_APP_SERVER_REMOTE_CONTROL_DISABLED=1` 作为纵深防御，并从
+Command child scrub。SSE/WebSocket/telemetry 同时被约束为 content-free。它继续通过
+exec-policy `Prompt`、pinned
+`/bin/zsh -lc` transport wrapper、唯一 allowlisted
 `commandAction` business authority、bounded validate-then-discard `reason`、generation-scoped
 replay、stable 必填 `sandboxPermissions=use_default`、120 秒 Host-monotonic TTL、accept/cancel 与
-`serverRequest/resolved` 语义，不改变当前实现 manifest。见
+`serverRequest/resolved` 语义。Runtime per-stream canonical Done admission、turn-global Provider
+request CAS 与 Host closed allowlist 共同
+构成 layered authority；gate-off 不注入 remote-control env，并对 managed config、startup
+producer、Provider request cardinality、post-tool sampling、401 recovery、process、contributors、
+transport、compaction、public v6 与 permission/decision 语义逐维保持历史 parity。旧 Runtime
+SHA/tree/artifact 只作为待替换占位，不能作为当前 immutable authority。见
 [`docs/agent-session-events-v6.md`](docs/agent-session-events-v6.md)。
 
 跨仓契约变更必须遵循
