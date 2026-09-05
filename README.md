@@ -1,5 +1,7 @@
 # yijie-contracts
 
+FEAT-137 已由 Owner 永久终止，未完成验收且不再实施。其 v6 审批材料仅为历史记录；当前消费者停用该能力。退役权威与保留的 v1-v5/Runtime 基线见 [FEAT-137 退役记录](docs/retirements/FEAT-137.md)。
+
 多仓 API 契约中心，负责 OpenAPI、Protobuf、AsyncAPI、JSON Schema、Runtime 兼容矩阵和 SDK 生成。
 
 当前 supported 版本 `contracts-v0.2.0` 提供 Agent Host HTTP/SSE OpenAPI、严格的 8 类

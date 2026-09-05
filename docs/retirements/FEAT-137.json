@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "feature_id": "FEAT-137",
+  "status": "terminated",
+  "permanent": true,
+  "owner": "段成威",
+  "confirmed_on": "2026-09-05",
+  "reason": "Owner 因实现投入时间过长决定永久终止；未完成验收，未来不再实施或重启。",
+  "acceptance_passed": false,
+  "contract_impact": "breaking",
+  "scope": "Withdrawal of the unreleased opt-in local/demo_fast v6 Command approval capability. No v1-v5 wire or persistent schema removal.",
+  "activation": {
+    "command_approval": false,
+    "deterministic_approval_producer": false,
+    "approval_ui": false,
+    "approval_policy": "never",
+    "sandbox": "read-only",
+    "legacy_enable_requests": "reject_before_runtime_start"
+  },
+  "runtime": {
+    "repository_commit": "b2b20e2fc4a0c94834f34d8cc459e488a1b56277",
+    "artifact_directory": "feat-136-b2b20e2fc4a0",
+    "binary_sha256": "4efe16d2848680752cf9aacf4c17741ab2eeb7415894a66c2bb03652b00a322d",
+    "binary_size_bytes": 355676760,
+    "manifest_sha256": "1cfa2e0a139b2213f4d29b1efeed71d4810110ac865f0bcbd931ff33b0062c1b",
+    "schema_tree_sha256": "82ee9de771cf1d41bac16d87380f1121e7794107aa3aa526ad702d5d1bf7afe1",
+    "patch_count": 2,
+    "authority": "compatibility/agent-host-runtime-v1.json at the preserved FEAT-136 baseline; existing canonical artifact, no binary replacement or rebuild"
+  },
+  "preserve": ["v1-v5 contracts and generated consumers", "existing history readers", "data and redaction safeguards", "FEAT-151 and other retained work"],
+  "historical_only": ["approval v6 contracts/projections", "FEAT-137 D4 producer patches", "uncompleted verification evidence"],
+  "consumers": ["yijie-agent-host", "yijie-desktop"],
+  "order": ["freeze retirement authority", "disable consumers and pin the preserved gate-off Runtime", "verify normal lifecycle without model calls", "remove unused FEAT-137 artifact"]
+}
