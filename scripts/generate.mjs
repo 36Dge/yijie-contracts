@@ -152,6 +152,18 @@ async function preserveAgentHostGoCompatibility(goOutput) {
   await writeFile(goOutput, compatible);
 }
 
+// Focused local FEAT-152 generation avoids unrelated legacy fixture families.
+if (process.argv.includes("--runtime-permissions-only")) {
+  const spec = "openapi/runtime-permissions/runtime-permissions.yaml";
+  const out = "sdks/go/openapi/runtime-permissions";
+  await mkdir(path.join(root, out), { recursive: true });
+  await mkdir(path.join(root, "sdks/typescript/src/openapi"), { recursive: true });
+  await run("pnpm", ["exec", "openapi-typescript", spec, "--redocly", "openapi-typescript.redocly.yaml", "-o", "sdks/typescript/src/openapi/runtime-permissions.gen.ts"]);
+  await run("pnpm", ["exec", "redocly", "bundle", spec, "--output", `${out}/source.bundle.yaml`]);
+  await run("go", ["tool", "oapi-codegen", "-generate", "types,client", "-package", "runtimepermissions", "-o", `${out}/client.gen.go`, `${out}/source.bundle.yaml`]);
+  process.exit(0);
+}
+
 if (!process.argv.includes("--skip-skill-fixture-generation")) {
   await run("node", ["scripts/generate-skill-bundle-fixtures.mjs"]);
 }
@@ -172,6 +184,7 @@ const openapiSpecs = [
   ["admin", "adminapi", "openapi/admin/admin.yaml"],
   ["internal", "internalapi", "openapi/internal/internal.yaml"],
   ["agent-host", "agenthostapi", "openapi/agent-host/agent-host.yaml"],
+  ["runtime-permissions", "runtimepermissions", "openapi/runtime-permissions/runtime-permissions.yaml"],
 ];
 
 for (const [name, goPackage, spec] of openapiSpecs) {
@@ -188,6 +201,11 @@ for (const [name, goPackage, spec] of openapiSpecs) {
     "-o",
     tsOutput,
   ]);
+  let goSpec = spec;
+  if (name === "runtime-permissions") {
+    goSpec = "sdks/go/openapi/runtime-permissions/source.bundle.yaml";
+    await run("pnpm", ["exec", "redocly", "bundle", spec, "--output", goSpec]);
+  }
   await run("go", [
     "tool",
     "oapi-codegen",
@@ -197,7 +215,7 @@ for (const [name, goPackage, spec] of openapiSpecs) {
     goPackage,
     "-o",
     goOutput,
-    spec,
+    goSpec,
   ]);
   if (name === "agent-host") {
     // Preserve the published v2 enum identifier and keep legacy client interfaces

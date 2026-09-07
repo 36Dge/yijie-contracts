@@ -1,0 +1,177 @@
+openapi: 3.0.3
+info:
+  title: Yijie local Runtime permissions
+  version: 0.1.0
+  description: FEAT-152 local-only thin adapter to native Codex approval
+    callbacks. Legacy v1-v6 remain unchanged.
+servers:
+  - url: http://127.0.0.1:9130
+security:
+  - LocalBearer: []
+paths:
+  /v1/agent-sessions/{agent_session_id}/permission-turns:
+    parameters: &a1
+      - &a2
+        name: agent_session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: startPermissionTurn
+      summary: Start a turn with an explicit saved task permission mode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PermissionTurnRequest"
+      responses:
+        "202":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: ../agent-host/agent-host.yaml#/components/schemas/StartTurnResponse
+        "400":
+          description: Invalid request
+        "409":
+          description: Active turn or operation conflict
+        "503":
+          description: Runtime unavailable
+  /v1/agent-sessions/{agent_session_id}/runtime-approvals:
+    parameters: *a1
+    get:
+      operationId: listRuntimeApprovals
+      summary: Read bounded live callback state for this task
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuntimeApprovalSnapshot"
+        "404":
+          description: Unknown session
+  /v1/agent-sessions/{agent_session_id}/runtime-approvals/{approval_id}:
+    parameters:
+      - *a2
+      - name: approval_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: decideRuntimeApproval
+      summary: Approve once or reject the exact original Runtime callback
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RuntimeApprovalDecision"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuntimeApproval"
+        "400":
+          description: Invalid decision
+        "404":
+          description: Unknown session or callback
+        "409":
+          description: Already decided differently or unavailable
+        "503":
+          description: Runtime response unconfirmed
+components:
+  securitySchemes:
+    LocalBearer:
+      type: http
+      scheme: bearer
+  schemas:
+    PermissionMode:
+      type: string
+      enum:
+        - ask
+        - auto
+        - full
+      description: ask = on-request/user/workspace-write; auto =
+        on-request/auto_review/workspace-write; full =
+        never/user/danger-full-access. Native OS restrictions still apply.
+    PermissionTurnRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - permission_mode
+        - turn
+      properties:
+        permission_mode:
+          $ref: "#/components/schemas/PermissionMode"
+        turn:
+          $ref: ../agent-host/agent-host.yaml#/components/schemas/StartTurnV2Request
+    RuntimeApprovalDecision:
+      type: object
+      additionalProperties: false
+      required:
+        - decision
+      properties:
+        decision:
+          type: string
+          enum:
+            - approve_once
+            - reject
+    RuntimeApproval:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - kind
+        - summary
+        - scope
+        - reason
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+          enum:
+            - command
+            - file_change
+            - permissions
+            - auto_review
+        summary:
+          type: string
+          maxLength: 4096
+          description: Display-only escaped and redacted operation summary
+        scope:
+          type: string
+          maxLength: 4096
+          description: Display-only affected command cwd, files or network target
+        reason:
+          type: string
+          maxLength: 4096
+          description: Redacted Runtime reason or automatic assessment
+        status:
+          type: string
+          enum:
+            - pending
+            - approved
+            - rejected
+            - unavailable
+    RuntimeApprovalSnapshot:
+      type: object
+      additionalProperties: false
+      required:
+        - requests
+      properties:
+        requests:
+          type: array
+          maxItems: 128
+          items:
+            $ref: "#/components/schemas/RuntimeApproval"
