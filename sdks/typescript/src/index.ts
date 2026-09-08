@@ -3,6 +3,7 @@ export * as PublicApi from "./openapi/public.gen.js";
 export * as AdminApi from "./openapi/admin.gen.js";
 export * as InternalApi from "./openapi/internal.gen.js";
 export * as AgentHostApi from "./openapi/agent-host.gen.js";
+export type * as NativeConversation from "./openapi/native-conversation.gen.js";
 export * as CommonV1 from "./protobuf/yijie/common/v1/common_pb.js";
 export * as AgentSessionEventsV1 from "./protobuf/yijie/events/v1/agent_session_pb.js";
 export * as AgentSessionEventsV2 from "./protobuf/yijie/events/v2/agent_session_pb.js";

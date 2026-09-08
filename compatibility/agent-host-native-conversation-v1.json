@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "feature": "FEAT-132",
+  "runtime_commit": "b2b20e2fc4a0c94834f34d8cc459e488a1b56277",
+  "runtime_version": "0.144.6",
+  "experimental_api": false,
+  "runtime_schema_tree_sha256": "82ee9de771cf1d41bac16d87380f1121e7794107aa3aa526ad702d5d1bf7afe1",
+  "runtime_methods": [
+    "thread/read",
+    "thread/resume",
+    "thread/start",
+    "turn/start",
+    "turn/interrupt"
+  ],
+  "runtime_notifications": [
+    "item/started",
+    "item/completed",
+    "item/agentMessage/delta",
+    "item/reasoning/textDelta",
+    "item/commandExecution/outputDelta",
+    "turn/started",
+    "turn/completed",
+    "turn/plan/updated",
+    "error",
+    "warning",
+    "item/reasoning/summaryTextDelta",
+    "item/reasoning/summaryPartAdded"
+  ],
+  "history_policy": "native Legacy; partial; no live/history item identity inference; observed native terminal must not be overwritten by rebuilt history"
+}

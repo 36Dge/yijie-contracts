@@ -32,6 +32,7 @@ const generateArgs = ["scripts/generate.mjs"];
 if (process.argv.includes("--skip-skill-fixture-generation")) {
   generateArgs.push("--skip-skill-fixture-generation");
 }
+if (process.argv.includes("--native-conversation-only")) generateArgs.push("--native-conversation-only");
 await exec("node", generateArgs, { maxBuffer: 20_000_000 });
 const after = await snapshotAll();
 const changed = new Set([...before.keys(), ...after.keys()]);

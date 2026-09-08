@@ -8,7 +8,8 @@ for spec in \
   openapi/public/public.yaml \
   openapi/admin/admin.yaml \
   openapi/internal/internal.yaml \
-  openapi/agent-host/agent-host.yaml; do
+  openapi/agent-host/agent-host.yaml \
+  openapi/native-conversation/native-conversation.yaml; do
   if git cat-file -e "$base_ref:$spec" 2>/dev/null; then
     base_file="$(mktemp)"
     trap 'rm -f "$base_file"' EXIT

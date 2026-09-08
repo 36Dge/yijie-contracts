@@ -34,7 +34,9 @@
     "check:v1-wire": "node scripts/check-v1-wire-equality.mjs",
     "build": "pnpm generate && tsc -p tsconfig.json",
     "build:safe": "pnpm generate:safe && tsc -p tsconfig.json",
-    "pack:sdk": "pnpm build && pnpm pack --pack-destination .artifacts"
+    "pack:sdk": "pnpm build && pnpm pack --pack-destination .artifacts",
+    "generate:native": "node scripts/generate.mjs --native-conversation-only",
+    "check-generated:native": "node scripts/check-generated.mjs --native-conversation-only"
   },
   "devDependencies": {
     "@bufbuild/buf": "1.71.0",

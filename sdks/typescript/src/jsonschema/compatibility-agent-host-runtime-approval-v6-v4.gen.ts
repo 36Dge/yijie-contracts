@@ -4,7 +4,7 @@ export interface AgentHostRuntimeApprovalCompatibilityV6V4 {
 schema_version: 4
 projection_id: "agent-host-runtime-approval-v6-v4"
 contracts_version: "0.7.0"
-status: "deterministic_d4_producer_authority"
+status: "deterministic_d4_producer_candidate_pending_runtime_freeze"
 runtime: Runtime
 activation: Activation
 reverse_request: ReverseRequest
@@ -33,6 +33,7 @@ binary_sha256: "896d303658a0978c3628f10e9e78f12139168be9508dd5f2abc658db186a828b
 manifest_sha256: "c428c0d06c9cf578e4bcfe53b328015977578469fc46e9461cb85f8c8bcd66fb"
 patch_0004_sha256: "b66583db09948fda038eaf056310d6116a37930e8b4d08e73d483c7ed1cf74e6"
 }
+freeze_status: "pending_final_clean_runtime_commit_tree_and_artifact_repin"
 }
 export interface Activation {
 exposure: "local"
@@ -52,7 +53,7 @@ not_match: [["git","status"],["git","show","HEAD"]]
 authority: "validation_only_not_runtime_exactness"
 }
 runtime_match_semantics: "prefix"
-exact_admission_authority: "host_wire_and_command_action_allowlist"
+exact_admission_authority: "runtime_turn_scoped_atomic_admission_then_host_wire_and_command_action_allowlist"
 owner_gate: {
 host_environment: "YIJIE_FEAT137_D4_DETERMINISTIC_PRODUCER_ENABLED"
 enabled_value: "true"
@@ -81,16 +82,132 @@ runtime_owned_arguments: {
 command: "git rev-parse --is-inside-work-tree"
 sandbox_permissions: "use_default"
 }
+turn_admission: {
+scope: "same_turn_context_including_steer_and_follow_up"
+accepted_item: "first_exact_plain_exec_command_done_with_nonempty_call_id"
+rejected_items: ["empty_call_id","namespaced_exec_command","hidden_tool_like_item","duplicate_tool_like_item","non_exec_command_tool_like_item"]
+stream_admission: "exactly_one_canonical_done_per_response_stream"
+turn_provider_request_admission: "single_winner_compare_and_swap_for_the_entire_turn_context"
+post_tool_or_second_stream_completion: "fail_closed_before_follow_up_provider_request"
+sanitization: "replace_provider_arguments_with_runtime_owned_arguments_before_any_sink"
+provider_terminal: "requires_exactly_one_admitted_done"
+handler_terminal: "requires_exactly_one_started_and_one_finished_lifecycle"
+fatal_boundary: "return_before_unpolled_tool_future_can_request_approval_or_execute"
+}
+startup_side_effect_policy: {
+scope: "startup_prewarm_authentication_and_turn_context_construction"
+prewarm_producer_side_effects: 0
+authentication_producer_side_effects: 0
+turn_context_producer_side_effects: 0
+cloud_config_loader: {
+installations: 0
+spawns: 0
+loads: 0
+outbound_requests: 0
+}
+otel: {
+exporter: "None"
+provider: "None"
+outbound_requests: 0
+}
+analytics: {
+client: "disabled"
+outbound_requests: 0
+}
+total_startup_outbound_requests: 0
+enforcement: "runtime_child_gate_checked_before_any_producer_side_effect"
+}
 after_first_exec_call: {
+sampling: "disabled"
 tools: []
-tool_choice: "auto"
 parallel_tool_calls: false
+provider_requests: 0
+}
+managed_runtime_surface: {
+managed_config_features: {
+hooks: false
+plugins: false
+apps: false
+tool_suggest: false
+shell_snapshot: false
+}
+hook_construction: "empty_before_plugin_discovery"
+plugin_discovery: "not_started"
+plugin_hooks: "disabled"
+remote_plugins: "disabled"
+extension_contributors: "not_invoked_before_empty_mcp_return"
+configured_mcp_servers: 0
+runtime_mcp_servers: 0
+effective_mcp_servers: 0
+connector_projections: 0
+plugins_available: false
+shell_snapshot_capture: "disabled_before_file_creation"
+app_server_remote_control: {
+runtime_private_gate_authority: "DisabledEphemeral"
+runtime_closure: "before_initialize_auth_database_and_remote_websocket_resolution"
+host_defense_in_depth_environment: "CODEX_INTERNAL_APP_SERVER_REMOTE_CONTROL_DISABLED"
+host_enabled_value: "1"
+host_ambient_handling: "strip_before_exact_d4_runtime_child_injection"
+host_injection: "runtime_child_only_exactly_once_after_owner_gate"
+runtime_environment_consumption: "remove_after_exact_read"
+command_child_handling: "always_scrub"
+}
+}
+provider_wire_confidentiality: {
+sse_wire_logging: "content_free"
+websocket_wire_logging: "content_free"
+transport_payload_telemetry: "suppressed"
+lifecycle_telemetry: "content_free_only"
+live_tool_input_deltas: "suppressed"
+materialized_projection: "runtime_owned_fixed_item_only"
+sink_order: "sanitized_before_items_added_last_response_rollout_session_history_hooks_otel_and_dispatch"
+stable_fatal_errors: "closed_content_free"
+}
+provider_call_policy: {
+scope: "entire_gate_on_turn_context_including_steer_and_follow_up"
+exact_turn_provider_requests: 1
+hard_max_turn_provider_requests: 1
+follow_up_provider_requests: 0
+automatic_pre_sampling_compaction: "disabled_when_runtime_child_gate_enabled"
+automatic_compaction_provider_requests: 0
+post_tool_final_sampling: "disabled"
+post_tool_final_sampling_provider_requests: 0
+}
+managed_provider_retry_policy: {
+authority: "host_managed_minimax_config"
+request_max_retries: 0
+stream_max_retries: 0
+automatic_401_recovery: "disabled"
+automatic_401_recovery_provider_requests: 0
+validation: "exact_closed_config_before_runtime_spawn"
+decision_post_retry: "separate_and_disabled"
 }
 sandbox_permissions: "use_default"
 sandbox_override: "forbidden"
 permission_escalation: false
 installation_scope: "exact_local_demo_fast_feat_134_feat_136_feat_137"
-gate_off_state: "tools_choice_parallel_and_provider_arguments_byte_identical"
+gate_off_parity: {
+managed_config_bytes: "historical_byte_identical"
+managed_provider_retry_config: "historical_byte_identical"
+provider_tools: "byte_identical"
+tool_choice: "byte_identical"
+parallel_tool_calls: "byte_identical"
+provider_arguments: "byte_identical"
+provider_output_items: "byte_identical"
+process_environment: "byte_identical"
+process_argv_and_shell: "byte_identical"
+extension_contributors: "ordinary_path_unchanged"
+app_server_remote_control: "historical_path_no_injection_or_change"
+startup_outbound_surfaces: "ordinary_path_unchanged"
+sse_websocket_logging_and_telemetry: "ordinary_path_unchanged"
+startup_prewarm_authentication_and_turn_context: "ordinary_path_unchanged"
+turn_provider_request_cardinality: "ordinary_path_unchanged"
+automatic_compaction: "ordinary_path_unchanged"
+post_tool_final_sampling: "ordinary_path_unchanged"
+automatic_401_recovery: "ordinary_path_unchanged"
+public_v6_and_stable_schema: "unchanged"
+permissions_and_approval_decisions: "unchanged"
+}
 }
 }
 export interface ReverseRequest {

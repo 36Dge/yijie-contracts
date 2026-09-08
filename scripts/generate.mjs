@@ -152,6 +152,17 @@ async function preserveAgentHostGoCompatibility(goOutput) {
   await writeFile(goOutput, compatible);
 }
 
+// Focused FEAT-132 generation never visits unrelated legacy fixture families.
+if (process.argv.includes("--native-conversation-only")) {
+  const spec = "openapi/native-conversation/native-conversation.yaml";
+  const out = "sdks/go/openapi/native-conversation";
+  await mkdir(path.join(root, out), { recursive: true });
+  await mkdir(path.join(root, "sdks/typescript/src/openapi"), { recursive: true });
+  await run("pnpm", ["exec", "openapi-typescript", spec, "--redocly", "openapi-typescript.redocly.yaml", "-o", "sdks/typescript/src/openapi/native-conversation.gen.ts"]);
+  await run("go", ["tool", "oapi-codegen", "-generate", "types,client,skip-prune", "-package", "nativeconversation", "-o", `${out}/client.gen.go`, spec]);
+  process.exit(0);
+}
+
 // Focused local FEAT-152 generation avoids unrelated legacy fixture families.
 if (process.argv.includes("--runtime-permissions-only")) {
   const spec = "openapi/runtime-permissions/runtime-permissions.yaml";
@@ -185,6 +196,7 @@ const openapiSpecs = [
   ["internal", "internalapi", "openapi/internal/internal.yaml"],
   ["agent-host", "agenthostapi", "openapi/agent-host/agent-host.yaml"],
   ["runtime-permissions", "runtimepermissions", "openapi/runtime-permissions/runtime-permissions.yaml"],
+  ["native-conversation", "nativeconversation", "openapi/native-conversation/native-conversation.yaml"],
 ];
 
 for (const [name, goPackage, spec] of openapiSpecs) {
@@ -210,7 +222,7 @@ for (const [name, goPackage, spec] of openapiSpecs) {
     "tool",
     "oapi-codegen",
     "-generate",
-    "types,client",
+    name === "native-conversation" ? "types,client,skip-prune" : "types,client",
     "-package",
     goPackage,
     "-o",
@@ -297,6 +309,7 @@ await writeFile(
     'export * as AdminApi from "./openapi/admin.gen.js";',
     'export * as InternalApi from "./openapi/internal.gen.js";',
     'export * as AgentHostApi from "./openapi/agent-host.gen.js";',
+    'export type * as NativeConversation from "./openapi/native-conversation.gen.js";',
     'export * as CommonV1 from "./protobuf/yijie/common/v1/common_pb.js";',
     'export * as AgentSessionEventsV1 from "./protobuf/yijie/events/v1/agent_session_pb.js";',
     'export * as AgentSessionEventsV2 from "./protobuf/yijie/events/v2/agent_session_pb.js";',

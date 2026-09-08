@@ -1,5 +1,9 @@
 # Supported Contract Baselines
 
+## FEAT-132 2026-09-08 未发布本地候选
+
+新增 native-conversation v1 / SSE v7。来源、消费者、两个固定比较基线与发布/回滚边界见 [native-conversation-v1.md](native-conversation-v1.md)。工作树摘要不是不可变发布 pin；本次不发布、不部署，不继承历史 D4。FEAT-137 的历史候选段落不改变其现有永久退役状态。
+
 ## 当前状态（2026-09-02）
 
 ### 已发布支持基线

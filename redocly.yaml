@@ -7,6 +7,8 @@ apis:
     root: ./openapi/internal/internal.yaml
   agent-host@v1:
     root: ./openapi/agent-host/agent-host.yaml
+  native-conversation@v1:
+    root: ./openapi/native-conversation/native-conversation.yaml
   events@v1:
     root: ./asyncapi/events.yaml
 
