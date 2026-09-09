@@ -1,6 +1,6 @@
 # FEAT-132 Native Conversation v1 / SSE v7
 
-2026-09-08，未提交的本地候选。Owner：段成威 / Agent Runtime Team；producer：yijie-agent-host；consumer：yijie-desktop。contract-impact=breaking。
+2026-09-09，已固定真实提交的本地开发版本；未发布SDK版本或部署。Owner：段成威 / Agent Runtime Team；producer：yijie-agent-host；consumer：yijie-desktop。contract-impact=breaking。
 
 最终按 breaking 管理，因为删除合成生命周期后不能继续承诺旧 Desktop 的语义兼容；必须版本化接入并完成消费者迁移。自动结构检查通过不降低该分类。
 
@@ -12,13 +12,13 @@ Native ID/phase/status/最终内容是 Codex 事实。字段投影失败属于 a
 
 序列仅用于传输去重。turn/completed 不提供完整 Item 集合；冷历史 partial。不同来源的 Item ID 不允许客户端猜测 join。HTTP 沿用 loopback bearer、no-store、关联验证和现有错误 envelope。
 
-生成：`pnpm generate:native`。同步本地候选：`node scripts/sync-native-conversation.mjs`；复核：`pnpm check-generated:native` 与 sync 的 `--check`。正式发布前须改为真实 immutable commit/tag 与 consumer pin；当前 candidate manifest 明确 published=false，不是发布来源锁。
+生成：`pnpm generate:native`。复核：`pnpm check-generated:native` 与 `node scripts/sync-native-conversation.mjs --check --require-committed`。两个consumer的native-conversation.lock.json已固定真实Contracts提交`6f632f155eacdaf93df0e0b00b5dab9e369c5442`及源摘要，provenance=git-commit、published=false。该不可变开发来源不冒充已发布SDK tag；后续仅文档提交无需改变字节完全一致的源契约pin。
 
 兼容验证基线：published supported `f16a497e1377f45747f8ff9292b4b60cf2027f88`；本次工作区基线 `468aecec53cd708286988a221061a2e5ccd2479d`。两次自动 breaking check 通过，但不能据此宣称语义或端到端兼容。旧 Desktop 依赖客户端推断的行为必须与新 Host 分阶段迁移，禁止混用后声明兼容。
 
 正式顺序：Contracts 固定来源 → Host 固定 pin / conformance → Desktop 固定 pin / migration → 正常生命周期与独立验收。退回旧版本不得让旧 Desktop 读写 schema 14 或旧 Host 读写 schema 5；禁止静默降级迁移和重启旧 reducer。FEAT-137 永久退役，FEAT-152 权限语义不变。
 
-当前所有测试为非付费安全定向验证；真实模型预算 0，D4 NOT RUN。完整记录位于元仓 FEAT-132 的 02-verification.md / 03-native-protocol-adjustment.md。
+2026-09-09原生改造的真实local/demo_fast D4及后续日常入口验证均已通过；十项Must AC通过。用户独立授权累计25次文本、3次图片，实际19次文本、1次图片，日常入口复验未增加调用。安全定向验证与真实模型结果分别记录；未运行禁止的故障/攻击测试。完整来源、限制及证据位于元仓FEAT-132的02-verification.md、03-native-protocol-adjustment.md和05-daily-entry-verification-2026-09-09.md。
 
 ## 2026-09-09 来源固定前核验
 
