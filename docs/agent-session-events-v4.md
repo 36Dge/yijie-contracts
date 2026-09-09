@@ -1,5 +1,7 @@
 # Agent Session Events v4
 
+> 2026-09-09 FEAT-134 adjustment: the original v4 design below is retained as historical documentation. FEAT-132 has replaced its client reconciliation, synthetic reasoning finalization and projection-failed Turn policy. Current conversations use native v1/v7 (`docs/native-conversation-v1.md`): Codex owns execution results; projection problems produce warnings/availability, never a fabricated failed terminal. Current v4 compatibility mapping also preserves actual Runtime terminal status. Consumers requiring the old synthetic policy must be retired under the FEAT-132 breaking migration; the old JSON wire/schema is not rewritten or represented as behavior-compatible. V4/V5 history and resource consumers still retain their explicit surfaces. Raw reasoning access remains separately gated.
+
 `AgentSessionEventV4` is an explicitly negotiated local candidate. Its authoritative JSON wire is
 `jsonschema/agent/session-event-v4.schema.json`; Protobuf v4 and AsyncAPI v4 are equivalent typed
 projections. V1, v2, and v3 paths, packages, schema IDs, and closed unions remain separate.
