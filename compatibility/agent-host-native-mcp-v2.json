@@ -42,5 +42,21 @@
     "source": "compatibility/sorftime-product-detail.input.schema.json",
     "evidence": "FEAT-144 fixed Runtime native discovery operation 8",
     "validation": "Compare actual native tools/list inputSchema structurally at first activation; do not invent outputSchema or annotations."
+  },
+  "current_thread_status": {
+    "endpoint": "GET /v2/agent-sessions/{agent_session_id}/native-thread-status",
+    "runtime_method": "thread/read",
+    "include_turns": false,
+    "source_field": "thread.status.type",
+    "allowed_status_types": [
+      "notLoaded",
+      "idle",
+      "systemError",
+      "active"
+    ],
+    "failure": "Unknown or missing status and native read failures use existing safe errors; never infer current state from Turn history.",
+    "scope": "Ephemeral owner-only no-store observation; no native history schema, writer, migration, permission decision, Runtime or FEAT-137 change.",
+    "activation": "Additive endpoint: provider support before new Desktop requests; preserve old native-thread response and Go client interfaces.",
+    "local_gate_reason": "Use native current thread status for the existing inactive-thread safety precondition; historical completed Turns cannot prove native idle. Native execution admission and FEAT-152 permission semantics remain authoritative."
   }
 }

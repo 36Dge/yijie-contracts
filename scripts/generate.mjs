@@ -152,6 +152,66 @@ async function preserveAgentHostGoCompatibility(goOutput) {
   await writeFile(goOutput, compatible);
 }
 
+// The new status endpoint is opt-in. Keep existing native history client mocks
+// and ClientWithResponses initializers source-compatible, as for the v6 family.
+async function preserveNativeThreadStatusGoCompatibility(goOutput) {
+  let source = await readFile(goOutput, "utf8");
+  for (const [legacy, extension] of [
+    ["ClientInterface", "ClientThreadStatusInterface"],
+    ["ClientWithResponsesInterface", "ClientWithThreadStatusResponsesInterface"],
+  ]) {
+    const declaration = `type ${legacy} interface {`;
+    const start = source.indexOf(declaration);
+    const end = source.indexOf("\n}\n", start);
+    if (start < 0 || end < 0) throw new Error(`Missing native ${legacy}`);
+    const groups = source.slice(start + declaration.length, end).trim().split("\n\n");
+    const added = groups.filter(group => group.includes("ReadNativeThreadStatus"));
+    if (added.length !== 1) throw new Error(`Expected one native status method in ${legacy}`);
+    source = source.slice(0, start) + [
+      declaration, groups.filter(group => !group.includes("ReadNativeThreadStatus")).join("\n\n"), "}", "",
+      `// ${extension} adds the opt-in current-status endpoint without widening ${legacy}.`,
+      `type ${extension} interface {`, `\t${legacy}`, "", added[0], "}", "",
+    ].join("\n") + source.slice(end + 3);
+  }
+  const marker = "\n// WithBaseURL overrides the baseURL.";
+  const receiver = "func (c *ClientWithResponses) ReadNativeThreadStatusWithResponse(";
+  const call = "\trsp, err := c.ReadNativeThreadStatus(";
+  if (!source.includes(marker) || !source.includes(receiver) || !source.includes(call)) {
+    throw new Error("Missing native status response-client insertion points");
+  }
+  source = source.replace(marker, `
+// ClientWithThreadStatusResponses explicitly opts into current native status reads.
+type ClientWithThreadStatusResponses struct {
+\t*ClientWithResponses
+\tstatus ClientThreadStatusInterface
+}
+
+// NewClientWithThreadStatusResponses creates the opt-in response wrapper.
+func NewClientWithThreadStatusResponses(server string, opts ...ClientOption) (*ClientWithThreadStatusResponses, error) {
+\tclient, err := NewClient(server, opts...)
+\tif err != nil { return nil, err }
+\treturn WithThreadStatusResponses(client), nil
+}
+
+// WithThreadStatusResponses wraps a client that supports the new status endpoint.
+func WithThreadStatusResponses(client ClientThreadStatusInterface) *ClientWithThreadStatusResponses {
+\treturn &ClientWithThreadStatusResponses{ClientWithResponses: &ClientWithResponses{ClientInterface: client}, status: client}
+}
+${marker}`)
+    .replace(receiver, "func (c *ClientWithThreadStatusResponses) ReadNativeThreadStatusWithResponse(")
+    .replace(call, "\trsp, err := c.status.ReadNativeThreadStatus(");
+  source += `
+var (
+\t_ ClientInterface = (*Client)(nil)
+\t_ ClientThreadStatusInterface = (*Client)(nil)
+\t_ ClientWithResponsesInterface = (*ClientWithResponses)(nil)
+\t_ ClientWithThreadStatusResponsesInterface = (*ClientWithThreadStatusResponses)(nil)
+)
+`;
+  await writeFile(goOutput, source);
+  await run("gofmt", ["-w", goOutput]);
+}
+
 // FEAT-144 source-first generation never visits historical archive fixtures.
 if (process.argv.includes("--native-mcp-only")) {
   for (const [name, pkg] of [["native-conversation-v2", "nativeconversationv2"], ["runtime-permissions-v2", "runtimepermissionsv2"]]) {
@@ -160,6 +220,7 @@ if (process.argv.includes("--native-mcp-only")) {
     await mkdir(path.join(root, out), {recursive: true});
     await run("pnpm", ["exec", "openapi-typescript", spec, "--redocly", "openapi-typescript.redocly.yaml", "-o", `sdks/typescript/src/openapi/${name}.gen.ts`]);
     await run("go", ["tool", "oapi-codegen", "-generate", "types,client,skip-prune", "-package", pkg, "-o", `${out}/client.gen.go`, spec]);
+    if (name === "native-conversation-v2") await preserveNativeThreadStatusGoCompatibility(path.join(root, out, "client.gen.go"));
   }
   process.exit(0);
 }
@@ -249,6 +310,7 @@ for (const [name, goPackage, spec] of openapiSpecs) {
     await preserveAgentHostGoCompatibility(path.join(root, goOutput));
     await run("gofmt", ["-w", goOutput]);
   }
+  if (name === "native-conversation-v2") await preserveNativeThreadStatusGoCompatibility(path.join(root, goOutput));
 }
 
 await run("pnpm", ["exec", "buf", "generate"]);

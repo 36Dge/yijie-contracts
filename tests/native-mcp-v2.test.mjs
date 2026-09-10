@@ -47,3 +47,48 @@ test("FEAT-144 MCP approval scope and single native choices are explicit", () =>
   for (const d of ["approve_once", "reject", "cancel"]) assert.equal(decision({decision: d}), true);
   assert.equal(decision({decision: "approve_session"}), false);
 });
+
+test("FEAT-144 current thread status is a separate closed native observation", () => {
+  const check = validate(native, "NativeThreadStatusSnapshot");
+  const observation = {schema_version: 2, source: "runtime_read", thread_id: "native-thread", status: "idle"};
+  for (const status of ["notLoaded", "idle", "systemError", "active"]) {
+    assert.equal(check({...observation, status}), true);
+  }
+  for (const status of ["completed", "inProgress", "unknown", null]) {
+    assert.equal(check({...observation, status}), false);
+  }
+  const {status, ...missingStatus} = observation;
+  assert.equal(check(missingStatus), false);
+  assert.equal(check({...observation, source: "runtime_resume"}), false);
+  assert.equal(check({...observation, turns: []}), false);
+  const operation = native.paths["/v2/agent-sessions/{agent_session_id}/native-thread-status"];
+  assert.deepEqual(operation.parameters, native.paths["/v2/agent-sessions/{agent_session_id}/native-thread"].parameters);
+  assert.deepEqual(native.security, [{LocalBearer: []}]);
+  for (const response of Object.values(operation.get.responses)) {
+    assert.deepEqual(response.headers["Cache-Control"].schema.enum, ["no-store"]);
+  }
+  const projection = JSON.parse(fs.readFileSync("compatibility/agent-host-native-mcp-v2.json", "utf8")).current_thread_status;
+  assert.equal(projection.runtime_method, "thread/read");
+  assert.equal(projection.include_turns, false);
+  assert.equal(projection.source_field, "thread.status.type");
+});
+
+test("FEAT-144 status extension keeps every old v2 path, schema and Go client interface unchanged", () => {
+  const baselineCommit = "db54c617c65db5431b950eb297ba148a43a8e600";
+  const baseline = JSON.parse(execFileSync("git", ["show", `${baselineCommit}:openapi/native-conversation-v2/native-conversation-v2.yaml`], {encoding: "utf8"}));
+  for (const [name, schema] of Object.entries(baseline.components.schemas)) {
+    assert.deepEqual(native.components.schemas[name], schema, name);
+  }
+  for (const [name, operation] of Object.entries(baseline.paths)) {
+    assert.deepEqual(native.paths[name], operation, name);
+  }
+  const goPath = "sdks/go/openapi/native-conversation-v2/client.gen.go";
+  const oldGo = execFileSync("git", ["show", `${baselineCommit}:${goPath}`], {encoding: "utf8"});
+  const newGo = fs.readFileSync(goPath, "utf8");
+  for (const name of ["ClientInterface", "ClientWithResponsesInterface", "ClientWithResponses", "NativeThreadSnapshot"]) {
+    const definition = new RegExp(`type ${name} (?:struct|interface) \\{[\\s\\S]*?\\n\\}`);
+    assert.equal(newGo.match(definition)?.[0], oldGo.match(definition)?.[0], name);
+  }
+  assert.match(newGo, /type ClientThreadStatusInterface interface/);
+  assert.match(newGo, /type ClientWithThreadStatusResponsesInterface interface/);
+});

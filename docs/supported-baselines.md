@@ -1,5 +1,17 @@
 # Supported Contract Baselines
 
+## FEAT-144 未发布的当前线程状态扩展
+
+新增独立的 owner-only `native-thread-status` GET，直接投影固定 Runtime 的
+`thread/read(includeTurns=false).thread.status.type`，不改变旧 v1/v2 history、SSE、权限或
+持久格式。该端点为 additive / provider-first；新 Desktop 遇到旧 Host 必须拒绝依赖该状态的
+本地动作，不从历史猜测。当前审查比较基线为前一 v2 来源
+`db54c617c65db5431b950eb297ba148a43a8e600`、固定 native-v1 来源
+`6f632f155eacdaf93df0e0b00b5dab9e369c5442` 和已发布支持版本
+`f16a497e1377f45747f8ff9292b4b60cf2027f88`。本扩展仍属未发布 `0.2.0` native family
+candidate，不新增 supported tag；最终来源、检查与消费者证据由 FEAT-144 交付包登记。
+兼容、生成和回滚说明见 [native-mcp-v2.md](native-mcp-v2.md#current-thread-status-read-extension)。
+
 ## FEAT-132 2026-09-09 未发布的固定开发来源
 
 新增 native-conversation v1 / SSE v7。两个消费者已固定真实Contracts提交`6f632f155eacdaf93df0e0b00b5dab9e369c5442`与源摘要，本地D4和后续日常入口验证通过。来源、消费者、两个固定比较基线与发布/回滚边界见 [native-conversation-v1.md](native-conversation-v1.md)。该开发来源尚未发布SDK tag，不新增已发布支持基线；本次不部署，不继承历史D4。FEAT-137的历史候选段落不改变其现有永久退役状态。
