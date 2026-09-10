@@ -152,6 +152,18 @@ async function preserveAgentHostGoCompatibility(goOutput) {
   await writeFile(goOutput, compatible);
 }
 
+// FEAT-144 source-first generation never visits historical archive fixtures.
+if (process.argv.includes("--native-mcp-only")) {
+  for (const [name, pkg] of [["native-conversation-v2", "nativeconversationv2"], ["runtime-permissions-v2", "runtimepermissionsv2"]]) {
+    const spec = `openapi/${name}/${name}.yaml`;
+    const out = `sdks/go/openapi/${name}`;
+    await mkdir(path.join(root, out), {recursive: true});
+    await run("pnpm", ["exec", "openapi-typescript", spec, "--redocly", "openapi-typescript.redocly.yaml", "-o", `sdks/typescript/src/openapi/${name}.gen.ts`]);
+    await run("go", ["tool", "oapi-codegen", "-generate", "types,client,skip-prune", "-package", pkg, "-o", `${out}/client.gen.go`, spec]);
+  }
+  process.exit(0);
+}
+
 // Focused FEAT-132 generation never visits unrelated legacy fixture families.
 if (process.argv.includes("--native-conversation-only")) {
   const spec = "openapi/native-conversation/native-conversation.yaml";
@@ -197,6 +209,8 @@ const openapiSpecs = [
   ["agent-host", "agenthostapi", "openapi/agent-host/agent-host.yaml"],
   ["runtime-permissions", "runtimepermissions", "openapi/runtime-permissions/runtime-permissions.yaml"],
   ["native-conversation", "nativeconversation", "openapi/native-conversation/native-conversation.yaml"],
+  ["native-conversation-v2", "nativeconversationv2", "openapi/native-conversation-v2/native-conversation-v2.yaml"],
+  ["runtime-permissions-v2", "runtimepermissionsv2", "openapi/runtime-permissions-v2/runtime-permissions-v2.yaml"],
 ];
 
 for (const [name, goPackage, spec] of openapiSpecs) {
@@ -222,7 +236,7 @@ for (const [name, goPackage, spec] of openapiSpecs) {
     "tool",
     "oapi-codegen",
     "-generate",
-    name === "native-conversation" ? "types,client,skip-prune" : "types,client",
+    name.startsWith("native-conversation") || name === "runtime-permissions-v2" ? "types,client,skip-prune" : "types,client",
     "-package",
     goPackage,
     "-o",
@@ -310,6 +324,8 @@ await writeFile(
     'export * as InternalApi from "./openapi/internal.gen.js";',
     'export * as AgentHostApi from "./openapi/agent-host.gen.js";',
     'export type * as NativeConversation from "./openapi/native-conversation.gen.js";',
+    'export type * as NativeConversationV2 from "./openapi/native-conversation-v2.gen.js";',
+    'export type * as RuntimePermissionsV2 from "./openapi/runtime-permissions-v2.gen.js";',
     'export * as CommonV1 from "./protobuf/yijie/common/v1/common_pb.js";',
     'export * as AgentSessionEventsV1 from "./protobuf/yijie/events/v1/agent_session_pb.js";',
     'export * as AgentSessionEventsV2 from "./protobuf/yijie/events/v2/agent_session_pb.js";',

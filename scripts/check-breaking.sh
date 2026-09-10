@@ -3,20 +3,23 @@ set -euo pipefail
 
 base_ref="${1:-main}"
 base_commit="$(git rev-parse --verify "$base_ref")"
+# Preserve the source tree so cross-family relative references resolve to the
+# matching baseline, never to a current working-tree dependency.
+base_tree="$(mktemp -d)"
+trap 'rm -rf "$base_tree"' EXIT
+git archive "$base_commit" openapi | tar -xf - -C "$base_tree"
 
 for spec in \
   openapi/public/public.yaml \
   openapi/admin/admin.yaml \
   openapi/internal/internal.yaml \
   openapi/agent-host/agent-host.yaml \
-  openapi/native-conversation/native-conversation.yaml; do
+  openapi/native-conversation/native-conversation.yaml \
+  openapi/runtime-permissions/runtime-permissions.yaml \
+  openapi/native-conversation-v2/native-conversation-v2.yaml \
+  openapi/runtime-permissions-v2/runtime-permissions-v2.yaml; do
   if git cat-file -e "$base_ref:$spec" 2>/dev/null; then
-    base_file="$(mktemp)"
-    trap 'rm -f "$base_file"' EXIT
-    git show "$base_ref:$spec" >"$base_file"
-    go tool oasdiff breaking "$base_file" "$spec"
-    rm -f "$base_file"
-    trap - EXIT
+    go tool oasdiff breaking "$base_tree/$spec" "$spec"
   fi
 done
 

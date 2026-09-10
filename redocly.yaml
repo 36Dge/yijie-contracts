@@ -9,6 +9,10 @@ apis:
     root: ./openapi/agent-host/agent-host.yaml
   native-conversation@v1:
     root: ./openapi/native-conversation/native-conversation.yaml
+  native-conversation@v2:
+    root: ./openapi/native-conversation-v2/native-conversation-v2.yaml
+  runtime-permissions@v2:
+    root: ./openapi/runtime-permissions-v2/runtime-permissions-v2.yaml
   events@v1:
     root: ./asyncapi/events.yaml
 

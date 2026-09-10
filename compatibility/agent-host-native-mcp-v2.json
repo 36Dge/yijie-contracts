@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "feature": "FEAT-144",
+  "runtime_commit": "b2b20e2fc4a0c94834f34d8cc459e488a1b56277",
+  "runtime_version": "0.144.6",
+  "runtime_schema_tree_sha256": "82ee9de771cf1d41bac16d87380f1121e7794107aa3aa526ad702d5d1bf7afe1",
+  "requires_experimental_api": false,
+  "canonical_scope": "Ordinary entry retains existing dynamic image capability; this MCP feature uses stable methods only.",
+  "runtime_methods": [
+    "initialize",
+    "thread/start",
+    "thread/resume",
+    "thread/read",
+    "turn/start",
+    "turn/interrupt",
+    "thread/unsubscribe",
+    "mcpServerStatus/list",
+    "config/read"
+  ],
+  "runtime_requests": [
+    "mcpServer/elicitation/request"
+  ],
+  "runtime_notifications": [
+    "mcpServer/startupStatus/updated",
+    "serverRequest/resolved",
+    "item/started",
+    "item/completed",
+    "turn/started",
+    "turn/completed"
+  ],
+  "configured_server": "sorftime",
+  "enabled_tools": [
+    "product_detail"
+  ],
+  "input_scope": "One public ASIN; explicit amz_site=US; bounded original native Prompt parameters; no business error scenario.",
+  "permissions": "Existing FEAT-152 ask -> on-request/user/workspaceWrite/networkAccess=false; Prompt; no hook/guardian approval replacement; no activation under auto/full.",
+  "history": "Existing native read/resume and encrypted observed snapshots; no fact replay, inference or lifecycle reconstruction.",
+  "activation": "Compatible reader and format version protection before new writer; immutable source required for canonical. Legacy v7/v1 and runtime-permissions v1 remain supported.",
+  "external_tool_schema": {
+    "server": "sorftime",
+    "tool": "product_detail",
+    "source": "compatibility/sorftime-product-detail.input.schema.json",
+    "evidence": "FEAT-144 fixed Runtime native discovery operation 8",
+    "validation": "Compare actual native tools/list inputSchema structurally at first activation; do not invent outputSchema or annotations."
+  }
+}
