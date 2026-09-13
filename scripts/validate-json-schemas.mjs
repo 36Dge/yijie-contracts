@@ -2,6 +2,7 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
+import { workflowValidators } from "./workflow-schema-validator.mjs";
 
 async function findSchemas(dir) {
   const files = [];
@@ -54,6 +55,11 @@ ajv.addKeyword({
 });
 const files = await findSchemas("jsonschema");
 for (const file of files) {
+  if (file === "jsonschema/workflow-editor/bridge-v1.schema.json") {
+    // Resolve OpenAPI-backed components through the digest-checked projection.
+    workflowValidators();
+    continue;
+  }
   const schema = JSON.parse(await readFile(file, "utf8"));
   ajv.compile(schema);
 }

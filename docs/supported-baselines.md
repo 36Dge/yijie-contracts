@@ -1,5 +1,13 @@
 # Supported Contract Baselines
 
+## FEAT-153 未发布的工作流独立契约
+
+`workflow-local` / editor bridge v1 为新的本地候选族，不新增已发布支持 tag。
+明确 fallback 为 `811f38d6b104fa18477107e7ac91a85e19c445d1`；同时逐一检查已发布
+`f16a497e1377f45747f8ff9292b4b60cf2027f88` 与 API pin
+`29317b6426578749dc698fc2ad32b986ee5c8e9f`。三个基线不含本族，旧受支持族保持。
+源、Owner/consumers、摘要锁、检查及回滚见 [workflow-local-v1.md](workflow-local-v1.md)。
+
 ## FEAT-144 未发布的当前线程状态扩展
 
 新增独立的 owner-only `native-thread-status` GET，直接投影固定 Runtime 的

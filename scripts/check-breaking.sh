@@ -17,7 +17,8 @@ for spec in \
   openapi/native-conversation/native-conversation.yaml \
   openapi/runtime-permissions/runtime-permissions.yaml \
   openapi/native-conversation-v2/native-conversation-v2.yaml \
-  openapi/runtime-permissions-v2/runtime-permissions-v2.yaml; do
+  openapi/runtime-permissions-v2/runtime-permissions-v2.yaml \
+  openapi/workflow-local/workflow-local.yaml; do
   if git cat-file -e "$base_ref:$spec" 2>/dev/null; then
     go tool oasdiff breaking "$base_tree/$spec" "$spec"
   fi

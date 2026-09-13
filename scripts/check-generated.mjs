@@ -4,7 +4,11 @@ import path from "node:path";
 import { promisify } from "node:util";
 
 const exec = promisify(execFile);
-const roots = ["sdks/go", "sdks/typescript/src", "sdks/asyncapi"];
+if (process.argv.includes("--workflow-local-only")) {
+  await import("./check-workflow-local.mjs");
+  process.exit(0);
+}
+const roots = ["sdks/go", "sdks/typescript/src", "sdks/asyncapi", "sdks/rust", "sdks/jsonschema", "sdks/openapi", "compatibility/workflow-local"];
 
 async function snapshot(dir) {
   const result = new Map();

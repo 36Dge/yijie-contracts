@@ -1,0 +1,2689 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Yijie local workflow foundation",
+    "version": "1.0.0-local-candidate",
+    "description": "FEAT-153 ADR-0019. Not a production release. x-utf8-max-bytes is an additional UTF-8 byte bound. Internal API/Coze paths use the same payload source but distinct credentials; editor sessions exist only at API/native boundary."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:18888"
+    }
+  ],
+  "security": [
+    {
+      "ServiceBearer": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "workflow-local",
+      "description": "Bounded synthetic local workflows"
+    }
+  ],
+  "paths": {
+    "/v1/workflow-local/status": {
+      "get": {
+        "operationId": "GetWorkflowStatus",
+        "summary": "GetWorkflowStatus",
+        "description": "Exact local/profile gate and authenticated fixed scope; identifiers alone do not authorize access.",
+        "tags": [
+          "workflow-local"
+        ],
+        "parameters": [
+          {
+            "name": "X-Yijie-Run-Epoch",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RunEpoch"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource or dispatch result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceStatus"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/workflow-local/principal": {
+      "post": {
+        "operationId": "EnsureLocalPrincipal",
+        "summary": "EnsureLocalPrincipal",
+        "description": "Exact local/profile gate and authenticated fixed scope; identifiers alone do not authorize access.",
+        "tags": [
+          "workflow-local"
+        ],
+        "parameters": [
+          {
+            "name": "X-Yijie-Run-Epoch",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RunEpoch"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource or dispatch result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Principal"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/workflows": {
+      "get": {
+        "operationId": "ListWorkflows",
+        "summary": "ListWorkflows",
+        "description": "Exact local/profile gate and authenticated fixed scope; identifiers alone do not authorize access.",
+        "tags": [
+          "workflow-local"
+        ],
+        "parameters": [
+          {
+            "name": "X-Yijie-Run-Epoch",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RunEpoch"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource or dispatch result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "CreateWorkflow",
+        "summary": "CreateWorkflow",
+        "description": "Exact local/profile gate and authenticated fixed scope; identifiers alone do not authorize access.",
+        "tags": [
+          "workflow-local"
+        ],
+        "parameters": [
+          {
+            "name": "X-Yijie-Run-Epoch",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RunEpoch"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Resource or dispatch result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Workflow"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/workflows/{workflow_id}": {
+      "get": {
+        "operationId": "ReadWorkflow",
+        "summary": "ReadWorkflow",
+        "description": "Exact local/profile gate and authenticated fixed scope; identifiers alone do not authorize access.",
+        "tags": [
+          "workflow-local"
+        ],
+        "parameters": [
+          {
+            "name": "workflow_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          {
+            "name": "X-Yijie-Run-Epoch",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RunEpoch"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource or dispatch result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Workflow"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "SaveWorkflow",
+        "summary": "SaveWorkflow",
+        "description": "Exact local/profile gate and authenticated fixed scope; identifiers alone do not authorize access.",
+        "tags": [
+          "workflow-local"
+        ],
+        "parameters": [
+          {
+            "name": "workflow_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          {
+            "name": "X-Yijie-Run-Epoch",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RunEpoch"
+            }
+          },
+          {
+            "name": "X-Yijie-Editor-Session",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 64,
+              "minLength": 64,
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "description": "Native-only E. Coze private adapter validates K_AC instead; this API session header is never forwarded to Coze."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource or dispatch result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Workflow"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/workflows/{workflow_id}/bootstrap": {
+      "get": {
+        "operationId": "GetEditorBootstrap",
+        "summary": "GetEditorBootstrap",
+        "description": "Exact local/profile gate and authenticated fixed scope; identifiers alone do not authorize access.",
+        "tags": [
+          "workflow-local"
+        ],
+        "parameters": [
+          {
+            "name": "workflow_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          {
+            "name": "X-Yijie-Run-Epoch",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RunEpoch"
+            }
+          },
+          {
+            "name": "X-Yijie-Editor-Session",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 64,
+              "minLength": 64,
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "description": "Native-only E. Coze private adapter validates K_AC instead; this API session header is never forwarded to Coze."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource or dispatch result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bootstrap"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/workflows/{workflow_id}/test-runs": {
+      "post": {
+        "operationId": "TestWorkflow",
+        "summary": "TestWorkflow",
+        "description": "Exact local/profile gate and authenticated fixed scope; identifiers alone do not authorize access.",
+        "tags": [
+          "workflow-local"
+        ],
+        "parameters": [
+          {
+            "name": "workflow_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          {
+            "name": "X-Yijie-Run-Epoch",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RunEpoch"
+            }
+          },
+          {
+            "name": "X-Yijie-Editor-Session",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 64,
+              "minLength": 64,
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "description": "Native-only E. Coze private adapter validates K_AC instead; this API session header is never forwarded to Coze."
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Resource or dispatch result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Run"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/workflows/{workflow_id}/versions": {
+      "post": {
+        "operationId": "PublishWorkflow",
+        "summary": "PublishWorkflow",
+        "description": "Exact local/profile gate and authenticated fixed scope; identifiers alone do not authorize access.",
+        "tags": [
+          "workflow-local"
+        ],
+        "parameters": [
+          {
+            "name": "workflow_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          {
+            "name": "X-Yijie-Run-Epoch",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RunEpoch"
+            }
+          },
+          {
+            "name": "X-Yijie-Editor-Session",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 64,
+              "minLength": 64,
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "description": "Native-only E. Coze private adapter validates K_AC instead; this API session header is never forwarded to Coze."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource or dispatch result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Workflow"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublishRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/workflows/{workflow_id}/runs": {
+      "post": {
+        "operationId": "RunWorkflow",
+        "summary": "RunWorkflow",
+        "description": "Exact local/profile gate and authenticated fixed scope; identifiers alone do not authorize access.",
+        "tags": [
+          "workflow-local"
+        ],
+        "parameters": [
+          {
+            "name": "workflow_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          {
+            "name": "X-Yijie-Run-Epoch",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RunEpoch"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Resource or dispatch result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Run"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunRequest"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "ListWorkflowRuns",
+        "summary": "ListWorkflowRuns",
+        "description": "Exact local/profile gate and authenticated fixed scope; identifiers alone do not authorize access.",
+        "tags": [
+          "workflow-local"
+        ],
+        "parameters": [
+          {
+            "name": "workflow_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          {
+            "name": "X-Yijie-Run-Epoch",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RunEpoch"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource or dispatch result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/workflows/{workflow_id}/runs/{run_id}": {
+      "get": {
+        "operationId": "ReadWorkflowRun",
+        "summary": "ReadWorkflowRun",
+        "description": "Exact local/profile gate and authenticated fixed scope; identifiers alone do not authorize access.",
+        "tags": [
+          "workflow-local"
+        ],
+        "parameters": [
+          {
+            "name": "workflow_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          {
+            "name": "X-Yijie-Run-Epoch",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RunEpoch"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource or dispatch result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Run"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/workflow-local/operations/{operation_id}": {
+      "get": {
+        "operationId": "ReadWorkflowOperation",
+        "summary": "ReadWorkflowOperation",
+        "description": "Exact local/profile gate and authenticated fixed scope; identifiers alone do not authorize access.",
+        "tags": [
+          "workflow-local"
+        ],
+        "parameters": [
+          {
+            "name": "operation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/OperationId"
+            }
+          },
+          {
+            "name": "X-Yijie-Run-Epoch",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RunEpoch"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource or dispatch result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationReceipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/workflow-local/editor-sessions": {
+      "post": {
+        "operationId": "OpenEditorSession",
+        "summary": "OpenEditorSession",
+        "description": "Exact local/profile gate and authenticated fixed scope; identifiers alone do not authorize access.",
+        "tags": [
+          "workflow-local"
+        ],
+        "parameters": [
+          {
+            "name": "X-Yijie-Run-Epoch",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RunEpoch"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Resource or dispatch result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EditorSessionSecret"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditorOpenRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/workflow-local/editor-sessions/{session_id}": {
+      "delete": {
+        "operationId": "CloseEditorSession",
+        "summary": "CloseEditorSession",
+        "description": "Exact local/profile gate and authenticated fixed scope; identifiers alone do not authorize access.",
+        "tags": [
+          "workflow-local"
+        ],
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          {
+            "name": "X-Yijie-Run-Epoch",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RunEpoch"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource or dispatch result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CloseResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Safe typed error. Retry must preserve operation semantics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ServiceBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "K_NA native/API; separate K_AC API/Coze. 256-bit random run-scoped values, never browser credentials."
+      }
+    },
+    "schemas": {
+      "Identifier": {
+        "type": "string",
+        "maxLength": 64,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9_-]+$"
+      },
+      "OperationId": {
+        "type": "string",
+        "maxLength": 36,
+        "minLength": 36,
+        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+      },
+      "Version": {
+        "type": "string",
+        "maxLength": 32,
+        "pattern": "^v0[.]0[.][1-9][0-9]*$"
+      },
+      "RunEpoch": {
+        "$ref": "#/components/schemas/OperationId"
+      },
+      "ErrorCode": {
+        "type": "string",
+        "enum": [
+          "profile_disabled",
+          "service_unavailable",
+          "unauthorized",
+          "session_expired",
+          "resource_not_found",
+          "revision_conflict",
+          "operation_conflict",
+          "invalid_draft",
+          "input_too_large",
+          "run_busy",
+          "operation_unknown",
+          "protocol_mismatch",
+          "invalid_request",
+          "storage_unavailable",
+          "internal_error"
+        ]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "$ref": "#/components/schemas/ErrorCode"
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "operation_id": {
+            "$ref": "#/components/schemas/OperationId"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ]
+      },
+      "Limits": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "input_bytes": {
+            "type": "integer",
+            "format": "int64",
+            "enum": [
+              4096
+            ]
+          },
+          "prefix_bytes": {
+            "type": "integer",
+            "format": "int64",
+            "enum": [
+              1024
+            ]
+          },
+          "output_bytes": {
+            "type": "integer",
+            "format": "int64",
+            "enum": [
+              5120
+            ]
+          },
+          "canvas_bytes": {
+            "type": "integer",
+            "format": "int64",
+            "enum": [
+              262144
+            ]
+          },
+          "message_bytes": {
+            "type": "integer",
+            "format": "int64",
+            "enum": [
+              524288
+            ]
+          },
+          "max_active_runs": {
+            "type": "integer",
+            "format": "int64",
+            "enum": [
+              1
+            ]
+          },
+          "execution_budget_seconds": {
+            "type": "integer",
+            "format": "int64",
+            "enum": [
+              30
+            ]
+          },
+          "editor_ttl_seconds": {
+            "type": "integer",
+            "format": "int64",
+            "enum": [
+              300
+            ]
+          }
+        },
+        "required": [
+          "input_bytes",
+          "prefix_bytes",
+          "output_bytes",
+          "canvas_bytes",
+          "message_bytes",
+          "max_active_runs",
+          "execution_budget_seconds",
+          "editor_ttl_seconds"
+        ]
+      },
+      "ServiceStatus": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "protocol_version": {
+            "type": "integer",
+            "format": "int64",
+            "enum": [
+              1
+            ]
+          },
+          "run_epoch": {
+            "$ref": "#/components/schemas/RunEpoch"
+          },
+          "ready": {
+            "type": "boolean"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "ready",
+              "unavailable",
+              "disabled"
+            ]
+          },
+          "limits": {
+            "$ref": "#/components/schemas/Limits"
+          }
+        },
+        "required": [
+          "protocol_version",
+          "run_epoch",
+          "ready",
+          "state",
+          "limits"
+        ]
+      },
+      "Principal": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "owner_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "tenant_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "user_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "space_id": {
+            "$ref": "#/components/schemas/Identifier"
+          }
+        },
+        "required": [
+          "owner_id",
+          "tenant_id",
+          "user_id",
+          "space_id"
+        ]
+      },
+      "Workflow": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "workflow_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1
+          },
+          "revision": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "canvas": {
+            "type": "string",
+            "maxLength": 262144,
+            "x-utf8-max-bytes": 262144
+          },
+          "runnable": {
+            "type": "boolean"
+          },
+          "published_version": {
+            "$ref": "#/components/schemas/Version"
+          },
+          "updated_at_ms": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "workflow_id",
+          "name",
+          "revision",
+          "canvas",
+          "runnable",
+          "updated_at_ms"
+        ],
+        "description": "Coze-owned graph and revision. Canvas is native JSON text; safe incomplete drafts may be saved. IDs are opaque strings, including decimal Coze IDs, never JS numbers."
+      },
+      "WorkflowList": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkflowSummary"
+            },
+            "maxItems": 50
+          },
+          "next_cursor": {
+            "type": "string",
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "ListRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "limit": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 50,
+            "default": 20
+          }
+        },
+        "required": []
+      },
+      "CreateInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "CreateRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1
+          },
+          "operation_id": {
+            "$ref": "#/components/schemas/OperationId"
+          }
+        },
+        "required": [
+          "name",
+          "operation_id"
+        ]
+      },
+      "TextInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "input": {
+            "type": "string",
+            "maxLength": 4096,
+            "x-utf8-max-bytes": 4096
+          }
+        },
+        "required": [
+          "input"
+        ]
+      },
+      "SaveRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "operation_id": {
+            "$ref": "#/components/schemas/OperationId"
+          },
+          "expected_revision": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1
+          },
+          "canvas": {
+            "type": "string",
+            "maxLength": 262144,
+            "x-utf8-max-bytes": 262144
+          }
+        },
+        "required": [
+          "operation_id",
+          "expected_revision",
+          "name",
+          "canvas"
+        ]
+      },
+      "TestRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "operation_id": {
+            "$ref": "#/components/schemas/OperationId"
+          },
+          "expected_revision": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "input": {
+            "$ref": "#/components/schemas/TextInput"
+          }
+        },
+        "required": [
+          "operation_id",
+          "expected_revision",
+          "input"
+        ]
+      },
+      "PublishRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "operation_id": {
+            "$ref": "#/components/schemas/OperationId"
+          },
+          "expected_revision": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "successful_test_run_id": {
+            "$ref": "#/components/schemas/Identifier"
+          }
+        },
+        "required": [
+          "operation_id",
+          "expected_revision",
+          "successful_test_run_id"
+        ]
+      },
+      "RunRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "operation_id": {
+            "$ref": "#/components/schemas/OperationId"
+          },
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          },
+          "input": {
+            "$ref": "#/components/schemas/TextInput"
+          }
+        },
+        "required": [
+          "operation_id",
+          "version",
+          "input"
+        ]
+      },
+      "RunInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "workflow_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          },
+          "input": {
+            "$ref": "#/components/schemas/TextInput"
+          }
+        },
+        "required": [
+          "workflow_id",
+          "version",
+          "input"
+        ]
+      },
+      "RunMode": {
+        "type": "string",
+        "enum": [
+          "debug",
+          "release"
+        ]
+      },
+      "NodeResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "node_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "state": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "output": {
+            "type": "string",
+            "maxLength": 5120,
+            "x-utf8-max-bytes": 5120
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        },
+        "required": [
+          "node_id",
+          "state"
+        ]
+      },
+      "Run": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "run_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "workflow_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "operation_id": {
+            "$ref": "#/components/schemas/OperationId"
+          },
+          "mode": {
+            "$ref": "#/components/schemas/RunMode"
+          },
+          "revision": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          },
+          "state": {
+            "type": "string",
+            "maxLength": 64,
+            "description": "Actual engine status; new values stay visible and never imply success."
+          },
+          "terminal": {
+            "type": "boolean"
+          },
+          "input": {
+            "$ref": "#/components/schemas/TextInput"
+          },
+          "output": {
+            "type": "string",
+            "maxLength": 5120,
+            "x-utf8-max-bytes": 5120
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NodeResult"
+            },
+            "maxItems": 3
+          },
+          "started_at_ms": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "finished_at_ms": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        },
+        "required": [
+          "run_id",
+          "workflow_id",
+          "operation_id",
+          "mode",
+          "state",
+          "terminal",
+          "started_at_ms"
+        ]
+      },
+      "RunList": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RunSummary"
+            },
+            "maxItems": 50
+          },
+          "next_cursor": {
+            "type": "string",
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "OperationKind": {
+        "type": "string",
+        "enum": [
+          "create",
+          "save",
+          "test",
+          "publish",
+          "run"
+        ]
+      },
+      "OperationPhase": {
+        "type": "string",
+        "enum": [
+          "recorded",
+          "completed",
+          "unknown",
+          "rejected"
+        ]
+      },
+      "OperationReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "operation_id": {
+            "$ref": "#/components/schemas/OperationId"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/OperationKind"
+          },
+          "phase": {
+            "$ref": "#/components/schemas/OperationPhase"
+          },
+          "workflow_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "revision": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "version": {
+            "$ref": "#/components/schemas/Version",
+            "description": "Version registered by this operation: the newly committed version for publish, or the selected published version for a release run. Omitted for create, save, and debug test operations; never copies Workflow.published_version as ambient resource metadata."
+          },
+          "run_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        },
+        "required": [
+          "operation_id",
+          "kind",
+          "phase"
+        ],
+        "description": "Dispatch receipt, not engine status. completed identifies committed resource/execution registration, not successful workflow execution."
+      },
+      "EditorOpenRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "workflow_id": {
+            "$ref": "#/components/schemas/Identifier"
+          }
+        },
+        "required": [
+          "workflow_id"
+        ]
+      },
+      "EditorSessionSecret": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "session_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "workflow_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "secret": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "description": "Native/API only. Never serialize this response to renderer, URL, log or MessageChannel."
+          },
+          "run_epoch": {
+            "$ref": "#/components/schemas/RunEpoch"
+          },
+          "expires_at_ms": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "session_id",
+          "workflow_id",
+          "secret",
+          "run_epoch",
+          "expires_at_ms"
+        ]
+      },
+      "EditorOpenedView": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "bridge_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "workflow": {
+            "$ref": "#/components/schemas/Workflow"
+          },
+          "generation": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "expires_at_ms": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "protocol_version": {
+            "type": "integer",
+            "format": "int64",
+            "enum": [
+              1
+            ]
+          }
+        },
+        "required": [
+          "bridge_id",
+          "workflow",
+          "generation",
+          "expires_at_ms",
+          "protocol_version"
+        ]
+      },
+      "Bootstrap": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "workflow": {
+            "$ref": "#/components/schemas/Workflow"
+          },
+          "principal": {
+            "$ref": "#/components/schemas/Principal"
+          },
+          "node_types": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64",
+              "enum": [
+                1,
+                15,
+                2
+              ]
+            },
+            "maxItems": 3
+          },
+          "limits": {
+            "$ref": "#/components/schemas/Limits"
+          }
+        },
+        "required": [
+          "workflow",
+          "principal",
+          "node_types",
+          "limits"
+        ]
+      },
+      "EditorOperation": {
+        "type": "string",
+        "enum": [
+          "bootstrap",
+          "read_draft",
+          "save_draft",
+          "test_draft",
+          "publish_internal",
+          "read_run",
+          "read_operation"
+        ]
+      },
+      "EditorExchangeInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "bridge_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "generation": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "protocol_version": {
+            "type": "integer",
+            "format": "int64",
+            "enum": [
+              1
+            ]
+          },
+          "request_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "operation": {
+            "$ref": "#/components/schemas/EditorOperation"
+          },
+          "expected_revision": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1
+          },
+          "canvas": {
+            "type": "string",
+            "maxLength": 262144,
+            "x-utf8-max-bytes": 262144
+          },
+          "input": {
+            "$ref": "#/components/schemas/TextInput"
+          },
+          "successful_test_run_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "run_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "operation_id": {
+            "$ref": "#/components/schemas/OperationId"
+          }
+        },
+        "required": [
+          "bridge_id",
+          "generation",
+          "protocol_version",
+          "request_id",
+          "operation"
+        ],
+        "description": "Native generates write operation IDs. operation_id input is only a read_operation lookup. No actor, secret, URL, headers or arbitrary command.",
+        "x-operation-required": {
+          "save_draft": [
+            "expected_revision",
+            "name",
+            "canvas"
+          ],
+          "test_draft": [
+            "expected_revision",
+            "input"
+          ],
+          "publish_internal": [
+            "expected_revision",
+            "successful_test_run_id"
+          ],
+          "read_run": [
+            "run_id"
+          ],
+          "read_operation": [
+            "operation_id"
+          ]
+        },
+        "x-operation-restrict-fields": true,
+        "x-operation-optional": {}
+      },
+      "EditorExchangeResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "request_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "operation_id": {
+            "$ref": "#/components/schemas/OperationId"
+          },
+          "bootstrap": {
+            "$ref": "#/components/schemas/Bootstrap"
+          },
+          "workflow": {
+            "$ref": "#/components/schemas/Workflow"
+          },
+          "run": {
+            "$ref": "#/components/schemas/Run"
+          },
+          "receipt": {
+            "$ref": "#/components/schemas/OperationReceipt"
+          }
+        },
+        "required": [
+          "request_id"
+        ]
+      },
+      "EditorCloseInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "bridge_id": {
+            "$ref": "#/components/schemas/Identifier"
+          }
+        },
+        "required": [
+          "bridge_id"
+        ]
+      },
+      "RunQueryKind": {
+        "type": "string",
+        "enum": [
+          "run",
+          "history",
+          "operation"
+        ]
+      },
+      "RunQueryInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/RunQueryKind"
+          },
+          "workflow_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "run_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "operation_id": {
+            "$ref": "#/components/schemas/OperationId"
+          },
+          "cursor": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "limit": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 50,
+            "default": 20
+          }
+        },
+        "required": [
+          "kind"
+        ],
+        "x-operation-field": "kind",
+        "x-operation-required": {
+          "run": [
+            "workflow_id",
+            "run_id"
+          ],
+          "history": [
+            "workflow_id"
+          ],
+          "operation": [
+            "operation_id"
+          ]
+        },
+        "x-operation-restrict-fields": true,
+        "x-operation-optional": {
+          "history": [
+            "cursor",
+            "limit"
+          ]
+        }
+      },
+      "RunQueryResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "run": {
+            "$ref": "#/components/schemas/Run"
+          },
+          "history": {
+            "$ref": "#/components/schemas/RunList"
+          },
+          "receipt": {
+            "$ref": "#/components/schemas/OperationReceipt"
+          }
+        },
+        "required": []
+      },
+      "CloseResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "closed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "closed"
+        ]
+      },
+      "WorkflowSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "workflow_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1
+          },
+          "revision": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "runnable": {
+            "type": "boolean"
+          },
+          "published_version": {
+            "$ref": "#/components/schemas/Version"
+          },
+          "updated_at_ms": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "workflow_id",
+          "name",
+          "revision",
+          "runnable",
+          "updated_at_ms"
+        ],
+        "description": "Bounded list summary; read the detail endpoint for full content."
+      },
+      "RunSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "run_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "workflow_id": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "operation_id": {
+            "$ref": "#/components/schemas/OperationId"
+          },
+          "mode": {
+            "$ref": "#/components/schemas/RunMode"
+          },
+          "revision": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          },
+          "state": {
+            "type": "string",
+            "maxLength": 64,
+            "description": "Actual engine status; new values stay visible and never imply success."
+          },
+          "terminal": {
+            "type": "boolean"
+          },
+          "started_at_ms": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "finished_at_ms": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        },
+        "required": [
+          "run_id",
+          "workflow_id",
+          "operation_id",
+          "mode",
+          "state",
+          "terminal",
+          "started_at_ms"
+        ],
+        "description": "Bounded list summary; read the detail endpoint for full content."
+      }
+    }
+  },
+  "x-private-adapter": {
+    "excluded_operations": [
+      "OpenEditorSession",
+      "CloseEditorSession"
+    ],
+    "omit_request_headers": [
+      "X-Yijie-Editor-Session"
+    ],
+    "credential": "K_AC",
+    "description": "Derived private provider surface. API validates E, Coze validates distinct K_AC and fixed scope/epoch; sessions are API-owned."
+  }
+}
