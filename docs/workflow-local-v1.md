@@ -69,3 +69,39 @@ session 状态。实际 dev/packaged WebView CSP 和 origin 行为仍须正常�
 源与生成物 → API/Coze/native 候选实现及 conformance → 第4步独立受控 local 栈 → 第5步 editor/WKWebView 资格与产品接入。当前默认关闭，不改变原 Chat 启动。回滚先关闭 workflow gate，撤下独立服务；保留独立工作流数据，不删除 volume，不回滚或改写旧 Chat 数据。
 
 第3步不启动 Docker、不执行实际 migration、不写业务数据，也不宣布 D4。默认历史测试链中的危险归档/注入式 fixture 未执行，按用户永久规则使用 safe/focused 检查。最终逐仓结果与未执行项由 FEAT-153 交付包登记。
+
+## 2026-09-13 原生 Coze 页面接入：1.3 本地候选
+
+本次 `contract-impact=breaking`（2026-09-14跨版本审计纠正原additive分类）：在已存在的有限 MessageChannel 输入上新增
+`request_history` UI 导航事件，让原生 Coze 工具栏打开 Desktop 已有的版本与运行记录面板。
+Owner 仍为段成威；producer 为 Coze 工作流页面，直接 consumer 为 Desktop Vue。
+API / Coze 服务仍消费同族来源锁，但不解释该 UI 事件。既有 1.2 的 description 与版本绑定
+删除候选均保留；HTTP、native command、身份、租户、凭据、数据库和执行能力不新增。
+
+唯一权威仍为 `jsonschema/workflow-editor/bridge-v1.schema.json`。事件只携带既有
+`protocol_version=1`、`request_id`、`bridge_id`、`generation` 和 `kind=request_history`；
+禁止 workflow ID、dirty、request、response 或 error payload。Desktop 只接受已完成 ready
+握手的当前端口与当前 bridge/generation，以当前 editor 选择资源，不能由 iframe 指定任意资源。
+该事件没有写入、副作用 receipt、持久重放或自动重试；重复点击只打开同一个本地面板。
+关闭端口后忽略消息，错误绑定按原有 protocol_mismatch 路径拒绝。会话到期不会销毁草稿；
+运行记录仍由原有独立查询能力读取，不因此重新授权编辑或启动执行。
+
+现有 connect/ready/request/response/dirty_changed/request_close 形状保持可读。
+旧 Desktop 的严格 validator 会拒绝新增 kind，并沿`protocol_mismatch`进入恢复状态，
+使画布iframe inert并显示重连遮罩；不会在该错误分支直接撤销API会话或销毁草稿。
+因此新 producer **不能**先对旧 consumer 发出 request_history。
+顺序是源与生成物 → Desktop consumer 与同源校验 → Coze producer；
+canonical bundle 来源锁和三个 consumer 锁必须一致后，才可在受控 local 栈启用。
+回滚时先停用新 producer（正常退出 App、停止栈），再成对回退 Desktop 与编辑器，保留工作流数据。
+这项定向启用不是旧 consumer 能忽略新 kind 的兼容承诺。结构breaking检查通过只证明
+其覆盖方向上的旧数据约束保持，不能证明新事件被旧reader接受。只允许同源配套local候选；
+不得把此提交作为支持新旧混用、滚动升级或生产激活的批准。
+
+本次计划版本为 `1.3.0-local-candidate`，仍未发布且不新增 supported tag。
+工作流增量 fallback 为原已交付来源 `32dd76298fd5ba2346fe2429f78b2b3e2f32a7e4`；
+另保留本族最初 fallback `811f38d6b104fa18477107e7ac91a85e19c445d1`、已发布支持基线
+`f16a497e1377f45747f8ff9292b4b60cf2027f88` 与 API 历史 pin
+`29317b6426578749dc698fc2ad32b986ee5c8e9f` 的既有族保护。
+dirty source 只用于本地候选；未来合并须先形成 Contracts 不可变完整 commit，再逐仓重新 pin。
+本轮消费者工程复核与测试不能替代正式 Owner 发布评审；实际检查结果和 App 资格由 FEAT-153
+本次原生页面接入交付记录单独登记，不继承旧 D4。

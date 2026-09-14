@@ -131,3 +131,41 @@ test("JSON Schema checker rejects a removed schema file", async (t) => {
     return true;
   });
 });
+
+test("JSON Schema checker accepts a new conditional kind excluded by the old required enum", async (t) => {
+  const baseline = {
+    ...baselineSchema(), required: ["state"],
+    allOf: [{ if: { properties: { state: { const: "draft" } } }, then: { required: ["id"] } }],
+  };
+  const directory = await createFixture(t, baseline);
+  await replaceSchema(directory, {
+    ...baseline,
+    properties: { ...baseline.properties, state: { type: "string", enum: ["draft", "running", "completed"] } },
+    allOf: [...baseline.allOf, { if: { properties: { state: { const: "completed" } } }, then: { required: ["id"] } }],
+  });
+  assert.match((await check(directory)).stdout, /No breaking JSON Schema changes/);
+});
+
+test("JSON Schema checker still rejects conditions that can restrict old values or omit the discriminator", async (t) => {
+  const baseline = {
+    ...baselineSchema(), required: ["state"],
+    allOf: [{ if: { properties: { state: { const: "draft" } } }, then: { required: ["id"] } }],
+  };
+  for (const mode of ["existing-value", "optional-discriminator", "else", "changed-existing-branch"]) {
+    const original = mode === "optional-discriminator" ? { ...baseline, required: [] } : baseline;
+    const directory = await createFixture(t, original);
+    const condition = { if: { properties: { state: { const: mode === "existing-value" ? "running" : "completed" } } }, then: { required: ["id"] } };
+    if (mode === "else") condition.else = false;
+    const previous = structuredClone(original.allOf);
+    if (mode === "changed-existing-branch") previous[0].then.required.push("values");
+    await replaceSchema(directory, {
+      ...original,
+      properties: { ...original.properties, state: { type: "string", enum: ["draft", "running", "completed"] } },
+      allOf: [...previous, condition],
+    });
+    await assert.rejects(check(directory), error => {
+      assert.match(error.stderr, /allOf branch count changed/, mode);
+      return true;
+    });
+  }
+});

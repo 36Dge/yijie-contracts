@@ -45,7 +45,10 @@ const check = process.argv.includes("--check");
 const lockPath = path.join(consumerRoot, "contracts/workflow-local.lock.json");
 const previousLock = existsSync(lockPath) ? JSON.parse(readFileSync(lockPath, "utf8")) : {};
 const commitArgument = process.argv.indexOf("--source-commit");
-const sourceCommit = commitArgument === -1 ? previousLock.source_commit : process.argv[commitArgument + 1];
+const localCandidate = process.argv.includes("--local-candidate");
+if (localCandidate && (check || commitArgument !== -1)) throw new Error("--local-candidate is an explicit local sync only; do not combine with --check or --source-commit.");
+if (localCandidate && lock.mode !== "local_candidate") throw new Error("Only a local_candidate source can drop an immutable consumer pin.");
+const sourceCommit = localCandidate ? undefined : commitArgument === -1 ? previousLock.source_commit : process.argv[commitArgument + 1];
 if (commitArgument !== -1 && !sourceCommit) throw new Error("Missing --source-commit value.");
 if (sourceCommit) {
   if (!/^[0-9a-f]{40}$/.test(sourceCommit)) throw new Error("Use a full immutable Contracts commit.");

@@ -8,6 +8,11 @@
 `29317b6426578749dc698fc2ad32b986ee5c8e9f`。三个基线不含本族，旧受支持族保持。
 源、Owner/consumers、摘要锁、检查及回滚见 [workflow-local-v1.md](workflow-local-v1.md)。
 
+2026-09-13 的 `1.3.0-local-candidate` 原生页面导航增量另使用已交付工作流来源
+`32dd76298fd5ba2346fe2429f78b2b3e2f32a7e4` 作为当前增量 fallback。仍保护上述三个历史
+基线，不新增 supported tag；新 request_history 仅在 Desktop consumer 就绪并与 Coze
+bundle 来源一致后发出。
+
 ## FEAT-144 未发布的当前线程状态扩展
 
 新增独立的 owner-only `native-thread-status` GET，直接投影固定 Runtime 的

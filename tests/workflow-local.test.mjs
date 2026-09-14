@@ -51,6 +51,19 @@ test("MessageChannel response has one typed outcome and generation binding", () 
   assert.equal(validate({ ...message, error: { code: "session_expired", message: "Reconnect editor" } }), false);
 });
 
+test("history navigation is bound to the editor without an operation or resource payload", () => {
+  const message = { protocol_version: 1, request_id: "history-1", kind: "request_history", bridge_id: "editor-1", generation: 1 };
+  assert.equal(validators.bridge(message), true);
+  for (const field of ["bridge_id", "generation"]) {
+    const missing = { ...message };
+    delete missing[field];
+    assert.equal(validators.bridge(missing), false);
+  }
+  for (const [field, value] of [["dirty", false], ["request", {}], ["response", {}], ["error", {}], ["workflow_id", "10001"]]) {
+    assert.equal(validators.bridge({ ...message, [field]: value }), false);
+  }
+});
+
 test("list summaries exclude bulk content while details retain it", () => {
   assert.equal(Object.hasOwn(schema.$defs.WorkflowSummary.properties, "canvas"), false);
   assert.equal(Object.hasOwn(schema.$defs.Workflow.properties, "canvas"), true);
@@ -58,4 +71,20 @@ test("list summaries exclude bulk content while details retain it", () => {
     assert.equal(Object.hasOwn(schema.$defs.RunSummary.properties, field), false);
     assert.equal(Object.hasOwn(schema.$defs.Run.properties, field), true);
   }
+});
+
+test("description is optional with a 600 code-point boundary and Unicode names remain compatible", () => {
+ const create = validates("CreateInput");
+ assert.equal(create({ name: "中文流程" }), true);
+ assert.equal(create({ name: "中文流程", description: "界".repeat(600) }), true);
+ assert.equal(create({ name: "中文流程", description: "界".repeat(601) }), false);
+ assert.equal(create({ name: "旧".repeat(80) }), true);
+});
+
+test("deletion is revision-bound and leaves legacy receipt kinds unchanged", () => {
+ assert.equal(validates('DeleteInput')({ workflow_id:'10001',expected_revision:'10002' }),true);
+ assert.equal(validates('DeleteInput')({ workflow_id:'10001' }),false);
+ assert.equal(validates('DeleteResult')({workflow_id:'10001',deleted:true}),true);
+ assert.equal(validates('DeleteResult')({workflow_id:'10001',deleted:false}),false);
+ assert.equal(validates('OperationKind')('delete'),false);
 });

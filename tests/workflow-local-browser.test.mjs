@@ -24,7 +24,8 @@ test("browser AOT matches source for ordinary Unicode and optional query fields"
 
 test("browser AOT validates existing connect ready and normal request-response envelope", () => {
   const common = { protocol_version: 1, request_id: "request-1", bridge_id: "bridge-1", generation: 1 };
-  for (const kind of ["connect", "ready", "request_close"]) assert.equal(validateBridge({ ...common, kind }), true);
+  for (const kind of ["connect", "ready", "request_close", "request_history"]) assert.equal(validateBridge({ ...common, kind }), true);
+  assert.equal(validateBridge({ ...common, kind: "request_history", dirty: false }), false);
   assert.equal(validateBridge({ ...common, kind: "dirty_changed", dirty: true }), true);
   assert.equal(validateBridge({ ...common, kind: "request", request: { ...common, operation: "bootstrap" } }), true);
   assert.equal(validateBridge({ ...common, kind: "response", response: { request_id: common.request_id } }), true);

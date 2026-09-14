@@ -117,6 +117,7 @@ const bridgeBranches = bridgeTypes.allOf.flatMap(rule => {
   return (oneOf ?? [{}]).map(outcome => {
     const result = structuredClone(baseType);
     result.properties.kind = rule.if.properties.kind;
+    Object.assign(result.properties, then.properties, outcome.properties);
     result.required = [...new Set([...bridgeTypes.required, ...(then.required ?? []), ...(outcome.required ?? [])])];
     for (const field of outcome.not?.required ?? []) result.properties[field] = { tsType: "never" };
     return result;

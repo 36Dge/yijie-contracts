@@ -28,6 +28,21 @@ func (e BootstrapNodeTypes) Valid() bool {
 	}
 }
 
+// Defines values for DeleteResultDeleted.
+const (
+	True DeleteResultDeleted = true
+)
+
+// Valid indicates whether the value is a known member of the DeleteResultDeleted enum.
+func (e DeleteResultDeleted) Valid() bool {
+	switch e {
+	case True:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for EditorExchangeInputProtocolVersion.
 const (
 	EditorExchangeInputProtocolVersionN1 EditorExchangeInputProtocolVersion = 1
@@ -394,6 +409,246 @@ func (e ServiceStatusState) Valid() bool {
 	}
 }
 
+// Defines values for OpenEditorSessionParamsXYijieWorkflowMetadata.
+const (
+	OpenEditorSessionParamsXYijieWorkflowMetadataDescriptionV1 OpenEditorSessionParamsXYijieWorkflowMetadata = "description-v1"
+)
+
+// Valid indicates whether the value is a known member of the OpenEditorSessionParamsXYijieWorkflowMetadata enum.
+func (e OpenEditorSessionParamsXYijieWorkflowMetadata) Valid() bool {
+	switch e {
+	case OpenEditorSessionParamsXYijieWorkflowMetadataDescriptionV1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CloseEditorSessionParamsXYijieWorkflowMetadata.
+const (
+	CloseEditorSessionParamsXYijieWorkflowMetadataDescriptionV1 CloseEditorSessionParamsXYijieWorkflowMetadata = "description-v1"
+)
+
+// Valid indicates whether the value is a known member of the CloseEditorSessionParamsXYijieWorkflowMetadata enum.
+func (e CloseEditorSessionParamsXYijieWorkflowMetadata) Valid() bool {
+	switch e {
+	case CloseEditorSessionParamsXYijieWorkflowMetadataDescriptionV1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ReadWorkflowOperationParamsXYijieWorkflowMetadata.
+const (
+	ReadWorkflowOperationParamsXYijieWorkflowMetadataDescriptionV1 ReadWorkflowOperationParamsXYijieWorkflowMetadata = "description-v1"
+)
+
+// Valid indicates whether the value is a known member of the ReadWorkflowOperationParamsXYijieWorkflowMetadata enum.
+func (e ReadWorkflowOperationParamsXYijieWorkflowMetadata) Valid() bool {
+	switch e {
+	case ReadWorkflowOperationParamsXYijieWorkflowMetadataDescriptionV1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for EnsureLocalPrincipalParamsXYijieWorkflowMetadata.
+const (
+	EnsureLocalPrincipalParamsXYijieWorkflowMetadataDescriptionV1 EnsureLocalPrincipalParamsXYijieWorkflowMetadata = "description-v1"
+)
+
+// Valid indicates whether the value is a known member of the EnsureLocalPrincipalParamsXYijieWorkflowMetadata enum.
+func (e EnsureLocalPrincipalParamsXYijieWorkflowMetadata) Valid() bool {
+	switch e {
+	case EnsureLocalPrincipalParamsXYijieWorkflowMetadataDescriptionV1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for GetWorkflowStatusParamsXYijieWorkflowMetadata.
+const (
+	GetWorkflowStatusParamsXYijieWorkflowMetadataDescriptionV1 GetWorkflowStatusParamsXYijieWorkflowMetadata = "description-v1"
+)
+
+// Valid indicates whether the value is a known member of the GetWorkflowStatusParamsXYijieWorkflowMetadata enum.
+func (e GetWorkflowStatusParamsXYijieWorkflowMetadata) Valid() bool {
+	switch e {
+	case GetWorkflowStatusParamsXYijieWorkflowMetadataDescriptionV1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ListWorkflowsParamsXYijieWorkflowMetadata.
+const (
+	ListWorkflowsParamsXYijieWorkflowMetadataDescriptionV1 ListWorkflowsParamsXYijieWorkflowMetadata = "description-v1"
+)
+
+// Valid indicates whether the value is a known member of the ListWorkflowsParamsXYijieWorkflowMetadata enum.
+func (e ListWorkflowsParamsXYijieWorkflowMetadata) Valid() bool {
+	switch e {
+	case ListWorkflowsParamsXYijieWorkflowMetadataDescriptionV1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CreateWorkflowParamsXYijieWorkflowMetadata.
+const (
+	CreateWorkflowParamsXYijieWorkflowMetadataDescriptionV1 CreateWorkflowParamsXYijieWorkflowMetadata = "description-v1"
+)
+
+// Valid indicates whether the value is a known member of the CreateWorkflowParamsXYijieWorkflowMetadata enum.
+func (e CreateWorkflowParamsXYijieWorkflowMetadata) Valid() bool {
+	switch e {
+	case CreateWorkflowParamsXYijieWorkflowMetadataDescriptionV1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DeleteWorkflowParamsXYijieWorkflowMetadata.
+const (
+	DeleteWorkflowParamsXYijieWorkflowMetadataDescriptionV1 DeleteWorkflowParamsXYijieWorkflowMetadata = "description-v1"
+)
+
+// Valid indicates whether the value is a known member of the DeleteWorkflowParamsXYijieWorkflowMetadata enum.
+func (e DeleteWorkflowParamsXYijieWorkflowMetadata) Valid() bool {
+	switch e {
+	case DeleteWorkflowParamsXYijieWorkflowMetadataDescriptionV1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ReadWorkflowParamsXYijieWorkflowMetadata.
+const (
+	ReadWorkflowParamsXYijieWorkflowMetadataDescriptionV1 ReadWorkflowParamsXYijieWorkflowMetadata = "description-v1"
+)
+
+// Valid indicates whether the value is a known member of the ReadWorkflowParamsXYijieWorkflowMetadata enum.
+func (e ReadWorkflowParamsXYijieWorkflowMetadata) Valid() bool {
+	switch e {
+	case ReadWorkflowParamsXYijieWorkflowMetadataDescriptionV1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SaveWorkflowParamsXYijieWorkflowMetadata.
+const (
+	SaveWorkflowParamsXYijieWorkflowMetadataDescriptionV1 SaveWorkflowParamsXYijieWorkflowMetadata = "description-v1"
+)
+
+// Valid indicates whether the value is a known member of the SaveWorkflowParamsXYijieWorkflowMetadata enum.
+func (e SaveWorkflowParamsXYijieWorkflowMetadata) Valid() bool {
+	switch e {
+	case SaveWorkflowParamsXYijieWorkflowMetadataDescriptionV1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for GetEditorBootstrapParamsXYijieWorkflowMetadata.
+const (
+	GetEditorBootstrapParamsXYijieWorkflowMetadataDescriptionV1 GetEditorBootstrapParamsXYijieWorkflowMetadata = "description-v1"
+)
+
+// Valid indicates whether the value is a known member of the GetEditorBootstrapParamsXYijieWorkflowMetadata enum.
+func (e GetEditorBootstrapParamsXYijieWorkflowMetadata) Valid() bool {
+	switch e {
+	case GetEditorBootstrapParamsXYijieWorkflowMetadataDescriptionV1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ListWorkflowRunsParamsXYijieWorkflowMetadata.
+const (
+	ListWorkflowRunsParamsXYijieWorkflowMetadataDescriptionV1 ListWorkflowRunsParamsXYijieWorkflowMetadata = "description-v1"
+)
+
+// Valid indicates whether the value is a known member of the ListWorkflowRunsParamsXYijieWorkflowMetadata enum.
+func (e ListWorkflowRunsParamsXYijieWorkflowMetadata) Valid() bool {
+	switch e {
+	case ListWorkflowRunsParamsXYijieWorkflowMetadataDescriptionV1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RunWorkflowParamsXYijieWorkflowMetadata.
+const (
+	RunWorkflowParamsXYijieWorkflowMetadataDescriptionV1 RunWorkflowParamsXYijieWorkflowMetadata = "description-v1"
+)
+
+// Valid indicates whether the value is a known member of the RunWorkflowParamsXYijieWorkflowMetadata enum.
+func (e RunWorkflowParamsXYijieWorkflowMetadata) Valid() bool {
+	switch e {
+	case RunWorkflowParamsXYijieWorkflowMetadataDescriptionV1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ReadWorkflowRunParamsXYijieWorkflowMetadata.
+const (
+	ReadWorkflowRunParamsXYijieWorkflowMetadataDescriptionV1 ReadWorkflowRunParamsXYijieWorkflowMetadata = "description-v1"
+)
+
+// Valid indicates whether the value is a known member of the ReadWorkflowRunParamsXYijieWorkflowMetadata enum.
+func (e ReadWorkflowRunParamsXYijieWorkflowMetadata) Valid() bool {
+	switch e {
+	case ReadWorkflowRunParamsXYijieWorkflowMetadataDescriptionV1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TestWorkflowParamsXYijieWorkflowMetadata.
+const (
+	TestWorkflowParamsXYijieWorkflowMetadataDescriptionV1 TestWorkflowParamsXYijieWorkflowMetadata = "description-v1"
+)
+
+// Valid indicates whether the value is a known member of the TestWorkflowParamsXYijieWorkflowMetadata enum.
+func (e TestWorkflowParamsXYijieWorkflowMetadata) Valid() bool {
+	switch e {
+	case TestWorkflowParamsXYijieWorkflowMetadataDescriptionV1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PublishWorkflowParamsXYijieWorkflowMetadata.
+const (
+	PublishWorkflowParamsXYijieWorkflowMetadataDescriptionV1 PublishWorkflowParamsXYijieWorkflowMetadata = "description-v1"
+)
+
+// Valid indicates whether the value is a known member of the PublishWorkflowParamsXYijieWorkflowMetadata enum.
+func (e PublishWorkflowParamsXYijieWorkflowMetadata) Valid() bool {
+	switch e {
+	case PublishWorkflowParamsXYijieWorkflowMetadataDescriptionV1:
+		return true
+	default:
+		return false
+	}
+}
+
 // Bootstrap defines model for Bootstrap.
 type Bootstrap struct {
 	Limits    Limits               `json:"limits"`
@@ -414,14 +669,38 @@ type CloseResult struct {
 
 // CreateInput defines model for CreateInput.
 type CreateInput struct {
-	Name string `json:"name"`
+	// Description Human-readable workflow purpose. Optional for legacy clients/resources; omitted create value means empty. Response field is emitted only after description-v1 HTTP opt-in. Not a prompt or an instruction to execute.
+	Description *string `json:"description,omitempty"`
+	Name        string  `json:"name"`
 }
 
 // CreateRequest defines model for CreateRequest.
 type CreateRequest struct {
+	// Description Human-readable workflow purpose. Optional for legacy clients/resources; omitted create value means empty. Response field is emitted only after description-v1 HTTP opt-in. Not a prompt or an instruction to execute.
+	Description *string     `json:"description,omitempty"`
 	Name        string      `json:"name"`
 	OperationId OperationId `json:"operation_id"`
 }
+
+// DeleteInput Native overview deletion after explicit UI confirmation. The original ID and revision are retained for all retries.
+type DeleteInput struct {
+	ExpectedRevision Identifier `json:"expected_revision"`
+	WorkflowId       Identifier `json:"workflow_id"`
+}
+
+// DeleteRequest Idempotent, revision-bound soft deletion. Repeating this exact ID/revision returns the same deletion result. No operation ID or OperationKind extension; audits are per attempt. A changed revision returns revision_conflict and requires a fresh user confirmation. Active execution returns run_busy. No physical graph/version/history deletion.
+type DeleteRequest struct {
+	ExpectedRevision Identifier `json:"expected_revision"`
+}
+
+// DeleteResult Confirmed soft deletion of the named owned resource. It no longer appears in normal lists and cannot be opened/saved/published/run. Existing API editor sessions are revoked. Durable graph/version/history and ownership rows are retained. Ambiguous failures must retry the original ID/revision, not infer success or change targets.
+type DeleteResult struct {
+	Deleted    DeleteResultDeleted `json:"deleted"`
+	WorkflowId Identifier          `json:"workflow_id"`
+}
+
+// DeleteResultDeleted defines model for DeleteResult.Deleted.
+type DeleteResultDeleted bool
 
 // EditorCloseInput defines model for EditorCloseInput.
 type EditorCloseInput struct {
@@ -718,7 +997,10 @@ type Version = string
 
 // Workflow Coze-owned graph and revision. Canvas is native JSON text; safe incomplete drafts may be saved. IDs are opaque strings, including decimal Coze IDs, never JS numbers.
 type Workflow struct {
-	Canvas           string     `json:"canvas"`
+	Canvas string `json:"canvas"`
+
+	// Description Human-readable workflow purpose. Optional for legacy clients/resources; omitted create value means empty. Response field is emitted only after description-v1 HTTP opt-in. Not a prompt or an instruction to execute.
+	Description      *string    `json:"description,omitempty"`
 	Name             string     `json:"name"`
 	PublishedVersion *Version   `json:"published_version,omitempty"`
 	Revision         Identifier `json:"revision"`
@@ -735,6 +1017,8 @@ type WorkflowList struct {
 
 // WorkflowSummary Bounded list summary; read the detail endpoint for full content.
 type WorkflowSummary struct {
+	// Description Human-readable workflow purpose. Optional for legacy clients/resources; omitted create value means empty. Response field is emitted only after description-v1 HTTP opt-in. Not a prompt or an instruction to execute.
+	Description      *string    `json:"description,omitempty"`
 	Name             string     `json:"name"`
 	PublishedVersion *Version   `json:"published_version,omitempty"`
 	Revision         Identifier `json:"revision"`
@@ -749,44 +1033,103 @@ type serviceBearerContextKey string
 // OpenEditorSessionParams defines parameters for OpenEditorSession.
 type OpenEditorSessionParams struct {
 	XYijieRunEpoch RunEpoch `json:"X-Yijie-Run-Epoch"`
+
+	// XYijieWorkflowMetadata Set description-v1 to opt into description response metadata. Missing or unrecognized values retain the legacy response projection. This is a capability selector, not authentication.
+	XYijieWorkflowMetadata *OpenEditorSessionParamsXYijieWorkflowMetadata `json:"X-Yijie-Workflow-Metadata,omitempty"`
 }
+
+// OpenEditorSessionParamsXYijieWorkflowMetadata defines parameters for OpenEditorSession.
+type OpenEditorSessionParamsXYijieWorkflowMetadata string
 
 // CloseEditorSessionParams defines parameters for CloseEditorSession.
 type CloseEditorSessionParams struct {
 	XYijieRunEpoch RunEpoch `json:"X-Yijie-Run-Epoch"`
+
+	// XYijieWorkflowMetadata Set description-v1 to opt into description response metadata. Missing or unrecognized values retain the legacy response projection. This is a capability selector, not authentication.
+	XYijieWorkflowMetadata *CloseEditorSessionParamsXYijieWorkflowMetadata `json:"X-Yijie-Workflow-Metadata,omitempty"`
 }
+
+// CloseEditorSessionParamsXYijieWorkflowMetadata defines parameters for CloseEditorSession.
+type CloseEditorSessionParamsXYijieWorkflowMetadata string
 
 // ReadWorkflowOperationParams defines parameters for ReadWorkflowOperation.
 type ReadWorkflowOperationParams struct {
 	XYijieRunEpoch RunEpoch `json:"X-Yijie-Run-Epoch"`
+
+	// XYijieWorkflowMetadata Set description-v1 to opt into description response metadata. Missing or unrecognized values retain the legacy response projection. This is a capability selector, not authentication.
+	XYijieWorkflowMetadata *ReadWorkflowOperationParamsXYijieWorkflowMetadata `json:"X-Yijie-Workflow-Metadata,omitempty"`
 }
+
+// ReadWorkflowOperationParamsXYijieWorkflowMetadata defines parameters for ReadWorkflowOperation.
+type ReadWorkflowOperationParamsXYijieWorkflowMetadata string
 
 // EnsureLocalPrincipalParams defines parameters for EnsureLocalPrincipal.
 type EnsureLocalPrincipalParams struct {
 	XYijieRunEpoch RunEpoch `json:"X-Yijie-Run-Epoch"`
+
+	// XYijieWorkflowMetadata Set description-v1 to opt into description response metadata. Missing or unrecognized values retain the legacy response projection. This is a capability selector, not authentication.
+	XYijieWorkflowMetadata *EnsureLocalPrincipalParamsXYijieWorkflowMetadata `json:"X-Yijie-Workflow-Metadata,omitempty"`
 }
+
+// EnsureLocalPrincipalParamsXYijieWorkflowMetadata defines parameters for EnsureLocalPrincipal.
+type EnsureLocalPrincipalParamsXYijieWorkflowMetadata string
 
 // GetWorkflowStatusParams defines parameters for GetWorkflowStatus.
 type GetWorkflowStatusParams struct {
 	XYijieRunEpoch RunEpoch `json:"X-Yijie-Run-Epoch"`
+
+	// XYijieWorkflowMetadata Set description-v1 to opt into description response metadata. Missing or unrecognized values retain the legacy response projection. This is a capability selector, not authentication.
+	XYijieWorkflowMetadata *GetWorkflowStatusParamsXYijieWorkflowMetadata `json:"X-Yijie-Workflow-Metadata,omitempty"`
 }
+
+// GetWorkflowStatusParamsXYijieWorkflowMetadata defines parameters for GetWorkflowStatus.
+type GetWorkflowStatusParamsXYijieWorkflowMetadata string
 
 // ListWorkflowsParams defines parameters for ListWorkflows.
 type ListWorkflowsParams struct {
 	Cursor         *string  `form:"cursor,omitempty" json:"cursor,omitempty"`
 	Limit          *int64   `form:"limit,omitempty" json:"limit,omitempty"`
 	XYijieRunEpoch RunEpoch `json:"X-Yijie-Run-Epoch"`
+
+	// XYijieWorkflowMetadata Set description-v1 to opt into description response metadata. Missing or unrecognized values retain the legacy response projection. This is a capability selector, not authentication.
+	XYijieWorkflowMetadata *ListWorkflowsParamsXYijieWorkflowMetadata `json:"X-Yijie-Workflow-Metadata,omitempty"`
 }
+
+// ListWorkflowsParamsXYijieWorkflowMetadata defines parameters for ListWorkflows.
+type ListWorkflowsParamsXYijieWorkflowMetadata string
 
 // CreateWorkflowParams defines parameters for CreateWorkflow.
 type CreateWorkflowParams struct {
 	XYijieRunEpoch RunEpoch `json:"X-Yijie-Run-Epoch"`
+
+	// XYijieWorkflowMetadata Set description-v1 to opt into description response metadata. Missing or unrecognized values retain the legacy response projection. This is a capability selector, not authentication.
+	XYijieWorkflowMetadata *CreateWorkflowParamsXYijieWorkflowMetadata `json:"X-Yijie-Workflow-Metadata,omitempty"`
 }
+
+// CreateWorkflowParamsXYijieWorkflowMetadata defines parameters for CreateWorkflow.
+type CreateWorkflowParamsXYijieWorkflowMetadata string
+
+// DeleteWorkflowParams defines parameters for DeleteWorkflow.
+type DeleteWorkflowParams struct {
+	XYijieRunEpoch RunEpoch `json:"X-Yijie-Run-Epoch"`
+
+	// XYijieWorkflowMetadata Set description-v1 to opt into description response metadata. Missing or unrecognized values retain the legacy response projection. This is a capability selector, not authentication.
+	XYijieWorkflowMetadata *DeleteWorkflowParamsXYijieWorkflowMetadata `json:"X-Yijie-Workflow-Metadata,omitempty"`
+}
+
+// DeleteWorkflowParamsXYijieWorkflowMetadata defines parameters for DeleteWorkflow.
+type DeleteWorkflowParamsXYijieWorkflowMetadata string
 
 // ReadWorkflowParams defines parameters for ReadWorkflow.
 type ReadWorkflowParams struct {
 	XYijieRunEpoch RunEpoch `json:"X-Yijie-Run-Epoch"`
+
+	// XYijieWorkflowMetadata Set description-v1 to opt into description response metadata. Missing or unrecognized values retain the legacy response projection. This is a capability selector, not authentication.
+	XYijieWorkflowMetadata *ReadWorkflowParamsXYijieWorkflowMetadata `json:"X-Yijie-Workflow-Metadata,omitempty"`
 }
+
+// ReadWorkflowParamsXYijieWorkflowMetadata defines parameters for ReadWorkflow.
+type ReadWorkflowParamsXYijieWorkflowMetadata string
 
 // SaveWorkflowParams defines parameters for SaveWorkflow.
 type SaveWorkflowParams struct {
@@ -794,7 +1137,13 @@ type SaveWorkflowParams struct {
 
 	// XYijieEditorSession Native-only E. Coze private adapter validates K_AC instead; this API session header is never forwarded to Coze.
 	XYijieEditorSession string `json:"X-Yijie-Editor-Session"`
+
+	// XYijieWorkflowMetadata Set description-v1 to opt into description response metadata. Missing or unrecognized values retain the legacy response projection. This is a capability selector, not authentication.
+	XYijieWorkflowMetadata *SaveWorkflowParamsXYijieWorkflowMetadata `json:"X-Yijie-Workflow-Metadata,omitempty"`
 }
+
+// SaveWorkflowParamsXYijieWorkflowMetadata defines parameters for SaveWorkflow.
+type SaveWorkflowParamsXYijieWorkflowMetadata string
 
 // GetEditorBootstrapParams defines parameters for GetEditorBootstrap.
 type GetEditorBootstrapParams struct {
@@ -802,24 +1151,48 @@ type GetEditorBootstrapParams struct {
 
 	// XYijieEditorSession Native-only E. Coze private adapter validates K_AC instead; this API session header is never forwarded to Coze.
 	XYijieEditorSession string `json:"X-Yijie-Editor-Session"`
+
+	// XYijieWorkflowMetadata Set description-v1 to opt into description response metadata. Missing or unrecognized values retain the legacy response projection. This is a capability selector, not authentication.
+	XYijieWorkflowMetadata *GetEditorBootstrapParamsXYijieWorkflowMetadata `json:"X-Yijie-Workflow-Metadata,omitempty"`
 }
+
+// GetEditorBootstrapParamsXYijieWorkflowMetadata defines parameters for GetEditorBootstrap.
+type GetEditorBootstrapParamsXYijieWorkflowMetadata string
 
 // ListWorkflowRunsParams defines parameters for ListWorkflowRuns.
 type ListWorkflowRunsParams struct {
 	Cursor         *string  `form:"cursor,omitempty" json:"cursor,omitempty"`
 	Limit          *int64   `form:"limit,omitempty" json:"limit,omitempty"`
 	XYijieRunEpoch RunEpoch `json:"X-Yijie-Run-Epoch"`
+
+	// XYijieWorkflowMetadata Set description-v1 to opt into description response metadata. Missing or unrecognized values retain the legacy response projection. This is a capability selector, not authentication.
+	XYijieWorkflowMetadata *ListWorkflowRunsParamsXYijieWorkflowMetadata `json:"X-Yijie-Workflow-Metadata,omitempty"`
 }
+
+// ListWorkflowRunsParamsXYijieWorkflowMetadata defines parameters for ListWorkflowRuns.
+type ListWorkflowRunsParamsXYijieWorkflowMetadata string
 
 // RunWorkflowParams defines parameters for RunWorkflow.
 type RunWorkflowParams struct {
 	XYijieRunEpoch RunEpoch `json:"X-Yijie-Run-Epoch"`
+
+	// XYijieWorkflowMetadata Set description-v1 to opt into description response metadata. Missing or unrecognized values retain the legacy response projection. This is a capability selector, not authentication.
+	XYijieWorkflowMetadata *RunWorkflowParamsXYijieWorkflowMetadata `json:"X-Yijie-Workflow-Metadata,omitempty"`
 }
+
+// RunWorkflowParamsXYijieWorkflowMetadata defines parameters for RunWorkflow.
+type RunWorkflowParamsXYijieWorkflowMetadata string
 
 // ReadWorkflowRunParams defines parameters for ReadWorkflowRun.
 type ReadWorkflowRunParams struct {
 	XYijieRunEpoch RunEpoch `json:"X-Yijie-Run-Epoch"`
+
+	// XYijieWorkflowMetadata Set description-v1 to opt into description response metadata. Missing or unrecognized values retain the legacy response projection. This is a capability selector, not authentication.
+	XYijieWorkflowMetadata *ReadWorkflowRunParamsXYijieWorkflowMetadata `json:"X-Yijie-Workflow-Metadata,omitempty"`
 }
+
+// ReadWorkflowRunParamsXYijieWorkflowMetadata defines parameters for ReadWorkflowRun.
+type ReadWorkflowRunParamsXYijieWorkflowMetadata string
 
 // TestWorkflowParams defines parameters for TestWorkflow.
 type TestWorkflowParams struct {
@@ -827,7 +1200,13 @@ type TestWorkflowParams struct {
 
 	// XYijieEditorSession Native-only E. Coze private adapter validates K_AC instead; this API session header is never forwarded to Coze.
 	XYijieEditorSession string `json:"X-Yijie-Editor-Session"`
+
+	// XYijieWorkflowMetadata Set description-v1 to opt into description response metadata. Missing or unrecognized values retain the legacy response projection. This is a capability selector, not authentication.
+	XYijieWorkflowMetadata *TestWorkflowParamsXYijieWorkflowMetadata `json:"X-Yijie-Workflow-Metadata,omitempty"`
 }
+
+// TestWorkflowParamsXYijieWorkflowMetadata defines parameters for TestWorkflow.
+type TestWorkflowParamsXYijieWorkflowMetadata string
 
 // PublishWorkflowParams defines parameters for PublishWorkflow.
 type PublishWorkflowParams struct {
@@ -835,13 +1214,22 @@ type PublishWorkflowParams struct {
 
 	// XYijieEditorSession Native-only E. Coze private adapter validates K_AC instead; this API session header is never forwarded to Coze.
 	XYijieEditorSession string `json:"X-Yijie-Editor-Session"`
+
+	// XYijieWorkflowMetadata Set description-v1 to opt into description response metadata. Missing or unrecognized values retain the legacy response projection. This is a capability selector, not authentication.
+	XYijieWorkflowMetadata *PublishWorkflowParamsXYijieWorkflowMetadata `json:"X-Yijie-Workflow-Metadata,omitempty"`
 }
+
+// PublishWorkflowParamsXYijieWorkflowMetadata defines parameters for PublishWorkflow.
+type PublishWorkflowParamsXYijieWorkflowMetadata string
 
 // OpenEditorSessionJSONRequestBody defines body for OpenEditorSession for application/json ContentType.
 type OpenEditorSessionJSONRequestBody = EditorOpenRequest
 
 // CreateWorkflowJSONRequestBody defines body for CreateWorkflow for application/json ContentType.
 type CreateWorkflowJSONRequestBody = CreateRequest
+
+// DeleteWorkflowJSONRequestBody defines body for DeleteWorkflow for application/json ContentType.
+type DeleteWorkflowJSONRequestBody = DeleteRequest
 
 // SaveWorkflowJSONRequestBody defines body for SaveWorkflow for application/json ContentType.
 type SaveWorkflowJSONRequestBody = SaveRequest

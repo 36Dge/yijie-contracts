@@ -38,6 +38,26 @@ function compareNumberConstraint(oldSchema, newSchema, key, direction, location,
   }
 }
 
+// A conditional constraint cannot narrow an old valid object when its only
+// discriminator is required and its const was excluded by the old enum.
+// Keep this proof deliberately small: no else, refs, compound conditions or
+// optional discriminators; all pre-existing branches must remain identical.
+function permitsNewDiscriminatorBranches(oldSchema, oldBranches, newBranches) {
+  if (oldSchema.type !== "object" || newBranches.length <= oldBranches.length) return false;
+  if (!oldBranches.every((branch, index) => isDeepStrictEqual(branch, newBranches[index]))) return false;
+  return newBranches.slice(oldBranches.length).every(branch => {
+    if (!branch || Object.keys(branch).sort().join(",") !== "if,then") return false;
+    if (!branch.if || Object.keys(branch.if).join(",") !== "properties") return false;
+    const properties = Object.entries(branch.if.properties ?? {});
+    if (properties.length !== 1) return false;
+    const [name, condition] = properties[0];
+    if (!condition || Object.keys(condition).join(",") !== "const") return false;
+    const oldValues = oldSchema.properties?.[name]?.enum;
+    return oldSchema.required?.includes(name) && Array.isArray(oldValues)
+      && !oldValues.some(value => isDeepStrictEqual(value, condition.const));
+  });
+}
+
 function compareSchema(oldSchema, newSchema, location, errors) {
   if (oldSchema === false || newSchema === true) return;
   if (oldSchema === true) {
@@ -222,6 +242,7 @@ function compareSchema(oldSchema, newSchema, location, errors) {
     }
     if (!oldBranches || !newBranches) continue;
     if (oldBranches.length !== newBranches.length) {
+      if (key === "allOf" && permitsNewDiscriminatorBranches(oldSchema, oldBranches, newBranches)) continue;
       errors.push(`${location}: ${key} branch count changed from ${oldBranches.length} to ${newBranches.length}`);
       continue;
     }
