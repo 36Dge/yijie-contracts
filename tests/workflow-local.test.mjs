@@ -9,6 +9,20 @@ const validators = workflowValidators();
 const validates = name => validators.components[name];
 const operation = "15300000-0000-4000-8000-000000000001";
 
+test("page protection retains the existing boolean envelope for drafts, UI design and query context", () => {
+  const common = { protocol_version: 1, request_id: "protection-1", kind: "dirty_changed", bridge_id: "editor-1", generation: 1 };
+  // These descriptions are test cases, not new wire fields or saved content.
+  const cases = [
+    ["unsaved ordinary draft", true],
+    ["in-memory ecommerce UI design", true],
+    ["operation query context", true],
+    ["no remaining page protection", false],
+  ];
+  for (const [reason, dirty] of cases) {
+    assert.equal(validators.bridge({ ...common, dirty }), true, reason);
+  }
+});
+
 test("workflow source separates native secret responses from renderer views", () => {
   const secret = { session_id: "session-1", workflow_id: "10001", secret: randomBytes(32).toString("hex"), run_epoch: operation, expires_at_ms: 300000 };
   assert.equal(validates("EditorSessionSecret")(secret), true);

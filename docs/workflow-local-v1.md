@@ -30,12 +30,12 @@ Owner：段成威；实现职责分别为 Contracts、API、Coze、Desktop 仓�
 ## 生成、验证与本地来源
 
 ```sh
-pnpm generate:workflow
-pnpm check-generated:workflow
-pnpm test:workflow
-pnpm sync:workflow api
-pnpm sync:workflow coze
-pnpm sync:workflow desktop
+make workflow-generate
+make workflow-check
+make workflow-test
+node scripts/sync-workflow-consumer.mjs api --local-candidate
+node scripts/sync-workflow-consumer.mjs coze --local-candidate
+node scripts/sync-workflow-consumer.mjs desktop --local-candidate
 ```
 
 `YIJIE_GO` 可选择已验证的原厂 Go 工具链路径。Go/TS 使用当前仓锁定的 generator；Rust 是本脚本支持范围明确的 serde 类型投影，标量校验由源 schema 驱动的 validator 执行。JSON Schema、私有 OpenAPI、TS MessageChannel 类型均从同源生成，不手改。正常 `generate:safe` 也生成全部这些输出，`validate:schemas` 实际验证带摘要校验的投影及 bridge，不静默跳过新 schema。
@@ -105,3 +105,42 @@ canonical bundle 来源锁和三个 consumer 锁必须一致后，才可在受�
 dirty source 只用于本地候选；未来合并须先形成 Contracts 不可变完整 commit，再逐仓重新 pin。
 本轮消费者工程复核与测试不能替代正式 Owner 发布评审；实际检查结果和 App 资格由 FEAT-153
 本次原生页面接入交付记录单独登记，不继承旧 D4。
+
+## 2026-09-15 电商节点 UI 设计：1.4 本地候选
+
+本次 FEAT-154 `contract-impact=semantic`：扩大并明确已有 `dirty_changed.dirty` 的
+页面离开保护语义。Owner 段成威已确认 D0 方案及纯前端范围，并授权第 2 步本地实现。
+Producer 为 Coze editor，直接 consumer 为 Desktop Vue；API、Coze 服务仅同步本族
+来源锁，不解释该 UI 状态。候选版本为 `1.4.0-local-candidate`，不新增事件 kind、字段、
+HTTP 路径、DTO、native command、认证、权限或执行能力；OpenAPI 仅更新 info.version。
+
+`dirty=true` 表示当前页面包含离开会失去的可保存草稿差异、只在本页内存保留且不支持
+持久保存的 UI 设计状态，或待确认操作的查询上下文。`false` 只表示当前 producer 确认
+上述条件都不存在。该保护位不是 save_draft 接受条件、执行权限、保存结果或业务终态；
+consumer 不得据此自动保存、试运行、发布或取消既有操作，也不得把它当作历史执行的
+busy 状态。设计 active 时，producer 独立禁止保存/试运行/内部发布，不发送设计图。
+
+消息仍绑定当前已 ready 的 port / bridge_id / generation；重连必须重投当前保护值，
+不能清空仍在页面的本地内容。`request_close` 只请求宿主尝试应用内导航，由统一路由
+保护确认后正常关闭会话；取消或关闭失败保留页面。`request_history` 只打开原同页
+面板，不卸载图、不自动保存或执行；用户仍可明确选择运行已有的服务端发布版本。
+本次不新增原生窗口关闭或 App 退出保护，关闭窗口、退出、刷新或重启不保证保留设计。
+
+方向性兼容：旧 Coze 的草稿 dirty 和 runs.pending 均被上述保护语义覆盖；新 Coze
+发送的仍是旧 Desktop 能读取的相同 boolean，新旧 Desktop 都只将它用于页面确认。
+Desktop → Coze 的 connect/response 及 native/API/Coze HTTP 语义均不变。
+1.2 Desktop 无法接收 1.3 request_history 的既有不兼容仍然存在；1.4 不增加混用承诺，
+仅启用同源配套的本地候选。自动结构校验不能替代此语义与方向性结论。
+
+顺序：源描述/版本与普通合成 conformance → canonical workflow 生成与检查 →
+Desktop consumer、Coze producer 和三个 consumer 锁同步 → 受控本地资格验证。
+当前实现前基线 `0543b21c61c39ea1d18833b25c5d376a32913979` 为本次增量比较点；
+同时复核本族 fallback `32dd76298fd5ba2346fe2429f78b2b3e2f32a7e4`、最初 fallback
+`811f38d6b104fa18477107e7ac91a85e19c445d1`、supported
+`f16a497e1377f45747f8ff9292b4b60cf2027f88` 及 API 历史 pin
+`29317b6426578749dc698fc2ad32b986ee5c8e9f`。本地锁如实记录
+`local_candidate` / `release=false`，没有伪造 source_commit，也没有创建提交、tag 或发布。
+检查的实际结果及未执行项登记在 FEAT-154 第 2 步证据中。
+
+回滚需正常退出 App、正常停止本地工作流栈，成对回退 producer/consumer/来源锁；
+保留原三节点服务数据。内存设计不持久化，退出后不能恢复。本次没有业务/模型/媒体调用。

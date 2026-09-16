@@ -31,6 +31,17 @@ test("browser AOT validates existing connect ready and normal request-response e
   assert.equal(validateBridge({ ...common, kind: "response", response: { request_id: common.request_id } }), true);
 });
 
+test("browser and source agree on protected and cleared page notifications after reconnect", () => {
+  const source = workflowValidators();
+  for (const generation of [1, 2]) {
+    for (const dirty of [true, false]) {
+      const message = { protocol_version: 1, request_id: `page-${generation}-${dirty}`, bridge_id: `bridge-${generation}`, generation, kind: "dirty_changed", dirty };
+      assert.equal(source.bridge(message), true);
+      assert.equal(validateBridge(message), true);
+    }
+  }
+});
+
 test("browser module runs with runtime string code generation disabled", () => {
   const file = "sdks/typescript/src/browser/workflow-local-validator.gen.js";
   const text = readFileSync(file, "utf8");
