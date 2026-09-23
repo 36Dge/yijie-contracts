@@ -3,7 +3,7 @@
   "contract_version": "0.1.0",
   "mode": "local_candidate",
   "release": false,
-  "base_commit": "db4458fe94572c4df41a114005d54a049bb79b1f",
+  "base_commit": "ccbae065f0294db25562c90cd4d39cf112129d23",
   "sources": [
     {
       "path": "jsonschema/scheduled-tasks/draft-execution-v1.schema.json",
@@ -19,7 +19,7 @@
     },
     {
       "path": "scripts/generate-scheduled-draft.mjs",
-      "sha256": "ccd015ec694b681248db12ed267d363cf7810a0bf047f5d01a7085e15d8a758f"
+      "sha256": "72bedaa8a09eb8aeab4eebefdd72c9c177d7b3e0225dbc2b1bc5a50ee65ba8ac"
     },
     {
       "path": "scripts/sync-scheduled-draft.mjs",
