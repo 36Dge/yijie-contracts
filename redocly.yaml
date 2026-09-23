@@ -1,4 +1,6 @@
 apis:
+  native-turn-timing@v1:
+    root: ./openapi/native-turn-timing/native-turn-timing.yaml
   public@v1:
     root: ./openapi/public/public.yaml
   admin@v1:

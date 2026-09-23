@@ -1,5 +1,21 @@
 # Supported Contract Baselines
 
+## FEAT-155 4D-1 未发布原生时间查询
+
+独立native-turn-timing v0.1.0 local candidate复用下列FEAT-155四个完整比较基线，不新增supported tag。
+旧native v1/v2及SSE不扩字段；Host additive provider-first，Desktop候选SQL26和私有IPC另按breaking兼容。
+来源、单位、未知和回退见[native-turn-timing-v1.md](native-turn-timing-v1.md)。
+
+## FEAT-155 原生input-only独立本地候选
+
+新增Runtime权威派生投影，不替换旧Runtime/Host公开契约，不新增supported tag。继续检查FEAT-155下列四个基线；来源、唯一Host消费者、源锁和回退见[投影说明](../compatibility/runtime-input-only/README.md)。实际原生start/resume、普通会话与默认未启用方向由Host定向集成另证，结构breaking检查不能替代此证明。
+
+## FEAT-155 未发布的只读恢复独立契约
+
+第二阶段新增scheduled-plan v0.1.0 native数据族，沿用下列四个兼容基线；复用原计划草案时间/目标定义，不改第一阶段查询。该族未发布、未注册renderer入口，详见[scheduled-plan-v1.md](scheduled-plan-v1.md)。Desktop SQLCipher 16兼容由其私有migration负责，普通迁移目标仍为15。
+
+scheduled-task-recovery v0.1.0及计划草案v1为local candidate；fallback为`db4458fe94572c4df41a114005d54a049bb79b1f`，已发布支持基线`f16a497e1377f45747f8ff9292b4b60cf2027f88`，本机native来源`6f632f155eacdaf93df0e0b00b5dab9e369c5442`和`811f38d6b104fa18477107e7ac91a85e19c445d1`。新族在这些基线不存在，旧族不改；不新增supported tag。见[来源与兼容说明](scheduled-task-recovery-v1.md)。
+
 ## FEAT-153 未发布的工作流独立契约
 
 `workflow-local` / editor bridge v1 为新的本地候选族，不新增已发布支持 tag。
@@ -370,3 +386,7 @@ breaking/semantic 评审必须覆盖表中所有 `supported` 和 `deprecating` �
 仍在生产兼容窗口的已登记历史/紧急例外 commit。只有观测证明无有效 consumer，且弃用
 流程完成后，才能把基线改为 `unsupported` 并停止检查。未打 tag 的生产 commit 只允许
 作为已登记的历史遗留或获批紧急例外，不能成为新发布的常规路径。
+
+## FEAT-155 3A scheduled execution local candidate
+
+Independent `execution-v1` family 0.1.0 is sourced by `jsonschema/scheduled-tasks/execution-v1.schema.json`; native Rust/TypeScript projections and candidate digests are recorded in `compatibility/scheduled-execution/source.lock.json`. Source semantics and activation order: [scheduled-execution-v1.md](scheduled-execution-v1.md). No published tag, Host producer or executable scheduled consumer is activated. Desktop's private schema 17 is breaking for older readers, despite the additive source family.

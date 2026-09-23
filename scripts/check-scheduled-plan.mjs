@@ -1,0 +1,22 @@
+import Ajv2020 from 'ajv/dist/2020.js';
+import addFormats from 'ajv-formats';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const read = file => readFileSync(path.join(root, file));
+const lockName = 'compatibility/scheduled-plan/source.lock.json';
+const lock = JSON.parse(read(lockName));
+for (const file of [...lock.sources, ...lock.generated]) assert.equal(createHash('sha256').update(read(file.path)).digest('hex'), file.sha256, file.path);
+const before = new Map([lockName, ...lock.generated.map(file => file.path)].map(file => [file, read(file)]));
+execFileSync(process.execPath, ['scripts/generate-scheduled-plan.mjs', '--base-commit', lock.base_commit], { cwd: root, stdio: 'inherit' });
+for (const [file, bytes] of before) assert.deepEqual(read(file), bytes, `Generation drift: ${file}`);
+console.log('Scheduled plan deterministic source/generated checks passed.');
+
+const schema = JSON.parse(read('sdks/jsonschema/scheduled-plan.schema.json'));
+const ajv = new Ajv2020({strict:true,allErrors:true}); addFormats(ajv); ajv.addSchema(schema);
+for (const name of Object.keys(schema.$defs)) ajv.compile({$ref:schema.$id+'#/$defs/'+name});
+console.log('Strict scheduled-plan schema lint passed.');

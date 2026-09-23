@@ -2,6 +2,7 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
+import { registerScheduledAnnotations } from "./scheduled-schema-source.mjs";
 import { workflowValidators } from "./workflow-schema-validator.mjs";
 
 async function findSchemas(dir) {
@@ -16,6 +17,7 @@ async function findSchemas(dir) {
 
 const ajv = new Ajv2020({ allErrors: true, strict: true });
 addFormats(ajv);
+registerScheduledAnnotations(ajv);
 for (const keyword of [
   "x-yijie-max-reasoning-items-per-turn",
   "x-yijie-max-reasoning-utf8-bytes-per-turn",
@@ -53,7 +55,8 @@ ajv.addKeyword({
     return isDeadlineOutcome ? resolvedAt >= expiresAt : resolvedAt < expiresAt;
   },
 });
-const files = await findSchemas("jsonschema");
+const files = (await findSchemas("jsonschema")).sort();
+const documents = [];
 for (const file of files) {
   if (file === "jsonschema/workflow-editor/bridge-v1.schema.json") {
     // Resolve OpenAPI-backed components through the digest-checked projection.
@@ -61,7 +64,19 @@ for (const file of files) {
     continue;
   }
   const schema = JSON.parse(await readFile(file, "utf8"));
+  ajv.addSchema(schema);
+  documents.push({ file, schema });
+}
+
+// Register all canonical sources before compilation so directory order is not
+// part of the contract. The workflow check above retains its existing authority.
+for (const { file, schema } of documents) {
   ajv.compile(schema);
+  if (file.startsWith("jsonschema/scheduled-tasks/")) {
+    for (const name of Object.keys(schema.$defs ?? {})) {
+      ajv.compile({ $ref: `${schema.$id}#/$defs/${name}` });
+    }
+  }
 }
 
 console.log(`Validated ${files.length} JSON Schema documents.`);

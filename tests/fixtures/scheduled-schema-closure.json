@@ -1,0 +1,4792 @@
+{
+  "description": "Ordinary semantic boundary cases evaluated against pre-closure source/projections, before source edits. Active validators remain strict; old validation was used only to capture this baseline.",
+  "source_sha256": {
+    "draft": "e1c56a242edcc413ecb6ae68849ae821a1645a4ac2530d315ee62ddee904fb19",
+    "plan": "9b4bb45e3adf68807a71aeda361b6ea288d57764855fb2844c1d02cecde96a7b",
+    "execution": "b6c9763e00285d75c79c21b195929c52ad997f050ecadeb735f51507c7609df9",
+    "recovery": "905dab1e0d4f8ad7ae080263b573ff91a65c0b0f2c80de44eda6f7ebc8d5113a"
+  },
+  "cases": [
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "base-0",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "daily",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "dedicated_chat"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "unknown-field-0",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "daily",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "dedicated_chat"
+        },
+        "ordinary_extra": "unused"
+      },
+      "valid": false
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "omit-schema_version-0",
+      "value": {
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "daily",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "dedicated_chat"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "null-schema_version-0",
+      "value": {
+        "schema_version": null,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "daily",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "dedicated_chat"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "omit-kind-0",
+      "value": {
+        "schema_version": 1,
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "daily",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "dedicated_chat"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "null-kind-0",
+      "value": {
+        "schema_version": 1,
+        "kind": null,
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "daily",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "dedicated_chat"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "omit-name-0",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "daily",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "dedicated_chat"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "null-name-0",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": null,
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "daily",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "dedicated_chat"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "omit-content-0",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "schedule": {
+          "frequency": "daily",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "dedicated_chat"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "null-content-0",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": null,
+        "schedule": {
+          "frequency": "daily",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "dedicated_chat"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "omit-schedule-0",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "target": {
+          "mode": "dedicated_chat"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "null-schedule-0",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": null,
+        "target": {
+          "mode": "dedicated_chat"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "omit-target-0",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "daily",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "null-target-0",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "daily",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": null
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "base-0",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "next_at": 1789693200,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 1,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "paused",
+        "target_state": "unbound",
+        "tzdb_version": "2025b"
+      },
+      "valid": true
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "unknown-field-0",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "next_at": 1789693200,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 1,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "paused",
+        "target_state": "unbound",
+        "tzdb_version": "2025b",
+        "ordinary_extra": "unused"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "omit-definition-0",
+      "value": {
+        "effective_from": 1789689600,
+        "next_at": 1789693200,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 1,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "paused",
+        "target_state": "unbound",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "null-definition-0",
+      "value": {
+        "definition": null,
+        "effective_from": 1789689600,
+        "next_at": 1789693200,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 1,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "paused",
+        "target_state": "unbound",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "omit-effective_from-0",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "next_at": 1789693200,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 1,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "paused",
+        "target_state": "unbound",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "null-effective_from-0",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": null,
+        "next_at": 1789693200,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 1,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "paused",
+        "target_state": "unbound",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "omit-next_at-0",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 1,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "paused",
+        "target_state": "unbound",
+        "tzdb_version": "2025b"
+      },
+      "valid": true
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "null-next_at-0",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "next_at": null,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 1,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "paused",
+        "target_state": "unbound",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "omit-plan_id-0",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "next_at": 1789693200,
+        "revision": 1,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "paused",
+        "target_state": "unbound",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "null-plan_id-0",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "next_at": 1789693200,
+        "plan_id": null,
+        "revision": 1,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "paused",
+        "target_state": "unbound",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "omit-revision-0",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "next_at": 1789693200,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "paused",
+        "target_state": "unbound",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "null-revision-0",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "next_at": 1789693200,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": null,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "paused",
+        "target_state": "unbound",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "omit-rule_version-0",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "next_at": 1789693200,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 1,
+        "schedule_epoch": 1,
+        "state": "paused",
+        "target_state": "unbound",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "null-rule_version-0",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "next_at": 1789693200,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 1,
+        "rule_version": null,
+        "schedule_epoch": 1,
+        "state": "paused",
+        "target_state": "unbound",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "omit-schedule_epoch-0",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "next_at": 1789693200,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 1,
+        "rule_version": 1,
+        "state": "paused",
+        "target_state": "unbound",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "null-schedule_epoch-0",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "next_at": 1789693200,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 1,
+        "rule_version": 1,
+        "schedule_epoch": null,
+        "state": "paused",
+        "target_state": "unbound",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "omit-state-0",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "next_at": 1789693200,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 1,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "target_state": "unbound",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "null-state-0",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "next_at": 1789693200,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 1,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": null,
+        "target_state": "unbound",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "omit-target_state-0",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "next_at": 1789693200,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 1,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "paused",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "null-target_state-0",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "next_at": 1789693200,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 1,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "paused",
+        "target_state": null,
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "omit-tzdb_version-0",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "next_at": 1789693200,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 1,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "paused",
+        "target_state": "unbound"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "null-tzdb_version-0",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "next_at": 1789693200,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 1,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "paused",
+        "target_state": "unbound",
+        "tzdb_version": null
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "base-1",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 2,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "deleted",
+        "target_state": "missing",
+        "tzdb_version": "2025b"
+      },
+      "valid": true
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "unknown-field-1",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 2,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "deleted",
+        "target_state": "missing",
+        "tzdb_version": "2025b",
+        "ordinary_extra": "unused"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "omit-definition-1",
+      "value": {
+        "effective_from": 1789689600,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 2,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "deleted",
+        "target_state": "missing",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "null-definition-1",
+      "value": {
+        "definition": null,
+        "effective_from": 1789689600,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 2,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "deleted",
+        "target_state": "missing",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "omit-effective_from-1",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 2,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "deleted",
+        "target_state": "missing",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "null-effective_from-1",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": null,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 2,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "deleted",
+        "target_state": "missing",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "omit-plan_id-1",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "revision": 2,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "deleted",
+        "target_state": "missing",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "null-plan_id-1",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "plan_id": null,
+        "revision": 2,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "deleted",
+        "target_state": "missing",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "omit-revision-1",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "deleted",
+        "target_state": "missing",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "null-revision-1",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": null,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "deleted",
+        "target_state": "missing",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "omit-rule_version-1",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 2,
+        "schedule_epoch": 1,
+        "state": "deleted",
+        "target_state": "missing",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "null-rule_version-1",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 2,
+        "rule_version": null,
+        "schedule_epoch": 1,
+        "state": "deleted",
+        "target_state": "missing",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "omit-schedule_epoch-1",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 2,
+        "rule_version": 1,
+        "state": "deleted",
+        "target_state": "missing",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "null-schedule_epoch-1",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 2,
+        "rule_version": 1,
+        "schedule_epoch": null,
+        "state": "deleted",
+        "target_state": "missing",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "omit-state-1",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 2,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "target_state": "missing",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "null-state-1",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 2,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": null,
+        "target_state": "missing",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "omit-target_state-1",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 2,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "deleted",
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "null-target_state-1",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 2,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "deleted",
+        "target_state": null,
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "omit-tzdb_version-1",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 2,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "deleted",
+        "target_state": "missing"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "PlanView",
+      "name": "null-tzdb_version-1",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "effective_from": 1789689600,
+        "plan_id": "01a0b2e1-1be6-7cc1-b536-b032cf2e4834",
+        "revision": 2,
+        "rule_version": 1,
+        "schedule_epoch": 1,
+        "state": "deleted",
+        "target_state": "missing",
+        "tzdb_version": null
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "SavePlanRequest",
+      "name": "base-0",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "request_id": "01a0b2e1-1be5-7743-ad80-46110eb183ae"
+      },
+      "valid": true
+    },
+    {
+      "family": "plan",
+      "definition": "SavePlanRequest",
+      "name": "unknown-field-0",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "request_id": "01a0b2e1-1be5-7743-ad80-46110eb183ae",
+        "ordinary_extra": "unused"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "SavePlanRequest",
+      "name": "omit-definition-0",
+      "value": {
+        "request_id": "01a0b2e1-1be5-7743-ad80-46110eb183ae"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "SavePlanRequest",
+      "name": "null-definition-0",
+      "value": {
+        "definition": null,
+        "request_id": "01a0b2e1-1be5-7743-ad80-46110eb183ae"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "SavePlanRequest",
+      "name": "omit-request_id-0",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "SavePlanRequest",
+      "name": "null-request_id-0",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "request_id": null
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "ScheduleErrorCode",
+      "name": "base-0",
+      "value": "execution_not_ready",
+      "valid": true
+    },
+    {
+      "family": "plan",
+      "definition": "TimePreview",
+      "name": "base-0",
+      "value": {
+        "candidates_examined": 2,
+        "logical_slot": "2026-03-09T02:30",
+        "next_at": 1773037800,
+        "rule_version": 1,
+        "skipped_slots": [
+          "2026-03-08T02:30"
+        ],
+        "tzdb_version": "2025b"
+      },
+      "valid": true
+    },
+    {
+      "family": "plan",
+      "definition": "TimePreview",
+      "name": "unknown-field-0",
+      "value": {
+        "candidates_examined": 2,
+        "logical_slot": "2026-03-09T02:30",
+        "next_at": 1773037800,
+        "rule_version": 1,
+        "skipped_slots": [
+          "2026-03-08T02:30"
+        ],
+        "tzdb_version": "2025b",
+        "ordinary_extra": "unused"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "TimePreview",
+      "name": "omit-candidates_examined-0",
+      "value": {
+        "logical_slot": "2026-03-09T02:30",
+        "next_at": 1773037800,
+        "rule_version": 1,
+        "skipped_slots": [
+          "2026-03-08T02:30"
+        ],
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "TimePreview",
+      "name": "null-candidates_examined-0",
+      "value": {
+        "candidates_examined": null,
+        "logical_slot": "2026-03-09T02:30",
+        "next_at": 1773037800,
+        "rule_version": 1,
+        "skipped_slots": [
+          "2026-03-08T02:30"
+        ],
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "TimePreview",
+      "name": "omit-logical_slot-0",
+      "value": {
+        "candidates_examined": 2,
+        "next_at": 1773037800,
+        "rule_version": 1,
+        "skipped_slots": [
+          "2026-03-08T02:30"
+        ],
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "TimePreview",
+      "name": "null-logical_slot-0",
+      "value": {
+        "candidates_examined": 2,
+        "logical_slot": null,
+        "next_at": 1773037800,
+        "rule_version": 1,
+        "skipped_slots": [
+          "2026-03-08T02:30"
+        ],
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "TimePreview",
+      "name": "omit-next_at-0",
+      "value": {
+        "candidates_examined": 2,
+        "logical_slot": "2026-03-09T02:30",
+        "rule_version": 1,
+        "skipped_slots": [
+          "2026-03-08T02:30"
+        ],
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "TimePreview",
+      "name": "null-next_at-0",
+      "value": {
+        "candidates_examined": 2,
+        "logical_slot": "2026-03-09T02:30",
+        "next_at": null,
+        "rule_version": 1,
+        "skipped_slots": [
+          "2026-03-08T02:30"
+        ],
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "TimePreview",
+      "name": "omit-rule_version-0",
+      "value": {
+        "candidates_examined": 2,
+        "logical_slot": "2026-03-09T02:30",
+        "next_at": 1773037800,
+        "skipped_slots": [
+          "2026-03-08T02:30"
+        ],
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "TimePreview",
+      "name": "null-rule_version-0",
+      "value": {
+        "candidates_examined": 2,
+        "logical_slot": "2026-03-09T02:30",
+        "next_at": 1773037800,
+        "rule_version": null,
+        "skipped_slots": [
+          "2026-03-08T02:30"
+        ],
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "TimePreview",
+      "name": "omit-skipped_slots-0",
+      "value": {
+        "candidates_examined": 2,
+        "logical_slot": "2026-03-09T02:30",
+        "next_at": 1773037800,
+        "rule_version": 1,
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "TimePreview",
+      "name": "null-skipped_slots-0",
+      "value": {
+        "candidates_examined": 2,
+        "logical_slot": "2026-03-09T02:30",
+        "next_at": 1773037800,
+        "rule_version": 1,
+        "skipped_slots": null,
+        "tzdb_version": "2025b"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "TimePreview",
+      "name": "omit-tzdb_version-0",
+      "value": {
+        "candidates_examined": 2,
+        "logical_slot": "2026-03-09T02:30",
+        "next_at": 1773037800,
+        "rule_version": 1,
+        "skipped_slots": [
+          "2026-03-08T02:30"
+        ]
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "TimePreview",
+      "name": "null-tzdb_version-0",
+      "value": {
+        "candidates_examined": 2,
+        "logical_slot": "2026-03-09T02:30",
+        "next_at": 1773037800,
+        "rule_version": 1,
+        "skipped_slots": [
+          "2026-03-08T02:30"
+        ],
+        "tzdb_version": null
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantConfirmation",
+      "name": "base-0",
+      "value": {
+        "expected_revision": 1,
+        "expires_at": 1789717189,
+        "max_runs": 2,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "request_id": "01a0b33e-3604-78c0-995c-4aeb106cbb1e"
+      },
+      "valid": true
+    },
+    {
+      "family": "execution",
+      "definition": "GrantConfirmation",
+      "name": "unknown-field-0",
+      "value": {
+        "expected_revision": 1,
+        "expires_at": 1789717189,
+        "max_runs": 2,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "request_id": "01a0b33e-3604-78c0-995c-4aeb106cbb1e",
+        "ordinary_extra": "unused"
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantConfirmation",
+      "name": "omit-expected_revision-0",
+      "value": {
+        "expires_at": 1789717189,
+        "max_runs": 2,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "request_id": "01a0b33e-3604-78c0-995c-4aeb106cbb1e"
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantConfirmation",
+      "name": "null-expected_revision-0",
+      "value": {
+        "expected_revision": null,
+        "expires_at": 1789717189,
+        "max_runs": 2,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "request_id": "01a0b33e-3604-78c0-995c-4aeb106cbb1e"
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantConfirmation",
+      "name": "omit-expires_at-0",
+      "value": {
+        "expected_revision": 1,
+        "max_runs": 2,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "request_id": "01a0b33e-3604-78c0-995c-4aeb106cbb1e"
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantConfirmation",
+      "name": "null-expires_at-0",
+      "value": {
+        "expected_revision": 1,
+        "expires_at": null,
+        "max_runs": 2,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "request_id": "01a0b33e-3604-78c0-995c-4aeb106cbb1e"
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantConfirmation",
+      "name": "omit-max_runs-0",
+      "value": {
+        "expected_revision": 1,
+        "expires_at": 1789717189,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "request_id": "01a0b33e-3604-78c0-995c-4aeb106cbb1e"
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantConfirmation",
+      "name": "null-max_runs-0",
+      "value": {
+        "expected_revision": 1,
+        "expires_at": 1789717189,
+        "max_runs": null,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "request_id": "01a0b33e-3604-78c0-995c-4aeb106cbb1e"
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantConfirmation",
+      "name": "omit-plan_id-0",
+      "value": {
+        "expected_revision": 1,
+        "expires_at": 1789717189,
+        "max_runs": 2,
+        "request_id": "01a0b33e-3604-78c0-995c-4aeb106cbb1e"
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantConfirmation",
+      "name": "null-plan_id-0",
+      "value": {
+        "expected_revision": 1,
+        "expires_at": 1789717189,
+        "max_runs": 2,
+        "plan_id": null,
+        "request_id": "01a0b33e-3604-78c0-995c-4aeb106cbb1e"
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantConfirmation",
+      "name": "omit-request_id-0",
+      "value": {
+        "expected_revision": 1,
+        "expires_at": 1789717189,
+        "max_runs": 2,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0"
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantConfirmation",
+      "name": "null-request_id-0",
+      "value": {
+        "expected_revision": 1,
+        "expires_at": 1789717189,
+        "max_runs": 2,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "request_id": null
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantView",
+      "name": "base-0",
+      "value": {
+        "authorization_revision": 1,
+        "definition_digest": "f1fee0dd670fd8cd072532b260e8721198a816ca26b29a25180a270bb3cb5d2f",
+        "expires_at": 1789717189,
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "max_runs": 2,
+        "occupied_runs": 0,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "state": "active",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "execution",
+      "definition": "GrantView",
+      "name": "unknown-field-0",
+      "value": {
+        "authorization_revision": 1,
+        "definition_digest": "f1fee0dd670fd8cd072532b260e8721198a816ca26b29a25180a270bb3cb5d2f",
+        "expires_at": 1789717189,
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "max_runs": 2,
+        "occupied_runs": 0,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "state": "active",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        },
+        "ordinary_extra": "unused"
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantView",
+      "name": "omit-authorization_revision-0",
+      "value": {
+        "definition_digest": "f1fee0dd670fd8cd072532b260e8721198a816ca26b29a25180a270bb3cb5d2f",
+        "expires_at": 1789717189,
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "max_runs": 2,
+        "occupied_runs": 0,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "state": "active",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantView",
+      "name": "null-authorization_revision-0",
+      "value": {
+        "authorization_revision": null,
+        "definition_digest": "f1fee0dd670fd8cd072532b260e8721198a816ca26b29a25180a270bb3cb5d2f",
+        "expires_at": 1789717189,
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "max_runs": 2,
+        "occupied_runs": 0,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "state": "active",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantView",
+      "name": "omit-definition_digest-0",
+      "value": {
+        "authorization_revision": 1,
+        "expires_at": 1789717189,
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "max_runs": 2,
+        "occupied_runs": 0,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "state": "active",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantView",
+      "name": "null-definition_digest-0",
+      "value": {
+        "authorization_revision": 1,
+        "definition_digest": null,
+        "expires_at": 1789717189,
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "max_runs": 2,
+        "occupied_runs": 0,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "state": "active",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantView",
+      "name": "omit-expires_at-0",
+      "value": {
+        "authorization_revision": 1,
+        "definition_digest": "f1fee0dd670fd8cd072532b260e8721198a816ca26b29a25180a270bb3cb5d2f",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "max_runs": 2,
+        "occupied_runs": 0,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "state": "active",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantView",
+      "name": "null-expires_at-0",
+      "value": {
+        "authorization_revision": 1,
+        "definition_digest": "f1fee0dd670fd8cd072532b260e8721198a816ca26b29a25180a270bb3cb5d2f",
+        "expires_at": null,
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "max_runs": 2,
+        "occupied_runs": 0,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "state": "active",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantView",
+      "name": "omit-grant_id-0",
+      "value": {
+        "authorization_revision": 1,
+        "definition_digest": "f1fee0dd670fd8cd072532b260e8721198a816ca26b29a25180a270bb3cb5d2f",
+        "expires_at": 1789717189,
+        "max_runs": 2,
+        "occupied_runs": 0,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "state": "active",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantView",
+      "name": "null-grant_id-0",
+      "value": {
+        "authorization_revision": 1,
+        "definition_digest": "f1fee0dd670fd8cd072532b260e8721198a816ca26b29a25180a270bb3cb5d2f",
+        "expires_at": 1789717189,
+        "grant_id": null,
+        "max_runs": 2,
+        "occupied_runs": 0,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "state": "active",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantView",
+      "name": "omit-max_runs-0",
+      "value": {
+        "authorization_revision": 1,
+        "definition_digest": "f1fee0dd670fd8cd072532b260e8721198a816ca26b29a25180a270bb3cb5d2f",
+        "expires_at": 1789717189,
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "occupied_runs": 0,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "state": "active",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantView",
+      "name": "null-max_runs-0",
+      "value": {
+        "authorization_revision": 1,
+        "definition_digest": "f1fee0dd670fd8cd072532b260e8721198a816ca26b29a25180a270bb3cb5d2f",
+        "expires_at": 1789717189,
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "max_runs": null,
+        "occupied_runs": 0,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "state": "active",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantView",
+      "name": "omit-occupied_runs-0",
+      "value": {
+        "authorization_revision": 1,
+        "definition_digest": "f1fee0dd670fd8cd072532b260e8721198a816ca26b29a25180a270bb3cb5d2f",
+        "expires_at": 1789717189,
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "max_runs": 2,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "state": "active",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantView",
+      "name": "null-occupied_runs-0",
+      "value": {
+        "authorization_revision": 1,
+        "definition_digest": "f1fee0dd670fd8cd072532b260e8721198a816ca26b29a25180a270bb3cb5d2f",
+        "expires_at": 1789717189,
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "max_runs": 2,
+        "occupied_runs": null,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "state": "active",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantView",
+      "name": "omit-plan_id-0",
+      "value": {
+        "authorization_revision": 1,
+        "definition_digest": "f1fee0dd670fd8cd072532b260e8721198a816ca26b29a25180a270bb3cb5d2f",
+        "expires_at": 1789717189,
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "max_runs": 2,
+        "occupied_runs": 0,
+        "plan_revision": 1,
+        "state": "active",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantView",
+      "name": "null-plan_id-0",
+      "value": {
+        "authorization_revision": 1,
+        "definition_digest": "f1fee0dd670fd8cd072532b260e8721198a816ca26b29a25180a270bb3cb5d2f",
+        "expires_at": 1789717189,
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "max_runs": 2,
+        "occupied_runs": 0,
+        "plan_id": null,
+        "plan_revision": 1,
+        "state": "active",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantView",
+      "name": "omit-plan_revision-0",
+      "value": {
+        "authorization_revision": 1,
+        "definition_digest": "f1fee0dd670fd8cd072532b260e8721198a816ca26b29a25180a270bb3cb5d2f",
+        "expires_at": 1789717189,
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "max_runs": 2,
+        "occupied_runs": 0,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "state": "active",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantView",
+      "name": "null-plan_revision-0",
+      "value": {
+        "authorization_revision": 1,
+        "definition_digest": "f1fee0dd670fd8cd072532b260e8721198a816ca26b29a25180a270bb3cb5d2f",
+        "expires_at": 1789717189,
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "max_runs": 2,
+        "occupied_runs": 0,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": null,
+        "state": "active",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantView",
+      "name": "omit-state-0",
+      "value": {
+        "authorization_revision": 1,
+        "definition_digest": "f1fee0dd670fd8cd072532b260e8721198a816ca26b29a25180a270bb3cb5d2f",
+        "expires_at": 1789717189,
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "max_runs": 2,
+        "occupied_runs": 0,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantView",
+      "name": "null-state-0",
+      "value": {
+        "authorization_revision": 1,
+        "definition_digest": "f1fee0dd670fd8cd072532b260e8721198a816ca26b29a25180a270bb3cb5d2f",
+        "expires_at": 1789717189,
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "max_runs": 2,
+        "occupied_runs": 0,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "state": null,
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantView",
+      "name": "omit-workspace-0",
+      "value": {
+        "authorization_revision": 1,
+        "definition_digest": "f1fee0dd670fd8cd072532b260e8721198a816ca26b29a25180a270bb3cb5d2f",
+        "expires_at": 1789717189,
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "max_runs": 2,
+        "occupied_runs": 0,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "state": "active"
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantView",
+      "name": "null-workspace-0",
+      "value": {
+        "authorization_revision": 1,
+        "definition_digest": "f1fee0dd670fd8cd072532b260e8721198a816ca26b29a25180a270bb3cb5d2f",
+        "expires_at": 1789717189,
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "max_runs": 2,
+        "occupied_runs": 0,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "state": "active",
+        "workspace": null
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "base-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "unknown-field-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        },
+        "ordinary_extra": "unused"
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "omit-delivery_state-0",
+      "value": {
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "null-delivery_state-0",
+      "value": {
+        "delivery_state": null,
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "omit-grant_id-0",
+      "value": {
+        "delivery_state": "reserved",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "null-grant_id-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": null,
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "omit-native_outcome-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "null-native_outcome-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": null,
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "omit-needs_attention-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "null-needs_attention-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": null,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "omit-operation_id-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "null-operation_id-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": null,
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "omit-permission_mode-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "null-permission_mode-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": null,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "omit-plan_id-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "null-plan_id-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": null,
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "omit-plan_revision-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "null-plan_revision-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": null,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "omit-request_id-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "null-request_id-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": null,
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "omit-run_id-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "null-run_id-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": null,
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "omit-schedule_epoch-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "null-schedule_epoch-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": null,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "omit-snapshot_digest-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "null-snapshot_digest-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": null,
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "omit-trigger-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "null-trigger-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": null,
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "omit-workspace-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual"
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "null-workspace-0",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": null
+      },
+      "valid": false
+    },
+    {
+      "family": "recovery",
+      "definition": "SessionMapping",
+      "name": "base-0",
+      "value": {
+        "task_id": "15500000-0000-4000-8000-000000000001",
+        "agent_session_id": "15500000-0000-4000-8000-000000000001",
+        "mapping_state": "reserved"
+      },
+      "valid": true
+    },
+    {
+      "family": "recovery",
+      "definition": "SessionMapping",
+      "name": "unknown-field-0",
+      "value": {
+        "task_id": "15500000-0000-4000-8000-000000000001",
+        "agent_session_id": "15500000-0000-4000-8000-000000000001",
+        "mapping_state": "reserved",
+        "ordinary_extra": "unused"
+      },
+      "valid": false
+    },
+    {
+      "family": "recovery",
+      "definition": "SessionMapping",
+      "name": "omit-task_id-0",
+      "value": {
+        "agent_session_id": "15500000-0000-4000-8000-000000000001",
+        "mapping_state": "reserved"
+      },
+      "valid": false
+    },
+    {
+      "family": "recovery",
+      "definition": "SessionMapping",
+      "name": "null-task_id-0",
+      "value": {
+        "task_id": null,
+        "agent_session_id": "15500000-0000-4000-8000-000000000001",
+        "mapping_state": "reserved"
+      },
+      "valid": false
+    },
+    {
+      "family": "recovery",
+      "definition": "SessionMapping",
+      "name": "omit-agent_session_id-0",
+      "value": {
+        "task_id": "15500000-0000-4000-8000-000000000001",
+        "mapping_state": "reserved"
+      },
+      "valid": false
+    },
+    {
+      "family": "recovery",
+      "definition": "SessionMapping",
+      "name": "null-agent_session_id-0",
+      "value": {
+        "task_id": "15500000-0000-4000-8000-000000000001",
+        "agent_session_id": null,
+        "mapping_state": "reserved"
+      },
+      "valid": false
+    },
+    {
+      "family": "recovery",
+      "definition": "SessionMapping",
+      "name": "omit-mapping_state-0",
+      "value": {
+        "task_id": "15500000-0000-4000-8000-000000000001",
+        "agent_session_id": "15500000-0000-4000-8000-000000000001"
+      },
+      "valid": false
+    },
+    {
+      "family": "recovery",
+      "definition": "SessionMapping",
+      "name": "null-mapping_state-0",
+      "value": {
+        "task_id": "15500000-0000-4000-8000-000000000001",
+        "agent_session_id": "15500000-0000-4000-8000-000000000001",
+        "mapping_state": null
+      },
+      "valid": false
+    },
+    {
+      "family": "recovery",
+      "definition": "TurnOperationResult",
+      "name": "base-0",
+      "value": {
+        "agent_session_id": "15500000-0000-4000-8000-000000000001",
+        "operation_id": "15500000-0000-4000-8000-000000000001",
+        "state": "pending"
+      },
+      "valid": true
+    },
+    {
+      "family": "recovery",
+      "definition": "TurnOperationResult",
+      "name": "unknown-field-0",
+      "value": {
+        "agent_session_id": "15500000-0000-4000-8000-000000000001",
+        "operation_id": "15500000-0000-4000-8000-000000000001",
+        "state": "pending",
+        "ordinary_extra": "unused"
+      },
+      "valid": false
+    },
+    {
+      "family": "recovery",
+      "definition": "TurnOperationResult",
+      "name": "omit-agent_session_id-0",
+      "value": {
+        "operation_id": "15500000-0000-4000-8000-000000000001",
+        "state": "pending"
+      },
+      "valid": false
+    },
+    {
+      "family": "recovery",
+      "definition": "TurnOperationResult",
+      "name": "null-agent_session_id-0",
+      "value": {
+        "agent_session_id": null,
+        "operation_id": "15500000-0000-4000-8000-000000000001",
+        "state": "pending"
+      },
+      "valid": false
+    },
+    {
+      "family": "recovery",
+      "definition": "TurnOperationResult",
+      "name": "omit-operation_id-0",
+      "value": {
+        "agent_session_id": "15500000-0000-4000-8000-000000000001",
+        "state": "pending"
+      },
+      "valid": false
+    },
+    {
+      "family": "recovery",
+      "definition": "TurnOperationResult",
+      "name": "null-operation_id-0",
+      "value": {
+        "agent_session_id": "15500000-0000-4000-8000-000000000001",
+        "operation_id": null,
+        "state": "pending"
+      },
+      "valid": false
+    },
+    {
+      "family": "recovery",
+      "definition": "TurnOperationResult",
+      "name": "omit-state-0",
+      "value": {
+        "agent_session_id": "15500000-0000-4000-8000-000000000001",
+        "operation_id": "15500000-0000-4000-8000-000000000001"
+      },
+      "valid": false
+    },
+    {
+      "family": "recovery",
+      "definition": "TurnOperationResult",
+      "name": "null-state-0",
+      "value": {
+        "agent_session_id": "15500000-0000-4000-8000-000000000001",
+        "operation_id": "15500000-0000-4000-8000-000000000001",
+        "state": null
+      },
+      "valid": false
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "clarify",
+      "value": {
+        "schema_version": 1,
+        "kind": "needs_clarification",
+        "missing_fields": [
+          "time_zone"
+        ],
+        "question": "使用哪个时区？"
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "once-dedicated_chat",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "once",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai",
+          "local_date": "2027-01-01"
+        },
+        "target": {
+          "mode": "dedicated_chat"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "plan",
+      "definition": "TimeRule",
+      "name": "once-rule",
+      "value": {
+        "frequency": "once",
+        "local_time": "09:00",
+        "time_zone": "Asia/Shanghai",
+        "local_date": "2027-01-01"
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "once-dedicated_chat-omit-local_date",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "once",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "dedicated_chat"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "once-dedicated_chat-omit-weekdays",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "once",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai",
+          "local_date": "2027-01-01"
+        },
+        "target": {
+          "mode": "dedicated_chat"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "once-new_chat_each_run",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "once",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai",
+          "local_date": "2027-01-01"
+        },
+        "target": {
+          "mode": "new_chat_each_run"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "plan",
+      "definition": "TimeRule",
+      "name": "once-rule",
+      "value": {
+        "frequency": "once",
+        "local_time": "09:00",
+        "time_zone": "Asia/Shanghai",
+        "local_date": "2027-01-01"
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "once-new_chat_each_run-omit-local_date",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "once",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "new_chat_each_run"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "once-new_chat_each_run-omit-weekdays",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "once",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai",
+          "local_date": "2027-01-01"
+        },
+        "target": {
+          "mode": "new_chat_each_run"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "once-existing_chat",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "once",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai",
+          "local_date": "2027-01-01"
+        },
+        "target": {
+          "mode": "existing_chat",
+          "existing_chat_label": "已选聊天"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "plan",
+      "definition": "TimeRule",
+      "name": "once-rule",
+      "value": {
+        "frequency": "once",
+        "local_time": "09:00",
+        "time_zone": "Asia/Shanghai",
+        "local_date": "2027-01-01"
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "once-existing_chat-omit-local_date",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "once",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "existing_chat",
+          "existing_chat_label": "已选聊天"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "once-existing_chat-omit-weekdays",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "once",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai",
+          "local_date": "2027-01-01"
+        },
+        "target": {
+          "mode": "existing_chat",
+          "existing_chat_label": "已选聊天"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "daily-dedicated_chat",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "daily",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "dedicated_chat"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "plan",
+      "definition": "TimeRule",
+      "name": "daily-rule",
+      "value": {
+        "frequency": "daily",
+        "local_time": "09:00",
+        "time_zone": "Asia/Shanghai"
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "daily-dedicated_chat-omit-local_date",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "daily",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "dedicated_chat"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "daily-dedicated_chat-omit-weekdays",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "daily",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "dedicated_chat"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "daily-new_chat_each_run",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "daily",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "new_chat_each_run"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "plan",
+      "definition": "TimeRule",
+      "name": "daily-rule",
+      "value": {
+        "frequency": "daily",
+        "local_time": "09:00",
+        "time_zone": "Asia/Shanghai"
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "daily-new_chat_each_run-omit-local_date",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "daily",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "new_chat_each_run"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "daily-new_chat_each_run-omit-weekdays",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "daily",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "new_chat_each_run"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "daily-existing_chat",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "daily",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "existing_chat",
+          "existing_chat_label": "已选聊天"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "plan",
+      "definition": "TimeRule",
+      "name": "daily-rule",
+      "value": {
+        "frequency": "daily",
+        "local_time": "09:00",
+        "time_zone": "Asia/Shanghai"
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "daily-existing_chat-omit-local_date",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "daily",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "existing_chat",
+          "existing_chat_label": "已选聊天"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "daily-existing_chat-omit-weekdays",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "daily",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "existing_chat",
+          "existing_chat_label": "已选聊天"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "weekdays-dedicated_chat",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "weekdays",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "dedicated_chat"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "plan",
+      "definition": "TimeRule",
+      "name": "weekdays-rule",
+      "value": {
+        "frequency": "weekdays",
+        "local_time": "09:00",
+        "time_zone": "Asia/Shanghai"
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "weekdays-dedicated_chat-omit-local_date",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "weekdays",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "dedicated_chat"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "weekdays-dedicated_chat-omit-weekdays",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "weekdays",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "dedicated_chat"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "weekdays-new_chat_each_run",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "weekdays",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "new_chat_each_run"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "plan",
+      "definition": "TimeRule",
+      "name": "weekdays-rule",
+      "value": {
+        "frequency": "weekdays",
+        "local_time": "09:00",
+        "time_zone": "Asia/Shanghai"
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "weekdays-new_chat_each_run-omit-local_date",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "weekdays",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "new_chat_each_run"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "weekdays-new_chat_each_run-omit-weekdays",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "weekdays",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "new_chat_each_run"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "weekdays-existing_chat",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "weekdays",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "existing_chat",
+          "existing_chat_label": "已选聊天"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "plan",
+      "definition": "TimeRule",
+      "name": "weekdays-rule",
+      "value": {
+        "frequency": "weekdays",
+        "local_time": "09:00",
+        "time_zone": "Asia/Shanghai"
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "weekdays-existing_chat-omit-local_date",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "weekdays",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "existing_chat",
+          "existing_chat_label": "已选聊天"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "weekdays-existing_chat-omit-weekdays",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "weekdays",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "existing_chat",
+          "existing_chat_label": "已选聊天"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "weekly-dedicated_chat",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "weekly",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai",
+          "weekdays": [
+            1,
+            5
+          ]
+        },
+        "target": {
+          "mode": "dedicated_chat"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "plan",
+      "definition": "TimeRule",
+      "name": "weekly-rule",
+      "value": {
+        "frequency": "weekly",
+        "local_time": "09:00",
+        "time_zone": "Asia/Shanghai",
+        "weekdays": [
+          1,
+          5
+        ]
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "weekly-dedicated_chat-omit-local_date",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "weekly",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai",
+          "weekdays": [
+            1,
+            5
+          ]
+        },
+        "target": {
+          "mode": "dedicated_chat"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "weekly-dedicated_chat-omit-weekdays",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "weekly",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "dedicated_chat"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "weekly-new_chat_each_run",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "weekly",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai",
+          "weekdays": [
+            1,
+            5
+          ]
+        },
+        "target": {
+          "mode": "new_chat_each_run"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "plan",
+      "definition": "TimeRule",
+      "name": "weekly-rule",
+      "value": {
+        "frequency": "weekly",
+        "local_time": "09:00",
+        "time_zone": "Asia/Shanghai",
+        "weekdays": [
+          1,
+          5
+        ]
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "weekly-new_chat_each_run-omit-local_date",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "weekly",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai",
+          "weekdays": [
+            1,
+            5
+          ]
+        },
+        "target": {
+          "mode": "new_chat_each_run"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "weekly-new_chat_each_run-omit-weekdays",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "weekly",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "new_chat_each_run"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "weekly-existing_chat",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "weekly",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai",
+          "weekdays": [
+            1,
+            5
+          ]
+        },
+        "target": {
+          "mode": "existing_chat",
+          "existing_chat_label": "已选聊天"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "plan",
+      "definition": "TimeRule",
+      "name": "weekly-rule",
+      "value": {
+        "frequency": "weekly",
+        "local_time": "09:00",
+        "time_zone": "Asia/Shanghai",
+        "weekdays": [
+          1,
+          5
+        ]
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "weekly-existing_chat-omit-local_date",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "weekly",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai",
+          "weekdays": [
+            1,
+            5
+          ]
+        },
+        "target": {
+          "mode": "existing_chat",
+          "existing_chat_label": "已选聊天"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "draft",
+      "definition": "root",
+      "name": "weekly-existing_chat-omit-weekdays",
+      "value": {
+        "schema_version": 1,
+        "kind": "candidate",
+        "name": "日常检查",
+        "content": "汇总公开信息",
+        "schedule": {
+          "frequency": "weekly",
+          "local_time": "09:00",
+          "time_zone": "Asia/Shanghai"
+        },
+        "target": {
+          "mode": "existing_chat",
+          "existing_chat_label": "已选聊天"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "SavePlanRequest",
+      "name": "dedicated_chat-id-false",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat"
+          }
+        },
+        "request_id": "01a0b2e1-1be5-7743-ad80-46110eb183ae"
+      },
+      "valid": true
+    },
+    {
+      "family": "plan",
+      "definition": "SavePlanRequest",
+      "name": "dedicated_chat-id-true",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "dedicated_chat",
+            "conversation_id": "15500000-0000-4000-8000-000000000001"
+          }
+        },
+        "request_id": "01a0b2e1-1be5-7743-ad80-46110eb183ae"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "SavePlanRequest",
+      "name": "new_chat_each_run-id-false",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "new_chat_each_run"
+          }
+        },
+        "request_id": "01a0b2e1-1be5-7743-ad80-46110eb183ae"
+      },
+      "valid": true
+    },
+    {
+      "family": "plan",
+      "definition": "SavePlanRequest",
+      "name": "new_chat_each_run-id-true",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "new_chat_each_run",
+            "conversation_id": "15500000-0000-4000-8000-000000000001"
+          }
+        },
+        "request_id": "01a0b2e1-1be5-7743-ad80-46110eb183ae"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "SavePlanRequest",
+      "name": "existing_chat-id-false",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "existing_chat"
+          }
+        },
+        "request_id": "01a0b2e1-1be5-7743-ad80-46110eb183ae"
+      },
+      "valid": false
+    },
+    {
+      "family": "plan",
+      "definition": "SavePlanRequest",
+      "name": "existing_chat-id-true",
+      "value": {
+        "definition": {
+          "content": "公开信息合成检查",
+          "name": "每日检查",
+          "rule": {
+            "frequency": "daily",
+            "local_time": "09:00",
+            "time_zone": "Asia/Shanghai"
+          },
+          "target": {
+            "mode": "existing_chat",
+            "conversation_id": "15500000-0000-4000-8000-000000000001"
+          }
+        },
+        "request_id": "01a0b2e1-1be5-7743-ad80-46110eb183ae"
+      },
+      "valid": true
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "manual-slot-false-original-false",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": true
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "manual-slot-false-original-true",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        },
+        "original_run_id": "15500000-0000-4000-8000-000000000001"
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "manual-slot-true-original-false",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        },
+        "logical_slot": "2026-09-18T09:00"
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "manual-slot-true-original-true",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "manual",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        },
+        "logical_slot": "2026-09-18T09:00",
+        "original_run_id": "15500000-0000-4000-8000-000000000001"
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "automatic-slot-false-original-false",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "automatic",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "automatic-slot-false-original-true",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "automatic",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        },
+        "original_run_id": "15500000-0000-4000-8000-000000000001"
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "automatic-slot-true-original-false",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "automatic",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        },
+        "logical_slot": "2026-09-18T09:00"
+      },
+      "valid": true
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "automatic-slot-true-original-true",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "automatic",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        },
+        "logical_slot": "2026-09-18T09:00",
+        "original_run_id": "15500000-0000-4000-8000-000000000001"
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "rerun-slot-false-original-false",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "rerun",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        }
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "rerun-slot-false-original-true",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "rerun",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        },
+        "original_run_id": "15500000-0000-4000-8000-000000000001"
+      },
+      "valid": true
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "rerun-slot-true-original-false",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "rerun",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        },
+        "logical_slot": "2026-09-18T09:00"
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "RunView",
+      "name": "rerun-slot-true-original-true",
+      "value": {
+        "delivery_state": "reserved",
+        "grant_id": "01a0b33e-3605-7183-946e-bed63e7a6875",
+        "native_outcome": "unobserved",
+        "needs_attention": false,
+        "operation_id": "01a0b33e-3618-74e0-b693-93a25de91518",
+        "permission_mode": "ask",
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "plan_revision": 1,
+        "request_id": "01a0b33e-3616-7270-9fb9-3ddb057ef52e",
+        "run_id": "01a0b33e-3618-74e0-b693-9395b0fcbb04",
+        "schedule_epoch": 1,
+        "snapshot_digest": "71d01baa64d735a34bfc37d025dc7973587ed8d4e311f15a0e687772d6df715f",
+        "trigger": "rerun",
+        "workspace": {
+          "resource_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+          "source": "managed_schedule"
+        },
+        "logical_slot": "2026-09-18T09:00",
+        "original_run_id": "15500000-0000-4000-8000-000000000001"
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantConfirmation",
+      "name": "quota-0",
+      "value": {
+        "expected_revision": 1,
+        "expires_at": 1789717189,
+        "max_runs": 0,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "request_id": "01a0b33e-3604-78c0-995c-4aeb106cbb1e"
+      },
+      "valid": false
+    },
+    {
+      "family": "execution",
+      "definition": "GrantConfirmation",
+      "name": "quota-1",
+      "value": {
+        "expected_revision": 1,
+        "expires_at": 1789717189,
+        "max_runs": 1,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "request_id": "01a0b33e-3604-78c0-995c-4aeb106cbb1e"
+      },
+      "valid": true
+    },
+    {
+      "family": "execution",
+      "definition": "GrantConfirmation",
+      "name": "quota-2147483647",
+      "value": {
+        "expected_revision": 1,
+        "expires_at": 1789717189,
+        "max_runs": 2147483647,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "request_id": "01a0b33e-3604-78c0-995c-4aeb106cbb1e"
+      },
+      "valid": true
+    },
+    {
+      "family": "execution",
+      "definition": "GrantConfirmation",
+      "name": "quota-2147483648",
+      "value": {
+        "expected_revision": 1,
+        "expires_at": 1789717189,
+        "max_runs": 2147483648,
+        "plan_id": "01a0b33e-35d7-7501-b89c-e23dcc04ddb0",
+        "request_id": "01a0b33e-3604-78c0-995c-4aeb106cbb1e"
+      },
+      "valid": false
+    },
+    {
+      "family": "recovery",
+      "definition": "TurnOperationResult",
+      "name": "pending-turn-false",
+      "value": {
+        "agent_session_id": "15500000-0000-4000-8000-000000000001",
+        "operation_id": "15500000-0000-4000-8000-000000000001",
+        "state": "pending"
+      },
+      "valid": true
+    },
+    {
+      "family": "recovery",
+      "definition": "TurnOperationResult",
+      "name": "pending-turn-true",
+      "value": {
+        "agent_session_id": "15500000-0000-4000-8000-000000000001",
+        "operation_id": "15500000-0000-4000-8000-000000000001",
+        "state": "pending",
+        "turn_id": "15500000-0000-4000-8000-000000000001"
+      },
+      "valid": false
+    },
+    {
+      "family": "recovery",
+      "definition": "TurnOperationResult",
+      "name": "uncertain-turn-false",
+      "value": {
+        "agent_session_id": "15500000-0000-4000-8000-000000000001",
+        "operation_id": "15500000-0000-4000-8000-000000000001",
+        "state": "uncertain"
+      },
+      "valid": true
+    },
+    {
+      "family": "recovery",
+      "definition": "TurnOperationResult",
+      "name": "uncertain-turn-true",
+      "value": {
+        "agent_session_id": "15500000-0000-4000-8000-000000000001",
+        "operation_id": "15500000-0000-4000-8000-000000000001",
+        "state": "uncertain",
+        "turn_id": "15500000-0000-4000-8000-000000000001"
+      },
+      "valid": false
+    },
+    {
+      "family": "recovery",
+      "definition": "TurnOperationResult",
+      "name": "accepted-turn-false",
+      "value": {
+        "agent_session_id": "15500000-0000-4000-8000-000000000001",
+        "operation_id": "15500000-0000-4000-8000-000000000001",
+        "state": "accepted"
+      },
+      "valid": false
+    },
+    {
+      "family": "recovery",
+      "definition": "TurnOperationResult",
+      "name": "accepted-turn-true",
+      "value": {
+        "agent_session_id": "15500000-0000-4000-8000-000000000001",
+        "operation_id": "15500000-0000-4000-8000-000000000001",
+        "state": "accepted",
+        "turn_id": "15500000-0000-4000-8000-000000000001"
+      },
+      "valid": true
+    },
+    {
+      "family": "recovery",
+      "definition": "TurnOperationResult",
+      "name": "future-turn-false",
+      "value": {
+        "agent_session_id": "15500000-0000-4000-8000-000000000001",
+        "operation_id": "15500000-0000-4000-8000-000000000001",
+        "state": "future"
+      },
+      "valid": false
+    },
+    {
+      "family": "recovery",
+      "definition": "TurnOperationResult",
+      "name": "future-turn-true",
+      "value": {
+        "agent_session_id": "15500000-0000-4000-8000-000000000001",
+        "operation_id": "15500000-0000-4000-8000-000000000001",
+        "state": "future",
+        "turn_id": "15500000-0000-4000-8000-000000000001"
+      },
+      "valid": false
+    },
+    {
+      "family": "recovery",
+      "definition": "SessionMapping",
+      "name": "reserved-thread-false",
+      "value": {
+        "task_id": "15500000-0000-4000-8000-000000000001",
+        "agent_session_id": "15500000-0000-4000-8000-000000000001",
+        "mapping_state": "reserved"
+      },
+      "valid": true
+    },
+    {
+      "family": "recovery",
+      "definition": "SessionMapping",
+      "name": "reserved-thread-true",
+      "value": {
+        "task_id": "15500000-0000-4000-8000-000000000001",
+        "agent_session_id": "15500000-0000-4000-8000-000000000001",
+        "mapping_state": "reserved",
+        "codex_thread_id": "15500000-0000-4000-8000-000000000001"
+      },
+      "valid": false
+    },
+    {
+      "family": "recovery",
+      "definition": "SessionMapping",
+      "name": "bound-thread-false",
+      "value": {
+        "task_id": "15500000-0000-4000-8000-000000000001",
+        "agent_session_id": "15500000-0000-4000-8000-000000000001",
+        "mapping_state": "bound"
+      },
+      "valid": false
+    },
+    {
+      "family": "recovery",
+      "definition": "SessionMapping",
+      "name": "bound-thread-true",
+      "value": {
+        "task_id": "15500000-0000-4000-8000-000000000001",
+        "agent_session_id": "15500000-0000-4000-8000-000000000001",
+        "mapping_state": "bound",
+        "codex_thread_id": "15500000-0000-4000-8000-000000000001"
+      },
+      "valid": true
+    }
+  ]
+}

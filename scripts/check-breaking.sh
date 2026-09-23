@@ -14,11 +14,13 @@ for spec in \
   openapi/admin/admin.yaml \
   openapi/internal/internal.yaml \
   openapi/agent-host/agent-host.yaml \
+  openapi/native-turn-timing/native-turn-timing.yaml \
   openapi/native-conversation/native-conversation.yaml \
   openapi/runtime-permissions/runtime-permissions.yaml \
   openapi/native-conversation-v2/native-conversation-v2.yaml \
   openapi/runtime-permissions-v2/runtime-permissions-v2.yaml \
-  openapi/workflow-local/workflow-local.yaml; do
+  openapi/workflow-local/workflow-local.yaml \
+  openapi/scheduled-plan-draft/scheduled-plan-draft.yaml; do
   if git cat-file -e "$base_ref:$spec" 2>/dev/null; then
     go tool oasdiff breaking "$base_tree/$spec" "$spec"
   fi

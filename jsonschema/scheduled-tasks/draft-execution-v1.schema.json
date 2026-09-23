@@ -1,0 +1,351 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.yijie.ai/scheduled-tasks/draft-execution/v1",
+  "title": "ScheduledDraftExecutionV1",
+  "description": "Local candidate, fixed-purpose draft only. Host controls output schema/policy; no renderer paths/config/runtime identity. Missing effective policy qualification prevents Runtime/model dispatch. Accepted is not a valid/saved plan.",
+  "$defs": {
+    "Identity": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "not": {
+        "const": "00000000-0000-0000-0000-000000000000"
+      }
+    },
+    "Version": {
+      "type": "integer",
+      "const": 1
+    },
+    "Text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 10000
+    },
+    "CreateRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "policy_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "task_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "workspace_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "schema_version",
+        "policy_version",
+        "task_id",
+        "workspace_id"
+      ]
+    },
+    "ResumeRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "policy_version": {
+          "type": "integer",
+          "const": 1
+        }
+      },
+      "required": [
+        "schema_version",
+        "policy_version"
+      ]
+    },
+    "TurnRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "policy_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "text": {
+          "$ref": "#/$defs/Text"
+        }
+      },
+      "required": [
+        "schema_version",
+        "policy_version",
+        "operation_id",
+        "text"
+      ]
+    },
+    "SessionReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "policy_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "purpose": {
+          "type": "string",
+          "const": "scheduled_plan_draft"
+        },
+        "task_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "agent_session_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "workspace_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "schema_version",
+        "policy_version",
+        "purpose",
+        "task_id",
+        "agent_session_id",
+        "workspace_id"
+      ]
+    },
+    "TurnReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "policy_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "agent_session_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "turn_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "schema_version",
+        "policy_version",
+        "agent_session_id",
+        "operation_id",
+        "turn_id"
+      ]
+    },
+    "Capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "available": {
+          "type": "boolean"
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "ready",
+            "storage_disabled",
+            "policy_unqualified"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "available",
+        "reason"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "available": {
+                "const": true
+              }
+            },
+            "required": [
+              "available"
+            ]
+          },
+          "then": {
+            "properties": {
+              "reason": {
+                "const": "ready"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "reason": {
+                "enum": [
+                  "storage_disabled",
+                  "policy_unqualified"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ErrorCode": {
+      "type": "string",
+      "enum": [
+        "invalid_request",
+        "not_found",
+        "request_conflict",
+        "purpose_conflict",
+        "storage_disabled",
+        "policy_unqualified",
+        "operation_unknown",
+        "busy",
+        "storage_unavailable",
+        "unauthorized"
+      ]
+    },
+    "Error": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "code": {
+          "$ref": "#/$defs/ErrorCode"
+        }
+      },
+      "required": [
+        "schema_version",
+        "code"
+      ]
+    },
+    "Clarification": {
+      "$ref": "https://schemas.yijie.ai/scheduled-tasks/plan-draft/v1#/oneOf/0"
+    },
+    "Candidate": {
+      "$ref": "https://schemas.yijie.ai/scheduled-tasks/plan-draft/v1#/oneOf/1"
+    },
+    "Output": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/Clarification"
+        },
+        {
+          "$ref": "#/$defs/Candidate"
+        }
+      ]
+    },
+    "RecoveryMapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "policy_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "purpose": {
+          "type": "string",
+          "const": "scheduled_plan_draft"
+        },
+        "task_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "agent_session_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "workspace_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "mapping_state": {
+          "type": "string",
+          "enum": [
+            "reserved",
+            "bound"
+          ]
+        },
+        "codex_thread_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "responding_host_instance_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "schema_version",
+        "policy_version",
+        "purpose",
+        "task_id",
+        "agent_session_id",
+        "workspace_id",
+        "mapping_state"
+      ],
+      "description": "Read-only persistent purpose and mapping. Responding instance is not the original execution generation. Omitted IDs are unknown, never non-execution evidence.",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "mapping_state": {
+                "const": "bound"
+              }
+            },
+            "required": [
+              "mapping_state"
+            ]
+          },
+          "then": {
+            "required": [
+              "codex_thread_id"
+            ],
+            "properties": {
+              "codex_thread_id": {
+                "$ref": "#/$defs/Identity"
+              }
+            }
+          },
+          "else": {
+            "not": {
+              "required": [
+                "codex_thread_id"
+              ],
+              "properties": {
+                "codex_thread_id": {
+                  "$ref": "#/$defs/Identity"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

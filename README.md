@@ -127,3 +127,8 @@ pnpm pack:sdk
 
 结构性 breaking check 绿色不等于语义、实现或端到端兼容。请求字段、响应字段、enum
 和事件必须按 producer/consumer 方向评审并测试。
+
+FEAT-155的受限草案Runtime投影是独立本地候选，来源、生成/同步命令和兼容边界见[输入受限投影](compatibility/runtime-input-only/README.md)。旧投影和公共Host wire不被覆盖。
+
+
+FEAT-155的执行时钟使用[独立只读时间契约](docs/native-turn-timing-v1.md)，不改变旧聊天协议，尚未发布。
