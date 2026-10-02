@@ -1,0 +1,870 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Local chat model selection",
+    "version": "0.1.0",
+    "description": "FEAT-156 owner-only local model protocol. Model-aware paths reuse existing source payloads; X-Yijie-Model-Profile freezes the profile. Catalog/selection reads never call a provider. Selection requires idle native thread, expected revision and an operation ID. Unknown application blocks sending. Legacy writes stay MiniMax-only and reject model-managed sessions. No custom URL, key or effort from the renderer."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:18080"
+    }
+  ],
+  "security": [
+    {
+      "localBearer": []
+    }
+  ],
+  "paths": {
+    "/v1/model-chat/catalog": {
+      "get": {
+        "operationId": "readChatModelCatalog",
+        "responses": {
+          "200": {
+            "description": "Validated local result; no secrets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../jsonschema/chat/model-selection-v1.schema.json#/$defs/Catalog"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validated local result; no secrets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../jsonschema/chat/model-selection-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Validated local result; no secrets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../jsonschema/chat/model-selection-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Validated local result; no secrets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../jsonschema/chat/model-selection-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Validated local result; no secrets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../jsonschema/chat/model-selection-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Validated local result; no secrets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../jsonschema/chat/model-selection-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/model-chat/agent-sessions/{agent_session_id}/model": {
+      "get": {
+        "operationId": "readChatModelSelection",
+        "responses": {
+          "200": {
+            "description": "Validated local result; no secrets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../jsonschema/chat/model-selection-v1.schema.json#/$defs/Selection"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validated local result; no secrets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../jsonschema/chat/model-selection-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Validated local result; no secrets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../jsonschema/chat/model-selection-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Validated local result; no secrets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../jsonschema/chat/model-selection-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Validated local result; no secrets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../jsonschema/chat/model-selection-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Validated local result; no secrets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../jsonschema/chat/model-selection-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "agent_session_id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "selectChatModel",
+        "responses": {
+          "200": {
+            "description": "Validated local result; no secrets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../jsonschema/chat/model-selection-v1.schema.json#/$defs/Selection"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validated local result; no secrets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../jsonschema/chat/model-selection-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Validated local result; no secrets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../jsonschema/chat/model-selection-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Validated local result; no secrets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../jsonschema/chat/model-selection-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Validated local result; no secrets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../jsonschema/chat/model-selection-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Validated local result; no secrets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../jsonschema/chat/model-selection-v1.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "agent_session_id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../../jsonschema/chat/model-selection-v1.schema.json#/$defs/SelectRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/model-chat/tasks/{task_id}/agent-sessions": {
+      "post": {
+        "operationId": "modelAwareStartAgentSession",
+        "summary": "Start the Agent session for a task",
+        "description": "Creates the one Agent session allowed for `task_id`, starts a persistent\nRuntime thread in `cwd`, and stores only the recovery mapping and status.\nA failed Runtime start can leave a queryable failed session reserved for\nthe task.\n",
+        "tags": [
+          "Sessions"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../agent-host/agent-host.yaml#/components/schemas/StartSessionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The session and Runtime thread were created and bound.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "../agent-host/agent-host.yaml#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../agent-host/agent-host.yaml#/components/schemas/SessionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`invalid_request`: malformed or oversized JSON, an unknown field, an\ninvalid task identifier, or a `cwd` that is not an existing absolute\ndirectory.\n",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "../agent-host/agent-host.yaml#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../agent-host/agent-host.yaml#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "invalid_request",
+                    "message": "request parameters are invalid"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "../agent-host/agent-host.yaml#/components/responses/Unauthorized"
+          },
+          "409": {
+            "description": "`task_session_exists`: the task already owns an Agent session.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "../agent-host/agent-host.yaml#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../agent-host/agent-host.yaml#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "task_session_exists",
+                    "message": "task already has an agent session"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "../agent-host/agent-host.yaml#/components/responses/InternalError"
+          },
+          "502": {
+            "$ref": "../agent-host/agent-host.yaml#/components/responses/RuntimeRequestFailed"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "../agent-host/agent-host.yaml#/components/parameters/TaskId"
+          },
+          {
+            "in": "header",
+            "name": "X-Yijie-Model-Profile",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "kimi-k3-max-v1",
+                "minimax-m3-high-v1"
+              ]
+            }
+          }
+        ],
+        "x-source-operation": "../agent-host/agent-host.yaml#/paths/~1v1~1tasks~1{task_id}~1agent-sessions/post"
+      }
+    },
+    "/v1/model-chat/agent-sessions/{agent_session_id}/resume": {
+      "post": {
+        "operationId": "modelAwareResumeAgentSession",
+        "summary": "Resume the session's Runtime thread",
+        "description": "Resumes the persisted Runtime thread mapping after a Runtime restart and\nrefreshes the current/last turn state. It does not restore SSE content\nfrom an earlier Host process.\n",
+        "tags": [
+          "Sessions"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../agent-host/agent-host.yaml#/components/schemas/TraceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The Runtime thread was resumed and session state refreshed.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "../agent-host/agent-host.yaml#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../agent-host/agent-host.yaml#/components/schemas/SessionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "../agent-host/agent-host.yaml#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "../agent-host/agent-host.yaml#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "../agent-host/agent-host.yaml#/components/responses/SessionNotFound"
+          },
+          "409": {
+            "description": "`session_not_usable`: the session has no Runtime thread that can be resumed.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "../agent-host/agent-host.yaml#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../agent-host/agent-host.yaml#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "session_not_usable",
+                    "message": "agent session cannot perform this operation"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "../agent-host/agent-host.yaml#/components/responses/InternalError"
+          },
+          "502": {
+            "$ref": "../agent-host/agent-host.yaml#/components/responses/RuntimeRequestFailed"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "../agent-host/agent-host.yaml#/components/parameters/AgentSessionId"
+          },
+          {
+            "in": "header",
+            "name": "X-Yijie-Model-Profile",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "kimi-k3-max-v1",
+                "minimax-m3-high-v1"
+              ]
+            }
+          }
+        ],
+        "x-source-operation": "../agent-host/agent-host.yaml#/paths/~1v1~1agent-sessions~1{agent_session_id}~1resume/post"
+      }
+    },
+    "/v1/model-chat/agent-sessions/{agent_session_id}": {
+      "get": {
+        "operationId": "modelAwareGetAgentSession",
+        "summary": "Get the persisted Agent session state",
+        "description": "Returns mapping and lifecycle state only; message content is not persisted by the Host.",
+        "tags": [
+          "Sessions"
+        ],
+        "responses": {
+          "200": {
+            "description": "Current Agent session state.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "../agent-host/agent-host.yaml#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../agent-host/agent-host.yaml#/components/schemas/SessionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "../agent-host/agent-host.yaml#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "../agent-host/agent-host.yaml#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "../agent-host/agent-host.yaml#/components/responses/SessionNotFound"
+          },
+          "500": {
+            "$ref": "../agent-host/agent-host.yaml#/components/responses/InternalError"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "../agent-host/agent-host.yaml#/components/parameters/AgentSessionId"
+          }
+        ],
+        "x-source-operation": "../agent-host/agent-host.yaml#/paths/~1v1~1agent-sessions~1{agent_session_id}/get"
+      }
+    },
+    "/v1/model-chat/agent-sessions/{agent_session_id}/turns": {
+      "post": {
+        "operationId": "modelAwareStartAgentTurnV2",
+        "summary": "Start an ordered multimodal turn",
+        "description": "Starts one Runtime turn from an ordered, closed sequence of text, image,\nand file-context blocks. At most one turn may be active for a session.\nThe accepted response identifies the turn; progress and terminal state\nare delivered through the explicitly negotiated event stream.\n\nDesktop resolves attachment ownership, readiness, and seven-day expiry,\nand revalidates file size and SHA-256 against its local authority before\ncalling Host. Host treats every name and text value as untrusted,\nrevalidates each decoded image's media type, size, and digest, and does\nnot persist the data URL or context chunks in bbolt, replay, logs,\nmetrics, or traces. Files are represented only by Desktop-selected text\ncontext; raw file bytes and local paths are never accepted, so file size\nand digest remain Desktop-verified correlation metadata rather than Host\nauthorization input.\n\nA request may contain at most 10 image/file blocks. Decoded image bytes\nacross the complete turn must not exceed 10 MiB, and UTF-8 file context\nacross all file blocks must not exceed 256 KiB. Host enforces these\naggregate limits before invoking Runtime. They are semantic cross-block\nconstraints in addition to the per-field schema bounds.\n\n`operation_id` is scoped to the Agent session and the canonical ordered\ncontent blocks plus reasoning effort. Replaying the same operation and\ncanonical input returns the original accepted `turn_id` without invoking\nRuntime again. Reusing the operation ID with different canonical input\nreturns `turn_operation_conflict`.\n",
+        "tags": [
+          "Turns"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../agent-host/agent-host.yaml#/components/schemas/StartTurnV2Request"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "The Runtime accepted the ordered multimodal turn, or the original accepted result was replayed idempotently.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "../agent-host/agent-host.yaml#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../agent-host/agent-host.yaml#/components/schemas/StartTurnResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`invalid_request`: malformed or oversized JSON, an unknown field, an\ninvalid session identifier, an invalid content block, a mismatched\ndata-URL media type, size, or digest, more than 10 attachment blocks,\nan exceeded aggregate image/context limit, or an unsupported\nreasoning effort.\n",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "../agent-host/agent-host.yaml#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../agent-host/agent-host.yaml#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "invalid_request",
+                    "message": "request parameters are invalid"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "../agent-host/agent-host.yaml#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "../agent-host/agent-host.yaml#/components/responses/SessionNotFound"
+          },
+          "409": {
+            "description": "`turn_active` when another turn is active; `session_not_usable` when\nthe session has no usable Runtime thread; or\n`turn_operation_conflict` when an operation ID is reused with\ndifferent canonical input.\n",
+            "x-yijie-error-codes": [
+              "turn_active",
+              "session_not_usable",
+              "turn_operation_conflict"
+            ],
+            "headers": {
+              "Cache-Control": {
+                "$ref": "../agent-host/agent-host.yaml#/components/headers/NoStore"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "../agent-host/agent-host.yaml#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "$ref": "../agent-host/agent-host.yaml#/components/schemas/TurnOperationConflictError"
+                    }
+                  ]
+                },
+                "examples": {
+                  "turnActive": {
+                    "value": {
+                      "error": {
+                        "code": "turn_active",
+                        "message": "agent session already has an active turn"
+                      }
+                    }
+                  },
+                  "sessionNotUsable": {
+                    "value": {
+                      "error": {
+                        "code": "session_not_usable",
+                        "message": "agent session cannot perform this operation"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "../agent-host/agent-host.yaml#/components/responses/InternalError"
+          },
+          "502": {
+            "$ref": "../agent-host/agent-host.yaml#/components/responses/RuntimeRequestFailed"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "../agent-host/agent-host.yaml#/components/parameters/AgentSessionId"
+          },
+          {
+            "in": "header",
+            "name": "X-Yijie-Model-Profile",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "kimi-k3-max-v1",
+                "minimax-m3-high-v1"
+              ]
+            }
+          }
+        ],
+        "x-source-operation": "../agent-host/agent-host.yaml#/paths/~1v2~1agent-sessions~1{agent_session_id}~1turns/post"
+      }
+    },
+    "/v1/model-chat/agent-sessions/{agent_session_id}/permission-turns": {
+      "post": {
+        "operationId": "modelAwareStartPermissionTurn",
+        "summary": "Start a turn with an explicit saved task permission mode",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../runtime-permissions/runtime-permissions.yaml#/components/schemas/PermissionTurnRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../agent-host/agent-host.yaml#/components/schemas/StartTurnResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "409": {
+            "description": "Active turn or operation conflict"
+          },
+          "503": {
+            "description": "Runtime unavailable"
+          }
+        },
+        "parameters": [
+          {
+            "name": "agent_session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Yijie-Model-Profile",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "kimi-k3-max-v1",
+                "minimax-m3-high-v1"
+              ]
+            }
+          }
+        ],
+        "x-source-operation": "../runtime-permissions/runtime-permissions.yaml#/paths/~1v1~1agent-sessions~1{agent_session_id}~1permission-turns/post"
+      }
+    },
+    "/v1/model-chat/scheduled-plan-draft-sessions": {
+      "post": {
+        "operationId": "modelAwareCreateScheduledDraftSession",
+        "responses": {
+          "200": {
+            "description": "Native receipt; no plan saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://schemas.yijie.ai/scheduled-tasks/draft-execution/v1#/$defs/SessionReceipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Closed failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://schemas.yijie.ai/scheduled-tasks/draft-execution/v1#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "https://schemas.yijie.ai/scheduled-tasks/draft-execution/v1#/$defs/CreateRequest"
+              }
+            }
+          }
+        },
+        "summary": "Create a fixed-purpose draft session",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Yijie-Model-Profile",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "kimi-k3-max-v1",
+                "minimax-m3-high-v1"
+              ]
+            }
+          }
+        ],
+        "x-source-operation": "../scheduled-plan-draft/scheduled-plan-draft.yaml#/paths/~1v1~1scheduled-plan-draft-sessions/post"
+      }
+    },
+    "/v1/model-chat/scheduled-plan-draft-sessions/{agent_session_id}/resume": {
+      "post": {
+        "operationId": "modelAwareResumeScheduledDraftSession",
+        "responses": {
+          "200": {
+            "description": "Native receipt; no plan saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://schemas.yijie.ai/scheduled-tasks/draft-execution/v1#/$defs/SessionReceipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Closed failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://schemas.yijie.ai/scheduled-tasks/draft-execution/v1#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "https://schemas.yijie.ai/scheduled-tasks/draft-execution/v1#/$defs/ResumeRequest"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "agent_session_id",
+            "required": true,
+            "schema": {
+              "$ref": "https://schemas.yijie.ai/scheduled-tasks/draft-execution/v1#/$defs/Identity"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Yijie-Model-Profile",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "kimi-k3-max-v1",
+                "minimax-m3-high-v1"
+              ]
+            }
+          }
+        ],
+        "summary": "Resume an existing fixed-purpose draft session",
+        "x-source-operation": "../scheduled-plan-draft/scheduled-plan-draft.yaml#/paths/~1v1~1scheduled-plan-draft-sessions~1{agent_session_id}~1resume/post"
+      }
+    },
+    "/v1/model-chat/scheduled-plan-draft-sessions/{agent_session_id}/turns": {
+      "post": {
+        "operationId": "modelAwareStartScheduledDraftTurn",
+        "responses": {
+          "200": {
+            "description": "Native receipt; no plan saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://schemas.yijie.ai/scheduled-tasks/draft-execution/v1#/$defs/TurnReceipt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Closed failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://schemas.yijie.ai/scheduled-tasks/draft-execution/v1#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "https://schemas.yijie.ai/scheduled-tasks/draft-execution/v1#/$defs/TurnRequest"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "agent_session_id",
+            "required": true,
+            "schema": {
+              "$ref": "https://schemas.yijie.ai/scheduled-tasks/draft-execution/v1#/$defs/Identity"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Yijie-Model-Profile",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "kimi-k3-max-v1",
+                "minimax-m3-high-v1"
+              ]
+            }
+          }
+        ],
+        "summary": "Submit text to an existing draft session",
+        "x-source-operation": "../scheduled-plan-draft/scheduled-plan-draft.yaml#/paths/~1v1~1scheduled-plan-draft-sessions~1{agent_session_id}~1turns/post"
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "localBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import { consumerSourceLock } from './scheduled-consumer-source.mjs';
+import { consumerSourceLock } from './chat-model-consumer-source.mjs';
 import assert from 'node:assert/strict';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';

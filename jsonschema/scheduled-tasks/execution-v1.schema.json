@@ -3,7 +3,7 @@
   "$id": "https://schemas.yijie.ai/scheduled-tasks/execution/v1",
   "title": "ScheduledExecutionFoundationV1",
   "description": "Phase 3A local native foundation. No renderer endpoint, enabled schedule, executable outbox or HTTP producer. Confirming a grant does not enable a plan or receive a run. Scope and authorization derive from native authority. Workspace IDs are native-owned references, never raw paths. A managed_schedule reference identifies the plan workspace policy; per-chat directories are allocated in phase 3B. Run results preserve native outcome separately from delivery and attention; terminal does not prove business success. Logical run quota is not a Provider request budget. Optional properties are absent, never null. Private SQL and reservation ownership remain Desktop-local.",
-  "x-family-version": "0.1.0",
+  "x-family-version": "0.2.0",
   "$defs": {
     "Identity": {
       "$ref": "https://schemas.yijie.ai/scheduled-tasks/storage/v1#/$defs/Identity"
@@ -17,10 +17,12 @@
       ]
     },
     "WorkspaceSource": {
+      "description": "Native-owned workspace origin. managed_chat is the existing app-owned ordinary-chat directory (SQL27); it is neither a user bookmark nor a new plan directory. Readers must support this value before such existing chats are admitted to a grant/run.",
       "type": "string",
       "enum": [
         "user_project",
-        "managed_schedule"
+        "managed_schedule",
+        "managed_chat"
       ]
     },
     "WorkspaceReference": {

@@ -14,7 +14,7 @@ if (!/^[0-9a-f]{40}$/.test(base)) throw new Error('Full base commit required');
 execFileSync('git', ['cat-file', '-e', `${base}^{commit}`], { cwd: root });
 const projection = projectScheduledSource(source.$id, loadScheduledSources(['draft', 'plan']));
 const definitions = new Map(Object.entries(projection.$defs));
-const pascal = value => value.split('_').map(word => word[0].toUpperCase() + word.slice(1)).join('');
+const pascal = value => value.split(/[_-]/).map(word => word[0].toUpperCase() + word.slice(1)).join('');
 function typeOf(schema, suggested, language) {
   if (schema.$ref) {
     if (!schema.$ref.startsWith('#/$defs/')) throw new Error('Unexpected external reference');
@@ -60,5 +60,5 @@ execFileSync('rustfmt', ['--edition', '2021', path.join(root, outputs[0])]);
 const sha = file => createHash('sha256').update(readFileSync(path.join(root, file))).digest('hex');
 const entries = files => files.map(file => ({ path: file, sha256: sha(file) }));
 write('compatibility/scheduled-plan/source.lock.json', JSON.stringify({ schema_version: 1, contract_version: source['x-family-version'], mode: 'local_candidate', release: false, repository: 'https://github.com/36Dge/yijie-contracts.git', base_commit: base,
-  sources: entries(['scripts/scheduled-schema-source.mjs', sourceName, 'jsonschema/scheduled-tasks/plan-draft-v1.schema.json', 'scripts/generate-scheduled-plan.mjs', 'scripts/sync-scheduled-plan.mjs', 'scripts/scheduled-consumer-source.mjs']), generated: entries(outputs), generators: { rust_typescript: 'source-local closed schema subset v1; serde validation plus native semantics', jsonschema: 'canonical context-preserving draft references v2' } }, null, 2)+'\n');
+  sources: entries(['jsonschema/chat/model-selection-v1.schema.json', 'scripts/scheduled-schema-source.mjs', sourceName, 'jsonschema/scheduled-tasks/plan-draft-v1.schema.json', 'scripts/generate-scheduled-plan.mjs', 'scripts/sync-scheduled-plan.mjs', 'scripts/scheduled-consumer-source.mjs','scripts/chat-model-consumer-source.mjs']), generated: entries(outputs), generators: { rust_typescript: 'source-local closed schema subset v1; serde validation plus native semantics', jsonschema: 'canonical context-preserving draft references v2' } }, null, 2)+'\n');
 console.log('Generated scheduled plan local candidate; legacy and phase-one sources unchanged.');

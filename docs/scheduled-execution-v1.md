@@ -17,3 +17,21 @@ SQL schema is private to Desktop. The compatible reader withholds marked schedul
 Verification: leaf generate/check/sync, four focused schema tests, actual native producer conformance via `node scripts/check-scheduled-execution-producer.mjs <artifact>`. Generated types enforce closed fields/enums and absent-vs-null; numeric, scope, digest and permission semantics remain native checks. No malicious/fault-injection fixtures, model or merchant calls are used.
 
 2026-09-18 contract closure: Identity now references the existing storage canonical ID. The closed repository resolver is included in source.lock; typed family metadata, raw definitions, projections, tests and actual producer checks retain strict validation. This batch is classified as semantic for source resolution/tooling, with unchanged payload decisions, generated Rust/TypeScript and native behavior. Earlier draft/storage schema expressions were normalized in the same closure; the earlier statement about unchanged families describes the original 3A batch. Version 0.1.0 remains unpublished. See FEAT-155 report 12 in the meta repository; 3B has not started.
+
+## FEAT-156 local candidate 0.2.0 — ordinary managed chat workspaces
+
+`contract-impact = breaking` for strict output readers. `WorkspaceSource.managed_chat`
+identifies an existing SQL27 app-owned ordinary-chat directory by its native resource UUID.
+It never carries a raw path, user bookmark, new directory grant, or permission expansion.
+The existing-chat target retains its directory and Ask policy; native scope, path hash and
+canonical resource checks still apply. `user_project` and `managed_schedule` retain their
+previous meaning and existing grant/run digests are not recomputed.
+
+The sole current producer/consumer is the Desktop native scheduled execution domain and
+its source-generated IPC/renderer reader. This is an unreleased FEAT-156 local working-tree
+candidate, not a published SDK or immutable pin. Deploy/generate the 0.2.0 reader before
+creating grants/runs using the new value. The ordinary model feature gate owns activation;
+SQL29 expands the two existing workspace CHECKs with copied historical values and restored
+proof/timing triggers. A compatible reader understands SQL29; an older unsupported binary
+must reject it rather than downgrade or reinterpret its references. New operations remain
+subject to their original model snapshot, finite grant and outbox admission.

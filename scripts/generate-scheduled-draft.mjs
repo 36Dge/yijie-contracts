@@ -34,7 +34,7 @@ for(const [name,s]of definitions){
 }
 function format(command,args,input){const r=spawnSync(command,args,{input,encoding:'utf8'});if(r.status!==0)throw Error(r.stderr);return r.stdout;}
 const outputs={'sdks/rust/scheduled-draft/types.gen.rs':format('rustfmt',['--edition','2021'],rust),'sdks/typescript/src/jsonschema/scheduled-draft.gen.ts':ts,'sdks/go/openapi/scheduled-draft/types.gen.go':format('gofmt',[],go),'sdks/jsonschema/scheduled-draft.schema.json':JSON.stringify(resolved,null,2)+'\n','sdks/jsonschema/scheduled-draft-output.schema.json':JSON.stringify(localize(modelBundle),null,2)+'\n'};
-const hash=b=>createHash('sha256').update(b).digest('hex');const sourceFiles=[sourcePath,'jsonschema/scheduled-tasks/plan-draft-v1.schema.json','openapi/scheduled-plan-draft/scheduled-plan-draft.yaml','scripts/generate-scheduled-draft.mjs','scripts/sync-scheduled-draft.mjs', 'scripts/scheduled-consumer-source.mjs','scripts/scheduled-schema-source.mjs'];
+const hash=b=>createHash('sha256').update(b).digest('hex');const sourceFiles=[sourcePath,'jsonschema/scheduled-tasks/plan-draft-v1.schema.json','openapi/scheduled-plan-draft/scheduled-plan-draft.yaml','scripts/generate-scheduled-draft.mjs','scripts/sync-scheduled-draft.mjs', 'scripts/scheduled-consumer-source.mjs','scripts/chat-model-consumer-source.mjs','scripts/scheduled-schema-source.mjs'];
 const lockPath='compatibility/scheduled-draft/source.lock.json';
 // Checking an immutable source must not substitute a later repository HEAD.
 const baseCommit=process.argv.includes('--check')?JSON.parse(readFileSync(path.join(root,lockPath))).base_commit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();

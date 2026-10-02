@@ -11,6 +11,7 @@ const sources = {
 };
 
 export function registerScheduledAnnotations(ajv) {
+  ajv.addKeyword({keyword:'x-model-profiles',schemaType:'array'});
   ajv.addKeyword({
     keyword: 'x-family-version',
     schemaType: 'string',
@@ -19,13 +20,14 @@ export function registerScheduledAnnotations(ajv) {
 }
 
 export function loadScheduledSources(names = Object.keys(sources)) {
-  return new Map(names.map(name => {
+  const models=JSON.parse(readFileSync(path.join(root,'jsonschema/chat/model-selection-v1.schema.json')));
+  return new Map([[models.$id,models],...names.map(name => {
     assert.ok(Object.hasOwn(sources, name), 'Unknown scheduled source');
     const [file, id] = sources[name];
     const document = JSON.parse(readFileSync(path.join(root, 'jsonschema/scheduled-tasks', file)));
     assert.equal(document.$id, id, 'Canonical scheduled source ID changed');
     return [id, document];
-  }));
+  })]);
 }
 
 // Resolve only the explicitly supplied in-repository source registry. No remote

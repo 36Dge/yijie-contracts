@@ -21,7 +21,7 @@ test('finite confirmation cannot grant scope, mode, enabled state or caller auth
 });
 test('workspace references distinguish native policy from user project and reject raw paths',()=>{
  const v=validate('WorkspaceReference');
- for(const source of ['user_project','managed_schedule'])assert.equal(v({source,resource_id:id}),true);
+ for(const source of ['user_project','managed_schedule','managed_chat'])assert.equal(v({source,resource_id:id}),true);
  assert.equal(v({source:'bookmark',resource_id:id}),false);
  assert.equal(v({source:'managed_schedule',resource_id:id,path:'/ordinary/path'}),false);
 });

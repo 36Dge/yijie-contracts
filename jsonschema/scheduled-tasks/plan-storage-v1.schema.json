@@ -87,6 +87,9 @@
         },
         "target": {
           "$ref": "#/$defs/TargetReference"
+        },
+        "model_profile": {
+          "$ref": "https://schemas.yijie.ai/chat/model-selection/v1#/$defs/ProfileId"
         }
       }
     },
