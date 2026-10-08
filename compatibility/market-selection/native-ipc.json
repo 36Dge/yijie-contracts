@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "contract_id": "market-selection/1",
+  "contract_version": "0.1.0",
+  "title": "FEAT-157 ordinary chat market selection",
+  "description": "Independent unreleased Native IPC and durable snapshot source. Overall FEAT-157 impact breaking; source-only local candidate, no Host route or execution grant. External refs preserve existing authorities.",
+  "wire_authority": "compatibility/market-selection/wire.schema.json",
+  "transport": "native_ipc",
+  "native_ipc": {
+    "version": 1,
+    "contextBinding": "chat_bind_context_v1",
+    "commands": [
+      {
+        "command": "chat_market_submit_v1",
+        "request": "SubmitRequest",
+        "response": "SubmitResponse",
+        "requiredPermission": "chat permissions; connector.use only for nonempty selection"
+      }
+    ]
+  },
+  "selection_digest": {
+    "version": 1,
+    "domain": "yijie.market-selection/v1",
+    "algorithm": "sha256",
+    "encoding": "ASCII; actual LF line endings; lowercase hexadecimal digest",
+    "lines": [
+      "domain",
+      "canonical actual turnOperationId",
+      "decimal count",
+      "each sorted installationId + ASCII SPACE + decimal revision + ASCII SPACE + decimal generation"
+    ],
+    "trailingLf": true,
+    "maxItems": 51,
+    "uniqueKey": "installationId",
+    "sort": "installationId ASCII ascending",
+    "safeIntegerMaximum": 9007199254740991
+  },
+  "semantics": {
+    "scope": "ordinary_chat_only",
+    "acceptedReplay": "same scope and same immutable intent returns original receipt without prepare/bind/Runtime work; changed intent conflicts; complete content/target/model/selection identity is compared, selectionDigest alone is insufficient",
+    "emptySelection": "explicit no market tools; never inherits previous or global market capability",
+    "unqualifiedNonempty": "reject execution_unavailable before durable acceptance; do not trim or silently fall back",
+    "unknownOutcome": "reuse original operation and query/replay only; do not generate replacement operation",
+    "rollback": "feature-off readers must skip connector-aware outboxes; old entry points must not execute connector snapshots",
+    "authority": "Native current scope and normal chat permissions; selection and digest do not grant authority",
+    "unqualifiedProvider": "reject all new submissions before durable acceptance; no legacy dispatch fallback",
+    "legacyCollision": "If the submission operation already belongs to a legacy outbox/turn/model record and lacks a market snapshot, return request_conflict; never adopt or relabel an existing legacy operation."
+  }
+}

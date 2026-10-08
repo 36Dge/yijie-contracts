@@ -4,6 +4,9 @@ import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { registerScheduledAnnotations } from "./scheduled-schema-source.mjs";
 import { workflowValidators } from "./workflow-schema-validator.mjs";
+import { loadMarketSelectionSource, marketSelectionSourcePath } from "./market-selection-source.mjs";
+import { loadBrokerSource, brokerSourcePath } from "./market-broker-source.mjs";
+import { loadMarketHostSource, loadMarketProviderSource } from "./market-host-source.mjs";
 
 async function findSchemas(dir) {
   const files = [];
@@ -17,6 +20,7 @@ async function findSchemas(dir) {
 
 const ajv = new Ajv2020({ allErrors: true, strict: true });
 addFormats(ajv);
+ajv.addFormat("int64", { type: "number", validate: Number.isSafeInteger });
 registerScheduledAnnotations(ajv);
 for (const keyword of [
   "x-yijie-max-reasoning-items-per-turn",
@@ -68,15 +72,29 @@ for (const file of files) {
   documents.push({ file, schema });
 }
 
+// The private IPC family intentionally lives outside the generic public-SDK
+// schema scan. Register its authoritative same-source projection explicitly;
+// validate the manifest and every wire definition without changing HTTP rules.
+const marketSelectionSchema = loadMarketSelectionSource().schema;
+ajv.addSchema(marketSelectionSchema);
+documents.push({ file: marketSelectionSourcePath, schema: marketSelectionSchema });
+const brokerSchema = loadBrokerSource().schema;
+ajv.addSchema(brokerSchema);
+documents.push({ file: brokerSourcePath, schema: brokerSchema });
+for (const family of [loadMarketHostSource(), loadMarketProviderSource()]) {
+  ajv.addSchema(family.schema);
+  documents.push({ file: family.manifest.wire_authority, schema: family.schema });
+}
+
 // Register all canonical sources before compilation so directory order is not
 // part of the contract. The workflow check above retains its existing authority.
 for (const { file, schema } of documents) {
   ajv.compile(schema);
-  if (file.startsWith("jsonschema/scheduled-tasks/")) {
+  if (file.startsWith("jsonschema/scheduled-tasks/") || file.startsWith("compatibility/market-")) {
     for (const name of Object.keys(schema.$defs ?? {})) {
       ajv.compile({ $ref: `${schema.$id}#/$defs/${name}` });
     }
   }
 }
 
-console.log(`Validated ${files.length} JSON Schema documents.`);
+console.log(`Validated ${files.length} JSON Schema documents and the private market wire authorities.`);

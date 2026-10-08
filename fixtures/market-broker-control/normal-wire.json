@@ -1,0 +1,527 @@
+{
+  "InitializeRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000157",
+    "method": "initialize",
+    "payload": {
+      "operationId": "00000000-0000-4000-8000-000000000157",
+      "process": {
+        "hostInstanceId": "00000000-0000-4000-8000-000000000157",
+        "runtimeGeneration": "00000000-0000-4000-8000-000000000158"
+      }
+    }
+  },
+  "PrepareRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000157",
+    "method": "prepare",
+    "payload": {
+      "operationId": "00000000-0000-4000-8000-000000000158",
+      "context": {
+        "process": {
+          "hostInstanceId": "00000000-0000-4000-8000-000000000157",
+          "runtimeGeneration": "00000000-0000-4000-8000-000000000158"
+        },
+        "scope": {
+          "ownerUserId": "00000000-0000-4000-8000-000000000157",
+          "tenantId": "00000000-0000-4000-8000-000000000158",
+          "nativeProcessEpoch": "00000000-0000-4000-8000-000000000157",
+          "authorizationRevision": 1,
+          "authorizationExpiresAtUnixMs": 1800000300000
+        },
+        "agentSessionId": "00000000-0000-4000-8000-000000000157",
+        "nativeThreadId": "thread-synthetic"
+      },
+      "snapshot": {
+        "schemaVersion": 1,
+        "turnOperationId": "00000000-0000-4000-8000-000000000157",
+        "selection": [
+          {
+            "installationId": "00000000-0000-4000-8000-000000000159",
+            "revision": 1,
+            "generation": 1
+          }
+        ],
+        "selectionDigest": "7b02b7ee8d09a9791015929f1b34c6d1a7ff19f5fba9e56c3d1c6bcac0830e87"
+      },
+      "ttlMs": 300000
+    }
+  },
+  "BindTurnRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000157",
+    "method": "bind_turn",
+    "payload": {
+      "operationId": "00000000-0000-4000-8000-000000000157",
+      "binding": {
+        "context": {
+          "process": {
+            "hostInstanceId": "00000000-0000-4000-8000-000000000157",
+            "runtimeGeneration": "00000000-0000-4000-8000-000000000158"
+          },
+          "scope": {
+            "ownerUserId": "00000000-0000-4000-8000-000000000157",
+            "tenantId": "00000000-0000-4000-8000-000000000158",
+            "nativeProcessEpoch": "00000000-0000-4000-8000-000000000157",
+            "authorizationRevision": 1,
+            "authorizationExpiresAtUnixMs": 1800000300000
+          },
+          "agentSessionId": "00000000-0000-4000-8000-000000000157",
+          "nativeThreadId": "thread-synthetic"
+        },
+        "capabilityRef": "00000000-0000-4000-8000-000000000158",
+        "turnOperationId": "00000000-0000-4000-8000-000000000157",
+        "selectionDigest": "7b02b7ee8d09a9791015929f1b34c6d1a7ff19f5fba9e56c3d1c6bcac0830e87"
+      },
+      "expectedRevision": 1,
+      "nativeTurnId": "turn-synthetic",
+      "nativeThreadId": "thread-synthetic"
+    }
+  },
+  "RevokeRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000157",
+    "method": "revoke",
+    "payload": {
+      "operationId": "00000000-0000-4000-8000-000000000157",
+      "binding": {
+        "context": {
+          "process": {
+            "hostInstanceId": "00000000-0000-4000-8000-000000000157",
+            "runtimeGeneration": "00000000-0000-4000-8000-000000000158"
+          },
+          "scope": {
+            "ownerUserId": "00000000-0000-4000-8000-000000000157",
+            "tenantId": "00000000-0000-4000-8000-000000000158",
+            "nativeProcessEpoch": "00000000-0000-4000-8000-000000000157",
+            "authorizationRevision": 1,
+            "authorizationExpiresAtUnixMs": 1800000300000
+          },
+          "agentSessionId": "00000000-0000-4000-8000-000000000157",
+          "nativeThreadId": "thread-synthetic"
+        },
+        "capabilityRef": "00000000-0000-4000-8000-000000000158",
+        "turnOperationId": "00000000-0000-4000-8000-000000000157",
+        "selectionDigest": "7b02b7ee8d09a9791015929f1b34c6d1a7ff19f5fba9e56c3d1c6bcac0830e87"
+      },
+      "expectedRevision": 2,
+      "reason": "user_cancelled"
+    }
+  },
+  "StatusRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000157",
+    "method": "status",
+    "payload": {
+      "binding": {
+        "context": {
+          "process": {
+            "hostInstanceId": "00000000-0000-4000-8000-000000000157",
+            "runtimeGeneration": "00000000-0000-4000-8000-000000000158"
+          },
+          "scope": {
+            "ownerUserId": "00000000-0000-4000-8000-000000000157",
+            "tenantId": "00000000-0000-4000-8000-000000000158",
+            "nativeProcessEpoch": "00000000-0000-4000-8000-000000000157",
+            "authorizationRevision": 1,
+            "authorizationExpiresAtUnixMs": 1800000300000
+          },
+          "agentSessionId": "00000000-0000-4000-8000-000000000157",
+          "nativeThreadId": "thread-synthetic"
+        },
+        "capabilityRef": "00000000-0000-4000-8000-000000000158",
+        "turnOperationId": "00000000-0000-4000-8000-000000000157",
+        "selectionDigest": "7b02b7ee8d09a9791015929f1b34c6d1a7ff19f5fba9e56c3d1c6bcac0830e87"
+      }
+    }
+  },
+  "PendingCallRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000157",
+    "method": "pending_call",
+    "payload": {
+      "binding": {
+        "context": {
+          "process": {
+            "hostInstanceId": "00000000-0000-4000-8000-000000000157",
+            "runtimeGeneration": "00000000-0000-4000-8000-000000000158"
+          },
+          "scope": {
+            "ownerUserId": "00000000-0000-4000-8000-000000000157",
+            "tenantId": "00000000-0000-4000-8000-000000000158",
+            "nativeProcessEpoch": "00000000-0000-4000-8000-000000000157",
+            "authorizationRevision": 1,
+            "authorizationExpiresAtUnixMs": 1800000300000
+          },
+          "agentSessionId": "00000000-0000-4000-8000-000000000157",
+          "nativeThreadId": "thread-synthetic"
+        },
+        "capabilityRef": "00000000-0000-4000-8000-000000000158",
+        "turnOperationId": "00000000-0000-4000-8000-000000000157",
+        "selectionDigest": "7b02b7ee8d09a9791015929f1b34c6d1a7ff19f5fba9e56c3d1c6bcac0830e87"
+      },
+      "nativeTurnId": "turn-synthetic",
+      "callRef": "00000000-0000-4000-8000-000000000157",
+      "nativeThreadId": "thread-synthetic"
+    }
+  },
+  "DecideCallRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000157",
+    "method": "decide_call",
+    "payload": {
+      "operationId": "00000000-0000-4000-8000-000000000157",
+      "identity": {
+        "binding": {
+          "context": {
+            "process": {
+              "hostInstanceId": "00000000-0000-4000-8000-000000000157",
+              "runtimeGeneration": "00000000-0000-4000-8000-000000000158"
+            },
+            "scope": {
+              "ownerUserId": "00000000-0000-4000-8000-000000000157",
+              "tenantId": "00000000-0000-4000-8000-000000000158",
+              "nativeProcessEpoch": "00000000-0000-4000-8000-000000000157",
+              "authorizationRevision": 1,
+              "authorizationExpiresAtUnixMs": 1800000300000
+            },
+            "agentSessionId": "00000000-0000-4000-8000-000000000157",
+            "nativeThreadId": "thread-synthetic"
+          },
+          "capabilityRef": "00000000-0000-4000-8000-000000000158",
+          "turnOperationId": "00000000-0000-4000-8000-000000000157",
+          "selectionDigest": "7b02b7ee8d09a9791015929f1b34c6d1a7ff19f5fba9e56c3d1c6bcac0830e87"
+        },
+        "nativeTurnId": "turn-synthetic",
+        "callRef": "00000000-0000-4000-8000-000000000157",
+        "serviceId": "market-qualification",
+        "reference": {
+          "installationId": "00000000-0000-4000-8000-000000000159",
+          "revision": 1,
+          "generation": 1
+        },
+        "toolName": "lookup",
+        "argsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "argsEncoding": "worker-json-v1",
+        "nativeThreadId": "thread-synthetic"
+      },
+      "expectedRevision": 1,
+      "approvalRef": "00000000-0000-4000-8000-000000000157",
+      "decisionId": "00000000-0000-4000-8000-000000000158",
+      "decision": "approve_once"
+    }
+  },
+  "ShutdownRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000157",
+    "method": "shutdown",
+    "payload": {
+      "operationId": "00000000-0000-4000-8000-000000000157",
+      "process": {
+        "hostInstanceId": "00000000-0000-4000-8000-000000000157",
+        "runtimeGeneration": "00000000-0000-4000-8000-000000000158"
+      },
+      "reason": "owner_shutdown"
+    }
+  },
+  "InitializeResponse": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000157",
+    "data": {
+      "workerInstanceId": "00000000-0000-4000-8000-000000000158",
+      "process": {
+        "hostInstanceId": "00000000-0000-4000-8000-000000000157",
+        "runtimeGeneration": "00000000-0000-4000-8000-000000000158"
+      },
+      "gatewayUrl": "http://127.0.0.1:18081/mcp",
+      "externalCallsEnabled": false
+    }
+  },
+  "PrepareResponse": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000157",
+    "data": {
+      "binding": {
+        "context": {
+          "process": {
+            "hostInstanceId": "00000000-0000-4000-8000-000000000157",
+            "runtimeGeneration": "00000000-0000-4000-8000-000000000158"
+          },
+          "scope": {
+            "ownerUserId": "00000000-0000-4000-8000-000000000157",
+            "tenantId": "00000000-0000-4000-8000-000000000158",
+            "nativeProcessEpoch": "00000000-0000-4000-8000-000000000157",
+            "authorizationRevision": 1,
+            "authorizationExpiresAtUnixMs": 1800000300000
+          },
+          "agentSessionId": "00000000-0000-4000-8000-000000000157",
+          "nativeThreadId": "thread-synthetic"
+        },
+        "capabilityRef": "00000000-0000-4000-8000-000000000158",
+        "turnOperationId": "00000000-0000-4000-8000-000000000157",
+        "selectionDigest": "7b02b7ee8d09a9791015929f1b34c6d1a7ff19f5fba9e56c3d1c6bcac0830e87"
+      },
+      "snapshot": {
+        "schemaVersion": 1,
+        "turnOperationId": "00000000-0000-4000-8000-000000000157",
+        "selection": [
+          {
+            "installationId": "00000000-0000-4000-8000-000000000159",
+            "revision": 1,
+            "generation": 1
+          }
+        ],
+        "selectionDigest": "7b02b7ee8d09a9791015929f1b34c6d1a7ff19f5fba9e56c3d1c6bcac0830e87"
+      },
+      "revision": 1,
+      "state": "prepared",
+      "remainingTtlMs": 300000
+    }
+  },
+  "BindTurnResponse": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000157",
+    "data": {
+      "binding": {
+        "context": {
+          "process": {
+            "hostInstanceId": "00000000-0000-4000-8000-000000000157",
+            "runtimeGeneration": "00000000-0000-4000-8000-000000000158"
+          },
+          "scope": {
+            "ownerUserId": "00000000-0000-4000-8000-000000000157",
+            "tenantId": "00000000-0000-4000-8000-000000000158",
+            "nativeProcessEpoch": "00000000-0000-4000-8000-000000000157",
+            "authorizationRevision": 1,
+            "authorizationExpiresAtUnixMs": 1800000300000
+          },
+          "agentSessionId": "00000000-0000-4000-8000-000000000157",
+          "nativeThreadId": "thread-synthetic"
+        },
+        "capabilityRef": "00000000-0000-4000-8000-000000000158",
+        "turnOperationId": "00000000-0000-4000-8000-000000000157",
+        "selectionDigest": "7b02b7ee8d09a9791015929f1b34c6d1a7ff19f5fba9e56c3d1c6bcac0830e87"
+      },
+      "snapshot": {
+        "schemaVersion": 1,
+        "turnOperationId": "00000000-0000-4000-8000-000000000157",
+        "selection": [
+          {
+            "installationId": "00000000-0000-4000-8000-000000000159",
+            "revision": 1,
+            "generation": 1
+          }
+        ],
+        "selectionDigest": "7b02b7ee8d09a9791015929f1b34c6d1a7ff19f5fba9e56c3d1c6bcac0830e87"
+      },
+      "revision": 2,
+      "state": "bound",
+      "remainingTtlMs": 299000,
+      "nativeTurnId": "turn-synthetic",
+      "boundNativeThreadId": "thread-synthetic"
+    }
+  },
+  "RevokeResponse": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000157",
+    "data": {
+      "binding": {
+        "context": {
+          "process": {
+            "hostInstanceId": "00000000-0000-4000-8000-000000000157",
+            "runtimeGeneration": "00000000-0000-4000-8000-000000000158"
+          },
+          "scope": {
+            "ownerUserId": "00000000-0000-4000-8000-000000000157",
+            "tenantId": "00000000-0000-4000-8000-000000000158",
+            "nativeProcessEpoch": "00000000-0000-4000-8000-000000000157",
+            "authorizationRevision": 1,
+            "authorizationExpiresAtUnixMs": 1800000300000
+          },
+          "agentSessionId": "00000000-0000-4000-8000-000000000157",
+          "nativeThreadId": "thread-synthetic"
+        },
+        "capabilityRef": "00000000-0000-4000-8000-000000000158",
+        "turnOperationId": "00000000-0000-4000-8000-000000000157",
+        "selectionDigest": "7b02b7ee8d09a9791015929f1b34c6d1a7ff19f5fba9e56c3d1c6bcac0830e87"
+      },
+      "snapshot": {
+        "schemaVersion": 1,
+        "turnOperationId": "00000000-0000-4000-8000-000000000157",
+        "selection": [
+          {
+            "installationId": "00000000-0000-4000-8000-000000000159",
+            "revision": 1,
+            "generation": 1
+          }
+        ],
+        "selectionDigest": "7b02b7ee8d09a9791015929f1b34c6d1a7ff19f5fba9e56c3d1c6bcac0830e87"
+      },
+      "revision": 3,
+      "state": "revoked",
+      "remainingTtlMs": 0,
+      "nativeTurnId": "turn-synthetic",
+      "boundNativeThreadId": "thread-synthetic"
+    }
+  },
+  "StatusResponse": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000157",
+    "data": {
+      "binding": {
+        "context": {
+          "process": {
+            "hostInstanceId": "00000000-0000-4000-8000-000000000157",
+            "runtimeGeneration": "00000000-0000-4000-8000-000000000158"
+          },
+          "scope": {
+            "ownerUserId": "00000000-0000-4000-8000-000000000157",
+            "tenantId": "00000000-0000-4000-8000-000000000158",
+            "nativeProcessEpoch": "00000000-0000-4000-8000-000000000157",
+            "authorizationRevision": 1,
+            "authorizationExpiresAtUnixMs": 1800000300000
+          },
+          "agentSessionId": "00000000-0000-4000-8000-000000000157",
+          "nativeThreadId": "thread-synthetic"
+        },
+        "capabilityRef": "00000000-0000-4000-8000-000000000158",
+        "turnOperationId": "00000000-0000-4000-8000-000000000157",
+        "selectionDigest": "7b02b7ee8d09a9791015929f1b34c6d1a7ff19f5fba9e56c3d1c6bcac0830e87"
+      },
+      "snapshot": {
+        "schemaVersion": 1,
+        "turnOperationId": "00000000-0000-4000-8000-000000000157",
+        "selection": [
+          {
+            "installationId": "00000000-0000-4000-8000-000000000159",
+            "revision": 1,
+            "generation": 1
+          }
+        ],
+        "selectionDigest": "7b02b7ee8d09a9791015929f1b34c6d1a7ff19f5fba9e56c3d1c6bcac0830e87"
+      },
+      "revision": 2,
+      "state": "bound",
+      "remainingTtlMs": 299000,
+      "nativeTurnId": "turn-synthetic",
+      "boundNativeThreadId": "thread-synthetic"
+    }
+  },
+  "PendingCallResponse": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000157",
+    "data": {
+      "identity": {
+        "binding": {
+          "context": {
+            "process": {
+              "hostInstanceId": "00000000-0000-4000-8000-000000000157",
+              "runtimeGeneration": "00000000-0000-4000-8000-000000000158"
+            },
+            "scope": {
+              "ownerUserId": "00000000-0000-4000-8000-000000000157",
+              "tenantId": "00000000-0000-4000-8000-000000000158",
+              "nativeProcessEpoch": "00000000-0000-4000-8000-000000000157",
+              "authorizationRevision": 1,
+              "authorizationExpiresAtUnixMs": 1800000300000
+            },
+            "agentSessionId": "00000000-0000-4000-8000-000000000157",
+            "nativeThreadId": "thread-synthetic"
+          },
+          "capabilityRef": "00000000-0000-4000-8000-000000000158",
+          "turnOperationId": "00000000-0000-4000-8000-000000000157",
+          "selectionDigest": "7b02b7ee8d09a9791015929f1b34c6d1a7ff19f5fba9e56c3d1c6bcac0830e87"
+        },
+        "nativeTurnId": "turn-synthetic",
+        "callRef": "00000000-0000-4000-8000-000000000157",
+        "serviceId": "market-qualification",
+        "reference": {
+          "installationId": "00000000-0000-4000-8000-000000000159",
+          "revision": 1,
+          "generation": 1
+        },
+        "toolName": "lookup",
+        "argsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "argsEncoding": "worker-json-v1",
+        "nativeThreadId": "thread-synthetic"
+      },
+      "revision": 1,
+      "state": "pending",
+      "remainingTtlMs": 60000,
+      "review": {
+        "title": "合成本地查询",
+        "summary": "查询已固定的本地样例，不涉及外部账号或平台数据。",
+        "risk": "read"
+      }
+    }
+  },
+  "DecideCallResponse": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000157",
+    "data": {
+      "identity": {
+        "binding": {
+          "context": {
+            "process": {
+              "hostInstanceId": "00000000-0000-4000-8000-000000000157",
+              "runtimeGeneration": "00000000-0000-4000-8000-000000000158"
+            },
+            "scope": {
+              "ownerUserId": "00000000-0000-4000-8000-000000000157",
+              "tenantId": "00000000-0000-4000-8000-000000000158",
+              "nativeProcessEpoch": "00000000-0000-4000-8000-000000000157",
+              "authorizationRevision": 1,
+              "authorizationExpiresAtUnixMs": 1800000300000
+            },
+            "agentSessionId": "00000000-0000-4000-8000-000000000157",
+            "nativeThreadId": "thread-synthetic"
+          },
+          "capabilityRef": "00000000-0000-4000-8000-000000000158",
+          "turnOperationId": "00000000-0000-4000-8000-000000000157",
+          "selectionDigest": "7b02b7ee8d09a9791015929f1b34c6d1a7ff19f5fba9e56c3d1c6bcac0830e87"
+        },
+        "nativeTurnId": "turn-synthetic",
+        "callRef": "00000000-0000-4000-8000-000000000157",
+        "serviceId": "market-qualification",
+        "reference": {
+          "installationId": "00000000-0000-4000-8000-000000000159",
+          "revision": 1,
+          "generation": 1
+        },
+        "toolName": "lookup",
+        "argsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "argsEncoding": "worker-json-v1",
+        "nativeThreadId": "thread-synthetic"
+      },
+      "revision": 2,
+      "state": "approved",
+      "remainingTtlMs": 60000,
+      "review": {
+        "title": "合成本地查询",
+        "summary": "查询已固定的本地样例，不涉及外部账号或平台数据。",
+        "risk": "read"
+      },
+      "decisionId": "00000000-0000-4000-8000-000000000158",
+      "decision": "approve_once"
+    }
+  },
+  "ShutdownResponse": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000157",
+    "data": {
+      "state": "stopping",
+      "stoppedAdmissions": true,
+      "externalOutcomes": "not_asserted"
+    }
+  },
+  "Error": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000157",
+    "code": "not_qualified",
+    "retryable": false
+  },
+  "ElicitationMetadata": {
+    "yijieMarketCallRef": "00000000-0000-4000-8000-000000000157",
+    "yijieKind": "gateway_call_approval"
+  }
+}

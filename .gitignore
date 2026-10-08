@@ -7,3 +7,5 @@ sdks/typescript/dist/
 .artifacts/
 coverage/
 *.log
+# FEAT-157 local Rust conformance build output.
+/tests/rust-market-*/target/

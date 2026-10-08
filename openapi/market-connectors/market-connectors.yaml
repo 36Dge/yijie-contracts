@@ -1,0 +1,1219 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FEAT-157 market connectors native IPC",
+    "version": "0.2.0",
+    "description": "Independent unreleased local family; Native IPC only, no HTTP routes. JSON Schema component definitions are source authority; existing strict families and pins unchanged."
+  },
+  "paths": {},
+  "x-native-ipc": {
+    "version": 1,
+    "contextBinding": "chat_bind_management_context_v1",
+    "exposure": "local",
+    "responseUnknownFields": "ignore without echo/persistence/logging",
+    "requestUnknownFields": "reject",
+    "unknownEnum": "reject; never upgrade unknown to allowed",
+    "commands": [
+      {
+        "command": "market_connectors_snapshot_v1",
+        "request": "SnapshotRequest",
+        "response": "SnapshotResponse",
+        "requiredPermission": "connector.read"
+      },
+      {
+        "command": "market_connectors_install_v1",
+        "request": "InstallRequest",
+        "response": "MutationResponse",
+        "requiredPermission": "connector.manage"
+      },
+      {
+        "command": "market_connectors_set_enabled_v1",
+        "request": "SetEnabledRequest",
+        "response": "MutationResponse",
+        "requiredPermission": "connector.manage"
+      },
+      {
+        "command": "market_connectors_uninstall_v1",
+        "request": "UninstallRequest",
+        "response": "MutationResponse",
+        "requiredPermission": "connector.manage"
+      },
+      {
+        "command": "market_connectors_configure_v1",
+        "request": "ConfigureRequest",
+        "response": "MutationResponse",
+        "requiredPermission": "connector.credentials.manage"
+      },
+      {
+        "command": "market_connectors_authorize_v1",
+        "request": "AuthorizeRequest",
+        "response": "MutationResponse",
+        "requiredPermission": "connector.credentials.manage"
+      },
+      {
+        "command": "market_connectors_operation_read_v1",
+        "request": "OperationReadRequest",
+        "response": "OperationResponse",
+        "requiredPermission": "connector.read"
+      },
+      {
+        "command": "market_connectors_operation_cancel_v1",
+        "request": "OperationCancelRequest",
+        "response": "OperationResponse",
+        "requiredPermission": "action_owner_permission"
+      },
+      {
+        "command": "market_connectors_operation_reopen_v1",
+        "request": "OperationReopenRequest",
+        "response": "OperationResponse",
+        "requiredPermission": "connector.credentials.manage"
+      },
+      {
+        "command": "market_connectors_selection_validate_v1",
+        "request": "SelectionValidateRequest",
+        "response": "SelectionValidateResponse",
+        "requiredPermission": "connector.use"
+      }
+    ],
+    "authorizationPageRecovery": "Explicit reopen reads the same original owned auth/configure operation under current credentials.manage authority and expected operation revision; only a fresh awaiting-user URL may open. Never create auth, DCR, probe, a credential generation or a new operation; never return URL or secrets to renderer. Cancelled, expired, terminal, replaced or owner-lost attempts cannot reopen. Automatic first browser launch also requires credentials.manage; read-only status access never opens a page. A failed browser launch does not restart authorization, and a later explicit reopen may use the same pending operation."
+  },
+  "components": {
+    "schemas": {
+      "CanonicalId": {
+        "type": "string",
+        "format": "uuid",
+        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+        "not": {
+          "const": "00000000-0000-0000-0000-000000000000"
+        }
+      },
+      "ServiceId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$",
+        "description": "Original case-sensitive catalog serverName. Syntactic acceptance does not replace exact registry lookup."
+      },
+      "Revision": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 9007199254740991
+      },
+      "InitialRevision": {
+        "type": "integer",
+        "const": 0
+      },
+      "SchemaVersion": {
+        "type": "integer",
+        "const": 1
+      },
+      "CredentialReference": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$",
+        "description": "Opaque non-redeemable reference only; never a secret, URL, file path, token or raw account identifier."
+      },
+      "Permission": {
+        "type": "string",
+        "enum": [
+          "connector.read",
+          "connector.manage",
+          "connector.credentials.manage",
+          "connector.use"
+        ]
+      },
+      "CategoryId": {
+        "type": "string",
+        "enum": [
+          "knowledge_docs",
+          "ecommerce_retail",
+          "data_analytics",
+          "productivity",
+          "industry_data",
+          "marketing"
+        ]
+      },
+      "Transport": {
+        "type": "string",
+        "enum": [
+          "http",
+          "stdio"
+        ]
+      },
+      "AuthMode": {
+        "type": "string",
+        "enum": [
+          "oauth",
+          "api_key",
+          "provider_credentials",
+          "local_oauth",
+          "stdio_api_key",
+          "provider_gateway",
+          "unknown"
+        ]
+      },
+      "Availability": {
+        "type": "string",
+        "enum": [
+          "available",
+          "needs_setup",
+          "blocked",
+          "unverified"
+        ]
+      },
+      "InstallationStatus": {
+        "type": "string",
+        "enum": [
+          "installed",
+          "removing",
+          "removed"
+        ]
+      },
+      "ConfigurationStatus": {
+        "type": "string",
+        "enum": [
+          "unconfigured",
+          "configured",
+          "invalid",
+          "unknown"
+        ]
+      },
+      "AuthorizationStatus": {
+        "type": "string",
+        "enum": [
+          "not_required",
+          "required",
+          "authorizing",
+          "authorized",
+          "expired",
+          "failed",
+          "unknown"
+        ]
+      },
+      "ConnectionStatus": {
+        "type": "string",
+        "enum": [
+          "disconnected",
+          "connecting",
+          "ready",
+          "failed",
+          "unknown"
+        ]
+      },
+      "OperationAction": {
+        "type": "string",
+        "enum": [
+          "install",
+          "configure",
+          "authorize",
+          "enable",
+          "disable",
+          "uninstall"
+        ]
+      },
+      "OperationStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "succeeded",
+          "failed",
+          "cancelled",
+          "unknown"
+        ]
+      },
+      "ErrorCode": {
+        "type": "string",
+        "enum": [
+          "invalid_request",
+          "context_invalid",
+          "not_found",
+          "request_conflict",
+          "not_configured",
+          "authorization_required",
+          "authorization_cancelled",
+          "dependency_missing",
+          "provider_onboarding_required",
+          "permission_denied",
+          "revision_conflict",
+          "unsupported_capability",
+          "rate_limited",
+          "temporarily_unavailable",
+          "operation_pending",
+          "outcome_unknown",
+          "cleanup_pending",
+          "execution_unavailable",
+          "selection_stale"
+        ]
+      },
+      "CatalogEntry": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "serviceId",
+          "serverName",
+          "displayName",
+          "categoryId",
+          "categoryLabel",
+          "description",
+          "iconAssetId",
+          "transport",
+          "authMode",
+          "availability",
+          "blockerCodes"
+        ],
+        "properties": {
+          "serviceId": {
+            "$ref": "#/components/schemas/ServiceId"
+          },
+          "serverName": {
+            "$ref": "#/components/schemas/ServiceId"
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "categoryId": {
+            "$ref": "#/components/schemas/CategoryId"
+          },
+          "categoryLabel": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "description": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 2000
+          },
+          "iconAssetId": {
+            "$ref": "#/components/schemas/ServiceId"
+          },
+          "transport": {
+            "$ref": "#/components/schemas/Transport"
+          },
+          "authMode": {
+            "$ref": "#/components/schemas/AuthMode"
+          },
+          "authorizationAvailable": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether this local Native product assembly has an available managed authorization adapter. Omitted means false. This is not provider authorization, installation enablement, connection readiness, tool qualification or execution permission. authMode is reference metadata and cannot establish this capability; credentials.manage is still required to authorize."
+          },
+          "availability": {
+            "$ref": "#/components/schemas/Availability"
+          },
+          "blockerCodes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorCode"
+            },
+            "maxItems": 20
+          }
+        },
+        "description": "Connectors-owned non-secret product catalog projection. No endpoint, command, header, environment, OAuth URL or executable configuration. Unknown response fields are ignored, never echoed/persisted."
+      },
+      "Operation": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "operationId",
+          "installationId",
+          "serviceId",
+          "action",
+          "status",
+          "revision",
+          "cancellable"
+        ],
+        "properties": {
+          "operationId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "installationId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "serviceId": {
+            "$ref": "#/components/schemas/ServiceId"
+          },
+          "action": {
+            "$ref": "#/components/schemas/OperationAction"
+          },
+          "status": {
+            "$ref": "#/components/schemas/OperationStatus"
+          },
+          "revision": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "cancellable": {
+            "type": "boolean"
+          },
+          "errorCode": {
+            "$ref": "#/components/schemas/ErrorCode"
+          }
+        },
+        "description": "One active management operation per local-scope service. Same operation ID and intent replays its receipt; different intent conflicts. Waiting expiry never proves non-execution."
+      },
+      "Installation": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "installationId",
+          "serviceId",
+          "revision",
+          "generation",
+          "status",
+          "desiredEnabled",
+          "effectiveEnabled",
+          "configurationStatus",
+          "authorizationStatus",
+          "connectionStatus"
+        ],
+        "properties": {
+          "installationId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "serviceId": {
+            "$ref": "#/components/schemas/ServiceId"
+          },
+          "revision": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "generation": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "status": {
+            "$ref": "#/components/schemas/InstallationStatus"
+          },
+          "desiredEnabled": {
+            "type": "boolean"
+          },
+          "effectiveEnabled": {
+            "type": "boolean"
+          },
+          "configurationStatus": {
+            "$ref": "#/components/schemas/ConfigurationStatus"
+          },
+          "authorizationStatus": {
+            "$ref": "#/components/schemas/AuthorizationStatus"
+          },
+          "connectionStatus": {
+            "$ref": "#/components/schemas/ConnectionStatus"
+          },
+          "credentialRef": {
+            "$ref": "#/components/schemas/CredentialReference"
+          },
+          "activeOperation": {
+            "$ref": "#/components/schemas/Operation"
+          },
+          "errorCode": {
+            "$ref": "#/components/schemas/ErrorCode"
+          }
+        },
+        "description": "Native product authority; one live installation per local scope and service. Reopen restores desired intent but starts effective=false until requalified. generation fences authorization/connection/selection; revision fences management writes."
+      },
+      "Snapshot": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "catalogRevision",
+          "catalog",
+          "installations",
+          "capabilities",
+          "executionAvailable"
+        ],
+        "properties": {
+          "catalogRevision": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "catalog": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CatalogEntry"
+            },
+            "maxItems": 51
+          },
+          "installations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Installation"
+            },
+            "maxItems": 51
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Permission"
+            },
+            "maxItems": 4,
+            "uniqueItems": true
+          },
+          "executionAvailable": {
+            "type": "boolean"
+          }
+        },
+        "description": "executionAvailable=false makes every connector unselectable even if cached states are ready. Exact catalog membership/count is verified against the Connectors product source, not inferred from a request."
+      },
+      "MutationResult": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "installation",
+          "operation"
+        ],
+        "properties": {
+          "installation": {
+            "$ref": "#/components/schemas/Installation"
+          },
+          "operation": {
+            "$ref": "#/components/schemas/Operation"
+          }
+        }
+      },
+      "SelectionRef": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "installationId",
+          "revision",
+          "generation"
+        ],
+        "properties": {
+          "installationId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "revision": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "generation": {
+            "$ref": "#/components/schemas/Revision"
+          }
+        },
+        "description": "No service label or secret is accepted as authority. Native and Host revalidate exact scope, generation, ready state and connector.use before a versioned turn is admitted."
+      },
+      "SelectionDisplay": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "reference",
+          "serviceId",
+          "displayName"
+        ],
+        "properties": {
+          "reference": {
+            "$ref": "#/components/schemas/SelectionRef"
+          },
+          "serviceId": {
+            "$ref": "#/components/schemas/ServiceId"
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          }
+        },
+        "description": "Safe display snapshot only, not a turn grant; old history cannot restore authority."
+      },
+      "SelectionValidation": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "selection",
+          "executionAvailable"
+        ],
+        "properties": {
+          "selection": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SelectionDisplay"
+            },
+            "maxItems": 51
+          },
+          "executionAvailable": {
+            "type": "boolean"
+          }
+        },
+        "description": "Successful validation is observational only. Does not mint a grant or authorize external side effects; submit must recheck atomically. Empty selection remains valid with execution unavailable."
+      },
+      "EmptyPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [],
+        "properties": {}
+      },
+      "InstallPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "serviceId",
+          "operationId",
+          "expectedRevision"
+        ],
+        "properties": {
+          "serviceId": {
+            "$ref": "#/components/schemas/ServiceId"
+          },
+          "operationId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "expectedRevision": {
+            "$ref": "#/components/schemas/InitialRevision"
+          }
+        }
+      },
+      "InstallationOperationPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "installationId",
+          "operationId",
+          "expectedRevision"
+        ],
+        "properties": {
+          "installationId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "operationId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "expectedRevision": {
+            "$ref": "#/components/schemas/Revision"
+          }
+        }
+      },
+      "CredentialOperationPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "installationId",
+          "operationId",
+          "expectedRevision",
+          "expectedGeneration"
+        ],
+        "properties": {
+          "installationId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "operationId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "expectedRevision": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "expectedGeneration": {
+            "$ref": "#/components/schemas/Revision"
+          }
+        },
+        "description": "Starts a trusted native credential/auth flow only. No secret values, URL, command, file path, provider client settings, key/value map or caller-provided credential reference."
+      },
+      "SetEnabledPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "installationId",
+          "operationId",
+          "expectedRevision",
+          "desiredEnabled"
+        ],
+        "properties": {
+          "installationId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "operationId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "expectedRevision": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "desiredEnabled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "UninstallPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "installationId",
+          "operationId",
+          "expectedRevision",
+          "confirmed"
+        ],
+        "properties": {
+          "installationId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "operationId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "expectedRevision": {
+            "$ref": "#/components/schemas/Revision"
+          },
+          "confirmed": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "description": "Product uninstall confirmation, not a platform-write approval. Tombstone/fence first; cleanup acknowledgement is required before completion."
+      },
+      "OperationReadPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "operationId"
+        ],
+        "properties": {
+          "operationId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          }
+        }
+      },
+      "OperationCancelPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "operationId",
+          "expectedRevision"
+        ],
+        "properties": {
+          "operationId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "expectedRevision": {
+            "$ref": "#/components/schemas/Revision"
+          }
+        },
+        "description": "Targets the original operation receipt revision. Cancellation only affects cancellable stages and never asserts reversal of an external action."
+      },
+      "SelectionValidatePayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "selection"
+        ],
+        "properties": {
+          "selection": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SelectionRef"
+            },
+            "maxItems": 51,
+            "uniqueItems": true
+          }
+        },
+        "description": "Duplicate installation IDs with different revisions are a semantic error even though JSON uniqueItems alone cannot detect them."
+      },
+      "SnapshotRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "requestId",
+          "contextId",
+          "payload"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "$ref": "#/components/schemas/SchemaVersion"
+          },
+          "requestId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "contextId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/EmptyPayload"
+          }
+        },
+        "description": "Context comes from existing chat_bind_management_context_v1. Native independently validates the current fixed local scope and required permission; request contains no identity/tenant override."
+      },
+      "SnapshotResponse": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "schemaVersion",
+          "requestId",
+          "data"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "$ref": "#/components/schemas/SchemaVersion"
+          },
+          "requestId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Snapshot"
+          }
+        }
+      },
+      "InstallRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "requestId",
+          "contextId",
+          "payload"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "$ref": "#/components/schemas/SchemaVersion"
+          },
+          "requestId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "contextId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/InstallPayload"
+          }
+        },
+        "description": "Context comes from existing chat_bind_management_context_v1. Native independently validates the current fixed local scope and required permission; request contains no identity/tenant override."
+      },
+      "MutationResponse": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "schemaVersion",
+          "requestId",
+          "data"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "$ref": "#/components/schemas/SchemaVersion"
+          },
+          "requestId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "data": {
+            "$ref": "#/components/schemas/MutationResult"
+          }
+        }
+      },
+      "SetEnabledRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "requestId",
+          "contextId",
+          "payload"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "$ref": "#/components/schemas/SchemaVersion"
+          },
+          "requestId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "contextId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/SetEnabledPayload"
+          }
+        },
+        "description": "Context comes from existing chat_bind_management_context_v1. Native independently validates the current fixed local scope and required permission; request contains no identity/tenant override."
+      },
+      "UninstallRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "requestId",
+          "contextId",
+          "payload"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "$ref": "#/components/schemas/SchemaVersion"
+          },
+          "requestId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "contextId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/UninstallPayload"
+          }
+        },
+        "description": "Context comes from existing chat_bind_management_context_v1. Native independently validates the current fixed local scope and required permission; request contains no identity/tenant override."
+      },
+      "ConfigureRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "requestId",
+          "contextId",
+          "payload"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "$ref": "#/components/schemas/SchemaVersion"
+          },
+          "requestId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "contextId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/CredentialOperationPayload"
+          }
+        },
+        "description": "Context comes from existing chat_bind_management_context_v1. Native independently validates the current fixed local scope and required permission; request contains no identity/tenant override."
+      },
+      "AuthorizeRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "requestId",
+          "contextId",
+          "payload"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "$ref": "#/components/schemas/SchemaVersion"
+          },
+          "requestId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "contextId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/CredentialOperationPayload"
+          }
+        },
+        "description": "Context comes from existing chat_bind_management_context_v1. Native independently validates the current fixed local scope and required permission; request contains no identity/tenant override."
+      },
+      "OperationReadRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "requestId",
+          "contextId",
+          "payload"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "$ref": "#/components/schemas/SchemaVersion"
+          },
+          "requestId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "contextId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/OperationReadPayload"
+          }
+        },
+        "description": "Context comes from existing chat_bind_management_context_v1. Native independently validates the current fixed local scope and required permission; request contains no identity/tenant override."
+      },
+      "OperationResponse": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "schemaVersion",
+          "requestId",
+          "data"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "$ref": "#/components/schemas/SchemaVersion"
+          },
+          "requestId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Operation"
+          }
+        }
+      },
+      "OperationCancelRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "requestId",
+          "contextId",
+          "payload"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "$ref": "#/components/schemas/SchemaVersion"
+          },
+          "requestId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "contextId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/OperationCancelPayload"
+          }
+        },
+        "description": "Context comes from existing chat_bind_management_context_v1. Native independently validates the current fixed local scope and required permission; request contains no identity/tenant override."
+      },
+      "SelectionValidateRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "requestId",
+          "contextId",
+          "payload"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "$ref": "#/components/schemas/SchemaVersion"
+          },
+          "requestId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "contextId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/SelectionValidatePayload"
+          }
+        },
+        "description": "Context comes from existing chat_bind_management_context_v1. Native independently validates the current fixed local scope and required permission; request contains no identity/tenant override."
+      },
+      "SelectionValidateResponse": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "schemaVersion",
+          "requestId",
+          "data"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "$ref": "#/components/schemas/SchemaVersion"
+          },
+          "requestId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "data": {
+            "$ref": "#/components/schemas/SelectionValidation"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "schemaVersion",
+          "code",
+          "retryable"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "$ref": "#/components/schemas/SchemaVersion"
+          },
+          "requestId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "code": {
+            "$ref": "#/components/schemas/ErrorCode"
+          },
+          "retryable": {
+            "type": "boolean"
+          }
+        },
+        "description": "No free-text message, provider response, URL, stack, raw arguments or secret. Optional requestId omitted when request identity is invalid. Retryable permits user-led retry/query only, never automatic external write replay."
+      },
+      "WorkerErrorCode": {
+        "type": "string",
+        "enum": [
+          "invalid_request",
+          "not_qualified",
+          "unknown_service",
+          "temporarily_unavailable"
+        ]
+      },
+      "WorkerLibraryPolicy": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "mcpLibrary",
+          "oauthStore",
+          "credentialBoundary",
+          "stdioShutdown",
+          "externalCallsEnabled"
+        ],
+        "properties": {
+          "mcpLibrary": {
+            "type": "string",
+            "const": "codex-rmcp-client"
+          },
+          "oauthStore": {
+            "type": "string",
+            "const": "keyring_only"
+          },
+          "credentialBoundary": {
+            "type": "string",
+            "const": "connectors_only"
+          },
+          "stdioShutdown": {
+            "type": "string",
+            "const": "eof_only"
+          },
+          "externalCallsEnabled": {
+            "type": "boolean",
+            "const": false
+          }
+        }
+      },
+      "WorkerAuthStatusRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "requestId",
+          "method",
+          "serviceId"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "$ref": "#/components/schemas/SchemaVersion"
+          },
+          "requestId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "method": {
+            "type": "string",
+            "const": "auth_status"
+          },
+          "serviceId": {
+            "$ref": "#/components/schemas/ServiceId"
+          }
+        },
+        "description": "Private EOF-owned Connectors worker stdin control only, never a Runtime RPC or renderer invoke. Reads no credential and starts no network/OAuth flow. Unknown service is distinct from known service not qualified."
+      },
+      "WorkerAuthStatus": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "serviceId",
+          "qualification",
+          "authorizationStatus",
+          "connectionStatus",
+          "executionAvailable",
+          "libraryPolicy"
+        ],
+        "properties": {
+          "serviceId": {
+            "$ref": "#/components/schemas/ServiceId"
+          },
+          "qualification": {
+            "type": "string",
+            "const": "not_qualified"
+          },
+          "authorizationStatus": {
+            "type": "string",
+            "const": "unknown"
+          },
+          "connectionStatus": {
+            "type": "string",
+            "const": "disconnected"
+          },
+          "executionAvailable": {
+            "type": "boolean",
+            "const": false
+          },
+          "libraryPolicy": {
+            "$ref": "#/components/schemas/WorkerLibraryPolicy"
+          }
+        }
+      },
+      "WorkerAuthStatusResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "requestId",
+          "data"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "$ref": "#/components/schemas/SchemaVersion"
+          },
+          "requestId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "data": {
+            "$ref": "#/components/schemas/WorkerAuthStatus"
+          }
+        }
+      },
+      "WorkerError": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "code",
+          "retryable"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "$ref": "#/components/schemas/SchemaVersion"
+          },
+          "requestId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "code": {
+            "$ref": "#/components/schemas/WorkerErrorCode"
+          },
+          "retryable": {
+            "type": "boolean"
+          }
+        }
+      },
+      "OperationReopenRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "requestId",
+          "contextId",
+          "payload"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "$ref": "#/components/schemas/SchemaVersion"
+          },
+          "requestId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "contextId": {
+            "$ref": "#/components/schemas/CanonicalId"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/OperationCancelPayload"
+          }
+        },
+        "description": "Reopen the current original auth/configure page only; expectedRevision is the operation receipt revision. No URL or new authorization intent."
+      }
+    }
+  },
+  "x-private-worker-control": {
+    "transport": "owner-managed stdio JSON lines",
+    "method": "auth_status",
+    "request": "WorkerAuthStatusRequest",
+    "response": "WorkerAuthStatusResponse",
+    "error": "WorkerError",
+    "authority": "Connectors child owner; no caller-supplied identity or external URL",
+    "qualification": "not_qualified; policy declaration is not capability evidence",
+    "lifecycle": "normal EOF and wait only; no process termination escalation"
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "contract_id": "market-broker-control/1",
+  "contract_version": "0.3.0",
+  "wire_authority": "compatibility/market-broker-control/wire.schema.json",
+  "transport": "owner_owned_stdio_jsonl",
+  "owner": "Agent Host exclusively owns the Connectors Rust worker; no forwarding Broker process",
+  "commands": [
+    {
+      "method": "initialize",
+      "request": "InitializeRequest",
+      "response": "InitializeResponse",
+      "mutation": true
+    },
+    {
+      "method": "prepare",
+      "request": "PrepareRequest",
+      "response": "PrepareResponse",
+      "mutation": true
+    },
+    {
+      "method": "bind_turn",
+      "request": "BindTurnRequest",
+      "response": "BindTurnResponse",
+      "mutation": true
+    },
+    {
+      "method": "revoke",
+      "request": "RevokeRequest",
+      "response": "RevokeResponse",
+      "mutation": true
+    },
+    {
+      "method": "status",
+      "request": "StatusRequest",
+      "response": "StatusResponse",
+      "mutation": false
+    },
+    {
+      "method": "pending_call",
+      "request": "PendingCallRequest",
+      "response": "PendingCallResponse",
+      "mutation": false
+    },
+    {
+      "method": "decide_call",
+      "request": "DecideCallRequest",
+      "response": "DecideCallResponse",
+      "mutation": true
+    },
+    {
+      "method": "shutdown",
+      "request": "ShutdownRequest",
+      "response": "ShutdownResponse",
+      "mutation": true
+    }
+  ],
+  "limits": {
+    "maxFrameBytes": 65536,
+    "maxLeaseTtlMs": 300000,
+    "maxUnboundWaitMs": 5000,
+    "maxApprovalTtlMs": 60000,
+    "maxRetainedLeases": 64,
+    "maxPendingCalls": 128,
+    "maxMutationReceipts": 1024,
+    "maxArgumentsBytes": 32768,
+    "maxArgumentsDepth": 16
+  },
+  "semantics": {
+    "scope": "Host accepts only the trusted Native projection and authoritative persisted snapshot, never renderer/Runtime-supplied scope. Product grant carrier remains disabled until separately implemented and qualified. ContextBinding.nativeThreadId is required nullable: null is new-thread intent, a string identifies an existing thread. New flow is prepare(null), thread/start with complete Gateway config, actual turn/start, then bind actual thread+turn once. Existing flow prepares the real thread, cold-resumes complete config, starts and binds. Binding never rewrites original context. At most one live bound lease per actual native thread.",
+    "clock": "At first receipt compute min(requested TTL, trusted authorizationExpiresAtUnixMs minus current wall clock, 300000), reject nonpositive or uncertain time, then enforce a monotonic deadline. No queued time credit, replay renewal, scope refresh extension, rebind or cross-turn resurrection.",
+    "deduplication": "Mutation operationId is process-local intent identity excluding transport requestId; compare the full typed payload before applying anything. Reserve each stable (ownerUserId, tenantId, nativeProcessEpoch, agentSessionId, actual turnOperationId) for one immutable selection lease. Authorization revision/expiry refresh never changes this reservation key. A changed scope binding must not modify the old record; renewed scope plus new mutation UUID cannot re-prepare the same original turn. Duplicate live prepare returns its original capability without deadline extension; expired/revoked prepare always fails closed, even with a new operationId. Decision replay returns a prior receipt without re-admission.",
+    "capacity": "Keep bounded original mutation receipts and reserved turn-operation tombstones for the worker lifetime. Do not evict them to accept new mutation work; capacity exhaustion fails closed. Active pending calls and retained leases must respect limits. If Revoke or Shutdown returns a typed capacity_exceeded error, Host MUST close this owner stdin normally and permanently retire its generation while still holding the serial control gate, then return that original typed capacity error. Host must subsequently call Close to observe normal exit or retain STOP_PENDING. Do not add a receipt, force-kill, retry the mutation, restart this owner or claim external completion. Only after normal owned shutdown may another generation be assembled.",
+    "dataCapability": "A separate generation-bound bearer is delivered only through a dedicated child launch environment to worker and the exact Runtime generation, with tool environment scrubbing. It never enters this control wire, responses, metadata, history, persistence or logs. Authenticated data requests still need an exact live bound lease and qualified tool approval. The initialize gatewayUrl is http://127.0.0.1:<port>/mcp; derive a lease route by appending /<capabilityRef>. The non-secret path only selects a lease; it is never sufficient authentication.",
+    "pendingCall": "Only a real tools/call may allocate callRef. Query/decision cannot create a call. Verify process/context/turn/selection, exact installation revision and generation, supported tool and frozen arguments. Human approval authority is Host; worker independently consumes a matching single-use admission after both owner decision and native elicitation agree. Gateway elicitation metadata is exactly the ElicitationMetadata source projection (yijieMarketCallRef/yijieKind); fixed upstream MCP envelope remains external authority.",
+    "shutdown": "First stop admission and revoke/wake pending work. Shutdown acknowledgement is stopping, not external completion. EOF normally tears down transport and child resources. A typed capacity_exceeded response to Revoke/Shutdown requires the Host gate-held normal EOF retirement defined by capacity semantics; return the original safe code and separately wait for normal exit/STOP_PENDING. An unconfirmed external result stays unknown. Never force-kill or silently recreate a stopped owner.",
+    "unknownOutcome": "A timeout does not prove rejection or execution. Read original lease/call/Host Turn operation before another action. Never automatically repeat external tools/call, especially writes. Broker restart invalidates old memory capabilities and cannot reconstruct approval from history.",
+    "qualification": "Initialize externalCallsEnabled reports network assembly, not an execution grant. Status-only remains no-I/O; qualification profiles cannot contact providers. The retained tushare-daily-v1 strategy requires exact reviewed upstream daily schema and normalized arguments/results. Owner approved generic-mcp-v1 on 2026-10-08: fixed catalog services may discover complete bounded tool schemas during explicit connection, freeze definitions and exact ProviderBindings in live capabilities, and validate every call. Generic calls require full argument review, conservatively risk=write unless independently reviewed as read; annotations grant nothing. Explicitly destructive tools without a dedicated impact policy remain denied. Every selected binding must resolve; expose no unselected tools or silently truncated catalog. Native explicit Enable, current scope/epoch/ref/generation/credentialRef, ask and one-call approval are independent requirements. Prepare uses retained current client/schema facts, never history or new per-turn probes. Fresh Native permission polling observes existing capability without network, and never extends pending OAuth attempts or original turn/call deadlines. Changed credential or binding, closed backend, revoked authority or owner exit invalidates admission.",
+    "gatewayOutcome": "Gateway keeps the existing MCP CallToolResult error shape: isError=true and bounded fixed text content, not a new structured error DTO. Choose gateway_errors using the actual call admission state and whether backend dispatch has begun, captured together under the Broker lock. ApprovalInvalid is not user rejection. Only the authoritative pre-consumption rejected/cancelled/expired/revoked cases may assert no provider request was sent. Consumed only spends one approval; later failure does not prove that nothing was sent or that execution occurred. Do not change consumed to a pre-dispatch terminal state, synthesize an empty successful result, suggest automatic/paid retries, or reinterpret OAuth authorization_rejected as tool approval rejection."
+  },
+  "args_digest": {
+    "version": "worker-json-v1",
+    "domain": "yijie.market-arguments/worker-json-v1\n",
+    "algorithm": "sha256",
+    "encoding": "Rust serde_json::to_vec of the exact frozen Option<Map<String, Value>>; absent arguments encodes null, present empty object encodes {}; UTF-8, lowercase hexadecimal SHA-256 over domain bytes then encoded bytes",
+    "ordering": "Pinned serde_json without preserve_order uses sorted object keys; Host never re-serializes or recomputes this digest",
+    "numbers": "Only finite JSON numbers representable by pinned serde_json Value; no NaN/infinity, no post-registration coercion",
+    "freeze": "Schema validation and any qualified defaults happen before freezing; final call uses that same frozen parsed value. Any later argument change requires a new actual call record and approval. Digest is unkeyed identity, not authentication or cross-language canonicalization"
+  },
+  "gateway_errors": {
+    "ownerRejected": {
+      "outcome": "not_sent",
+      "code": "approval_invalid",
+      "message": "用户已拒绝本次连接器调用，本次外部请求未发送。不会自动重试。",
+      "when": "Only a matching actual call with an authoritative owner reject decision and Broker CallState rejected, before approval consumption and before backend dispatch. ApprovalInvalid alone is insufficient."
+    },
+    "admissionStopped": {
+      "outcome": "not_sent",
+      "code": "approval_invalid",
+      "message": "本次连接器调用在进入外部执行前已停止，外部请求未发送。不会自动重试。",
+      "when": "Only a known pre-consumption cancelled, expired or revoked actual call with backend dispatch not begun. Do not guess that the user rejected it or infer a specific stop reason from ApprovalInvalid."
+    },
+    "executionUnverified": {
+      "outcome": "unknown",
+      "code": "temporarily_unavailable",
+      "message": "本次连接器调用未取得可验证的结果，无法确认外部请求是否已发送或完成。不能据此判断没有数据或已执行；不会自动重试。",
+      "when": "Any backend-dispatch error including cancellation, timeout, transport error or unsupported result remains unknown unless separate trusted execution evidence proves otherwise. Also use this conservative projection when pre-admission state cannot be established. Never reinterpret consumed as sent or successful."
+    }
+  },
+  "generic_profile": {
+    "profile": "generic-mcp-v1",
+    "maxToolsPerService": 256,
+    "maxToolsPerSelection": 256,
+    "maxSchemaBytes": 65536,
+    "maxSchemasBytes": 2097152,
+    "maxReviewArgumentsBytes": 16384,
+    "maxResultBytes": 65536,
+    "maxDepth": 16,
+    "permissionMode": "ask",
+    "unknownRisk": "write",
+    "destructiveWithoutImpactPolicy": "deny",
+    "schemaReferences": "local_only_no_network_or_files",
+    "businessRetry": "never"
+  }
+}

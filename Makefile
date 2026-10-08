@@ -1,18 +1,18 @@
 .PHONY: generate lint test breaking build
 
-generate:
+generate: market-selection-generate market-broker-generate market-host-generate
 	pnpm generate
 
-lint:
+lint: market-selection-check market-broker-check market-host-check
 	pnpm lint
 
-test:
+test: market-selection-test market-broker-test market-host-test
 	pnpm test
 
 breaking:
 	pnpm breaking
 
-build:
+build: market-selection-check market-broker-check market-host-check
 	pnpm build
 
 # Isolated local candidate family. Keep the committed native Chat generator and
@@ -72,3 +72,52 @@ native-timing-check:
 	node scripts/sync-native-turn-timing.mjs --check
 native-timing-test:
 	node --test tests/native-turn-timing.test.mjs
+
+# FEAT-157 isolated local IPC family; legacy generators/source pins stay intact.
+.PHONY: market-connectors-generate market-connectors-check market-connectors-test
+market-connectors-generate:
+	node scripts/generate-market-connectors.mjs
+market-connectors-check:
+	node scripts/generate-market-connectors.mjs --check
+market-connectors-test:
+	node --test tests/market-connectors.test.mjs
+	go test ./sdks/go/market-connectors
+	cargo test --offline --locked --manifest-path tests/rust-market-connectors/Cargo.toml --target-dir /tmp/yijie-feat157-contracts-rust-target
+	cargo clippy --offline --locked --manifest-path tests/rust-market-connectors/Cargo.toml --target-dir /tmp/yijie-feat157-contracts-rust-target --all-targets -- -D warnings
+
+# Independent JSON Schema + private Native IPC manifest. No HTTP/Host provider.
+.PHONY: market-selection-generate market-selection-check market-selection-test
+market-selection-generate:
+	node scripts/generate-market-selection.mjs
+market-selection-check:
+	node scripts/generate-market-selection.mjs --check
+market-selection-test:
+	node --test tests/market-selection.test.mjs
+	go test ./sdks/go/market-selection
+	cargo test --offline --locked --manifest-path tests/rust-market-selection/Cargo.toml --target-dir /tmp/yijie-feat157-selection-contract-target
+	cargo clippy --offline --locked --manifest-path tests/rust-market-selection/Cargo.toml --target-dir /tmp/yijie-feat157-selection-contract-target --all-targets -- -D warnings
+
+# FEAT-157 private Host-owned worker control; no public listener or release pin.
+.PHONY: market-broker-generate market-broker-check market-broker-test
+market-broker-generate:
+	node scripts/generate-market-broker.mjs
+market-broker-check:
+	node scripts/generate-market-broker.mjs --check
+market-broker-test:
+	node --test tests/market-broker.test.mjs
+	go test ./sdks/go/market-broker-control ./sdks/go/market-selection
+	cargo test --offline --locked --manifest-path tests/rust-market-broker/Cargo.toml --target-dir /tmp/yijie-feat157-broker-contract-target
+	cargo clippy --offline --locked --manifest-path tests/rust-market-broker/Cargo.toml --target-dir /tmp/yijie-feat157-broker-contract-target --all-targets -- -D warnings
+
+.PHONY: market-host-generate market-host-check market-host-test
+market-host-generate:
+	node scripts/generate-market-provider.mjs
+	node scripts/generate-market-host.mjs
+market-host-check:
+	node scripts/generate-market-provider.mjs --check
+	node scripts/generate-market-host.mjs --check
+market-host-test:
+	node --test tests/market-host.test.mjs
+	go test ./sdks/go/market-host ./sdks/go/market-provider
+	cargo test --offline --locked --manifest-path tests/rust-market-host/Cargo.toml --target-dir /tmp/yijie-feat157-market-host-contract-target
+	cargo clippy --offline --locked --manifest-path tests/rust-market-host/Cargo.toml --target-dir /tmp/yijie-feat157-market-host-contract-target --all-targets -- -D warnings

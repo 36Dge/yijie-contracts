@@ -1,0 +1,399 @@
+{
+  "HelloRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000160",
+    "method": "hello",
+    "payload": {
+      "hostInstanceId": "00000000-0000-4000-8000-000000000163",
+      "nativeProcessEpoch": "00000000-0000-4000-8000-000000000153",
+      "ownerUserId": "00000000-0000-4000-8000-000000000151",
+      "tenantId": "00000000-0000-4000-8000-000000000152"
+    }
+  },
+  "GrantRegisterRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000160",
+    "method": "grant_register",
+    "payload": {
+      "operationId": "00000000-0000-4000-8000-000000000161",
+      "hostInstanceId": "00000000-0000-4000-8000-000000000163",
+      "scope": {
+        "ownerUserId": "00000000-0000-4000-8000-000000000151",
+        "tenantId": "00000000-0000-4000-8000-000000000152",
+        "nativeProcessEpoch": "00000000-0000-4000-8000-000000000153",
+        "authorizationRevision": 2,
+        "authorizationExpiresAtUnixMs": 1800000300000
+      },
+      "submission": {
+        "taskId": "00000000-0000-4000-8000-000000000155",
+        "localSessionId": "00000000-0000-4000-8000-000000000156",
+        "agentSessionId": null,
+        "submissionOperationId": "00000000-0000-4000-8000-000000000157",
+        "cwd": "/tmp/yijie-market-contract-example",
+        "contentBlocks": [
+          {
+            "type": "text",
+            "text": "普通合成只读查询"
+          }
+        ],
+        "intent": {
+          "profileId": "minimax-m3-high-v1",
+          "expectedRevision": 0
+        },
+        "permissionMode": "ask",
+        "snapshot": {
+          "schemaVersion": 1,
+          "turnOperationId": "00000000-0000-4000-8000-000000000158",
+          "selection": [
+            {
+              "installationId": "00000000-0000-4000-8000-000000000159",
+              "revision": 2,
+              "generation": 1
+            }
+          ],
+          "selectionDigest": "83a887bd6f56fafe150cb126706a160406e3dc011025e675e974626c332fa265"
+        },
+        "services": [
+          {
+            "reference": {
+              "installationId": "00000000-0000-4000-8000-000000000159",
+              "revision": 2,
+              "generation": 1
+            },
+            "serviceId": "tushare",
+            "credentialRef": "00000000-0000-4000-8000-000000000154"
+          }
+        ]
+      }
+    }
+  },
+  "RevokeAuthorityRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000160",
+    "method": "revoke_authority",
+    "payload": {
+      "operationId": "00000000-0000-4000-8000-000000000164",
+      "hostInstanceId": "00000000-0000-4000-8000-000000000163",
+      "scope": {
+        "ownerUserId": "00000000-0000-4000-8000-000000000151",
+        "tenantId": "00000000-0000-4000-8000-000000000152",
+        "nativeProcessEpoch": "00000000-0000-4000-8000-000000000153",
+        "authorizationRevision": 2,
+        "authorizationExpiresAtUnixMs": 1800000300000
+      },
+      "reason": "authorization_changed"
+    }
+  },
+  "SubmitRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000160",
+    "payload": {
+      "grantRef": "00000000-0000-4000-8000-000000000165",
+      "turnOperationId": "00000000-0000-4000-8000-000000000158"
+    }
+  },
+  "NativeObserveRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000160",
+    "contextId": "00000000-0000-4000-8000-000000000166",
+    "payload": {
+      "sessionId": "00000000-0000-4000-8000-000000000156"
+    }
+  },
+  "NativeObserveResponse": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000160",
+    "data": {
+      "managed": false,
+      "selectionDisplay": []
+    }
+  },
+  "NativeApprovalDecideRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000160",
+    "contextId": "00000000-0000-4000-8000-000000000166",
+    "payload": {
+      "sessionId": "00000000-0000-4000-8000-000000000156",
+      "approvalId": "00000000-0000-4000-8000-000000000167",
+      "decisionId": "00000000-0000-4000-8000-000000000168",
+      "expectedRevision": 1,
+      "decision": "reject"
+    }
+  },
+  "NativeError": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000160",
+    "code": "permission_mode_unavailable",
+    "retryable": false
+  },
+  "AuthBeginRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000160",
+    "method": "provider_auth_begin",
+    "payload": {
+      "operationId": "00000000-0000-4000-8000-000000000162",
+      "hostInstanceId": "00000000-0000-4000-8000-000000000163",
+      "scope": {
+        "ownerUserId": "00000000-0000-4000-8000-000000000151",
+        "tenantId": "00000000-0000-4000-8000-000000000152",
+        "nativeProcessEpoch": "00000000-0000-4000-8000-000000000153",
+        "authorizationRevision": 2,
+        "authorizationExpiresAtUnixMs": 1800000300000
+      },
+      "binding": {
+        "reference": {
+          "installationId": "00000000-0000-4000-8000-000000000159",
+          "revision": 2,
+          "generation": 1
+        },
+        "serviceId": "tushare",
+        "credentialRef": "00000000-0000-4000-8000-000000000154"
+      }
+    }
+  },
+  "AuthPollRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000160",
+    "method": "provider_auth_poll",
+    "payload": {
+      "operationId": "00000000-0000-4000-8000-000000000162",
+      "hostInstanceId": "00000000-0000-4000-8000-000000000163",
+      "scope": {
+        "ownerUserId": "00000000-0000-4000-8000-000000000151",
+        "tenantId": "00000000-0000-4000-8000-000000000152",
+        "nativeProcessEpoch": "00000000-0000-4000-8000-000000000153",
+        "authorizationRevision": 2,
+        "authorizationExpiresAtUnixMs": 1800000300000
+      },
+      "binding": {
+        "reference": {
+          "installationId": "00000000-0000-4000-8000-000000000159",
+          "revision": 2,
+          "generation": 1
+        },
+        "serviceId": "tushare",
+        "credentialRef": "00000000-0000-4000-8000-000000000154"
+      }
+    }
+  },
+  "AuthCancelRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000160",
+    "method": "provider_auth_cancel",
+    "payload": {
+      "operationId": "00000000-0000-4000-8000-000000000162",
+      "hostInstanceId": "00000000-0000-4000-8000-000000000163",
+      "scope": {
+        "ownerUserId": "00000000-0000-4000-8000-000000000151",
+        "tenantId": "00000000-0000-4000-8000-000000000152",
+        "nativeProcessEpoch": "00000000-0000-4000-8000-000000000153",
+        "authorizationRevision": 2,
+        "authorizationExpiresAtUnixMs": 1800000300000
+      },
+      "binding": {
+        "reference": {
+          "installationId": "00000000-0000-4000-8000-000000000159",
+          "revision": 2,
+          "generation": 1
+        },
+        "serviceId": "tushare",
+        "credentialRef": "00000000-0000-4000-8000-000000000154"
+      }
+    }
+  },
+  "ForgetRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000160",
+    "method": "provider_forget",
+    "payload": {
+      "operationId": "00000000-0000-4000-8000-000000000162",
+      "hostInstanceId": "00000000-0000-4000-8000-000000000163",
+      "scope": {
+        "ownerUserId": "00000000-0000-4000-8000-000000000151",
+        "tenantId": "00000000-0000-4000-8000-000000000152",
+        "nativeProcessEpoch": "00000000-0000-4000-8000-000000000153",
+        "authorizationRevision": 2,
+        "authorizationExpiresAtUnixMs": 1800000300000
+      },
+      "binding": {
+        "reference": {
+          "installationId": "00000000-0000-4000-8000-000000000159",
+          "revision": 2,
+          "generation": 1
+        },
+        "serviceId": "tushare",
+        "credentialRef": "00000000-0000-4000-8000-000000000154"
+      }
+    }
+  },
+  "ProbeRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000160",
+    "method": "provider_probe",
+    "payload": {
+      "operationId": "00000000-0000-4000-8000-000000000162",
+      "hostInstanceId": "00000000-0000-4000-8000-000000000163",
+      "scope": {
+        "ownerUserId": "00000000-0000-4000-8000-000000000151",
+        "tenantId": "00000000-0000-4000-8000-000000000152",
+        "nativeProcessEpoch": "00000000-0000-4000-8000-000000000153",
+        "authorizationRevision": 2,
+        "authorizationExpiresAtUnixMs": 1800000300000
+      },
+      "binding": {
+        "reference": {
+          "installationId": "00000000-0000-4000-8000-000000000159",
+          "revision": 2,
+          "generation": 1
+        },
+        "serviceId": "tushare",
+        "credentialRef": "00000000-0000-4000-8000-000000000154"
+      }
+    }
+  },
+  "AuthBeginResponse": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000160",
+    "data": {
+      "operationId": "00000000-0000-4000-8000-000000000162",
+      "hostInstanceId": "00000000-0000-4000-8000-000000000163",
+      "scope": {
+        "ownerUserId": "00000000-0000-4000-8000-000000000151",
+        "tenantId": "00000000-0000-4000-8000-000000000152",
+        "nativeProcessEpoch": "00000000-0000-4000-8000-000000000153",
+        "authorizationRevision": 2,
+        "authorizationExpiresAtUnixMs": 1800000300000
+      },
+      "binding": {
+        "reference": {
+          "installationId": "00000000-0000-4000-8000-000000000159",
+          "revision": 2,
+          "generation": 1
+        },
+        "serviceId": "tushare",
+        "credentialRef": "00000000-0000-4000-8000-000000000154"
+      },
+      "operationState": "starting",
+      "authorizationStatus": "unknown",
+      "connectionStatus": "disconnected",
+      "qualification": "not_qualified",
+      "executionAvailable": false
+    }
+  },
+  "AuthPollResponse": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000160",
+    "data": {
+      "operationId": "00000000-0000-4000-8000-000000000162",
+      "hostInstanceId": "00000000-0000-4000-8000-000000000163",
+      "scope": {
+        "ownerUserId": "00000000-0000-4000-8000-000000000151",
+        "tenantId": "00000000-0000-4000-8000-000000000152",
+        "nativeProcessEpoch": "00000000-0000-4000-8000-000000000153",
+        "authorizationRevision": 2,
+        "authorizationExpiresAtUnixMs": 1800000300000
+      },
+      "binding": {
+        "reference": {
+          "installationId": "00000000-0000-4000-8000-000000000159",
+          "revision": 2,
+          "generation": 1
+        },
+        "serviceId": "tushare",
+        "credentialRef": "00000000-0000-4000-8000-000000000154"
+      },
+      "operationState": "starting",
+      "authorizationStatus": "unknown",
+      "connectionStatus": "disconnected",
+      "qualification": "not_qualified",
+      "executionAvailable": false
+    }
+  },
+  "AuthCancelResponse": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000160",
+    "data": {
+      "operationId": "00000000-0000-4000-8000-000000000162",
+      "hostInstanceId": "00000000-0000-4000-8000-000000000163",
+      "scope": {
+        "ownerUserId": "00000000-0000-4000-8000-000000000151",
+        "tenantId": "00000000-0000-4000-8000-000000000152",
+        "nativeProcessEpoch": "00000000-0000-4000-8000-000000000153",
+        "authorizationRevision": 2,
+        "authorizationExpiresAtUnixMs": 1800000300000
+      },
+      "binding": {
+        "reference": {
+          "installationId": "00000000-0000-4000-8000-000000000159",
+          "revision": 2,
+          "generation": 1
+        },
+        "serviceId": "tushare",
+        "credentialRef": "00000000-0000-4000-8000-000000000154"
+      },
+      "operationState": "starting",
+      "authorizationStatus": "unknown",
+      "connectionStatus": "disconnected",
+      "qualification": "not_qualified",
+      "executionAvailable": false
+    }
+  },
+  "ForgetResponse": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000160",
+    "data": {
+      "operationId": "00000000-0000-4000-8000-000000000162",
+      "hostInstanceId": "00000000-0000-4000-8000-000000000163",
+      "scope": {
+        "ownerUserId": "00000000-0000-4000-8000-000000000151",
+        "tenantId": "00000000-0000-4000-8000-000000000152",
+        "nativeProcessEpoch": "00000000-0000-4000-8000-000000000153",
+        "authorizationRevision": 2,
+        "authorizationExpiresAtUnixMs": 1800000300000
+      },
+      "binding": {
+        "reference": {
+          "installationId": "00000000-0000-4000-8000-000000000159",
+          "revision": 2,
+          "generation": 1
+        },
+        "serviceId": "tushare",
+        "credentialRef": "00000000-0000-4000-8000-000000000154"
+      },
+      "operationState": "starting",
+      "authorizationStatus": "unknown",
+      "connectionStatus": "disconnected",
+      "qualification": "not_qualified",
+      "executionAvailable": false
+    }
+  },
+  "ProbeResponse": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000160",
+    "data": {
+      "operationId": "00000000-0000-4000-8000-000000000162",
+      "hostInstanceId": "00000000-0000-4000-8000-000000000163",
+      "scope": {
+        "ownerUserId": "00000000-0000-4000-8000-000000000151",
+        "tenantId": "00000000-0000-4000-8000-000000000152",
+        "nativeProcessEpoch": "00000000-0000-4000-8000-000000000153",
+        "authorizationRevision": 2,
+        "authorizationExpiresAtUnixMs": 1800000300000
+      },
+      "binding": {
+        "reference": {
+          "installationId": "00000000-0000-4000-8000-000000000159",
+          "revision": 2,
+          "generation": 1
+        },
+        "serviceId": "tushare",
+        "credentialRef": "00000000-0000-4000-8000-000000000154"
+      },
+      "operationState": "starting",
+      "authorizationStatus": "unknown",
+      "connectionStatus": "disconnected",
+      "qualification": "not_qualified",
+      "executionAvailable": false
+    }
+  }
+}

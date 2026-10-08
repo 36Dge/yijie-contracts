@@ -390,3 +390,13 @@ breaking/semantic 评审必须覆盖表中所有 `supported` 和 `deprecating` �
 ## FEAT-155 3A scheduled execution local candidate
 
 Independent `execution-v1` family 0.1.0 is sourced by `jsonschema/scheduled-tasks/execution-v1.schema.json`; native Rust/TypeScript projections and candidate digests are recorded in `compatibility/scheduled-execution/source.lock.json`. Source semantics and activation order: [scheduled-execution-v1.md](scheduled-execution-v1.md). No published tag, Host producer or executable scheduled consumer is activated. Desktop's private schema 17 is breaking for older readers, despite the additive source family.
+
+## FEAT-157 market-connectors 未发布本地 IPC 契约
+
+独立 `market-connectors` 0.1.0 family 为 additive source，整体 FEAT-157 仍按 breaking 管理。没有新增 supported tag。明确 pre-feature fallback 为 `1a213ac8383e95ac6ec69363937687904fa3591c`；同时比较已发布 `f16a497e1377f45747f8ff9292b4b60cf2027f88` 与保留 Native `6f632f155eacdaf93df0e0b00b5dab9e369c5442`、`811f38d6b104fa18477107e7ac91a85e19c445d1`。本族在这些基线不存在，旧族源/锁/严格decoder不变。工作树摘要只用于本地候选，不伪造尚未提交的 immutable SHA；Owner、consumer、安全语义、生成/同步、验证及回滚见 [market-connectors-v1.md](market-connectors-v1.md)。
+
+FEAT-157 第二阶段增加独立 `market-selection/1` Native submit/immutable snapshot family，沿用上述四个完整基线及未发布状态。旧 market-connectors 55defs/9IPC 不变；新 provider 尚未就绪时空集也不得进入 legacy outbox。见 [market-selection-v1.md](market-selection-v1.md)。
+
+FEAT-157 第三阶段增加独立 `market-broker-control/1` 私有 Host→Rust worker 控制 family，沿用上述四个完整 baseline。本地候选，无新增 supported tag；旧管理/选集源与生成字节保持，全部真实 provider 仍未资格。见 [market-broker-control-v1.md](market-broker-control-v1.md)。
+
+FEAT-157 后续装配增加 `market-host/1` 与 `market-provider/1` 0.1.0 本地候选，以及 Broker 候选显式 breaking 升级到 0.2.0（externalCallsEnabled 如实表达外部网络装配）。仍沿用上述四个基线，无新增 supported tag；旧管理55/selection18/Sorftime 不改义。真实验证只选 Tushare，生成一致性不等于真实资格。新授权/提交、两条 Native UI 命令与 provider 生命周期见 [market-host-v1.md](market-host-v1.md)、[market-provider-v1.md](market-provider-v1.md)；本轮限定检查及未执行项见 [验证记录](market-host-validation-2026-10-07.md)。
