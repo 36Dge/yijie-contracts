@@ -45,7 +45,7 @@ test('new thread intent is explicit null and actual binding identities are manda
  assert.match(manifest.semantics.deduplication,/nativeProcessEpoch, agentSessionId, actual turnOperationId/);
 });
 test('external network assembly is explicit and response extras are not authority',()=>{
- const r=structuredClone(fixture.InitializeResponse);r.data.externalCallsEnabled=true;assert.equal(validator('InitializeResponse')(r),true);assert.equal(manifest.contract_version,'0.3.0');assert.match(manifest.semantics.qualification,/not an execution grant/);
+ const r=structuredClone(fixture.InitializeResponse);r.data.externalCallsEnabled=true;assert.equal(validator('InitializeResponse')(r),true);assert.equal(manifest.contract_version,'0.4.0');assert.match(manifest.semantics.qualification,/not an execution grant/);
  assert.ok(validator('InitializeResponse')({...fixture.InitializeResponse,futureField:true}));
  assert.equal(validator('Error')({...fixture.Error,retryable:true}),false);
  for(const gatewayUrl of ['http://127.0.0.1:0/mcp','http://127.0.0.1:65536/mcp']){const v=structuredClone(fixture.InitializeResponse);v.data.gatewayUrl=gatewayUrl;assert.equal(validator('InitializeResponse')(v),false);}

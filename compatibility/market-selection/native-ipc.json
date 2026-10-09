@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "contract_id": "market-selection/1",
-  "contract_version": "0.1.0",
+  "contract_version": "0.2.0",
   "title": "FEAT-157 ordinary chat market selection",
   "description": "Independent unreleased Native IPC and durable snapshot source. Overall FEAT-157 impact breaking; source-only local candidate, no Host route or execution grant. External refs preserve existing authorities.",
   "wire_authority": "compatibility/market-selection/wire.schema.json",
@@ -30,7 +30,7 @@
       "each sorted installationId + ASCII SPACE + decimal revision + ASCII SPACE + decimal generation"
     ],
     "trailingLf": true,
-    "maxItems": 51,
+    "maxItems": 58,
     "uniqueKey": "installationId",
     "sort": "installationId ASCII ascending",
     "safeIntegerMaximum": 9007199254740991

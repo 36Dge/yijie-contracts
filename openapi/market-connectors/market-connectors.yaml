@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "FEAT-157 market connectors native IPC",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "description": "Independent unreleased local family; Native IPC only, no HTTP routes. JSON Schema component definitions are source authority; existing strict families and pins unchanged."
   },
   "paths": {},
@@ -128,6 +128,7 @@
         "enum": [
           "knowledge_docs",
           "ecommerce_retail",
+          "cross_border_ecommerce",
           "data_analytics",
           "productivity",
           "industry_data",
@@ -150,6 +151,7 @@
           "local_oauth",
           "stdio_api_key",
           "provider_gateway",
+          "none",
           "unknown"
         ]
       },
@@ -431,14 +433,14 @@
             "items": {
               "$ref": "#/components/schemas/CatalogEntry"
             },
-            "maxItems": 51
+            "maxItems": 58
           },
           "installations": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Installation"
             },
-            "maxItems": 51
+            "maxItems": 58
           },
           "capabilities": {
             "type": "array",
@@ -527,7 +529,7 @@
             "items": {
               "$ref": "#/components/schemas/SelectionDisplay"
             },
-            "maxItems": 51
+            "maxItems": 58
           },
           "executionAvailable": {
             "type": "boolean"
@@ -697,7 +699,7 @@
             "items": {
               "$ref": "#/components/schemas/SelectionRef"
             },
-            "maxItems": 51,
+            "maxItems": 58,
             "uniqueItems": true
           }
         },

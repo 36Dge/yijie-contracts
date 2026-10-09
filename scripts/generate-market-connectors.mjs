@@ -16,7 +16,7 @@ assert.ok(args.length === 0 || (args.length === 1 && args[0] === '--check'), 'On
 const check = args.includes('--check');
 const sourcePath = 'openapi/market-connectors/market-connectors.yaml';
 const spec = JSON.parse(readFileSync(path.join(root, sourcePath)));
-assert.equal(spec.info.version, '0.2.0');
+assert.equal(spec.info.version, '0.3.0');
 assert.deepEqual(spec.paths, {});
 const defs = spec.components.schemas;
 const entries = Object.entries(defs);

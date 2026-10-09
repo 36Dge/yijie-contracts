@@ -9,7 +9,7 @@ const read=p=>JSON.parse(readFileSync(path.join(root,p),'utf8'));
 const keys=(v,want)=>assert.deepEqual(Object.keys(v).sort(),[...want].sort());
 export function validateBrokerManifest(m,names){
  keys(m,['schema_version','contract_id','contract_version','wire_authority','transport','owner','commands','limits','semantics','args_digest','gateway_errors','generic_profile']);
- assert.equal(m.schema_version,1);assert.equal(m.contract_id,'market-broker-control/1');assert.equal(m.contract_version,'0.3.0');assert.equal(m.wire_authority,brokerSourcePath);assert.equal(m.transport,'owner_owned_stdio_jsonl');
+ assert.equal(m.schema_version,1);assert.equal(m.contract_id,'market-broker-control/1');assert.equal(m.contract_version,'0.4.0');assert.equal(m.wire_authority,brokerSourcePath);assert.equal(m.transport,'owner_owned_stdio_jsonl');
  assert.deepEqual(m.commands.map(c=>c.method),['initialize','prepare','bind_turn','revoke','status','pending_call','decide_call','shutdown']);
  for(const c of m.commands){keys(c,['method','request','response','mutation']);assert.ok(names.includes(c.request)&&names.includes(c.response));assert.equal(c.mutation,!['status','pending_call'].includes(c.method));}
  assert.deepEqual(m.limits,{maxFrameBytes:65536,maxLeaseTtlMs:300000,maxUnboundWaitMs:5000,maxApprovalTtlMs:60000,maxRetainedLeases:64,maxPendingCalls:128,maxMutationReceipts:1024,maxArgumentsBytes:32768,maxArgumentsDepth:16});

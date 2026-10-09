@@ -80,6 +80,6 @@ outputs.set('sdks/jsonschema/market-host-native.schema.json',q(nativeSchema,null
 const lockPath='compatibility/market-host/source.lock.json',base=existsSync(path.join(root,lockPath))?JSON.parse(read(lockPath)).base_commit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const sources=[...documents.keys(),nativePath,'scripts/market-host-source.mjs','scripts/generate-market-host.mjs','scripts/market-broker-codegen.mjs','scripts/sync-market-host.mjs','pnpm-lock.yaml'];
-outputs.set(lockPath,q({schema_version:1,contract_version:'0.1.0',feature:'FEAT-157',mode:'local_worktree_candidate',release:false,base_commit:base,sources:sources.map(p=>({path:p,sha256:hash(read(p))})),generated:[...outputs].map(([p,b])=>({path:p,sha256:hash(b)}))},null,2)+'\n');
+outputs.set(lockPath,q({schema_version:1,contract_version:'0.2.0',feature:'FEAT-157',mode:'local_worktree_candidate',release:false,base_commit:base,sources:sources.map(p=>({path:p,sha256:hash(read(p))})),generated:[...outputs].map(([p,b])=>({path:p,sha256:hash(b)}))},null,2)+'\n');
 for(const[p,b]of outputs){const file=path.join(root,p);if(check)assert.deepEqual(readFileSync(file),Buffer.from(b),p);else{mkdirSync(path.dirname(file),{recursive:true});writeFileSync(file,b);}}
 console.log(`Market Host ${check?'checked':'generated'}: ${names.length} definitions; existing v2 content and private Native authority.`);

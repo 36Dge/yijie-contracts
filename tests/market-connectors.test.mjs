@@ -120,3 +120,10 @@ test('authorization page recovery has scoped original-operation authority withou
  check('OperationReopenRequest',envelope({operationId:id2,expectedRevision:2}),true);
  check('OperationReopenRequest',envelope({operationId:id2}),false);
 });
+test('58-entry cross-border catalog preserves old entries and keyless is explicit',()=>{
+ const catalog=Array.from({length:58},(_,i)=>({...entry,serviceId:`service-${i}`,serverName:`service-${i}`,iconAssetId:`service-${i}`}));
+ catalog[57]={...catalog[57],categoryId:'cross_border_ecommerce',categoryLabel:'跨境电商',authMode:'none'};
+ check('Snapshot',{catalogRevision:6,catalog,installations:[],capabilities:[],executionAvailable:false},true);
+ check('Snapshot',{catalogRevision:6,catalog:[...catalog,catalog[57]],installations:[],capabilities:[],executionAvailable:false},false);
+ check('CatalogEntry',entry,true);
+});

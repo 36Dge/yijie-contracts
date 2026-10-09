@@ -38,7 +38,8 @@ test('required model and selection identity are bounded by original sources',()=
  const value=request();value.payload.intent.profileId='other';assert.equal(validators.validateSubmitRequest(value),false);
  const refs=request();refs.payload.selection=[{installationId:id,revision:1,generation:1}];assert.ok(validators.validateSubmitRequest(refs));
  refs.payload.selection[0].generation=0;assert.equal(validators.validateSubmitRequest(refs),false);
- assert.equal(validators.validateSelection(Array.from({length:52},(_,i)=>({installationId:`00000000-0000-4000-8000-${String(i+1).padStart(12,'0')}`,revision:1,generation:1}))),false);
+ assert.ok(validators.validateSelection(Array.from({length:58},(_,i)=>({installationId:`00000000-0000-4000-8000-${String(i+1).padStart(12,'0')}`,revision:1,generation:1}))));
+ assert.equal(validators.validateSelection(Array.from({length:59},(_,i)=>({installationId:`00000000-0000-4000-8000-${String(i+1).padStart(12,'0')}`,revision:1,generation:1}))),false);
 });
 test('cross-language vectors encode exact operation identity and sorted refs',()=>{
  const vectors=JSON.parse(readFileSync('fixtures/market-selection/digest-vectors.json'));
