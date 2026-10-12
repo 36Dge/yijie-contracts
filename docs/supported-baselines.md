@@ -1,5 +1,9 @@
 # Supported Contract Baselines
 
+## FEAT-158 未发布专家独立本地候选
+
+`experts/1` 0.1.0 与受管 bundle v3 新增源不替换 v1/v2、market 或普通聊天协议，不新增 supported tag。当前 fallback 为 `35e0949c95d7a59ca5480715c225766dcc822056`；同时保留已发布 `f16a497e1377f45747f8ff9292b4b60cf2027f88` 与 Native 来源 `6f632f155eacdaf93df0e0b00b5dab9e369c5442`、`811f38d6b104fa18477107e7ac91a85e19c445d1`。四个基线的 JSON Schema 比较通过，新 family 的 source isolation 不等于跨仓运行兼容或产品 D4；字段、普通/专家包装、local-only 许可、生成和回退见 [experts-v1.md](experts-v1.md)。
+
 ## FEAT-155 4D-1 未发布原生时间查询
 
 独立native-turn-timing v0.1.0 local candidate复用下列FEAT-155四个完整比较基线，不新增supported tag。

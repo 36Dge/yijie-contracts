@@ -1,0 +1,436 @@
+{
+  "SnapshotRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000801",
+    "contextId": "00000000-0000-4000-8000-000000000802",
+    "payload": {}
+  },
+  "PrepareRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000801",
+    "contextId": "00000000-0000-4000-8000-000000000802",
+    "payload": {
+      "operationId": "00000000-0000-4000-8000-000000000803",
+      "expert": {
+        "expertId": "jd-ops-expert",
+        "version": "0.1.0"
+      }
+    }
+  },
+  "BindingSetRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000801",
+    "contextId": "00000000-0000-4000-8000-000000000802",
+    "payload": {
+      "operationId": "00000000-0000-4000-8000-000000000803",
+      "sessionId": "00000000-0000-4000-8000-000000000156",
+      "expectedBindingRevision": 0,
+      "expert": {
+        "expertId": "jd-ops-expert",
+        "version": "0.1.0"
+      }
+    }
+  },
+  "NativeSubmitRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000801",
+    "contextId": "00000000-0000-4000-8000-000000000802",
+    "payload": {
+      "submission": {
+        "operationId": "00000000-0000-4000-8000-000000000803",
+        "projectId": null,
+        "contentBlocks": [
+          {
+            "type": "text",
+            "text": "请整理合成商品规格。"
+          }
+        ],
+        "intent": {
+          "profileId": "minimax-m3-high-v1",
+          "expectedRevision": 0
+        },
+        "selection": []
+      },
+      "expectedBindingRevision": 0,
+      "expert": {
+        "expertId": "jd-ops-expert",
+        "version": "0.1.0"
+      }
+    }
+  },
+  "PrivateGrantRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000801",
+    "method": "expert_grant_register",
+    "payload": {
+      "operationId": "00000000-0000-4000-8000-000000000161",
+      "hostInstanceId": "00000000-0000-4000-8000-000000000163",
+      "scope": {
+        "ownerUserId": "00000000-0000-4000-8000-000000000151",
+        "tenantId": "00000000-0000-4000-8000-000000000152",
+        "nativeProcessEpoch": "00000000-0000-4000-8000-000000000153",
+        "authorizationRevision": 2,
+        "authorizationExpiresAtUnixMs": 1800000300000
+      },
+      "submission": {
+        "submission": {
+          "taskId": "00000000-0000-4000-8000-000000000155",
+          "localSessionId": "00000000-0000-4000-8000-000000000156",
+          "agentSessionId": null,
+          "submissionOperationId": "00000000-0000-4000-8000-000000000157",
+          "cwd": "/tmp/yijie-market-contract-example",
+          "contentBlocks": [
+            {
+              "type": "text",
+              "text": "普通合成只读查询"
+            }
+          ],
+          "intent": {
+            "profileId": "minimax-m3-high-v1",
+            "expectedRevision": 0
+          },
+          "permissionMode": "ask",
+          "snapshot": {
+            "schemaVersion": 1,
+            "turnOperationId": "00000000-0000-4000-8000-000000000158",
+            "selection": [
+              {
+                "installationId": "00000000-0000-4000-8000-000000000159",
+                "revision": 2,
+                "generation": 1
+              }
+            ],
+            "selectionDigest": "83a887bd6f56fafe150cb126706a160406e3dc011025e675e974626c332fa265"
+          },
+          "services": [
+            {
+              "reference": {
+                "installationId": "00000000-0000-4000-8000-000000000159",
+                "revision": 2,
+                "generation": 1
+              },
+              "serviceId": "tushare",
+              "credentialRef": "00000000-0000-4000-8000-000000000154"
+            }
+          ]
+        },
+        "expertSnapshot": {
+          "formatVersion": 1,
+          "turnOperationId": "00000000-0000-4000-8000-000000000158",
+          "bindingRevision": 1,
+          "expert": {
+            "expertId": "jd-ops-expert",
+            "version": "0.1.0",
+            "archiveSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "roleSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "knowledgeManifestSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          "snapshotDigest": "44ff0e897c7e0b9c9971cd6377720d8f3fb4197fbb42a86828b4f2dd29d20a6e"
+        }
+      }
+    }
+  },
+  "ApplyRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000801",
+    "method": "expert_apply_binding",
+    "payload": {
+      "operationId": "00000000-0000-4000-8000-000000000803",
+      "hostInstanceId": "00000000-0000-4000-8000-000000000163",
+      "scope": {
+        "ownerUserId": "00000000-0000-4000-8000-000000000151",
+        "tenantId": "00000000-0000-4000-8000-000000000152",
+        "nativeProcessEpoch": "00000000-0000-4000-8000-000000000153",
+        "authorizationRevision": 2,
+        "authorizationExpiresAtUnixMs": 1800000300000
+      },
+      "localSessionId": "00000000-0000-4000-8000-000000000156",
+      "agentSessionId": "00000000-0000-4000-8000-000000000804",
+      "nativeThreadId": "00000000-0000-4000-8000-000000000805",
+      "expectedBindingRevision": 0,
+      "bindingRevision": 1,
+      "expert": {
+        "expertId": "jd-ops-expert",
+        "version": "0.1.0",
+        "archiveSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "roleSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "knowledgeManifestSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      },
+      "intent": {
+        "profileId": "minimax-m3-high-v1",
+        "expectedRevision": 1
+      },
+      "permissionMode": "ask",
+      "marketSnapshot": {
+        "schemaVersion": 1,
+        "turnOperationId": "00000000-0000-4000-8000-000000000158",
+        "selection": [
+          {
+            "installationId": "00000000-0000-4000-8000-000000000159",
+            "revision": 2,
+            "generation": 1
+          }
+        ],
+        "selectionDigest": "83a887bd6f56fafe150cb126706a160406e3dc011025e675e974626c332fa265"
+      }
+    }
+  },
+  "PrivateOperationReadRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000801",
+    "method": "expert_operation_read",
+    "payload": {
+      "hostInstanceId": "00000000-0000-4000-8000-000000000163",
+      "scope": {
+        "ownerUserId": "00000000-0000-4000-8000-000000000151",
+        "tenantId": "00000000-0000-4000-8000-000000000152",
+        "nativeProcessEpoch": "00000000-0000-4000-8000-000000000153",
+        "authorizationRevision": 2,
+        "authorizationExpiresAtUnixMs": 1800000300000
+      },
+      "localSessionId": "00000000-0000-4000-8000-000000000156",
+      "agentSessionId": "00000000-0000-4000-8000-000000000804",
+      "operationId": "00000000-0000-4000-8000-000000000803"
+    }
+  },
+  "SubmissionReadRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000801",
+    "method": "expert_submission_read",
+    "payload": {
+      "hostInstanceId": "00000000-0000-4000-8000-000000000163",
+      "scope": {
+        "ownerUserId": "00000000-0000-4000-8000-000000000151",
+        "tenantId": "00000000-0000-4000-8000-000000000152",
+        "nativeProcessEpoch": "00000000-0000-4000-8000-000000000153",
+        "authorizationRevision": 2,
+        "authorizationExpiresAtUnixMs": 1800000300000
+      },
+      "taskId": "00000000-0000-4000-8000-000000000155",
+      "localSessionId": "00000000-0000-4000-8000-000000000156",
+      "turnOperationId": "00000000-0000-4000-8000-000000000158"
+    }
+  },
+  "PrivateSubmitRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000801",
+    "method": "expert_submit",
+    "payload": {
+      "grantRef": "00000000-0000-4000-8000-000000000165",
+      "turnOperationId": "00000000-0000-4000-8000-000000000158"
+    }
+  },
+  "BindingReadResponse": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000801",
+    "data": {
+      "sessionId": "00000000-0000-4000-8000-000000000156",
+      "bindingRevision": 1,
+      "expert": {
+        "expertId": "jd-ops-expert",
+        "version": "0.1.0",
+        "displayName": "合成京东专家",
+        "subtitle": "京东专向",
+        "iconKey": "skillOperations"
+      },
+      "state": "ready",
+      "managed": true
+    }
+  },
+  "Error": {
+    "schemaVersion": 1,
+    "code": "outcome_unknown",
+    "retryable": false
+  },
+  "ApplyResponse": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000801",
+    "data": {
+      "operationId": "00000000-0000-4000-8000-000000000803",
+      "hostInstanceId": "00000000-0000-4000-8000-000000000163",
+      "localSessionId": "00000000-0000-4000-8000-000000000156",
+      "agentSessionId": "00000000-0000-4000-8000-000000000804",
+      "nativeThreadId": "00000000-0000-4000-8000-000000000805",
+      "expectedBindingRevision": 0,
+      "bindingRevision": 1,
+      "expert": {
+        "expertId": "jd-ops-expert",
+        "version": "0.1.0",
+        "archiveSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "roleSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "knowledgeManifestSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      },
+      "state": "succeeded"
+    }
+  },
+  "BindingSetResponse": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000801",
+    "data": {
+      "binding": {
+        "sessionId": "00000000-0000-4000-8000-000000000156",
+        "bindingRevision": 1,
+        "expert": {
+          "expertId": "jd-ops-expert",
+          "version": "0.1.0",
+          "displayName": "合成京东专家",
+          "subtitle": "京东专向",
+          "iconKey": "skillOperations"
+        },
+        "state": "ready",
+        "managed": true
+      },
+      "operation": {
+        "operationId": "00000000-0000-4000-8000-000000000803",
+        "sessionId": "00000000-0000-4000-8000-000000000156",
+        "state": "succeeded",
+        "expectedBindingRevision": 0,
+        "bindingRevision": 1,
+        "requestedExpert": {
+          "expertId": "jd-ops-expert",
+          "version": "0.1.0",
+          "displayName": "合成京东专家",
+          "subtitle": "京东专向",
+          "iconKey": "skillOperations"
+        }
+      }
+    }
+  },
+  "SubmissionReadResponse": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000801",
+    "data": {
+      "receipt": {
+        "hostInstanceId": "00000000-0000-4000-8000-000000000163",
+        "runtimeGeneration": "00000000-0000-4000-8000-000000000810",
+        "taskId": "00000000-0000-4000-8000-000000000155",
+        "localSessionId": "00000000-0000-4000-8000-000000000156",
+        "submissionOperationId": "00000000-0000-4000-8000-000000000157",
+        "turnOperationId": "00000000-0000-4000-8000-000000000158",
+        "selectionDigest": "83a887bd6f56fafe150cb126706a160406e3dc011025e675e974626c332fa265",
+        "state": "accepted",
+        "agentSessionId": "00000000-0000-4000-8000-000000000804",
+        "nativeThreadId": "00000000-0000-4000-8000-000000000805",
+        "nativeTurnId": "00000000-0000-4000-8000-000000000811",
+        "profileId": "minimax-m3-high-v1",
+        "modelRevision": 1
+      },
+      "expertSnapshot": {
+        "formatVersion": 1,
+        "turnOperationId": "00000000-0000-4000-8000-000000000158",
+        "bindingRevision": 1,
+        "expert": {
+          "expertId": "jd-ops-expert",
+          "version": "0.1.0",
+          "archiveSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "roleSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "knowledgeManifestSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        "snapshotDigest": "44ff0e897c7e0b9c9971cd6377720d8f3fb4197fbb42a86828b4f2dd29d20a6e"
+      }
+    }
+  },
+  "PrivateBindingRecoverRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000801",
+    "method": "expert_binding_recover",
+    "payload": {
+      "hostInstanceId": "00000000-0000-4000-8000-000000000163",
+      "scope": {
+        "ownerUserId": "00000000-0000-4000-8000-000000000151",
+        "tenantId": "00000000-0000-4000-8000-000000000152",
+        "nativeProcessEpoch": "00000000-0000-4000-8000-000000000153",
+        "authorizationRevision": 2,
+        "authorizationExpiresAtUnixMs": 1800000300000
+      },
+      "original": {
+        "operationId": "00000000-0000-4000-8000-000000000803",
+        "hostInstanceId": "00000000-0000-4000-8000-000000000163",
+        "scope": {
+          "ownerUserId": "00000000-0000-4000-8000-000000000151",
+          "tenantId": "00000000-0000-4000-8000-000000000152",
+          "nativeProcessEpoch": "00000000-0000-4000-8000-000000000153",
+          "authorizationRevision": 2,
+          "authorizationExpiresAtUnixMs": 1800000300000
+        },
+        "localSessionId": "00000000-0000-4000-8000-000000000156",
+        "agentSessionId": "00000000-0000-4000-8000-000000000804",
+        "nativeThreadId": "00000000-0000-4000-8000-000000000805",
+        "expectedBindingRevision": 0,
+        "bindingRevision": 1,
+        "expert": {
+          "expertId": "jd-ops-expert",
+          "version": "0.1.0",
+          "archiveSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "roleSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "knowledgeManifestSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        "intent": {
+          "profileId": "minimax-m3-high-v1",
+          "expectedRevision": 1
+        },
+        "permissionMode": "ask",
+        "marketSnapshot": {
+          "schemaVersion": 1,
+          "turnOperationId": "00000000-0000-4000-8000-000000000158",
+          "selection": [
+            {
+              "installationId": "00000000-0000-4000-8000-000000000159",
+              "revision": 2,
+              "generation": 1
+            }
+          ],
+          "selectionDigest": "83a887bd6f56fafe150cb126706a160406e3dc011025e675e974626c332fa265"
+        }
+      }
+    }
+  },
+  "PrivateResourceRecoverRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000801",
+    "method": "expert_resources_recover",
+    "payload": {
+      "hostInstanceId": "00000000-0000-4000-8000-000000000163",
+      "scope": {
+        "ownerUserId": "00000000-0000-4000-8000-000000000151",
+        "tenantId": "00000000-0000-4000-8000-000000000152",
+        "nativeProcessEpoch": "00000000-0000-4000-8000-000000000153",
+        "authorizationRevision": 2,
+        "authorizationExpiresAtUnixMs": 1800000300000
+      },
+      "original": {
+        "hostInstanceId": "00000000-0000-4000-8000-000000000163",
+        "scope": {
+          "ownerUserId": "00000000-0000-4000-8000-000000000151",
+          "tenantId": "00000000-0000-4000-8000-000000000152",
+          "nativeProcessEpoch": "00000000-0000-4000-8000-000000000153",
+          "authorizationRevision": 2,
+          "authorizationExpiresAtUnixMs": 1800000300000
+        },
+        "operationId": "00000000-0000-4000-8000-000000000803",
+        "expert": {
+          "expertId": "jd-ops-expert",
+          "version": "0.1.0"
+        }
+      },
+      "action": "prepare"
+    }
+  },
+  "BindingRecoverRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000801",
+    "contextId": "00000000-0000-4000-8000-000000000802",
+    "payload": {
+      "sessionId": "00000000-0000-4000-8000-000000000156",
+      "operationId": "00000000-0000-4000-8000-000000000803"
+    }
+  },
+  "ResourceOperationRecoverRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000801",
+    "contextId": "00000000-0000-4000-8000-000000000802",
+    "payload": {
+      "operationId": "00000000-0000-4000-8000-000000000803"
+    }
+  }
+}

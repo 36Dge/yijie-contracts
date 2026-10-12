@@ -136,3 +136,5 @@ FEAT-155的执行时钟使用[独立只读时间契约](docs/native-turn-timing-
 FEAT-157 adds an independent, unreleased [market-connectors 0.1.0 local family](docs/market-connectors-v1.md): versioned Native management IPC, safe catalog/install/operation/selection projections, four explicit capabilities and private unqualified-worker status. Canonical generation is `make market-connectors-generate`; the existing families, generators and immutable source pins remain unchanged. The catalog belongs to Connectors and no provider credential or caller-supplied endpoint enters this family.
 
 FEAT-157 私有 Broker 控制 0.2.0 本地候选见 [market-broker-control-v1.md](docs/market-broker-control-v1.md)；独立 `make market-broker-{generate,check,test}`。新增 [Native → Host 授权/提交](docs/market-host-v1.md) 与 [Provider 生命周期](docs/market-provider-v1.md)，使用 `make market-host-{generate,check,test}`。真实验证仅选择 Tushare；产品准入取决于可信授权与真实工具资格，契约生成不构成已完成验收。
+
+FEAT-158 新增 [experts/1 本地候选](docs/experts-v1.md)与受管资源 manifest v3：专家安全投影、会话绑定、冻结发送包装和只读恢复复用现有机制；普通 v1/v2 及所有旧生成入口保持不变。使用 `make experts-{generate,check,test}`；只读/写同步显式指定一个 consumer。首期专家仅限有明确本地授权证据的 local-development，不声明已获对外分发许可或真实模型验收。

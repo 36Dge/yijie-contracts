@@ -1,0 +1,26 @@
+[
+  {
+    "name": "ordinary",
+    "formatVersion": 1,
+    "turnOperationId": "00000000-0000-4000-8000-000000000158",
+    "bindingRevision": 0,
+    "expert": null,
+    "canonicalText": "yijie.expert-snapshot/v1\n00000000-0000-4000-8000-000000000158\n0\nnone\n",
+    "snapshotDigest": "4038f6099bebb5e047e7c231e0eff7f9dabd78a7708ecd4f6539a22c7eff05a0"
+  },
+  {
+    "name": "expert",
+    "formatVersion": 1,
+    "turnOperationId": "00000000-0000-4000-8000-000000000159",
+    "bindingRevision": 1,
+    "expert": {
+      "expertId": "jd-ops-expert",
+      "version": "0.1.0",
+      "archiveSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "roleSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "knowledgeManifestSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "canonicalText": "yijie.expert-snapshot/v1\n00000000-0000-4000-8000-000000000159\n1\nexpert\njd-ops-expert\n0.1.0\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\nbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\ncccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\n",
+    "snapshotDigest": "3f34a6ac5ef8fd980db63f16b6b605035e1c82373bbb3784632aa4bd78bb11cc"
+  }
+]

@@ -121,3 +121,16 @@ market-host-test:
 	go test ./sdks/go/market-host ./sdks/go/market-provider
 	cargo test --offline --locked --manifest-path tests/rust-market-host/Cargo.toml --target-dir /tmp/yijie-feat157-market-host-contract-target
 	cargo clippy --offline --locked --manifest-path tests/rust-market-host/Cargo.toml --target-dir /tmp/yijie-feat157-market-host-contract-target --all-targets -- -D warnings
+
+# FEAT-158 independent local family; normal JSON/metadata only, no old fixture generator.
+.PHONY: experts-generate experts-check experts-test
+experts-generate:
+	node scripts/generate-experts.mjs
+experts-check:
+	node scripts/generate-experts.mjs --check
+experts-test: experts-check
+	node --test tests/experts.test.mjs
+	go test ./sdks/go/experts
+	go vet ./sdks/go/experts
+	cargo test --offline --locked --manifest-path tests/rust-experts/Cargo.toml --target-dir /tmp/yijie-feat158-contracts-target
+	cargo clippy --offline --locked --manifest-path tests/rust-experts/Cargo.toml --target-dir /tmp/yijie-feat158-contracts-target --all-targets -- -D warnings

@@ -1,0 +1,104 @@
+{
+  "schema_version": 3,
+  "bundle_id": "yijie.desktop.skill-packages",
+  "bundle_version": "0.4.0",
+  "distribution_channel": "local-development",
+  "source": {
+    "repository": "https://example.com/synthetic/skills",
+    "revision_kind": "working-tree",
+    "revision": "0000000000000000000000000000000000000000",
+    "tree_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+  },
+  "skills": [
+    {
+      "id": "yijie.experts.jd-ops-expert",
+      "runtime_name": "jd-ops-kb",
+      "category": "store-operations",
+      "order": 0,
+      "display_name": "合成专家",
+      "description": "普通合成契约样例",
+      "version": "0.1.0",
+      "catalog_entry_mode": "bundled",
+      "entrypoint": "SKILL.md",
+      "icon": {
+        "registry": "yj-icon-v1",
+        "key": "skillOperations"
+      },
+      "risk": {
+        "level": "medium",
+        "reasons": [
+          "普通咨询"
+        ]
+      },
+      "provenance": {
+        "source_type": "internal",
+        "source_reference": "synthetic/experts",
+        "source_version": "0.1.0",
+        "source_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "review_status": "verified",
+        "reviewed_by": "Synthetic reviewer",
+        "reviewed_at": "2026-10-11T00:00:00Z"
+      },
+      "license": {
+        "expression": "LicenseRef-Synthetic-Local-Use",
+        "redistribution_status": "unverified",
+        "authorization_scope": "local-development",
+        "evidence_reference": "synthetic/local-use.md",
+        "reviewed_by": "Synthetic owner",
+        "reviewed_at": "2026-10-11T00:00:00Z"
+      },
+      "capabilities": {
+        "execution_mode": "tool-assisted",
+        "network": "none",
+        "filesystem": "read",
+        "required_tools": []
+      },
+      "archive": {
+        "path": "packages/yijie.experts.jd-ops-expert-0.1.0.zip",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "compressed_size_bytes": 120,
+        "uncompressed_size_bytes": 100,
+        "file_count": 3
+      },
+      "release": {
+        "catalog_status": "installable",
+        "maintenance_status": "maintained"
+      },
+      "asset_kind": "expert_resources",
+      "expert": {
+        "expert_id": "jd-ops-expert",
+        "source_id": "synthetic-local",
+        "platform": "jd",
+        "subtitle": "京东专向",
+        "tags": [
+          "京东咨询"
+        ],
+        "quick_prompts": [
+          "请整理合成商品规格。"
+        ],
+        "knowledge_summary": "合成本地资料",
+        "role_resource": {
+          "path": "ROLE.md",
+          "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "bytes": 20
+        },
+        "knowledge_resources": [
+          {
+            "id": "index",
+            "title": "合成参考索引",
+            "path": "references/index.md",
+            "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "bytes": 24,
+            "content_version": "0.1.0",
+            "content_status": "reviewed-reference"
+          }
+        ],
+        "runtime_projection": "expert_only",
+        "local_use_authorization": {
+          "status": "local-use-authorized",
+          "evidence_reference": "synthetic/local-use.md"
+        }
+      }
+    }
+  ]
+}
