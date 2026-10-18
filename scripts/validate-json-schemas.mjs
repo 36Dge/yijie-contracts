@@ -59,6 +59,8 @@ ajv.addKeyword({
     return isDeadlineOutcome ? resolvedAt >= expiresAt : resolvedAt < expiresAt;
   },
 });
+for (const keyword of ["x-event-schema-version", "x-resource-version"]) ajv.addKeyword({keyword,schemaType:"number"});
+for (const keyword of ["x-media-types", "x-http"]) ajv.addKeyword({keyword,schemaType:"object"});
 const files = (await findSchemas("jsonschema")).sort();
 const documents = [];
 for (const file of files) {

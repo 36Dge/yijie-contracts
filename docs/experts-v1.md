@@ -110,3 +110,7 @@ Current recovery-family conformance: `make experts-test` passed 12 Node tests, f
 ## 2026-10-13 Git delivery
 
 The source and generated projections are now submitted together for the existing local-only feature. Consumer documents record this source commit and the unchanged source-lock digest after the commit exists, avoiding a self-referential source SHA. `base_commit` remains the truthful pre-change baseline; `release=false` remains unchanged. Git publication does not create a package release, supported contract tag, public service or production qualification. AC-007 content quality was removed from FEAT-158 by the Owner; historical outcomes remain unchanged, and appearance acceptance is skipped.
+
+## FEAT-160 历史状态恢复语义（2026-10-18，本地候选）
+
+contract-impact=semantic，wire形状和版本不变。权威细则在transport.json的historical_turn_recovery及submission_busy_recovery。Host只在新可信提交的原守卫内，以匹配的原生终态和当前非active状态复用Store.Resume；notLoaded独立不证明过去结束。Native先读原操作，accepted优先；仅可信原busy拒绝加同一合法会话下真正缺失的原账本才通过现有blocked/failed收敛，不自动重发。普通404、存储错误、超时及其他未知仍保持unknown。无Core修改、数据库迁移、新权限或协议字段；旧consumer仍可读取原状态，先更新Host语义再消费。
