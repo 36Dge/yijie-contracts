@@ -1,6 +1,6 @@
 # Market connectors v1 — FEAT-157 local candidate
 
-Owner: 段成威. Family version: `0.2.0`. Status: unreleased local working-tree candidate, `release=false`. No immutable candidate SHA/tag, published SDK or external service qualification is claimed.
+Owner: 段成威. Family version: `0.5.0` (current local capacity candidate). Status: unreleased local working-tree candidate, `release=false`. No immutable candidate SHA/tag, published SDK or external service qualification is claimed.
 
 The new isolated family has `contract-impact=additive`: its source and generated modules are new paths and no old family, decoder, permission enumeration, generator or source pin is modified. FEAT-157 as a whole remains conservatively **breaking** because Native management/context semantics, persistent installation/selection records and later turn admission change. This source does not declare the overall feature compatible or complete.
 
@@ -114,3 +114,20 @@ Order: source and generated local family → safe Connectors catalog/status prod
 Adds `market_connectors_operation_reopen_v1` with a current management context, original operation ID and receipt revision. It returns the existing Operation response and never exposes the URL or accepts platform settings. Native reads the original worker operation, then opens only its current awaiting-user page under `connector.credentials.manage`; it never starts a new auth/DCR/probe or changes credential generation. A terminal result is read-only; cancelled/expired/replaced operations cannot reopen. Browser-open failure can be retried explicitly on the same pending operation. Automatic first-page opening also requires credentials management permission, while read-only receipt consumers keep reading without this side effect.
 
 Contract impact is semantic overall for the browser permission correction, with an additive command and unchanged existing payload/response fields. New UI and Native ship in the same Desktop bundle; deploy the new Native before invoking the new command. Old clients do not send it, and old Native fails closed for it. No database migration, Host/Broker command or Runtime protocol change. Local source-first generators and all dependent source locks are synchronized; no release provenance claim.
+
+## 2026-10-16 TikTok expert dependency: 59-entry local catalog
+
+This local increment changes only `Snapshot.catalog` and `Snapshot.installations` maximum length from 58 to 59, and versions this unpublished family from 0.3.0 to 0.4.0. All selection capacities remain 58; command shapes, identity/revision semantics, permission, secret and approval boundaries are unchanged. Connectors catalog revision 8 appends `chuhaijiang` without changing any of the original 58 entries.
+
+Impact is **breaking** for the mixed direction new 59-entry producer → old 58-entry reader. New readers continue accepting old snapshots. Generate canonical Typescript/Go/Rust/JSON Schema and synchronize Desktop, Host and Connectors before using the new catalog; cascading source locks must be frozen together. Do not roll back to the older reader while retaining a 59-entry catalog or overwrite installed expert versions/history. Runtime and storage schemas do not change. These are working-tree candidate digests, not release provenance or a production upgrade.
+
+Reviewed baseline is `e35ae9a0711014e4774a1347413e9a343ce7ab2c`, alongside the existing FEAT-157/158 fallback and supported/native baselines. Full global breaking checks still encounter the previously recorded unrelated scheduled-plan-draft remote-reference EOF on the three recent baselines; this is not marked PASS or bypassed. Three older supported/native baseline checks pass. Focused capacity conformance and exact source-delta analysis cover this increment. Evidence and all NOT RUN items: meta-repository `docs/features/FEAT-158-desktop-experts/22-third-group-tiktok-integration.md`.
+
+
+## 2026-10-17 mannequin expert dependency: 60-entry local catalog
+
+This increment changes only `Snapshot.catalog` and `Snapshot.installations` maximum length from 59 to 60 and the unpublished family version from 0.4.0 to 0.5.0. Existing selection limits remain 58. Connectors revision 9 appends `linkfox`; the original 59 catalog and provider entries remain byte-equivalent JSON values. OAuth discovery, permissions, approval, Runtime and database schemas are unchanged.
+
+Impact remains **breaking** for new 60-entry producers with old 59-entry readers. Canonical generators and synchronization update all Desktop/Host/Connectors readers before catalog activation. New readers accept 58/59/60 snapshots; 61 entries remain rejected. No release or independent consumer approval is claimed. Rollback must retain compatible readers and all precise historical resources and bindings.
+
+The current source delta is measured against the retained pre-increment 0.4.0 working-tree source as well as commit `e35ae9a0711014e4774a1347413e9a343ce7ab2c`. Older global supported/fallback checks and the scheduled-plan-draft remote-reference blocker are reported separately from focused family conformance. See meta `docs/features/FEAT-158-desktop-experts/23-fourth-group-mannequin-integration.md` for current evidence, account-dependent NOT RUN items and public-image-only scope. No breaking gate has been weakened.

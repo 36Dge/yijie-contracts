@@ -404,3 +404,7 @@ FEAT-157 第二阶段增加独立 `market-selection/1` Native submit/immutable s
 FEAT-157 第三阶段增加独立 `market-broker-control/1` 私有 Host→Rust worker 控制 family，沿用上述四个完整 baseline。本地候选，无新增 supported tag；旧管理/选集源与生成字节保持，全部真实 provider 仍未资格。见 [market-broker-control-v1.md](market-broker-control-v1.md)。
 
 FEAT-157 后续装配增加 `market-host/1` 与 `market-provider/1` 0.1.0 本地候选，以及 Broker 候选显式 breaking 升级到 0.2.0（externalCallsEnabled 如实表达外部网络装配）。仍沿用上述四个基线，无新增 supported tag；旧管理55/selection18/Sorftime 不改义。真实验证只选 Tushare，生成一致性不等于真实资格。新授权/提交、两条 Native UI 命令与 provider 生命周期见 [market-host-v1.md](market-host-v1.md)、[market-provider-v1.md](market-provider-v1.md)；本轮限定检查及未执行项见 [验证记录](market-host-validation-2026-10-07.md)。
+
+## FEAT-158 third group: market catalog capacity candidate (2026-10-16)
+
+Market-connectors local family 0.4.0 raises only catalog/installation snapshot capacity 58→59; selection remains 58. Current increment baseline is `e35ae9a0711014e4774a1347413e9a343ce7ab2c`. Existing FEAT-157 fallback `1a213ac8383e95ac6ec69363937687904fa3591c`, FEAT-158 fallback `35e0949c95d7a59ca5480715c225766dcc822056`, published `f16a497e1377f45747f8ff9292b4b60cf2027f88` and both Native baselines remain supported comparison inputs. No tag/status promotion. Mixed old reader/new catalog is breaking and must not be deployed. See [capacity compatibility and known global-check blocker](market-connectors-v1.md#2026-10-16-tiktok-expert-dependency-59-entry-local-catalog).
