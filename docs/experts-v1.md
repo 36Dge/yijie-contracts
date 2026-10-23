@@ -114,3 +114,11 @@ The source and generated projections are now submitted together for the existing
 ## FEAT-160 历史状态恢复语义（2026-10-18，本地候选）
 
 contract-impact=semantic，wire形状和版本不变。权威细则在transport.json的historical_turn_recovery及submission_busy_recovery。Host只在新可信提交的原守卫内，以匹配的原生终态和当前非active状态复用Store.Resume；notLoaded独立不证明过去结束。Native先读原操作，accepted优先；仅可信原busy拒绝加同一合法会话下真正缺失的原账本才通过现有blocked/failed收敛，不自动重发。普通404、存储错误、超时及其他未知仍保持unknown。无Core修改、数据库迁移、新权限或协议字段；旧consumer仍可读取原状态，先更新Host语义再消费。
+
+## 2026-10-21 developer metadata read (local candidate)
+
+`contract-impact = additive`: `experts_developer_read_v1` is a new Native-only, read-only command with existing `plugin.read` context authorization. `DeveloperReadRequest.payload` is the existing exact `ExpertSelection`; `DeveloperReadResponse.data` contains `{expert, name}`. The current Native provider defaults to `易界 AI` after validating the catalog identity. This is a product developer label, not third-party source attribution or a verified badge. No usage metric or external URL is invented.
+
+The previous 100 definitions, catalog response, retained ExpertDisplay, Host transport and durable formats remain unchanged. Old UI continues using its original closed frames. A new UI can fall back to the user-specified default against an older Native provider, without changing execution access. Provider-first installation and rollback have no data migration. Owner/consumer is the existing Desktop client team; the human request authorizes the default and missing-interface addition. No additional independent review, commit or release approval is claimed.
+
+All three expert consumers synchronize with the canonical generator for the local build provenance gate. Host receives no new method or changed Go model; Skills content/archive bytes remain unchanged. Source locks remain release=false. `make experts-test`, generated checks, and the four registered FEAT-158 JSON Schema baselines passed. Desktop evidence: sibling `yijie-desktop/docs/verification/expert-detail-20261021.md`. Broad legacy fixture-generation and attack/fault-injection tests are not run under the user's non-destructive test restrictions.

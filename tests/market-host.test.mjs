@@ -44,7 +44,7 @@ test('Native UI exports exactly observe and decision, never private grants or pr
 });
 test('provider management validates exact non-secret installation and operation identity',()=>{
  for(const n of Object.keys(provider.defs))assert.ok(pv(n),n);
- for(const n of ['AuthBegin','AuthPoll','AuthCancel','Forget','Probe'])for(const suffix of ['Request','Response'])assert.ok(pv(n+suffix)(fixture[n+suffix]));
+ for(const n of ['AuthBegin','AuthPoll','AuthCancel','Forget','Probe','Suspend'])for(const suffix of ['Request','Response'])assert.ok(pv(n+suffix)(fixture[n+suffix]));
  const missing=structuredClone(fixture.AuthBeginRequest);delete missing.payload.binding.reference.revision;assert.equal(pv('AuthBeginRequest')(missing),false);
  const prohibited=new Set(['token','secret','apiKey','clientSecret','headers','credentialValue']);
  for(const source of [provider.schema,host.schema]){function walk(v){if(!v||typeof v!=='object')return;for(const k of Object.keys(v.properties??{}))assert.ok(!prohibited.has(k),k);Object.values(v).forEach(walk);}walk(source);}

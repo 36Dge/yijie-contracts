@@ -21,3 +21,6 @@ renderer 仅有 `chat_market_observe_v1` 和 `chat_market_approval_decide_v1`。
 生成/验证入口为 `make market-host-generate`、`make market-host-check`、`make market-host-test`。`sync-market-host.mjs --consumer=desktop|agent-host` 只机械同步；Desktop TS 路径为 `src/domain/market-host-native.generated.ts` 和 `src/api/generated/market-host-native-validator.gen.js`。源锁记录实际工作树摘要、base commit、`release=false`，不冒充已发布 pin。验证、基线和未执行项见 [本轮记录](market-host-validation-2026-10-07.md)。
 
 发布前须形成真实 immutable commit/tag、逐仓 pin 和实现符合性证据。当前无新 supported tag；沿用 FEAT-157 四个登记基线。回滚停止新 family 装配并保留隔离 outbox/任务记录，不能降级为 legacy submit 执行。
+
+
+2026-10-21 本地 0.3.0 增加 `provider_suspend` 私有转发，先复用 revoke_authority 撤销执行准入，再调用 Worker 的普通关闭连接操作；不把 suspend 路由为 forget。形状、兼容方向和旧方法保留见 market-provider-v1.md 的同日说明。Native UI 两个观察/审批命令及 HTTP 业务入口不扩大。

@@ -31,3 +31,12 @@ Broker prepare 查找同 owner/tenant、Host instance、Native epoch 和原 snap
 归一化结果是封闭对象 `{rows: [...]}`，rows 必有且最多一行。非空行必须包含同请求的 ts_code/trade_date 和有限数值 close；其余数值白名单字段可省略，出现时必须是有限数值，不接受 null 或数字字符串替代。仅身份字段的行是结果错误，不能静默改成空数组；真正 rows=[] 是成功的空数据。`resultRequiredNumericFields:["close"]`、rows 字段名及其余白名单由 tool_profile 唯一定义；生成器直接复用输入身份规则投影 `TUSHARE_DAILY_OUTPUT_SCHEMA_JSON` / `TushareDailyOutputSchemaJson` 和独立生成 JSON Schema，Gateway metadata 不再手写结果 schema。静态 Schema 不证明行身份等于这一次请求，backend 仍须显式比对。
 
 `generate-market-provider.mjs` 从源生成 Go/Rust/schema，`sync-market-provider.mjs --consumer=desktop|agent-host|connectors` 同步本地候选；`make market-host-{generate,check,test}` 覆盖该族。source.lock 记录实际源/产物摘要、base commit、release=false。不修改旧管理55/selection18/Sorftime；不创建发布 tag 或虚构 pin。Owner/consumer 确認、下游生命周期与真实工具资格证据仍须分别完成，源码编译不能代替端到端验收。验证见 [本轮记录](market-host-validation-2026-10-07.md)。
+
+
+## 2026-10-21 普通停用保留授权
+
+用户要求聊天选用与全局管理分离，普通停用不得清除凭据。本地 family 0.4.0 增加 `provider_suspend`（Host 0.3.0 同源转发），请求/响应沿用 ProviderPayload/ProviderStatus；旧 begin/poll/cancel/probe/forget 字节形状与语义保留。Suspend 先撤销执行准入，阻止旧回调和刷新继续运行，正常等待连接清理；不访问 Keychain、不读写/删除凭据，不改变 credentialRef/generation。返回 disconnected/not-qualified/executionAvailable=false，authorizationStatus=unknown 不抹去 Native 已保存的配置/授权事实。相同操作只回读回执，取消不撤回减少权限的动作；清理未完成如实失败，不转为 forget。
+
+公共 wire 为增量、provider-first（Worker→Host→Native）；整体变更因 Desktop 私有 schema 37 的新增持久操作种类按 breaking 管理。旧 reader 最大版本36会拒绝新库；本机升级前正常退出并备份加密数据，回滚不得直接用旧客户端打开或降级丢弃新记录。新客户端仍读取旧 auth/probe/forget 历史回执；新 disable 写 suspend，明确卸载继续 forget，不重写历史删除结果。此前删除的凭据不能推断恢复。
+
+本次用户明确授权本地跨仓修复与原生打包验收，未授权发布；无新公开 SDK 发布/tag/immutable 合并声明。Owner/consumer：原有 Desktop、Agent Host、Connectors；凭据仅在既有 Worker/Keychain 边界。无平台 endpoint、第三方 schema、Runtime 或权限范围扩张。实现、六个既有基线的结构比较、源生成/同步及迁移/重启验证记录见 Desktop `docs/verification/connector-state-fix-20261021.md`。旧 provider 不支持 suspend 时保持失败，不删除凭据兜底。

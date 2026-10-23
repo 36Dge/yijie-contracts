@@ -122,3 +122,19 @@ test('explicit recovery carries immutable original intent separately from curren
   }
   assert.ok(source.transport.semantics.explicit_recovery.includes('Read/reopen/repeated set or prepare remain query-only'));
 });
+
+test('developer metadata is an independent read-only exact-identity interface',()=>{
+  const expert=fixtures.BindingSetRequest.payload.expert;
+  const request={...fixtures.SnapshotRequest,payload:expert};
+  const response={schemaVersion:1,requestId:request.requestId,data:{expert,name:'易界 AI'}};
+  assert.ok(native.validateDeveloperReadRequest(request));
+  assert.ok(native.validateDeveloperReadResponse(response));
+  assert.ok(validate('DeveloperInfo')(response.data));
+  assert.deepEqual(source.native.commands.find(c=>c.command==='experts_developer_read_v1'),{
+    command:'experts_developer_read_v1',request:'DeveloperReadRequest',response:'DeveloperReadResponse',requiredPermission:'plugin.read',
+  });
+  assert.equal(source.defs.CatalogEntry.properties.developer,undefined);
+  assert.equal(source.defs.ExpertDisplay.properties.developer,undefined);
+  assert.equal(source.transport.commands.some(c=>c.method.includes('developer')),false);
+  assert.ok(native.validateSnapshotResponse({schemaVersion:1,requestId:request.requestId,data:{experts:[],canManage:true,executionAvailable:false}}));
+});

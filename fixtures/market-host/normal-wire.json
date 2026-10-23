@@ -395,5 +395,59 @@
       "qualification": "not_qualified",
       "executionAvailable": false
     }
+  },
+  "SuspendRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000160",
+    "method": "provider_suspend",
+    "payload": {
+      "operationId": "00000000-0000-4000-8000-000000000162",
+      "hostInstanceId": "00000000-0000-4000-8000-000000000163",
+      "scope": {
+        "ownerUserId": "00000000-0000-4000-8000-000000000151",
+        "tenantId": "00000000-0000-4000-8000-000000000152",
+        "nativeProcessEpoch": "00000000-0000-4000-8000-000000000153",
+        "authorizationRevision": 2,
+        "authorizationExpiresAtUnixMs": 1800000300000
+      },
+      "binding": {
+        "reference": {
+          "installationId": "00000000-0000-4000-8000-000000000159",
+          "revision": 2,
+          "generation": 1
+        },
+        "serviceId": "tushare",
+        "credentialRef": "00000000-0000-4000-8000-000000000154"
+      }
+    }
+  },
+  "SuspendResponse": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000160",
+    "data": {
+      "operationId": "00000000-0000-4000-8000-000000000162",
+      "hostInstanceId": "00000000-0000-4000-8000-000000000163",
+      "scope": {
+        "ownerUserId": "00000000-0000-4000-8000-000000000151",
+        "tenantId": "00000000-0000-4000-8000-000000000152",
+        "nativeProcessEpoch": "00000000-0000-4000-8000-000000000153",
+        "authorizationRevision": 2,
+        "authorizationExpiresAtUnixMs": 1800000300000
+      },
+      "binding": {
+        "reference": {
+          "installationId": "00000000-0000-4000-8000-000000000159",
+          "revision": 2,
+          "generation": 1
+        },
+        "serviceId": "tushare",
+        "credentialRef": "00000000-0000-4000-8000-000000000154"
+      },
+      "operationState": "starting",
+      "authorizationStatus": "unknown",
+      "connectionStatus": "disconnected",
+      "qualification": "not_qualified",
+      "executionAvailable": false
+    }
   }
 }
