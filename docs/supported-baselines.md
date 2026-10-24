@@ -1,5 +1,9 @@
 # Supported Contract Baselines
 
+## FEAT-164 未激活 Kimi K3.1 Pro 候选
+
+独立 `chat-models-v2` 0.2.0 与 `runtime-kimi-k31-pro` 投影保留所有旧 family 和当前 consumer pin。整体迁移为 breaking；不新增 supported tag。源语义、方向兼容及比较入口见 [chat-models-v2.md](chat-models-v2.md)。比较输入为已发布 `f16a497e1377f45747f8ff9292b4b60cf2027f88`、Native `6f632f155eacdaf93df0e0b00b5dab9e369c5442` / `811f38d6b104fa18477107e7ac91a85e19c445d1`、scheduled `db4458fe94572c4df41a114005d54a049bb79b1f`、experts `35e0949c95d7a59ca5480715c225766dcc822056`、chat-model 前身 `54be9314dce5319b049dc0a236800fd1a1fdd7a1` 与实施前 fallback `bedf4159b0fa22e24efe6c295f8b0d4845df56b7`。这只是检查基线登记，当前本地工作树候选尚未形成 G2A 不可变提交或 Consumer Owner 批准，不能据此激活。
+
 ## FEAT-158 未发布专家独立本地候选
 
 `experts/1` 0.1.0 与受管 bundle v3 新增源不替换 v1/v2、market 或普通聊天协议，不新增 supported tag。当前 fallback 为 `35e0949c95d7a59ca5480715c225766dcc822056`；同时保留已发布 `f16a497e1377f45747f8ff9292b4b60cf2027f88` 与 Native 来源 `6f632f155eacdaf93df0e0b00b5dab9e369c5442`、`811f38d6b104fa18477107e7ac91a85e19c445d1`。四个基线的 JSON Schema 比较通过，新 family 的 source isolation 不等于跨仓运行兼容或产品 D4；字段、普通/专家包装、local-only 许可、生成和回退见 [experts-v1.md](experts-v1.md)。

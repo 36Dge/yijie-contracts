@@ -1,5 +1,21 @@
 .PHONY: generate lint test breaking build
 
+.PHONY: chat-models-v2-generate chat-models-v2-check chat-models-v2-test
+chat-models-v2-generate:
+	node scripts/generate-chat-models-v2.mjs
+chat-models-v2-check:
+	node scripts/generate-chat-models-v2.mjs --check
+chat-models-v2-test: chat-models-v2-check
+	node --test tests/chat-models-v2.test.mjs tests/chat-models.test.mjs
+	cargo test --offline --locked --manifest-path tests/rust-chat-models-v2/Cargo.toml
+
+.PHONY: runtime-kimi-k31-pro-generate runtime-kimi-k31-pro-check
+runtime-kimi-k31-pro-generate:
+	node scripts/generate-runtime-kimi-k31-pro.mjs
+
+runtime-kimi-k31-pro-check:
+	node scripts/generate-runtime-kimi-k31-pro.mjs --check
+
 generate: market-selection-generate market-broker-generate market-host-generate
 	pnpm generate
 
