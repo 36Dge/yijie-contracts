@@ -1,0 +1,26 @@
+[
+  {
+    "resources": [
+      {
+        "id": "m02",
+        "title": "第二模块",
+        "path": "references/m02.md",
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "bytes": 42,
+        "content_version": "0.1.0",
+        "content_status": "reviewed-reference"
+      },
+      {
+        "id": "m01",
+        "title": "第一模块",
+        "path": "references/m01.md",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "bytes": 20,
+        "content_version": "0.1.0",
+        "content_status": "incomplete"
+      }
+    ],
+    "canonicalText": "yijie.expert-knowledge/v1\n2\n3:m0112:第一模块17:references/m01.md64:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa2:205:0.1.010:incomplete\n3:m0212:第二模块17:references/m02.md64:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb2:425:0.1.018:reviewed-reference\n",
+    "digest": "a0bdae080e15352e70d68af8a67fae14fd526802452dda536cf7bfc1a6b95976"
+  }
+]

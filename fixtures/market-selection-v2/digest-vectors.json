@@ -1,0 +1,27 @@
+[
+  {
+    "name": "empty",
+    "turnOperationId": "00000000-0000-4000-8000-000000000157",
+    "selection": [],
+    "canonicalText": "yijie.market-selection/v1\n00000000-0000-4000-8000-000000000157\n0\n",
+    "selectionDigest": "c4433809b730f7fbdd7c3dfe161d68f70f5d43d199cd2cb29a0246bfefb995f7"
+  },
+  {
+    "name": "two_unsorted",
+    "turnOperationId": "00000000-0000-4000-8000-000000000158",
+    "selection": [
+      {
+        "installationId": "00000000-0000-4000-8000-000000000160",
+        "revision": 9007199254740991,
+        "generation": 3
+      },
+      {
+        "installationId": "00000000-0000-4000-8000-000000000159",
+        "revision": 1,
+        "generation": 2
+      }
+    ],
+    "canonicalText": "yijie.market-selection/v1\n00000000-0000-4000-8000-000000000158\n2\n00000000-0000-4000-8000-000000000159 1 2\n00000000-0000-4000-8000-000000000160 9007199254740991 3\n",
+    "selectionDigest": "aca3f6799d135244c195c92d176b7f5bc4decd029a4d49328275c4c7f52774ba"
+  }
+]
