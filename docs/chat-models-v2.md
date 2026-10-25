@@ -16,7 +16,7 @@ Owner: 段成威。整体影响 breaking；family 0.2.0，未发布、未激活�
 
 OpenAPI 的 canonical URL 是 schema 标识符；离线 generator 从本仓权威源解析并登记所有传递依赖。对生成的 `sdks/openapi/chat-models-v2.bundle.json` 执行 Redocly lint；分辨类型的 discriminator 引用保留为可解析的具名组件。此独立 family 通过 Makefile 的 `chat-models-v2-*` 入口生成/检查，不替换既有生成入口。
 
-Runtime 独立投影入口是 `scripts/generate-runtime-kimi-k31-pro.mjs`，从已完成构建的 `.yijie/build/kimi-k31-pro-r1/aarch64-apple-darwin` 校验实际 binary、manifest、269 个 schema 及 0001—0007 patch 摘要，生成 `compatibility/runtime-kimi-k31-pro/source.lock.json` 与对应 Go constants。它先检查保留的 input-only 权威，不修改旧 runtime-chat-models 投影，也不向 Host/Desktop 同步。mode=local_worktree_candidate/release=false 不能当作不可变已发布 pin。
+Runtime 独立投影入口是 `scripts/generate-runtime-kimi-k31-pro.mjs`，从已完成构建的 `.yijie/build/kimi-k31-pro-r2/aarch64-apple-darwin` 校验实际 binary、manifest、269 个 schema 及 0001—0008 patch 摘要，生成 `compatibility/runtime-kimi-k31-pro/source.lock.json` 与对应 Go constants。r2 仅修正新 Kimi 的 Responses include 枚举，旧 r1 产物保留；app-server schema 与 input-only/搜索来源权威逐字比较。它先检查保留的 input-only 权威，不修改旧 runtime-chat-models 投影，也不向 Host/Desktop 同步。mode=local_worktree_candidate/release=false 不能当作不可变已发布 pin。
 
 后续顺序：G2A 不可变候选及 consumer 审查 → 兼容 reader 和新路由 → G2V → 各切片 → 停派发/前向迁移 → 新执行。当前没有 Host/Desktop v2 consumer，也没有旧日常库迁移；不得用本仓检查通过声称用户端已换模型。
 

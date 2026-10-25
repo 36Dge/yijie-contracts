@@ -8,7 +8,7 @@ import {fileURLToPath} from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const runtime = path.resolve(root, '../yijie-codex');
-const artifact = '.yijie/build/kimi-k31-pro-r1/aarch64-apple-darwin';
+const artifact = '.yijie/build/kimi-k31-pro-r2/aarch64-apple-darwin';
 assert.ok(process.argv.slice(2).every(arg => arg === '--check'));
 const check = process.argv.includes('--check');
 const schema = `${artifact}/generated-json-schema`;
@@ -30,7 +30,8 @@ const expectedPatches = [...base.native_sources.filter(row => row.path.endsWith(
   '.yijie/patches/chat-models/0004-feat-156-upstream-tool-choice.patch',
   '.yijie/patches/chat-models/0005-feat-156-terminal-tool-arguments.patch',
   '.yijie/patches/chat-models/0006-native-web-search-sources.patch',
-  '.yijie/patches/chat-models/0007-feat-164-kimi-k31-pro.patch'];
+  '.yijie/patches/chat-models/0007-feat-164-kimi-k31-pro.patch',
+  '.yijie/patches/chat-models/0008-feat-164-kimi-responses-include.patch'];
 assert.deepEqual(manifest.patches.map(row => row.path), expectedPatches);
 for (const row of manifest.patches) assert.equal(hash(read(row.path)), row.sha256, row.path);
 const files = readdirSync(path.join(runtime, schema), {recursive: true})
@@ -45,6 +46,7 @@ for (const name of files) {
 assert.equal(files.length, manifest.appServer.schemaFileCount);
 assert.equal(tree.digest('hex'), manifest.appServer.schemaTreeSha256);
 const nativeSources = [...expectedPatches, '.yijie/upstream.env', 'scripts/build-kimi-k31-pro.sh',
+  'scripts/build-kimi-k31-pro-r2.sh', 'scripts/write-kimi-k31-pro-r2-runtime-manifest.py',
   'scripts/write-kimi-k31-pro-runtime-manifest.py',
   'scripts/write-chat-model-stream-runtime-manifest.py', 'scripts/write-web-search-sources-runtime-manifest.py',
   'scripts/verify-web-search-sources-schema.py', 'scripts/write-runtime-manifest.py',
@@ -62,7 +64,7 @@ const RuntimePatchManifest = ${JSON.stringify(JSON.stringify(manifest.patches))}
 const outputs = {'sdks/go/openapi/runtime-kimi-k31-pro/artifact.gen.go': execFileSync('gofmt', [], {input: go, encoding: 'utf8'})};
 outputs['compatibility/runtime-kimi-k31-pro/source.lock.json'] = JSON.stringify({
   schema_version: 1, feature: 'FEAT-164', mode: 'local_worktree_candidate', release: false,
-  authority: 'yijie-codex canonical FEAT-164 candidate; new Kimi source predicate and retired-model request guard; app-server wire unchanged from retained web-sources artifact',
+  authority: 'yijie-codex canonical FEAT-164 r2 candidate; new Kimi documented include enum, search source predicate and retired-model request guard; app-server wire unchanged from retained web-sources artifact',
   runtime_source: {repository: 'https://github.com/36Dge/yijie-codex.git', base_commit: execFileSync('git', ['rev-parse', 'HEAD'], {cwd: runtime, encoding: 'utf8'}).trim()},
   upstream: manifest.upstream, methods: base.methods, experimental_api: false,
   wire_authority: {path: 'compatibility/runtime-input-only/source.lock.json', sha256: hash(readFileSync(path.join(root, 'compatibility/runtime-input-only/source.lock.json')))},
