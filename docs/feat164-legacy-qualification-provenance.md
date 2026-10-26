@@ -1,0 +1,7 @@
+# FEAT-164 旧模式验收来源
+
+2026-10-26。Owner授权固定独立旧App→新App安全离线资格；仅本地，不发布。增量semantic仅部署来源元数据，公共wire/schema/行为不变。旧 `runtime-chat-models` local_worktree_candidate 的base7fd463并不包含其后来加入的schema verifier；用其HEAD无法还原来源。
+
+沿用现有generator在完整的Runtime11fd4504c28afd0f65c6f5f62a6b5328dd437f5a运行，唯一输出变化是base_commit。旧canonical binary9766d7e10d25327f0595964a19ad67e1e1c1db0c22e5a65f9af66b547ab316c6、manifest91f1e4ef729410931fa13a304097b482cdb33d0d73baeb1235dc881c6875d6ba、patch/schema/generated Go字节保持；没有修改或重建Runtime。它是当前受审源码对保留旧制品的内容绑定，不声称11fd曾重新构建旧制品，也不把local候选升级为release。
+
+Consumer Host/Desktop使用原sync脚本先同步来源再独立构建锁；新版r5 wire投影保持原5b5dad来源。Owner/唯一consumer段成威，当前批准执行范围覆盖本地资格所需来源整理。公开兼容breaking结构N/A，原因是所有协议/schema/generated代码逐字未变；原支持窗口不变。旧/新App正常关闭后才切换，日常入口未获迁移授权。
