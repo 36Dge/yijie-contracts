@@ -20,3 +20,13 @@ generate-runtime-chat-models / sync-runtime-chat-models 固定，canonical schem
 
 安全验证仅普通样例、版本降级、真实 Host 字节经过 Native/SQLCipher 正常重开，以及用户授权的
 Kimi 同题真实回合。不运行攻击或进程故障注入；具体结论见元仓 `docs/dev/dual-progress-resume-20261023.md`。
+
+## FEAT-164 URL组件判定修正（2026-10-27，Owner已批准）
+
+增量contract-impact=semantic；v4/旧降级wire、schema、SDK、32来源/2048 URL/512标题上限不变。Host来源URL原有整串不透明凭据启发式会跨越URI结构分隔符误删普通公开路径，当前修正仅限定该启发式的输入范围。单一Owner段成威已在FEAT164第53号方案批准秘密识别适用边界、Contract First及零新增真实调用离线验证。
+
+先保持既有HTTP(S)、无userinfo、合法host、大小、控制字符及Bearer/敏感名称/JWT/AWS/PEM全文检查。随后不透明长串判断分别作用于host、每个原始path segment解码后的完整值、每个query key/value解码后的完整值和fragment；按原始结构分段之后解码，编码的分隔符不能成为新边界。组件内短横线/编码内容不拆开，无域名白名单；不改通用命令输出脱敏规则。无法通过原保护条件的来源仍不输出、availability仍partial，不改变URL本身。
+
+普通样例权威为tests/fixtures/agent/native-search-sources/ordinary-url-components.json，含本次真实返回的20个公开URL和5个普通结构化控制；不访问这些URL，不构造攻击/进程故障。该20条按本限定策略保留18、仍有独立长组件的2条保持保守隐藏，不能称20条全显。Provider/Runtime原始事实保留，既有SQL/回放记录不回写；正常native-thread读取按当前producer安全投影，旧v1/v2/v3降级继续剥离新增sources且不改变原事实。
+
+同源同步manifest包含本说明及普通样例摘要；权威固定本地commit→Host消费/实现→Desktop固定Host构建来源。没有发布tag或push；正常来源显示修复不改变本次供应商检索答案质量，也不增加真实模型预算。

@@ -28,7 +28,7 @@ const pairs = [
   ["sdks/typescript/src/openapi/native-conversation-v4.gen.ts", "yijie-desktop/src/api/generated/native-conversation-v4.gen.ts"],
 ];
 const sources = {};
-for (const source of [...new Set([...pairs.map(([file]) => file), "scripts/generate-native-process.mjs", "scripts/sync-native-process.mjs"])]) {
+for (const source of [...new Set([...pairs.map(([file]) => file), "scripts/generate-native-process.mjs", "scripts/sync-native-process.mjs", "docs/native-search-sources-v4.md", "tests/fixtures/agent/native-search-sources/ordinary-url-components.json"])]) {
   const bytes = await fs.readFile(path.join(root, source));
   if (commit && !bytes.equals(execFileSync("git", ["show", `${commit}:${source}`], {cwd: root, maxBuffer: 16 << 20}))) throw new Error(`Uncommitted source: ${source}`);
   sources[source] = createHash("sha256").update(bytes).digest("hex");
