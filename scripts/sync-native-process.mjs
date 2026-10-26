@@ -18,6 +18,7 @@ if (candidate === Boolean(commit)) throw new Error("Select either explicit local
 if (commit && (!/^[a-f0-9]{40}$/.test(commit) || execFileSync("git", ["rev-parse", `${commit}^{commit}`], {cwd: root, encoding: "utf8"}).trim() !== commit)) throw new Error("Exact source commit required");
 const spec = "openapi/native-conversation-v4/native-conversation-v4.yaml";
 const pairs = [
+  ["tests/fixtures/agent/native-search-sources/ordinary-url-components.json", "yijie-agent-host/api/fixtures/native-search-ordinary-url-components.json"],
   ["openapi/native-conversation-v3/native-conversation-v3.yaml", "yijie-agent-host/api/openapi/native-conversation-v3.yaml"],
   ["sdks/go/openapi/native-conversation-v3/client.gen.go", "yijie-agent-host/internal/contracts/nativeconversationv3/types.gen.go"],
   ["openapi/native-conversation-v3/native-conversation-v3.yaml", "yijie-desktop/src-tauri/contracts/native-conversation-v3.json"],
