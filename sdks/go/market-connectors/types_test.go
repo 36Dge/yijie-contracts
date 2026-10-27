@@ -5,6 +5,32 @@ import (
 	"testing"
 )
 
+func TestCatalogCapacityPreservesOldSnapshots(t *testing.T) {
+	const raw = `{"serviceId":"synthetic-service","serverName":"synthetic-service","displayName":"Synthetic","categoryId":"productivity","categoryLabel":"Productivity","description":"","iconAssetId":"synthetic-service","transport":"http","authMode":"api_key","availability":"unverified","blockerCodes":[]}`
+	var entry CatalogEntry
+	if err := json.Unmarshal([]byte(raw), &entry); err != nil {
+		t.Fatal(err)
+	}
+	for _, size := range []int{60, 61, 62, 63} {
+		catalog := make([]CatalogEntry, size)
+		for i := range catalog {
+			catalog[i] = entry
+		}
+		value := Snapshot{CatalogRevision: 10, Catalog: catalog, Installations: []Installation{}, Capabilities: []Permission{}, ExecutionAvailable: false}
+		if got := value.Validate() == nil; got != (size <= 62) {
+			t.Fatalf("catalog size %d accepted=%v", size, got)
+		}
+		encoded, err := json.Marshal(value)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var decoded Snapshot
+		if got := json.Unmarshal(encoded, &decoded) == nil; got != (size <= 62) {
+			t.Fatalf("catalog decode size %d accepted=%v", size, got)
+		}
+	}
+}
+
 func TestContextEnvelopeAndRevisions(t *testing.T) {
 	const valid = `{"schemaVersion":1,"requestId":"00000000-0000-4000-8000-000000000157","contextId":"00000000-0000-4000-8000-000000000158","payload":{"installationId":"00000000-0000-4000-8000-000000000157","operationId":"00000000-0000-4000-8000-000000000158","expectedRevision":1,"desiredEnabled":false}}`
 	var got SetEnabledRequest

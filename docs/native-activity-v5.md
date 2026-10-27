@@ -1,0 +1,11 @@
+# Native activity display v5 — FEAT-163
+
+Contract impact: **breaking**, versioned expansion of the existing native conversation family. Owner: 段成威; producer: Agent Host; consumer: Desktop Native/Timeline. Local `demo_fast` working-tree candidate only, not a released SDK or production pin.
+
+Authority is the already pinned Codex 0.144.6 app-server `v2/item.rs` (`CommandAction`, `FileUpdateChange`, `McpToolCallAppContext`), plus its canonical schemas. No Runtime patch or new execution loop is required for these fields. OpenAPI v5 is the authority for the safe downstream projection. Use `generate-native-process.mjs` and `sync-native-process.mjs --candidate`; generated Go/TS/Rust readers must not be edited.
+
+History `/v5/.../native-thread`, SSE `/v12/.../events`, Desktop native view channel v5 and stored native format 5 carry the optional display fields. Existing v4/v11 and earlier endpoints stay closed: strip the new metadata and project fileChange as unknown/unavailable with the same Item identity. Never replay an execution during conversion. Native IDs, phase, status, order, bearer and approval scope remain unchanged.
+
+Command actions preserve original indexes and best-effort classification, not extra executions. Commands, text, paths and diffs use the existing confidentiality filters and byte limits. Paths are inert workspace-relative labels; resource URIs, credentials and arbitrary plugin payloads are excluded. The display never scans the filesystem or invents actions from command text. File statistics describe a complete reported change using the pinned native add/delete content-line and update unified-hunk semantics. Unknown/truncated/unparseable changes have absent statistics. Completion snapshots are authoritative; no live patch chunk accumulator is added.
+
+Deployment: generate source projections; install Host v5 alongside old routes; install Desktop readers for formats 1–5 and strict legacy wire decoders; only then select v5/v12 in the normal local application. No database table or user_version change. Old native formats remain readable without rewriting. Rollback must retain a reader capable of format 5; older readers reject future formats and must not delete or rewrite history. Local focused conformance is recorded in the FEAT-163 verification package; it does not claim full production baseline qualification.

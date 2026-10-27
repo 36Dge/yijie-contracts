@@ -27,13 +27,19 @@ const pairs = [
   [spec, "yijie-desktop/src-tauri/contracts/native-conversation-v4.json"],
   ["sdks/typescript/src/openapi/native-conversation-v4.gen.ts", "yijie-desktop/src/api/generated/native-conversation-v4.gen.ts"],
 ];
+pairs.push(
+  ["openapi/native-conversation-v5/native-conversation-v5.yaml", "yijie-agent-host/api/openapi/native-conversation-v5.yaml"],
+  ["sdks/go/openapi/native-conversation-v5/client.gen.go", "yijie-agent-host/internal/contracts/nativeconversationv5/types.gen.go"],
+  ["openapi/native-conversation-v5/native-conversation-v5.yaml", "yijie-desktop/src-tauri/contracts/native-conversation-v5.json"],
+  ["sdks/typescript/src/openapi/native-conversation-v5.gen.ts", "yijie-desktop/src/api/generated/native-conversation-v5.gen.ts"],
+);
 const sources = {};
 for (const source of [...new Set([...pairs.map(([file]) => file), "scripts/generate-native-process.mjs", "scripts/sync-native-process.mjs"])]) {
   const bytes = await fs.readFile(path.join(root, source));
   if (commit && !bytes.equals(execFileSync("git", ["show", `${commit}:${source}`], {cwd: root, maxBuffer: 16 << 20}))) throw new Error(`Uncommitted source: ${source}`);
   sources[source] = createHash("sha256").update(bytes).digest("hex");
 }
-const manifest = {schema_version: 1, contract_family_version: "0.4.0", published: false,
+const manifest = {schema_version: 1, contract_family_version: "0.5.0", published: false,
   provenance: candidate ? "local-working-tree-candidate" : "git-commit", ...(commit ? {contracts: {full_commit: commit}} : {}), sources};
 const outputs = [];
 for (const [source, destination] of pairs) outputs.push([destination, await fs.readFile(path.join(root, source))]);

@@ -12,6 +12,7 @@ import standaloneCode from 'ajv/dist/standalone/index.js';
 import ucs2length from 'ajv/dist/runtime/ucs2length.js';
 import equal from 'ajv/dist/runtime/equal.js';
 import {createRequire} from 'node:module';
+import {formatSourceFile} from './format-source-file.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),read=p=>readFileSync(path.join(root,p),'utf8');
 const args=process.argv.slice(2),check=args.includes('--check');assert.ok(args.every(a=>a==='--check'));
 const {source,manifest,names,defs,documents,schema}=loadMarketHostSource();
@@ -56,8 +57,8 @@ let rust=banner+projection.rust+rustHelpers;
 let go=banner+projection.go+'func validateContentBlock(v ContentBlock)error{b,err:=v.MarshalJSON();if err!=nil{return errors.New("invalid content block")};var tag struct{Type string `json:"type"`};if json.Unmarshal(b,&tag)!=nil{return errors.New("invalid content block")};switch tag.Type{'+variants.map(({n,v})=>`case ${q(v)}:var value ${n};return json.Unmarshal(b,&value);`).join('')+'default:return errors.New("unsupported content block")}}\n';
 for(const[key,value]of Object.entries(manifest.limits)){rust+=`pub const ${key.replace(/([a-z0-9])([A-Z])/g,'$1_$2').toUpperCase()}:usize=${value};\n`;go+=`const ${key[0].toUpperCase()+key.slice(1)}=${value}\n`;}
 const outputs=new Map([
- ['sdks/rust/market-host/types.gen.rs',execFileSync('rustfmt',['--edition','2021'],{input:rust})],
- ['sdks/go/market-host/types.gen.go',execFileSync('gofmt',[],{input:go})],
+ ['sdks/rust/market-host/types.gen.rs',formatSourceFile('rustfmt',['--edition','2021'],rust)],
+ ['sdks/go/market-host/types.gen.go',formatSourceFile('gofmt',[],go)],
  ['sdks/jsonschema/market-host.schema.json',q(schema,null,2)+'\n'],
 ]);
 // Only the two declared Native UI commands and their response/error closure
@@ -79,7 +80,7 @@ outputs.set('sdks/typescript/src/api/generated/market-host-native-validator.gen.
 outputs.set('sdks/jsonschema/market-host-native.schema.json',q(nativeSchema,null,2)+'\n');
 const lockPath='compatibility/market-host/source.lock.json',base=existsSync(path.join(root,lockPath))?JSON.parse(read(lockPath)).base_commit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
 const hash=b=>createHash('sha256').update(b).digest('hex');
-const sources=[...documents.keys(),nativePath,'scripts/market-host-source.mjs','scripts/generate-market-host.mjs','scripts/market-broker-codegen.mjs','scripts/sync-market-host.mjs','pnpm-lock.yaml'];
+const sources=[...documents.keys(),nativePath,'scripts/market-host-source.mjs','scripts/generate-market-host.mjs','scripts/format-source-file.mjs','scripts/market-broker-codegen.mjs','scripts/sync-market-host.mjs','pnpm-lock.yaml'];
 outputs.set(lockPath,q({schema_version:1,contract_version:manifest.contract_version,feature:'FEAT-157',mode:'local_worktree_candidate',release:false,base_commit:base,sources:sources.map(p=>({path:p,sha256:hash(read(p))})),generated:[...outputs].map(([p,b])=>({path:p,sha256:hash(b)}))},null,2)+'\n');
 for(const[p,b]of outputs){const file=path.join(root,p);if(check)assert.deepEqual(readFileSync(file),Buffer.from(b),p);else{mkdirSync(path.dirname(file),{recursive:true});writeFileSync(file,b);}}
 console.log(`Market Host ${check?'checked':'generated'}: ${names.length} definitions; existing v2 content and private Native authority.`);

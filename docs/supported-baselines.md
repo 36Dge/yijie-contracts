@@ -412,3 +412,11 @@ FEAT-157 后续装配增加 `market-host/1` 与 `market-provider/1` 0.1.0 本地
 ## FEAT-158 third group: market catalog capacity candidate (2026-10-16)
 
 Market-connectors local family 0.4.0 raises only catalog/installation snapshot capacity 58→59; selection remains 58. Current increment baseline is `e35ae9a0711014e4774a1347413e9a343ce7ab2c`. Existing FEAT-157 fallback `1a213ac8383e95ac6ec69363937687904fa3591c`, FEAT-158 fallback `35e0949c95d7a59ca5480715c225766dcc822056`, published `f16a497e1377f45747f8ff9292b4b60cf2027f88` and both Native baselines remain supported comparison inputs. No tag/status promotion. Mixed old reader/new catalog is breaking and must not be deployed. See [capacity compatibility and known global-check blocker](market-connectors-v1.md#2026-10-16-tiktok-expert-dependency-59-entry-local-catalog).
+
+## FEAT-162 web retrieval and market capacity (2026-10-24)
+
+Independent unpublished `web-retrieval/1` 0.1.0 adds two normalized tools to one Kimi service. Market-connectors 0.6.0 expands capacity60→62; actual catalog becomes61 and old60 readers reject it, so the complete change is breaking. New readers accept60/61/62, reject63; per-turn selection stays58. No supported tag, Runtime change, database migration or production activation.
+
+Current pre-change fallback: `bedf4159b0fa22e24efe6c295f8b0d4845df56b7`. Also retain `e35ae9a0711014e4774a1347413e9a343ce7ab2c`, FEAT-157 `1a213ac8383e95ac6ec69363937687904fa3591c`, FEAT-158 `35e0949c95d7a59ca5480715c225766dcc822056`, published `f16a497e1377f45747f8ff9292b4b60cf2027f88`, Native `6f632f155eacdaf93df0e0b00b5dab9e369c5442` and `811f38d6b104fa18477107e7ac91a85e19c445d1`. Canonical sources, exact local digests and consumer conformance are required; working-tree digests do not imply immutable release provenance. See [web retrieval contract](web-retrieval-v1.md) and meta FEAT-162 verification for actual results and unexecuted checks.
+
+FEAT-162 follow-up local candidate: web-retrieval0.2.0, management0.7.0 and provider/broker0.6.0 replace manual Kimi configuration and /models probing with built-in model-key reuse and zero-HTTP local preparation. All listed baselines remain comparison inputs; no published support promotion. Current consumers must be upgraded together for this local semantic switch; historical connected/qualified cannot be interpreted as supplier verification.

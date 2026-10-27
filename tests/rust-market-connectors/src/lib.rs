@@ -11,6 +11,18 @@ mod tests {
         json!({"schemaVersion":1,"requestId":ID,"contextId":CONTEXT,"payload":payload})
     }
     #[test]
+    fn current_catalog_capacity_preserves_old_snapshots() {
+        let entry = json!({"serviceId":"synthetic-service","serverName":"synthetic-service","displayName":"Synthetic","categoryId":"productivity","categoryLabel":"Productivity","description":"","iconAssetId":"synthetic-service","transport":"http","authMode":"api_key","availability":"unverified","blockerCodes":[]});
+        for size in [60, 61, 62, 63] {
+            let catalog: Vec<_> = (0..size).map(|_| entry.clone()).collect();
+            let value = json!({"catalogRevision":10,"catalog":catalog,"installations":[],"capabilities":[],"executionAvailable":false});
+            assert_eq!(
+                serde_json::from_value::<Snapshot>(value).is_ok(),
+                size <= 62
+            );
+        }
+    }
+    #[test]
     fn required_context_and_positive_revision() {
         let mut value = envelope(
             json!({"installationId":ID,"operationId":CONTEXT,"expectedRevision":1,"desiredEnabled":false}),

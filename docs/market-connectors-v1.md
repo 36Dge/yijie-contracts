@@ -1,6 +1,6 @@
 # Market connectors v1 — FEAT-157 local candidate
 
-Owner: 段成威. Family version: `0.5.0` (current local capacity candidate). Status: unreleased local working-tree candidate, `release=false`. No immutable candidate SHA/tag, published SDK or external service qualification is claimed.
+Owner: 段成威. Family version: `0.7.0` (current local built-in credential candidate). Status: unreleased local working-tree candidate, `release=false`. No immutable candidate SHA/tag, published SDK or external service qualification is claimed.
 
 The new isolated family has `contract-impact=additive`: its source and generated modules are new paths and no old family, decoder, permission enumeration, generator or source pin is modified. FEAT-157 as a whole remains conservatively **breaking** because Native management/context semantics, persistent installation/selection records and later turn admission change. This source does not declare the overall feature compatible or complete.
 
@@ -131,3 +131,15 @@ This increment changes only `Snapshot.catalog` and `Snapshot.installations` maxi
 Impact remains **breaking** for new 60-entry producers with old 59-entry readers. Canonical generators and synchronization update all Desktop/Host/Connectors readers before catalog activation. New readers accept 58/59/60 snapshots; 61 entries remain rejected. No release or independent consumer approval is claimed. Rollback must retain compatible readers and all precise historical resources and bindings.
 
 The current source delta is measured against the retained pre-increment 0.4.0 working-tree source as well as commit `e35ae9a0711014e4774a1347413e9a343ce7ab2c`. Older global supported/fallback checks and the scheduled-plan-draft remote-reference blocker are reported separately from focused family conformance. See meta `docs/features/FEAT-158-desktop-experts/23-fourth-group-mannequin-integration.md` for current evidence, account-dependent NOT RUN items and public-image-only scope. No breaking gate has been weakened.
+
+## 2026-10-24 FEAT-162: capacity 62 and independent web retrieval
+
+Owner authorized two additional catalog slots. Unpublished family 0.6.0 changes only Snapshot catalog/installations maximum 60→62; actual catalog revision10 adds one `kimi-web` service with two tools, reaching61 entries. Existing selection maximum58, command shapes, enums, revisions, permissions and credential boundaries are unchanged. One free catalog slot does not authorize any additional service implementation.
+
+Impact is breaking in the new61/62 producer → old60 reader direction. Canonical JS/Go/Rust checks cover old60 and new61/62 acceptance and63 rejection. All five dependent source locks and Desktop/Host/Connectors readers must synchronize before catalog activation. New tool input/output is independently owned by [web-retrieval/1](web-retrieval-v1.md); no Runtime or old Broker error enum change.
+
+Current pre-change fallback is `bedf4159b0fa22e24efe6c295f8b0d4845df56b7`, with all previously registered supported/fallback/native references retained. Actual verification and known global-check blockers are reported in the FEAT-162 evidence, not converted into a PASS by focused checks. Rollback retains compatible readers and precise historical state; release/tag/production remain inactive.
+
+## 2026-10-24 Kimi automatic preparation
+
+Family 0.7.0 records the fixed built-in model-credential policy in x-native-ipc. Snapshot default installation/desired intent requires current connector read, manage and credentials.manage authority plus the models feature; read-only contexts do not mutate or start an additional owner. Existing Enable/Probe restoration prepares the local adapter with the current model-key snapshot, without supplier HTTP or a separate configuration step. Persisted desired/ready observations never substitute for current worker admission. Explicit disable/uninstall is preserved. No new command, table or Agent loop. Catalog revision11 retains61 services and maximum62; other connectors remain unchanged. See the meta FEAT-162 07 audit and 08 plan; current local checks do not establish production compatibility or a supplier account entitlement.

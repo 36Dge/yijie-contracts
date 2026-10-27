@@ -9,7 +9,7 @@ import {fileURLToPath} from "node:url";
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"..");
 const scratch=await fs.mkdtemp(path.join(os.tmpdir(),"yijie-native-process-codegen-"));
 try {
- for (const version of [3, 4]) {
+ for (const version of [3, 4, 5]) {
   const spec=`openapi/native-conversation-v${version}/native-conversation-v${version}.yaml`;
   const outputs=[[`sdks/typescript/src/openapi/native-conversation-v${version}.gen.ts`,"types.ts"],[`sdks/go/openapi/native-conversation-v${version}/client.gen.go`,"types.go"]];
   execFileSync("pnpm",["exec","openapi-typescript",spec,"--redocly","openapi-typescript.redocly.yaml","-o",path.join(scratch,"types.ts")],{cwd:root,stdio:"inherit"});

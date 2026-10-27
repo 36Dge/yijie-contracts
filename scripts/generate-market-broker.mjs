@@ -58,6 +58,11 @@ for(const[group,projection]of Object.entries(manifest.gateway_errors))for(const 
  rust+=`pub const ${name.replace(/([a-z0-9])([A-Z])/g,'$1_$2').toUpperCase()}:&str=${JSON.stringify(projection[field])};\n`;
  go+=`const ${name}=${JSON.stringify(projection[field])}\n`;
 }
+for(const[key,value]of Object.entries(manifest.kimi_model_credential)){
+ const name='KimiModelCredential'+key[0].toUpperCase()+key.slice(1);
+ rust+=`pub const ${name.replace(/([a-z0-9])([A-Z])/g,'$1_$2').toUpperCase()}:${typeof value==='number'?'usize':'&str'}=${JSON.stringify(value)};\n`;
+ go+=`const ${name}=${JSON.stringify(value)}\n`;
+}
 const outputs=new Map([
  ['sdks/rust/market-selection/portable.gen.rs',execFileSync('rustfmt',['--edition','2021'],{input:portableRust})],
  ['sdks/go/market-selection/snapshot.gen.go',execFileSync('gofmt',[],{input:banner+portableGo})],
