@@ -1,0 +1,11 @@
+# FEAT-164 existing display-format 5 reader authority
+
+Owner explicitly authorized fixing every D4 blocker on 2026-10-27. The observed daily store has nine format-5 and two format-4 views. The existing FEAT-164 candidate reads only 1–4; its coarse migration preflight incorrectly admitted 5. No saved view or original operation may be downgraded or rewritten to pass a reader check.
+
+`compatibility/native-display-archive-v5.json` freezes the reachable NativeItem display vocabulary of the existing local producer, with the exact source SHA. It is the only new consumer authority here. Owner/producer and consumer review is the current Owner's authorization plus the recorded Codex source review, not an invented independent review. The original dirty FEAT-163 files remain untouched. This file contains no private database envelope, actual history, credentials, samples from user data, live endpoint or SSE activation.
+
+Incremental contract impact: additive input vocabulary; downstream historical-read and preflight behavior is semantic. Current v1–v4 HTTP/SSE/runtime/schema sources are unchanged. The sole new consumer is Desktop's separate strict archive decoder and operator preflight. The active Runtime/Host protocol and format-4 writer remain unchanged; saved format 5 is only read and never written back as format 4. A version-5 file-change record can be displayed as an explicit historical file-change item through the existing bounded display adapter; it must not become an executable command or a fabricated assistant answer. Original data remains authoritative.
+
+Freeze this Contracts commit before Desktop pins and generates its decoder/validator. Do not import the FEAT-163 live process/replay implementation. Unknown versions remain unsupported, and submitted-but-unreadable history must show the incompatibility rather than queued work. Existing supported-baseline public surfaces and the fallback c5d138374c102f1a8a11e328a869ec8f91724efd retain identical bytes. No new published API/SDK/tag is claimed; this archive definition is consumed by the Desktop source generator, so public SDK generation is not applicable to this input-only artifact.
+
+Normal value checks: `node --test tests/native-display-archive-v5.test.mjs`. No fault injection, malicious archive, real data fixture, new model call or provider invocation is part of these tests.
