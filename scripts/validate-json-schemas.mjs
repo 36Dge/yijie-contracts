@@ -7,6 +7,7 @@ import { workflowValidators } from "./workflow-schema-validator.mjs";
 import { loadMarketSelectionSource, marketSelectionSourcePath } from "./market-selection-source.mjs";
 import { loadBrokerSource, brokerSourcePath } from "./market-broker-source.mjs";
 import { loadMarketHostSource, loadMarketProviderSource } from "./market-host-source.mjs";
+import { loadWebRetrievalSource, sourcePath as webRetrievalSourcePath } from "./web-retrieval-source.mjs";
 
 async function findSchemas(dir) {
   const files = [];
@@ -87,12 +88,15 @@ for (const family of [loadMarketHostSource(), loadMarketProviderSource()]) {
   ajv.addSchema(family.schema);
   documents.push({ file: family.manifest.wire_authority, schema: family.schema });
 }
+const webRetrievalSchema = loadWebRetrievalSource().schema;
+ajv.addSchema(webRetrievalSchema);
+documents.push({ file: webRetrievalSourcePath, schema: webRetrievalSchema });
 
 // Register all canonical sources before compilation so directory order is not
 // part of the contract. The workflow check above retains its existing authority.
 for (const { file, schema } of documents) {
   ajv.compile(schema);
-  if (file.startsWith("jsonschema/scheduled-tasks/") || file.startsWith("compatibility/market-")) {
+  if (file.startsWith("jsonschema/scheduled-tasks/") || file.startsWith("compatibility/market-") || file === webRetrievalSourcePath) {
     for (const name of Object.keys(schema.$defs ?? {})) {
       ajv.compile({ $ref: `${schema.$id}#/$defs/${name}` });
     }

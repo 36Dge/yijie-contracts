@@ -1,0 +1,11 @@
+[package]
+name = "yijie-web-retrieval-contract-conformance"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+serde = { version = "=1.0.228", features = ["derive"] }
+serde_json = "=1.0.150"
+# Same already-pinned URL parser used by the Connectors consumer.
+url = "=2.5.8"

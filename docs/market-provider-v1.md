@@ -16,6 +16,8 @@ OAuth 授权、连接、工具资格与用户启用是不同事实。probe 只�
 
 本地候选增加 `TushareDailyArguments` 和同源 `transport.json.tool_profile`，复用已有 Qualification/ProviderStatus/CallIdentity/ReviewProjection，不新增审批协议或 renderer 输入。契约影响为 semantic（既有 qualified/true 在严格受管 profile 下实现），新增工具输入为 additive；整个 FEAT-157 仍按 breaking 管理，未发布状态及版本不伪装为生产 pin。新产品构建明确 `tushare-daily-v1`；旧 `tushare-oauth-v1` 继续仅 OAuth/metadata，不能按旧 profile 自动打开金融调用。
 
+FEAT-162当前本地候选provider/broker 0.6.0：仅`kimi-web`复用客户端已有Kimi模型Key。Native默认意图与现有Enable恢复链调用Probe，worker只载入canonical descriptors并登记当前scope/binding的本地执行backend；不请求/models、远程tools/list、推理或Search/Fetch。connected/qualified仅表示本地调用支持，不表示供应商鉴权、权限、余额或结果已验证。Legacy Auth只保留本地绑定兼容，界面不再配置/启用；Key经Host拥有的单次匿名FD3快照提供，不进入第二份Keyring，Forget不删除模型Key。完整选集、逐次ask、一次HTTP准入与禁止自动重试保持。明确停用/卸载保留；旧consumer不可混用新语义。详见[工具契约](web-retrieval-v1.md)。
+
 只暴露易界工具 `tushare_daily`，映射上游精确 `daily`。输入只允许必填字符串 `ts_code`、`trade_date`：六位数字加 `.SH/.SZ/.BJ`，一个 0001–9999 年范围内的合法公历 YYYYMMDD（含闰年），额外字段和日期范围不允许。代码格式不证明该证券当前上市。`000001.SZ` / `20260105` 是首次验证样本，不是产品写死参数。Rust/Go 的 `TushareDailyArguments` 严格 validator、JSON Schema 和 `TUSHARE_DAILY_*` / `TushareDaily*` 常量都由同源生成；Gateway 应直接使用生成的 INPUT_SCHEMA_JSON，不能手写另一套输入规则。
 
 Probe 只实际 initialize/tools/list，并要求恰好一个 `daily`，其完整 inputSchema 在固定 serde_json 的排序对象序列化下 SHA-256 等于 `ec10409543d1ae690de2b5da5893a0e69387cdd5a398f976fb04d187fc632ae1`，且上游形状接受两字符串、不要求其他输入。剥离描述后的摘要不能代替完整摘要，名字/annotations/历史文件不能代替当前核验。其余已发现 253 工具均不暴露；摘要变动先关闭该资格，再进行新的源评审，不能自动跟随供应商变化。

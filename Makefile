@@ -19,7 +19,7 @@ runtime-kimi-k31-pro-check:
 generate: market-selection-generate market-broker-generate market-host-generate
 	pnpm generate
 
-lint: market-selection-check market-broker-check market-host-check
+lint: market-selection-check market-broker-check market-host-check web-retrieval-check
 	pnpm lint
 
 test: market-selection-test market-broker-test market-host-test
@@ -30,6 +30,17 @@ breaking:
 
 build: market-selection-check market-broker-check market-host-check
 	pnpm build
+
+# FEAT-162 focused canonical path. No legacy fixture generation or remote calls.
+.PHONY: web-retrieval-generate web-retrieval-check web-retrieval-test
+web-retrieval-generate:
+	node scripts/generate-web-retrieval.mjs
+web-retrieval-check:
+	node scripts/generate-web-retrieval.mjs --check
+web-retrieval-test:
+	node --test tests/web-retrieval.test.mjs
+	cargo test --offline --locked --manifest-path tests/rust-web-retrieval/Cargo.toml --target-dir /tmp/yijie-feat162-contracts-target
+	cargo clippy --offline --locked --manifest-path tests/rust-web-retrieval/Cargo.toml --target-dir /tmp/yijie-feat162-contracts-target --all-targets -- -D warnings
 
 # Isolated local candidate family. Keep the committed native Chat generator and
 # package manifest byte-identical to their immutable consumer pin.

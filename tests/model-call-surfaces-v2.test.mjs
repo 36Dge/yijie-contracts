@@ -32,3 +32,12 @@ test('selection and expert snapshot/knowledge digest vectors remain byte-identic
   const [family,name]=file.split('/');assert.deepEqual(readFileSync('fixtures/'+file),readFileSync(`fixtures/${family}-v2/${name}`));
  }
 });
+test('K3.1 market reader preserves the shared missing-credential error',()=>{
+  const schema=read('sdks/jsonschema/market-host-v2.schema.json');
+  const ajv=new Ajv({strict:true});addFormats(ajv);ajv.addSchema(schema);
+  const valid=ajv.compile({$ref:schema.$id+'#/$defs/ErrorCode'});
+  assert.equal(valid('not_configured'),true);
+  assert.equal(valid('unknown_credential_error'),false);
+ assert.equal(read('compatibility/market-host-v2/transport.json').contract_version,'0.5.0');
+ assert.equal(read('compatibility/experts-v2/transport.json').contract_version,'0.2.0');
+});

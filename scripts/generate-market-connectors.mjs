@@ -16,8 +16,10 @@ assert.ok(args.length === 0 || (args.length === 1 && args[0] === '--check'), 'On
 const check = args.includes('--check');
 const sourcePath = 'openapi/market-connectors/market-connectors.yaml';
 const spec = JSON.parse(readFileSync(path.join(root, sourcePath)));
-assert.equal(spec.info.version, '0.5.0');
+assert.equal(spec.info.version, '0.7.0');
 assert.deepEqual(spec.paths, {});
+const builtin=spec['x-native-ipc'].builtinModelCredentialPolicy;
+assert.equal(builtin.serviceId,'kimi-web');assert.equal(builtin.defaultDesiredEnabled,true);assert.equal(builtin.supplierHttpDuringPreparation,false);assert.equal(builtin.respectDisableAndUninstall,true);assert.deepEqual(builtin.requiredPermissions,['connector.manage','connector.credentials.manage']);
 const defs = spec.components.schemas;
 const entries = Object.entries(defs);
 const pascal = s => s.split(/[_.-]/).map(w => w[0].toUpperCase() + w.slice(1)).join('');
@@ -42,6 +44,9 @@ let ts = banner + `export const CONNECTOR_CAPABILITIES = ${q(permissions)} as co
 let rust = banner + `use serde::{Serialize, Deserialize};\nfn optional_non_null<'de,D,T>(d:D)->Result<Option<T>,D::Error> where D:serde::Deserializer<'de>,T:Deserialize<'de>{T::deserialize(d).map(Some)}\nfn canonical_id(s:&str)->bool{let b=s.as_bytes();b.len()==36 && s!="00000000-0000-0000-0000-000000000000" && b.iter().enumerate().all(|(i,c)| if [8,13,18,23].contains(&i){*c==b'-'}else{c.is_ascii_digit()||(*c>=b'a'&&*c<=b'f')})}\nfn catalog_identifier(s:&str)->bool{let b=s.as_bytes();!b.is_empty() && b[0].is_ascii_alphanumeric() && b.iter().all(|c| c.is_ascii_alphanumeric() || *c==b'_' || *c==b'-')}\npub const CONNECTOR_CAPABILITIES: [&str; 4] = [${permissions.map(q).join(',')}];\n`;
 let go = banner + 'package marketconnectors\nimport("bytes";"encoding/json";"errors";"io";"regexp";"unicode/utf8")\n';
 go += `var ConnectorCapabilities = []Permission{${permissions.map(v => 'Permission'+pascal(v)).join(',')}}\n`;
+ts+=`export const BUILTIN_MODEL_SERVICE_ID = ${q(builtin.serviceId)} as const;\n`;
+rust+=`pub const BUILTIN_MODEL_SERVICE_ID: &str = ${q(builtin.serviceId)};\n`;
+go+=`const BuiltinModelServiceID = ${q(builtin.serviceId)}\n`;
 let patternIndex=0;
 const patterns=new Map();
 for (const [,s] of entries) if(s.pattern && !patterns.has(s.pattern))patterns.set(s.pattern, `pattern${patternIndex++}`);
