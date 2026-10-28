@@ -6,8 +6,8 @@
  */
 
 /**
- * FEAT-159 local negotiated artifact media. Existing v3–v8 sources unchanged.
+ * FEAT-165 file formats. Explicit v12 subscription; v9 remains unchanged. Existing v3 byte transport and ACK.
  */
-export interface ArtifactMediaV1 {
+export interface ArtifactMediaV2 {
   [k: string]: unknown;
 }

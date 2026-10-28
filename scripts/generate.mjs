@@ -248,6 +248,29 @@ if (process.argv.includes("--runtime-permissions-only")) {
   process.exit(0);
 }
 
+// FEAT-165 source-first generation. Do not visit unrelated schema families or
+// remove SDK trees: the historical full generator cannot resolve every new $id.
+if (process.argv.includes("--artifact-files-only")) {
+  for (const [name, pkg] of [["agent-host", "agenthostapi"], ["runtime-permissions", "runtimepermissions"]]) {
+    const spec = `openapi/${name}/${name}.yaml`;
+    const out = `sdks/go/openapi/${name}`;
+    await mkdir(path.join(root, out), {recursive:true});
+    await run("pnpm", ["exec", "openapi-typescript", spec, "--redocly", "openapi-typescript.redocly.yaml", "-o", `sdks/typescript/src/openapi/${name}.gen.ts`]);
+    let goSpec = spec;
+    if (name === "runtime-permissions") {
+      goSpec = `${out}/source.bundle.yaml`;
+      await run("pnpm", ["exec", "redocly", "bundle", spec, "--output", goSpec]);
+    }
+    await run("go", ["tool", "oapi-codegen", "-generate", "types,client", "-package", pkg, "-o", `${out}/client.gen.go`, goSpec]);
+    if (name === "agent-host") await preserveAgentHostGoCompatibility(path.join(root, `${out}/client.gen.go`));
+    await run("gofmt", ["-w", `${out}/client.gen.go`]);
+  }
+  const message = JSON.parse(await readFile(path.join(root, "jsonschema/chat/message.schema.json"), "utf8"));
+  await writeFile(path.join(root,"sdks/typescript/src/jsonschema/chat-message.gen.ts"), await compile(message,message.title,{bannerComment:"/* Generated from JSON Schema. Do not edit by hand. */",additionalProperties:false,format:false}));
+  for (const generator of ["generate-artifact-media.mjs", "generate-market-selection.mjs", "generate-market-broker.mjs", "generate-market-host.mjs", "generate-experts.mjs", "generate-chat-models-v2.mjs", "generate-market-selection-v2.mjs", "generate-market-host-v2.mjs", "generate-experts-v2.mjs"]) await run("node", [`scripts/${generator}`]);
+  process.exit(0);
+}
+
 if (!process.argv.includes("--skip-skill-fixture-generation")) {
   await run("node", ["scripts/generate-skill-bundle-fixtures.mjs"]);
 }
@@ -340,6 +363,7 @@ for (const { relativePath, schema } of schemas) {
     }),
   );
   if (
+    outputName === "artifact-media-v2" ||
     outputName === "agent-session-event-v2" ||
     outputName === "agent-session-event-v3" ||
     outputName === "agent-session-event-v4" ||
@@ -355,6 +379,7 @@ for (const { relativePath, schema } of schemas) {
     // Namespace exports keep additions from making the existing root SDK
     // exports ambiguous or forcing wire concepts to be renamed for TypeScript.
     const namespace = {
+      "artifact-media-v2": "ArtifactMediaSchemaV2",
       "agent-session-event-v2": "AgentSessionEventSchemaV2",
       "agent-session-event-v3": "AgentSessionEventSchemaV3",
       "agent-session-event-v4": "AgentSessionEventSchemaV4",

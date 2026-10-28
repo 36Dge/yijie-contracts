@@ -5,7 +5,7 @@
  */
 export type SafeDisplayName = string
 export type BoundAttachmentStatus = ("bound" | "expired")
-export type FileMediaType = ("application/pdf" | "text/plain" | "text/markdown" | "text/csv" | "application/json" | "application/yaml" | "application/xml" | "text/html" | "application/rtf" | "application/vnd.openxmlformats-officedocument.wordprocessingml.document" | "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" | "application/vnd.openxmlformats-officedocument.presentationml.presentation")
+export type FileMediaType = ("application/pdf" | "text/plain" | "text/markdown" | "text/csv" | "application/json" | "application/yaml" | "application/xml" | "text/html" | "application/rtf" | "application/vnd.openxmlformats-officedocument.wordprocessingml.document" | "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" | "application/vnd.openxmlformats-officedocument.presentationml.presentation" | "image/svg+xml" | "video/mp4")
 
 export interface ChatMessage {
 id: string

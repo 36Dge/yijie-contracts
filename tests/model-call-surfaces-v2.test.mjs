@@ -19,7 +19,7 @@ for(const family of ['market-selection','market-host','experts']){
    if(Array.isArray(v))return v.map(x=>expand(x,defs));
    if(!v||typeof v!=='object')return v;
    if(v.$ref)return expand(defs[v.$ref.split('/').at(-1)],defs);
-   return Object.fromEntries(Object.entries(v).filter(([k])=>k!=='description').map(([k,x])=>[k,k==='enum'?x.filter(y=>y!=='kimi-k3-1-pro-max-v1'):expand(x,defs)]));
+   return Object.fromEntries(Object.entries(v).filter(([k])=>k!=='description').map(([k,x])=>[k,k==='enum'?x.filter(y=>y!=='kimi-k3-1-pro-max-v1'&&(!(x.includes('application/pdf')&&x.includes('text/plain'))||!['image/svg+xml','video/mp4'].includes(y))):expand(x,defs)]));
   };
   for(const [name,value] of Object.entries(old.$defs)){
    if(name==='ProfileId')continue;
