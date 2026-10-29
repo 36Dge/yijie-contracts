@@ -1,3 +1,4 @@
+import {existsSync} from 'node:fs';
 import assert from 'node:assert/strict';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
@@ -66,7 +67,7 @@ const outputs = new Map([
 ]);
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const lockPath='compatibility/artifact-media/source.lock.json';
-const base=check?JSON.parse(read(lockPath)).base_commit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
+const base=existsSync(path.join(root,lockPath))?JSON.parse(read(lockPath)).base_commit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
 outputs.set(lockPath,JSON.stringify({schema_version:1,mode:'local_candidate',release:false,base_commit:base,sources:[sourcePath,legacySourcePath,'jsonschema/agent/session-event-v3.schema.json','scripts/generate-artifact-media.mjs'].map(path=>({path,sha256:sha(read(path))})),generated:[...outputs].map(([path,bytes])=>({path,sha256:sha(bytes)}))},null,2)+'\n');
 for(const [file,bytes] of outputs) { const target=path.join(root,file);if(check)assert.deepEqual(readFileSync(target),Buffer.from(bytes),file);else{mkdirSync(path.dirname(target),{recursive:true});writeFileSync(target,bytes);} }
 const consumer=process.argv.find(x=>x.startsWith('--consumer='))?.split('=')[1];

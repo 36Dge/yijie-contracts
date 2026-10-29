@@ -32,7 +32,7 @@
     },
     {
       "path": "compatibility/market-broker-control/wire.schema.json",
-      "sha256": "f6aa66d748a925a3c34be53237d2f539ad5fd1c493a920748c34f1de7a341fdf"
+      "sha256": "614b37f68d13ce80f0a2f17573084507c11f888d283c092544bd84d6540c6c6f"
     },
     {
       "path": "compatibility/market-selection/wire.schema.json",
@@ -44,7 +44,7 @@
     },
     {
       "path": "compatibility/market-host/wire.schema.json",
-      "sha256": "94d6482240876452d5aee37c03d12af2cf4ab53f865293d181eb62af1134c5b0"
+      "sha256": "a31ec38d7fd35e3bf6f74b7b8e915df55be1942f78f939f99ddbf09a2173646c"
     },
     {
       "path": "jsonschema/chat/model-selection-v1.schema.json",

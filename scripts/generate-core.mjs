@@ -1,0 +1,349 @@
+import { execFile } from "node:child_process";
+import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { promisify } from "node:util";
+import { compile } from "json-schema-to-typescript";
+
+const exec = promisify(execFile);
+const root = process.cwd();
+
+async function run(command, args) {
+  const { stdout, stderr } = await exec(command, args, { cwd: root });
+  if (stdout) process.stdout.write(stdout);
+  if (stderr) process.stderr.write(stderr);
+}
+
+async function collectJsonSchemas(dir) {
+  const entries = await readdir(dir, { withFileTypes: true });
+  const schemas = [];
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      schemas.push(...(await collectJsonSchemas(fullPath)));
+    } else if (entry.name.endsWith(".json")) {
+      schemas.push({
+        fullPath,
+        relativePath: path.relative(path.join(root, "jsonschema"), fullPath),
+        schema: JSON.parse(await readFile(fullPath, "utf8")),
+      });
+    }
+  }
+  return schemas.sort((a, b) => a.relativePath.localeCompare(b.relativePath));
+}
+
+function splitAgentHostGoV6Interface(source, legacyName, extensionName) {
+  const declaration = `type ${legacyName} interface {`;
+  const start = source.indexOf(declaration);
+  if (start < 0) throw new Error(`missing generated ${legacyName}`);
+  const bodyStart = start + declaration.length;
+  const end = source.indexOf("\n}\n", bodyStart);
+  if (end < 0) throw new Error(`unterminated generated ${legacyName}`);
+  const groups = source
+    .slice(bodyStart, end)
+    .split("\n\n")
+    .map((group) => group.replace(/^\n+|\n+$/g, ""))
+    .filter(Boolean);
+  const v6Groups = groups.filter((group) => group.includes("V6"));
+  const legacyGroups = groups.filter((group) => !group.includes("V6"));
+  const v6MethodCount = v6Groups
+    .flatMap((group) => group.split("\n"))
+    .map((line) => line.trim())
+    .filter((line) => /^[A-Z]/.test(line) && line.includes("(")).length;
+  if (v6MethodCount !== 4) {
+    throw new Error(`expected four FEAT-137 methods in generated ${legacyName}, found ${v6MethodCount}`);
+  }
+  const replacement = [
+    declaration,
+    legacyGroups.join("\n\n"),
+    "}",
+    "",
+    `// ${extensionName} is the opt-in FEAT-137 v6 extension. The legacy ${legacyName}`,
+    "// intentionally remains source-compatible for existing mocks and adapters.",
+    `type ${extensionName} interface {`,
+    `\t${legacyName}`,
+    "",
+    v6Groups.join("\n\n"),
+    "}",
+    "",
+  ].join("\n");
+  return source.slice(0, start) + replacement + source.slice(end + 3);
+}
+
+function addAgentHostGoV6ResponseClient(source) {
+  const marker = "\n// WithBaseURL overrides the baseURL.";
+  if (!source.includes(marker)) throw new Error("missing Agent Host response-client insertion point");
+  const responseClient = `
+// ClientWithResponsesV6 is the opt-in FEAT-137 response wrapper. It promotes
+// every legacy response method without widening ClientWithResponses.
+type ClientWithResponsesV6 struct {
+\t*ClientWithResponses
+\tv6 ClientV6Interface
+}
+
+// NewClientWithResponsesV6 creates the opt-in FEAT-137 response wrapper.
+func NewClientWithResponsesV6(server string, opts ...ClientOption) (*ClientWithResponsesV6, error) {
+\tclient, err := NewClient(server, opts...)
+\tif err != nil {
+\t\treturn nil, err
+\t}
+\treturn WithResponsesV6(client), nil
+}
+
+// WithResponsesV6 wraps an implementation of the opt-in FEAT-137 client interface.
+func WithResponsesV6(client ClientV6Interface) *ClientWithResponsesV6 {
+\treturn &ClientWithResponsesV6{
+\t\tClientWithResponses: &ClientWithResponses{ClientInterface: client},
+\t\tv6:                  client,
+\t}
+}
+`;
+  let compatible = source.replace(marker, `\n${responseClient}${marker}`);
+  const methods = [
+    ["GetPendingAgentApprovalsV6WithResponse", "GetPendingAgentApprovalsV6"],
+    ["DecideAgentApprovalV6WithBodyWithResponse", "DecideAgentApprovalV6WithBody"],
+    ["DecideAgentApprovalV6WithResponse", "DecideAgentApprovalV6"],
+    ["StreamAgentSessionEventsV6WithResponse", "StreamAgentSessionEventsV6"],
+  ];
+  for (const [responseMethod, rawMethod] of methods) {
+    const receiver = `func (c *ClientWithResponses) ${responseMethod}(`;
+    const v6Receiver = `func (c *ClientWithResponsesV6) ${responseMethod}(`;
+    const call = `\trsp, err := c.${rawMethod}(`;
+    const v6Call = `\trsp, err := c.v6.${rawMethod}(`;
+    if (!compatible.includes(receiver) || !compatible.includes(call)) {
+      throw new Error(`missing generated FEAT-137 response method ${responseMethod}`);
+    }
+    compatible = compatible.replace(receiver, v6Receiver).replace(call, v6Call);
+  }
+  return `${compatible}
+var (
+\t_ ClientInterface                = (*Client)(nil)
+\t_ ClientV6Interface              = (*Client)(nil)
+\t_ ClientWithResponsesInterface   = (*ClientWithResponses)(nil)
+\t_ ClientWithResponsesV6Interface = (*ClientWithResponsesV6)(nil)
+)
+`;
+}
+
+async function preserveAgentHostGoCompatibility(goOutput) {
+  const generated = await readFile(goOutput, "utf8");
+  const typeName = "StreamAgentSessionEventsV2ParamsEventSchemaVersion";
+  const stableName = `${typeName}N2`;
+  const unstableDeclaration = `\tN2 ${typeName} = 2`;
+  const stableDeclaration = `\t${stableName} ${typeName} = 2`;
+  let compatible = generated;
+  if (compatible.includes(unstableDeclaration) && compatible.includes("\tcase N2:")) {
+    compatible = compatible
+      .replace(unstableDeclaration, stableDeclaration)
+      .replace("\tcase N2:", `\tcase ${stableName}:`);
+  } else if (!compatible.includes(stableDeclaration)) {
+    throw new Error(`cannot preserve the published Agent Host Go enum symbol in ${goOutput}`);
+  }
+  compatible = splitAgentHostGoV6Interface(
+    compatible,
+    "ClientInterface",
+    "ClientV6Interface",
+  );
+  compatible = splitAgentHostGoV6Interface(
+    compatible,
+    "ClientWithResponsesInterface",
+    "ClientWithResponsesV6Interface",
+  );
+  compatible = addAgentHostGoV6ResponseClient(compatible);
+  await writeFile(goOutput, compatible);
+}
+
+// The new status endpoint is opt-in. Keep existing native history client mocks
+// and ClientWithResponses initializers source-compatible, as for the v6 family.
+async function preserveNativeThreadStatusGoCompatibility(goOutput) {
+  let source = await readFile(goOutput, "utf8");
+  for (const [legacy, extension] of [
+    ["ClientInterface", "ClientThreadStatusInterface"],
+    ["ClientWithResponsesInterface", "ClientWithThreadStatusResponsesInterface"],
+  ]) {
+    const declaration = `type ${legacy} interface {`;
+    const start = source.indexOf(declaration);
+    const end = source.indexOf("\n}\n", start);
+    if (start < 0 || end < 0) throw new Error(`Missing native ${legacy}`);
+    const groups = source.slice(start + declaration.length, end).trim().split("\n\n");
+    const added = groups.filter(group => group.includes("ReadNativeThreadStatus"));
+    if (added.length !== 1) throw new Error(`Expected one native status method in ${legacy}`);
+    source = source.slice(0, start) + [
+      declaration, groups.filter(group => !group.includes("ReadNativeThreadStatus")).join("\n\n"), "}", "",
+      `// ${extension} adds the opt-in current-status endpoint without widening ${legacy}.`,
+      `type ${extension} interface {`, `\t${legacy}`, "", added[0], "}", "",
+    ].join("\n") + source.slice(end + 3);
+  }
+  const marker = "\n// WithBaseURL overrides the baseURL.";
+  const receiver = "func (c *ClientWithResponses) ReadNativeThreadStatusWithResponse(";
+  const call = "\trsp, err := c.ReadNativeThreadStatus(";
+  if (!source.includes(marker) || !source.includes(receiver) || !source.includes(call)) {
+    throw new Error("Missing native status response-client insertion points");
+  }
+  source = source.replace(marker, `
+// ClientWithThreadStatusResponses explicitly opts into current native status reads.
+type ClientWithThreadStatusResponses struct {
+\t*ClientWithResponses
+\tstatus ClientThreadStatusInterface
+}
+
+// NewClientWithThreadStatusResponses creates the opt-in response wrapper.
+func NewClientWithThreadStatusResponses(server string, opts ...ClientOption) (*ClientWithThreadStatusResponses, error) {
+\tclient, err := NewClient(server, opts...)
+\tif err != nil { return nil, err }
+\treturn WithThreadStatusResponses(client), nil
+}
+
+// WithThreadStatusResponses wraps a client that supports the new status endpoint.
+func WithThreadStatusResponses(client ClientThreadStatusInterface) *ClientWithThreadStatusResponses {
+\treturn &ClientWithThreadStatusResponses{ClientWithResponses: &ClientWithResponses{ClientInterface: client}, status: client}
+}
+${marker}`)
+    .replace(receiver, "func (c *ClientWithThreadStatusResponses) ReadNativeThreadStatusWithResponse(")
+    .replace(call, "\trsp, err := c.status.ReadNativeThreadStatus(");
+  source += `
+var (
+\t_ ClientInterface = (*Client)(nil)
+\t_ ClientThreadStatusInterface = (*Client)(nil)
+\t_ ClientWithResponsesInterface = (*ClientWithResponses)(nil)
+\t_ ClientWithThreadStatusResponsesInterface = (*ClientWithThreadStatusResponses)(nil)
+)
+`;
+  await writeFile(goOutput, source);
+  await run("gofmt", ["-w", goOutput]);
+}
+
+// FEAT-144 source-first generation never visits historical archive fixtures.
+if (process.argv.includes("--native-mcp-only")) {
+  for (const [name, pkg] of [["native-conversation-v2", "nativeconversationv2"], ["runtime-permissions-v2", "runtimepermissionsv2"]]) {
+    const spec = `openapi/${name}/${name}.yaml`;
+    const out = `sdks/go/openapi/${name}`;
+    await mkdir(path.join(root, out), {recursive: true});
+    await run("pnpm", ["exec", "openapi-typescript", spec, "--redocly", "openapi-typescript.redocly.yaml", "-o", `sdks/typescript/src/openapi/${name}.gen.ts`]);
+    await run("go", ["tool", "oapi-codegen", "-generate", "types,client,skip-prune", "-package", pkg, "-o", `${out}/client.gen.go`, spec]);
+    if (name === "native-conversation-v2") await preserveNativeThreadStatusGoCompatibility(path.join(root, out, "client.gen.go"));
+  }
+  process.exit(0);
+}
+
+// Focused FEAT-132 generation never visits unrelated legacy fixture families.
+if (process.argv.includes("--native-conversation-only")) {
+  const spec = "openapi/native-conversation/native-conversation.yaml";
+  const out = "sdks/go/openapi/native-conversation";
+  await mkdir(path.join(root, out), { recursive: true });
+  await mkdir(path.join(root, "sdks/typescript/src/openapi"), { recursive: true });
+  await run("pnpm", ["exec", "openapi-typescript", spec, "--redocly", "openapi-typescript.redocly.yaml", "-o", "sdks/typescript/src/openapi/native-conversation.gen.ts"]);
+  await run("go", ["tool", "oapi-codegen", "-generate", "types,client,skip-prune", "-package", "nativeconversation", "-o", `${out}/client.gen.go`, spec]);
+  process.exit(0);
+}
+
+// Focused local FEAT-152 generation avoids unrelated legacy fixture families.
+if (process.argv.includes("--runtime-permissions-only")) {
+  const spec = "openapi/runtime-permissions/runtime-permissions.yaml";
+  const out = "sdks/go/openapi/runtime-permissions";
+  await mkdir(path.join(root, out), { recursive: true });
+  await mkdir(path.join(root, "sdks/typescript/src/openapi"), { recursive: true });
+  await run("pnpm", ["exec", "openapi-typescript", spec, "--redocly", "openapi-typescript.redocly.yaml", "-o", "sdks/typescript/src/openapi/runtime-permissions.gen.ts"]);
+  await run("pnpm", ["exec", "redocly", "bundle", spec, "--output", `${out}/source.bundle.yaml`]);
+  await run("go", ["tool", "oapi-codegen", "-generate", "types,client", "-package", "runtimepermissions", "-o", `${out}/client.gen.go`, `${out}/source.bundle.yaml`]);
+  process.exit(0);
+}
+
+// FEAT-165 source-first generation. Do not visit unrelated schema families or
+// remove SDK trees: the historical full generator cannot resolve every new $id.
+if (process.argv.includes("--artifact-files-only")) {
+  for (const [name, pkg] of [["agent-host", "agenthostapi"], ["runtime-permissions", "runtimepermissions"]]) {
+    const spec = `openapi/${name}/${name}.yaml`;
+    const out = `sdks/go/openapi/${name}`;
+    await mkdir(path.join(root, out), {recursive:true});
+    await run("pnpm", ["exec", "openapi-typescript", spec, "--redocly", "openapi-typescript.redocly.yaml", "-o", `sdks/typescript/src/openapi/${name}.gen.ts`]);
+    let goSpec = spec;
+    if (name === "runtime-permissions") {
+      goSpec = `${out}/source.bundle.yaml`;
+      await run("pnpm", ["exec", "redocly", "bundle", spec, "--output", goSpec]);
+    }
+    await run("go", ["tool", "oapi-codegen", "-generate", "types,client", "-package", pkg, "-o", `${out}/client.gen.go`, goSpec]);
+    if (name === "agent-host") await preserveAgentHostGoCompatibility(path.join(root, `${out}/client.gen.go`));
+    await run("gofmt", ["-w", `${out}/client.gen.go`]);
+  }
+  const message = JSON.parse(await readFile(path.join(root, "jsonschema/chat/message.schema.json"), "utf8"));
+  await writeFile(path.join(root,"sdks/typescript/src/jsonschema/chat-message.gen.ts"), await compile(message,message.title,{bannerComment:"/* Generated from JSON Schema. Do not edit by hand. */",additionalProperties:false,format:false}));
+
+  process.exit(0);
+}
+
+const openapiSpecs = [
+  ["public", "publicapi", "openapi/public/public.yaml"],
+  ["admin", "adminapi", "openapi/admin/admin.yaml"],
+  ["internal", "internalapi", "openapi/internal/internal.yaml"],
+  ["agent-host", "agenthostapi", "openapi/agent-host/agent-host.yaml"],
+  ["runtime-permissions", "runtimepermissions", "openapi/runtime-permissions/runtime-permissions.yaml"],
+  ["native-conversation", "nativeconversation", "openapi/native-conversation/native-conversation.yaml"],
+  ["native-conversation-v2", "nativeconversationv2", "openapi/native-conversation-v2/native-conversation-v2.yaml"],
+  ["runtime-permissions-v2", "runtimepermissionsv2", "openapi/runtime-permissions-v2/runtime-permissions-v2.yaml"],
+];
+
+for (const [name, goPackage, spec] of openapiSpecs) {
+  const tsOutput = `sdks/typescript/src/openapi/${name}.gen.ts`;
+  const goOutput = `sdks/go/openapi/${name}/client.gen.go`;
+  await mkdir(path.dirname(path.join(root, tsOutput)), { recursive: true });
+  await mkdir(path.dirname(path.join(root, goOutput)), { recursive: true });
+  await run("pnpm", [
+    "exec",
+    "openapi-typescript",
+    spec,
+    "--redocly",
+    "openapi-typescript.redocly.yaml",
+    "-o",
+    tsOutput,
+  ]);
+  let goSpec = spec;
+  if (name === "runtime-permissions") {
+    goSpec = "sdks/go/openapi/runtime-permissions/source.bundle.yaml";
+    await run("pnpm", ["exec", "redocly", "bundle", spec, "--output", goSpec]);
+  }
+  await run("go", [
+    "tool",
+    "oapi-codegen",
+    "-generate",
+    name.startsWith("native-conversation") || name === "runtime-permissions-v2" ? "types,client,skip-prune" : "types,client",
+    "-package",
+    goPackage,
+    "-o",
+    goOutput,
+    goSpec,
+  ]);
+  if (name === "agent-host") {
+    // Preserve the published v2 enum identifier and keep legacy client interfaces
+    // source-compatible while exposing v6 through explicit extension interfaces.
+    await preserveAgentHostGoCompatibility(path.join(root, goOutput));
+    await run("gofmt", ["-w", goOutput]);
+  }
+  if (name === "native-conversation-v2") await preserveNativeThreadStatusGoCompatibility(path.join(root, goOutput));
+}
+
+await run("pnpm", ["exec", "buf", "generate"]);
+
+await mkdir(path.join(root, "sdks/asyncapi"), { recursive: true });
+await run("pnpm", [
+  "exec",
+  "redocly",
+  "bundle",
+  "asyncapi/events.yaml",
+  "--output",
+  "sdks/asyncapi/events.bundle.json",
+]);
+
+// The public entrypoint is an explicit compatibility surface, not every schema.
+const exports = JSON.parse(await readFile(path.join(root, "scripts/sdk-exports.json"), "utf8"));
+const genericNames = new Set(exports.filter(line => line.includes('jsonschema/') && !line.includes('WorkflowEditorBridge')).map(line => line.match(/jsonschema\/([^"/]+)\.gen\.js/)[1]));
+const schemas = (await collectJsonSchemas(path.join(root, "jsonschema"))).filter(({relativePath}) => genericNames.has(relativePath.replace(/\.schema\.json$/, "").replaceAll(path.sep, "-")));
+if (schemas.length !== genericNames.size) throw Error("Missing generic SDK source");
+for (const { relativePath, schema } of schemas) {
+ const outputName = relativePath.replace(/\.schema\.json$/, "").replaceAll(path.sep, "-");
+ await writeFile(path.join(root, "sdks/typescript/src/jsonschema", `${outputName}.gen.ts`), await compile(schema, schema.title, {
+  bannerComment: "/* Generated from JSON Schema. Do not edit by hand. */", additionalProperties: false, format: false,
+  $refOptions: {resolve: {http: false}},
+ }));
+}
+await writeFile(path.join(root, "sdks/typescript/src/index.ts"), ["/* Generated SDK entrypoint. Do not edit by hand. */", ...exports, ""].join("\n"));
+console.log(`Generated core APIs, Protobuf, AsyncAPI and ${schemas.length} legacy JSON Schema SDKs.`);

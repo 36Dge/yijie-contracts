@@ -1,3 +1,4 @@
+import {existsSync} from 'node:fs';
 import assert from 'node:assert/strict';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
@@ -52,7 +53,7 @@ const out=new Map([
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const sources=[sourcePath,'scripts/generate-chat-models.mjs','openapi/chat-models/chat-models.yaml'];
 const lockPath='compatibility/chat-models/source.lock.json';
-const base=check?JSON.parse(readFileSync(path.join(root,lockPath))).base_commit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
+const base=existsSync(path.join(root,lockPath))?JSON.parse(readFileSync(path.join(root,lockPath))).base_commit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
 out.set(lockPath,JSON.stringify({schema_version:1,contract_version:'0.1.0',mode:'local_worktree_candidate',release:false,base_commit:base,sources:sources.map(p=>({path:p,sha256:hash(readFileSync(path.join(root,p)))})),generated:[...out].map(([p,b])=>({path:p,sha256:hash(b)}))},null,2)+'\n');
 for(const [p,b]of out){let f=path.join(root,p);if(check)assert.deepEqual(readFileSync(f),Buffer.from(b),p);else{mkdirSync(path.dirname(f),{recursive:true});writeFileSync(f,b);}}
 console.log('Chat models source generation '+(check?'verified':'complete')+'; unreleased local candidate.');

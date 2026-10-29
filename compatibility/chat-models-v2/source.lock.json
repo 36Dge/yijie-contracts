@@ -31,7 +31,7 @@
     },
     {
       "path": "scripts/generate-chat-models-v2.mjs",
-      "sha256": "46806979daed97b68afc6706df13dbd58a54e6c0b6e81c593c23bca357aa7880"
+      "sha256": "9e8e320e11cca6411384ead93a515ddf7067657a2757cd5398dcb7339814824b"
     }
   ],
   "generated": [

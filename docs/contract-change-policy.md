@@ -95,6 +95,10 @@ make test
 commit，只要求计划版本、检查和评审；后者才要求最终完整 commit/tag、下游 pin、
 conformance 和 rollout 证据。
 
+### 4.4 本地权威引用解析
+
+OpenAPI breaking检查分别从固定基线与当前工作树解析自有schema URI，只在临时比较输入中改写引用位置，不能下载远端兜底或用当前schema填补旧树。原约束保持、引用闭合和失败退出由[离线比较说明](offline-breaking-checks.md)约束；不得为了消除EOF删除引用/分支或降低错误级别。
+
 ## 5. 方向性兼容矩阵
 
 | 变化 | 可能失败的旧端 | 必须的发布顺序 |

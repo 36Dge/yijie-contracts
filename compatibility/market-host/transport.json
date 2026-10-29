@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "contract_id": "market-host/1",
-  "contract_version": "0.3.0",
+  "contract_version": "0.4.0",
   "wire_authority": "compatibility/market-host/wire.schema.json",
   "control_transport": "native_owned_stdio_jsonl",
   "commands": [

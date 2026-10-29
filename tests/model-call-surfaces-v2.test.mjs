@@ -38,6 +38,6 @@ test('K3.1 market reader preserves the shared missing-credential error',()=>{
   const valid=ajv.compile({$ref:schema.$id+'#/$defs/ErrorCode'});
   assert.equal(valid('not_configured'),true);
   assert.equal(valid('unknown_credential_error'),false);
- assert.equal(read('compatibility/market-host-v2/transport.json').contract_version,'0.5.0');
+ assert.equal(read('compatibility/market-host-v2/transport.json').contract_version,'0.6.0');
  assert.equal(read('compatibility/experts-v2/transport.json').contract_version,'0.2.0');
 });

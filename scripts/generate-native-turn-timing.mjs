@@ -1,3 +1,4 @@
+import {existsSync} from 'node:fs';
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
@@ -88,7 +89,7 @@ for(const name of ['ThreadReadResponse','TurnStartedNotification','TurnCompleted
  runtime[file]=sha(bytes);
 }
 const lockPath='compatibility/native-turn-timing/source.lock.json';
-const base=check?JSON.parse(read(lockPath)).base_commit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
+const base=existsSync(path.join(root,lockPath))?JSON.parse(read(lockPath)).base_commit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
 execFileSync('git',['cat-file','-e',`${base}^{commit}`],{cwd:root});
 const sources=[source,'scripts/generate-native-turn-timing.mjs','scripts/sync-native-turn-timing.mjs', 'scripts/scheduled-consumer-source.mjs','go.mod','go.sum','package.json','pnpm-lock.yaml'];
 const lock={schema_version:1,contract_version:spec.info.version,mode:'local_candidate',release:false,repository:'https://github.com/36Dge/yijie-contracts.git',base_commit:base,

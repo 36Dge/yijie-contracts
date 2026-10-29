@@ -9,3 +9,4 @@ coverage/
 *.log
 # FEAT-157 local Rust conformance build output.
 /tests/rust-market-*/target/
+/tests/rust-web-retrieval/target/

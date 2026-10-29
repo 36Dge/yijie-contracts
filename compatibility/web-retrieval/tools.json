@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "contract_id": "web-retrieval/1",
-  "contract_version": "0.2.0",
+  "contract_version": "0.3.0",
   "feature": "FEAT-162",
   "service_id": "kimi-web",
   "wire_authority": "compatibility/web-retrieval/wire.schema.json",
   "tools": [
     {
       "name": "kimi_web_search",
-      "description": "按查询词获取网页标题、URL和摘要的结构化列表。需要结构化搜索结果时使用；一般联网回答可使用原生搜索。只读但按次计费，每次需要批准，不自动重试。",
+      "description": "用于展示网页标题、摘要、链接列表或找官网，默认include_content=false；用户明确采集正文供自行加工时才用true。选中本连接器的普通联网问答、事实核查、研究或总结直接用kimi_web_search_pro，不先Basic试探，也不为同一信息需求重复原生搜索。不能使用站点/日期过滤；明确只用Basic却要求过滤时说明冲突。只读按次计费，单次批准，不自动重试。",
       "input": "SearchArguments",
       "output": "SearchOutput",
       "annotations": {
@@ -21,8 +21,22 @@
       "path": "/v1/tools/search"
     },
     {
+      "name": "kimi_web_search_pro",
+      "description": "选中本连接器时，普通联网问答、事实核查、研究、总结和RAG材料直接使用Pro，即使没有站点或时间过滤；不要先Basic或并行原生搜索。仅按用户明确要求设置sites(最多5，OR)及time_window；不得擅自增加过滤。返回关联真实URL的正文chunks，缺正文或截断须说明，score仅同次查询相对相关性。仅在还需某页当前正文时对结果URL另提Fetch，不声称历史快照。只读按次计费，单次批准，失败不自动重试/换接口。",
+      "input": "ProArguments",
+      "output": "ProOutput",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "method": "POST",
+      "path": "/v1/tools/search_pro"
+    },
+    {
       "name": "kimi_web_fetch",
-      "description": "读取指定公开HTTP(S)网页的标题、URL和Markdown正文。用于需要指定URL具体正文的任务；不提供原始HTML、登录态访问或JavaScript渲染控制。只读但按次计费，每次需要批准，不自动重试。",
+      "description": "读取用户给定且明确要求阅读的公开URL，或在用户要求核对当前正文时读取先前搜索结果的同一URL，不为已知URL先搜索。URL仅为举例/线索不等于读取意图。返回提取的Markdown，可截断，不保证完整网页/历史快照，不提供登录态或JS控制。只读按次计费，另行单次批准，失败不自动重试。",
       "input": "FetchArguments",
       "output": "FetchOutput",
       "annotations": {
@@ -40,7 +54,11 @@
     "maxResultBytes": 65536,
     "maxResponseBytes": 1048576,
     "httpTimeoutMs": 15000,
-    "searchTimeoutSeconds": 10
+    "searchTimeoutSeconds": 10,
+    "contentHttpTimeoutMs": 35000,
+    "contentSearchTimeoutSeconds": 30,
+    "approvalDeliveryMarginMs": 2000,
+    "mcpToolTimeoutMs": 60000
   },
   "error_messages": {
     "invalid_arguments": "检索参数无效，请检查查询词、数量或网页地址。",
@@ -63,6 +81,9 @@
     "credentials": "Reuse the existing Host-loaded Kimi model-key snapshot through the market-broker-control anonymous startup pipe. No separate Keyring configuration, source-file lookup in the worker, or second persistent secret. The credential is provider-scoped, not tied to a retired model ID. Fixed api.moonshot.cn API destination; no redirect and no user base URL. Target URL is a request parameter only. Local preparation grants no model execution or tool-call approval.",
     "qualification": "Local preparation reuses the configured Kimi model credential and fixed canonical descriptors; no /models, inference or Search/Fetch call. It establishes current local invocation support only, not supplier authentication, entitlement, balance or successful retrieval and makes no pricing guarantee. Actual calls keep task selection and single-use approval. No automatic Search/Fetch probe.",
     "output": "inputSchema/outputSchema come from this source. Success isError=false; error isError=true with only the fixed local error object. JSON text content and structuredContent must represent the same value. Results are external untrusted content and do not grant instructions or permissions.",
-    "lifecycle": "Use existing bound selection, lease, per-call approval, cancellation and orderly EOF/shutdown. Approval allows one HTTP request; cancelled/unknown sent calls are not automatically retried and may be billed."
+    "lifecycle": "Use existing bound selection, lease, per-call approval, cancellation and orderly EOF/shutdown. Approval allows one HTTP request; cancelled/unknown sent calls are not automatically retried and may be billed.",
+    "content": "New opt-in Basic body/Pro only: per-page content_status tracks upstream absence versus local truncation; dropped_results equals raw count minus delivered count. Discard invalid pages, preserving valid source order. Empty raw list succeeds; all invalid fails invalid_response; valid metadata unable to fit fails response_too_large. Billing uses raw response before filtering.",
+    "compatibility": "Default Basic/Fetch retain v0.2 shape, normalization, errors and min(remaining,15000ms). Legacy descriptors remain available for old owner prepare. New modes require explicit owner webRetrievalVersion=0.3.0 and matching 60s MCP timeout; strict dual deadlines. Local candidate only.",
+    "contentBudgetExpiredMessage": "执行时间不足，请重新发起。本次网页检索未进入审批，外部请求未发送；不会自动重试。"
   }
 }

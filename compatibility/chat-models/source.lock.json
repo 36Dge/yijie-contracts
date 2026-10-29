@@ -11,7 +11,7 @@
     },
     {
       "path": "scripts/generate-chat-models.mjs",
-      "sha256": "4ac1167e6af9a23f24787729eecea7094c3c89b976ed44eae60d531d298daab1"
+      "sha256": "19d08c7d06e53d7b64155605293d3f085915049b88e295558111a5779e000725"
     },
     {
       "path": "openapi/chat-models/chat-models.yaml",

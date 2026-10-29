@@ -1,3 +1,4 @@
+import {existsSync} from 'node:fs';
 import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
 import {execFileSync,spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
@@ -37,7 +38,7 @@ const outputs={'sdks/rust/scheduled-draft/types.gen.rs':format('rustfmt',['--edi
 const hash=b=>createHash('sha256').update(b).digest('hex');const sourceFiles=[sourcePath,'jsonschema/scheduled-tasks/plan-draft-v1.schema.json','openapi/scheduled-plan-draft/scheduled-plan-draft.yaml','scripts/generate-scheduled-draft.mjs','scripts/sync-scheduled-draft.mjs', 'scripts/scheduled-consumer-source.mjs','scripts/chat-model-consumer-source.mjs','scripts/scheduled-schema-source.mjs'];
 const lockPath='compatibility/scheduled-draft/source.lock.json';
 // Checking an immutable source must not substitute a later repository HEAD.
-const baseCommit=process.argv.includes('--check')?JSON.parse(readFileSync(path.join(root,lockPath))).base_commit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
+const baseCommit=existsSync(path.join(root,lockPath))?JSON.parse(readFileSync(path.join(root,lockPath))).base_commit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
 outputs['compatibility/scheduled-draft/source.lock.json']=JSON.stringify({schema_version:1,contract_version:'0.1.0',mode:'local_candidate',release:false,base_commit:baseCommit,sources:sourceFiles.map(p=>({path:p,sha256:hash(readFileSync(path.join(root,p)))})),generated:Object.entries(outputs).map(([p,b])=>({path:p,sha256:hash(b)}))},null,2)+'\n';
 for(const [p,b]of Object.entries(outputs)){const target=path.join(root,p);if(process.argv.includes('--check')){if(readFileSync(target,'utf8')!==b)throw Error('Generation drift '+p);}else{mkdirSync(path.dirname(target),{recursive:true});writeFileSync(target,b);}}
 console.log('Scheduled draft same-source generation '+(process.argv.includes('--check')?'verified':'generated'));

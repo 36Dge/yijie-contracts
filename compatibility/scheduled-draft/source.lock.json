@@ -19,7 +19,7 @@
     },
     {
       "path": "scripts/generate-scheduled-draft.mjs",
-      "sha256": "9ef2ea82ee8d2ddf30664bd6ee3092a2869347b49b8ab91630e5d01f3c896682"
+      "sha256": "d27f8ee260ea913a965dcfa8b46d3d8c1d92ac353a92b085059e389a44a38ca0"
     },
     {
       "path": "scripts/sync-scheduled-draft.mjs",

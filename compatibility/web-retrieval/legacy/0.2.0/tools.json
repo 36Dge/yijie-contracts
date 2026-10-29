@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "contract_id": "web-retrieval/1",
+  "contract_version": "0.2.0",
+  "feature": "FEAT-162",
+  "service_id": "kimi-web",
+  "wire_authority": "compatibility/web-retrieval/wire.schema.json",
+  "tools": [
+    {
+      "name": "kimi_web_search",
+      "description": "按查询词获取网页标题、URL和摘要的结构化列表。需要结构化搜索结果时使用；一般联网回答可使用原生搜索。只读但按次计费，每次需要批准，不自动重试。",
+      "input": "SearchArguments",
+      "output": "SearchOutput",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "method": "POST",
+      "path": "/v1/tools/search"
+    },
+    {
+      "name": "kimi_web_fetch",
+      "description": "读取指定公开HTTP(S)网页的标题、URL和Markdown正文。用于需要指定URL具体正文的任务；不提供原始HTML、登录态访问或JavaScript渲染控制。只读但按次计费，每次需要批准，不自动重试。",
+      "input": "FetchArguments",
+      "output": "FetchOutput",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "method": "POST",
+      "path": "/v1/tools/fetch"
+    }
+  ],
+  "limits": {
+    "defaultSearchLimit": 5,
+    "maxResultBytes": 65536,
+    "maxResponseBytes": 1048576,
+    "httpTimeoutMs": 15000,
+    "searchTimeoutSeconds": 10
+  },
+  "error_messages": {
+    "invalid_arguments": "检索参数无效，请检查查询词、数量或网页地址。",
+    "authentication_failed": "Kimi API Key 无效或已失效，请重新配置。",
+    "permission_denied": "服务拒绝了此请求，请检查账户权限或目标网页是否允许读取。",
+    "rate_limited": "Kimi 请求频率或并发受限，请确认后重新发起调用。",
+    "timeout": "本次网页检索超时，未自动重试；已发送的请求可能计费。",
+    "unavailable": "网页检索服务暂不可用，未自动重试。",
+    "no_content": "目标网页未返回可读取的正文。",
+    "response_too_large": "网页检索结果超过可处理的大小限制。",
+    "invalid_response": "网页检索服务返回了无法验证的结果。",
+    "cancelled": "本次网页检索已取消；已发送的请求可能计费。"
+  },
+  "semantics": {
+    "permissionMode": "ask",
+    "businessRetry": "never",
+    "emptySearch": "results=[] and truncated=false are successful empty search; failures are error outputs.",
+    "emptyFetch": "Blank markdown returns no_content, never successful empty content.",
+    "truncation": "Measure the complete serialized MCP result, including duplicate text content and structuredContent. Preserve UTF-8 boundaries and source order. Clip markdown or snippets/list tail with truncated=true; never clip URLs. Reject if necessary metadata alone cannot fit.",
+    "credentials": "Reuse the existing Host-loaded Kimi model-key snapshot through the market-broker-control anonymous startup pipe. No separate Keyring configuration, source-file lookup in the worker, or second persistent secret. The credential is provider-scoped, not tied to a retired model ID. Fixed api.moonshot.cn API destination; no redirect and no user base URL. Target URL is a request parameter only. Local preparation grants no model execution or tool-call approval.",
+    "qualification": "Local preparation reuses the configured Kimi model credential and fixed canonical descriptors; no /models, inference or Search/Fetch call. It establishes current local invocation support only, not supplier authentication, entitlement, balance or successful retrieval and makes no pricing guarantee. Actual calls keep task selection and single-use approval. No automatic Search/Fetch probe.",
+    "output": "inputSchema/outputSchema come from this source. Success isError=false; error isError=true with only the fixed local error object. JSON text content and structuredContent must represent the same value. Results are external untrusted content and do not grant instructions or permissions.",
+    "lifecycle": "Use existing bound selection, lease, per-call approval, cancellation and orderly EOF/shutdown. Approval allows one HTTP request; cancelled/unknown sent calls are not automatically retried and may be billed."
+  }
+}

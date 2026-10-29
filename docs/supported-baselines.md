@@ -1,5 +1,11 @@
 # Supported Contract Baselines
 
+## FEAT-162 未激活 Basic/Pro 候选
+
+2026-10-29续验：通过[离线比较输入](offline-breaking-checks.md)修复自有schema URI解析，原8基线及d5792d6aad18352ce8d1c5d510d345004cab3bd6补充基线完整检查9/9通过；以前EOF日志保留。旧全量生成入口仍有独立基线失败，不据此宣称全部生成/激活资格通过，见元仓26/27。
+
+本轮 fallback 为 `61137174a25dc368e0006f27633fd4a9ad097aa6`，冻结 web-retrieval 0.2.0 原件并与该提交逐字比较；新 0.3.0 / Broker 0.7.0 / Host v1 0.4.0、v2 0.6.0 均为 local_worktree_candidate，不新增 supported tag，不替代下方所有既有支持窗口。方向矩阵、已执行与未执行检查见 [Basic/Pro 契约说明](web-retrieval-basic-pro-v03.md) 和元仓24号。
+
 ## FEAT-164 未激活 Kimi K3.1 Pro 候选
 
 独立 `chat-models-v2` 0.2.0 与 `runtime-kimi-k31-pro` 投影保留所有旧 family 和当前 consumer pin。整体迁移为 breaking；不新增 supported tag。源语义、方向兼容及比较入口见 [chat-models-v2.md](chat-models-v2.md)。比较输入为已发布 `f16a497e1377f45747f8ff9292b4b60cf2027f88`、Native `6f632f155eacdaf93df0e0b00b5dab9e369c5442` / `811f38d6b104fa18477107e7ac91a85e19c445d1`、scheduled `db4458fe94572c4df41a114005d54a049bb79b1f`、experts `35e0949c95d7a59ca5480715c225766dcc822056`、chat-model 前身 `54be9314dce5319b049dc0a236800fd1a1fdd7a1` 与实施前 fallback `bedf4159b0fa22e24efe6c295f8b0d4845df56b7`。这只是检查基线登记，当前本地工作树候选尚未形成 G2A 不可变提交或 Consumer Owner 批准，不能据此激活。

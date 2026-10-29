@@ -45,7 +45,7 @@ test('new thread intent is explicit null and actual binding identities are manda
  assert.match(manifest.semantics.deduplication,/nativeProcessEpoch, agentSessionId, actual turnOperationId/);
 });
 test('external network assembly is explicit and response extras are not authority',()=>{
- const r=structuredClone(fixture.InitializeResponse);r.data.externalCallsEnabled=true;assert.equal(validator('InitializeResponse')(r),true);assert.equal(manifest.contract_version,'0.6.0');assert.match(manifest.semantics.qualification,/not an execution grant/);
+ const r=structuredClone(fixture.InitializeResponse);r.data.externalCallsEnabled=true;assert.equal(validator('InitializeResponse')(r),true);assert.equal(manifest.contract_version,'0.7.0');assert.match(manifest.semantics.qualification,/not an execution grant/);
  assert.ok(validator('InitializeResponse')({...fixture.InitializeResponse,futureField:true}));
  assert.equal(validator('Error')({...fixture.Error,retryable:true}),false);
  for(const gatewayUrl of ['http://127.0.0.1:0/mcp','http://127.0.0.1:65536/mcp']){const v=structuredClone(fixture.InitializeResponse);v.data.gatewayUrl=gatewayUrl;assert.equal(validator('InitializeResponse')(v),false);}
@@ -62,4 +62,16 @@ test('control wire contains neither raw arguments nor credentials and source rem
  function walk(v){if(!v||typeof v!=='object')return;for(const k of Object.keys(v.properties??{}))assert.ok(!prohibited.has(k),k);for(const c of Object.values(v))walk(c);}
  walk(schema);
  for(const script of ['generate-market-broker.mjs','generate-market-connectors.mjs','generate-market-selection.mjs'])execFileSync(process.execPath,['scripts/'+script,'--check'],{stdio:'pipe'});
+});
+
+test('web body owner opt-in pairs a version with the frozen Runtime timeout',()=>{
+ const valid=validator('PrepareRequest');const req=structuredClone(fixture.PrepareRequest);
+ req.payload.webRetrievalVersion='0.3.0';assert.equal(valid(req),false);
+ req.payload.mcpToolTimeoutMs=60000;assert.ok(valid(req));
+ req.payload.mcpToolTimeoutMs=65000;assert.equal(valid(req),false);
+});
+test('new pending observation has both deadlines while legacy omits both',()=>{
+ const valid=validator('PendingCall');const call=structuredClone(fixture.PendingCallResponse.data);
+ assert.ok(valid(call));call.decisionExpiresAtUnixMs=1800000023000;assert.equal(valid(call),false);
+ call.executionExpiresAtUnixMs=1800000060000;assert.ok(valid(call));
 });

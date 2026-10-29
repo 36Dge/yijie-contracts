@@ -12,7 +12,7 @@
     },
     {
       "path": "scripts/generate-native-turn-timing.mjs",
-      "sha256": "dff4287b61427fdd9b922462c36d6294d6d616448b31661781ee2b977d72d81f"
+      "sha256": "54222f9b30f35a64216fe5336ac193596d6779444338248342389ef8d0b8ba41"
     },
     {
       "path": "scripts/sync-native-turn-timing.mjs",

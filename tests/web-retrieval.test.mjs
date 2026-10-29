@@ -10,12 +10,12 @@ const family=loadWebRetrievalSource();
 const ajv=new Ajv({strict:true,allErrors:true});
 addFormats(ajv);
 const validator=name=>ajv.compile(family.standalone(name));
-test('two stable tools expose canonical closed input/output and billed read-only annotations',()=>{
-  assert.deepEqual(family.tools.map(t=>t.name),['kimi_web_search','kimi_web_fetch']);
+test('three current tools expose canonical closed input/output and billed read-only annotations',()=>{
+  assert.deepEqual(family.tools.map(t=>t.name),['kimi_web_search','kimi_web_search_pro','kimi_web_fetch']);
   for(const tool of family.tools){
     assert.equal(tool.inputSchema.additionalProperties,false);
     assert.equal(tool.outputSchema.type,'object');
-    assert.equal(tool.outputSchema.oneOf.length,2);
+    assert.equal(tool.outputSchema.oneOf.length,tool.name==='kimi_web_search'?3:2);
     assert.deepEqual(tool.annotations,{readOnlyHint:true,destructiveHint:false,idempotentHint:false,openWorldHint:true});
   }
   assert.deepEqual(JSON.parse(readFileSync('sdks/jsonschema/web-retrieval.tools.json')),family.tools);
@@ -89,4 +89,47 @@ test('local preparation keeps zero supplier HTTP and unchanged MCP budget',()=>{
 });
 test('focused canonical generator check is synchronized without network or legacy fixtures',()=>{
   execFileSync(process.execPath,['scripts/generate-web-retrieval.mjs','--check'],{stdio:'pipe'});
+});
+
+test('frozen legacy descriptor and default output remain unchanged',()=>{
+ for(const file of ['wire.schema.json','tools.json']){
+  const before=execFileSync('git',['show',`61137174a25dc368e0006f27633fd4a9ad097aa6:compatibility/web-retrieval/${file}`]);
+  assert.deepEqual(readFileSync(`compatibility/web-retrieval/legacy/0.2.0/${file}`),before);
+ }
+ const old=loadWebRetrievalSource({legacy:true});
+ assert.equal(old.manifest.contract_version,'0.2.0');
+ assert.deepEqual(old.tools.map(t=>t.name),['kimi_web_search','kimi_web_fetch']);
+ for(const name of ['SearchResult','SearchSuccess','FetchArguments','FetchSuccess','FetchOutput','ErrorOutput'])assert.deepEqual(family.schema.$defs[name],old.schema.$defs[name]);
+ const legacy=old.standalone('SearchArguments');
+ assert.equal(ajv.compile(legacy)({query:'public docs',include_content:true}),false);
+});
+test('body and Pro sources retain separate typed content and drop status',()=>{
+ const content=validator('ContentSuccess'),pro=validator('ProSuccess');
+ for(const status of ['available','unavailable','truncated']){
+  const base={title:'Example',url:'https://example.org/',snippet:'summary',content_status:status};
+  assert.ok(content({results:[{...base,text:status==='available'?'body':''}],truncated:status==='truncated',dropped_results:0}));
+  assert.ok(pro({results:[{...base,site_name:'Example',date:'2026-10-29',authority:'',chunks:[{text:status==='unavailable'?'':'body',score:0.25}]}],truncated:status==='truncated',dropped_results:0}));
+ }
+ assert.equal(content({results:[],truncated:false}),false);
+ assert.equal(pro({results:[],truncated:false,dropped_results:-1}),false);
+ assert.equal(validator('SearchSuccess')({results:[],truncated:false,dropped_results:0}),false);
+});
+test('Pro input accepts explicit constraints without inventing defaults',()=>{
+ const valid=validator('ProArguments');
+ assert.ok(valid({query:'public docs'}));
+ assert.ok(valid({query:'public docs',sites:['example.org'],time_window:{start:'2026-01',end:'2026-10-29'}}));
+ for(const input of [{query:'docs',sites:['']},{query:'docs',sites:['a b']},{query:'docs',sites:Array(6).fill('example.org')},{query:'docs',include_content:true},{query:'docs',time_window:null}])assert.equal(valid(input),false);
+ assert.equal(family.manifest.limits.contentHttpTimeoutMs,35000);
+});
+
+test('content provenance cannot contradict body or top-level truncation',()=>{
+ const valid=validator('ContentSuccess');
+ const page={title:'',url:'https://example.org/',snippet:'',text:'body',content_status:'available'};
+ for(const v of [
+  {results:[{...page,text:''}],truncated:false,dropped_results:0},
+  {results:[{...page,content_status:'unavailable'}],truncated:false,dropped_results:0},
+  {results:[{...page,content_status:'truncated'}],truncated:false,dropped_results:0},
+  {results:[page],truncated:false,dropped_results:1}
+ ]) assert.equal(valid(v),false);
+ assert.ok(valid({results:[{...page,text:'',content_status:'truncated'}],truncated:true,dropped_results:0}));
 });
