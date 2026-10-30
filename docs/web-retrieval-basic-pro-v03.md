@@ -23,3 +23,7 @@ Broker 0.7.0 新 prepare 成对携带 webRetrievalVersion=0.3.0 / mcpToolTimeout
 发布顺序仍为源契约不可变引用→provider→匹配 Host/Desktop→准确制品→单独激活/真实验收。当前禁止 Git 提交，故不可变消费闭合、专家资源级联及 daily:prepare/open 留待后续授权；不刷写 Skills 摘要绕过门禁。恢复旧端时先停用新模式，保留旧两工具及原历史，正常退出自有进程，不迁移数据。
 
 验证结果和完整命令见元仓 `24-basic-pro-implementation-and-zero-cost.md` 与 `evidence/implementation-checks-20261029.json`。定向检查不是所有已发布 baseline/公开 wire 的全量兼容证明，不新增 supported tag。
+
+## 2026-10-30：Alpha E1 列表分流澄清
+
+两次真实 E1 均错选 Pro，现以 semantic 修订明确无站点/日期限制的仅列表交付优先 Basic，Pro 的普通问答规则不覆盖“只列标题/摘要/链接、不作问答或分析”。不更改三工具输入输出、注解、单次审批、期限、旧 0.2 描述或实际供应商接口；0.3.0 未发布候选用新完整 commit 区分。Connectors 为描述 producer，固定 Runtime 为模型消费者；Host/Desktop 仅透传及保存来源。新旧 SDK wire 兼容，回滚只回到旧描述，不回放调用。用户已授权本地提交、收费 Alpha、遇阻修复；旧段落禁止提交/收费仅为原时点记录。具体源引用、零费用检查和 E1/E5 复验见元仓 42 号，未取得实际通过前不宣称闭环。
