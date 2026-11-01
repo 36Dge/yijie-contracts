@@ -14,9 +14,24 @@ test("source metadata uses new closed boundaries and retains unrelated semantics
   assert.deepEqual(current.security,old.security);
   assert.deepEqual(current.components.schemas.NativeEvent.properties.schema_version.enum,[11]);
   assert.deepEqual(current.components.schemas.NativeThreadSnapshot.properties.schema_version.enum,[4]);
-  for(const name of ["NativeItem","NativeNotification","NativeTurn","NativeMcpDisplay","NativeError","NativePlanStep"])
+  for(const name of ["NativeItem","NativeNotification","NativeTurn","NativeError","NativePlanStep"])
     assert.deepEqual(current.components.schemas[name],old.components.schemas[name]);
+  // Only v4's documented discovery display policy changes; its closed wire,
+  // limits and previous readers remain byte-for-byte structurally equivalent.
+  const {description: currentDescription, ...display} = current.components.schemas.NativeMcpDisplay;
+  const {description: previousDescription, ...previousDisplay} = old.components.schemas.NativeMcpDisplay;
+  assert.deepEqual(display,previousDisplay);
+  assert.match(currentDescription,/list_mcp_resources\/list_mcp_resource_templates/);
+  assert.match(currentDescription,/never resource URIs, cursors or metadata/);
+  assert.match(previousDescription,/No raw arguments\/error\/meta\/resources\/structuredContent/);
   assert.deepEqual(old.components.schemas.NativeEvent.properties.schema_version.enum,[10]);
+});
+
+test("resource discovery results use the existing indexed text shape for both readers",()=>{
+  const item={id:"resource-check",type:"mcpToolCall",status:"completed",availability:"available",argumentsSummary:"查询所有已连接服务的可用资源",mcp:{server:"codex",tool:"list_mcp_resources",resultKind:"text",texts:[{index:0,text:"未发现可用资源"}],diagnostics:[]}};
+  assert.equal(validate(current)(item),true);
+  assert.equal(validate(old)(item),true);
+  assert.equal(validate(current)({...item,availability:"partial",mcp:{...item.mcp,resultKind:"omitted",texts:[],diagnostics:["result_unavailable"]}}),true);
 });
 
 test("actual optional sources survive new validation and are absent from old readers",()=>{
