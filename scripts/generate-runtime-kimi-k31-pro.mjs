@@ -8,7 +8,7 @@ import {fileURLToPath} from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const runtime = path.resolve(root, '../yijie-codex');
-const artifact = '.yijie/build/kimi-k31-pro-r5/aarch64-apple-darwin';
+const artifact = '.yijie/build/web-retrieval-guard-v1/aarch64-apple-darwin';
 assert.ok(process.argv.slice(2).every(arg => arg === '--check'));
 const check = process.argv.includes('--check');
 const schema = `${artifact}/generated-json-schema`;
@@ -34,7 +34,8 @@ const expectedPatches = [...base.native_sources.filter(row => row.path.endsWith(
   '.yijie/patches/chat-models/0008-feat-164-kimi-responses-include.patch',
   '.yijie/patches/chat-models/0009-feat-164-native-failure-terminals.patch',
   '.yijie/patches/chat-models/0010-feat-164-sanitized-persistence-metrics.patch',
-  '.yijie/patches/chat-models/0011-feat-164-graceful-state-close.patch'];
+  '.yijie/patches/chat-models/0011-feat-164-graceful-state-close.patch',
+  '.yijie/patches/chat-models/0012-web-retrieval-execution-guard.patch'];
 assert.deepEqual(manifest.patches.map(row => row.path), expectedPatches);
 for (const row of manifest.patches) assert.equal(hash(read(row.path)), row.sha256, row.path);
 const files = readdirSync(path.join(runtime, schema), {recursive: true})
@@ -53,6 +54,7 @@ const nativeSources = [...expectedPatches, '.yijie/upstream.env', 'scripts/build
   'scripts/build-kimi-k31-pro-r3.sh', 'scripts/check-kimi-k31-pro-r3.sh', 'scripts/write-kimi-k31-pro-r3-runtime-manifest.py',
   'scripts/build-kimi-k31-pro-r4.sh', 'scripts/check-kimi-k31-pro-r4.sh', 'scripts/write-kimi-k31-pro-r4-runtime-manifest.py',
   'scripts/build-kimi-k31-pro-r5.sh', 'scripts/check-kimi-k31-pro-r5.sh', 'scripts/write-kimi-k31-pro-r5-runtime-manifest.py',
+  'scripts/build-web-retrieval-guard.sh', 'scripts/prepare-web-retrieval-guard.py', 'scripts/write-web-retrieval-guard-runtime-manifest.py',
   'scripts/check-feat164-state-close.py',
   'scripts/write-kimi-k31-pro-runtime-manifest.py',
   'scripts/write-chat-model-stream-runtime-manifest.py', 'scripts/write-web-search-sources-runtime-manifest.py',
@@ -77,7 +79,7 @@ const RuntimePatchManifest = ${JSON.stringify(JSON.stringify(manifest.patches))}
 const outputs = {'sdks/go/openapi/runtime-kimi-k31-pro/artifact.gen.go': execFileSync('gofmt', [], {input: go, encoding: 'utf8'})};
 outputs['compatibility/runtime-kimi-k31-pro/source.lock.json'] = JSON.stringify({
   schema_version: 1, feature: 'FEAT-164', mode: 'local_worktree_candidate', release: false,
-  authority: 'yijie-codex canonical FEAT-164 r5 candidate; owned normal stdio RPC, thread, listener and log drain precedes four-pool close; native failed-agent terminal survives completion, sanitized existing ErrorEvent persists for history replay; app-server wire unchanged from retained r2; prior include/search/retirement protections retained',
+  authority: 'yijie-codex canonical execution-guard candidate retaining the complete FEAT-164 r5 chain; native tool dispatcher refuses post-search local webpage fetching and unchanged failed operations before execution; per-turn state, existing warnings and tool errors, unchanged app-server wire and retained permission/history/graceful-close protections',
   runtime_source: {repository: 'https://github.com/36Dge/yijie-codex.git', base_commit: sourceCommit},
   upstream: manifest.upstream, methods: base.methods, experimental_api: false,
   wire_authority: {path: 'compatibility/runtime-input-only/source.lock.json', sha256: hash(readFileSync(path.join(root, 'compatibility/runtime-input-only/source.lock.json')))},
