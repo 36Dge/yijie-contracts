@@ -222,6 +222,14 @@
       "sha256": "56b7e3351d0cb7ea1fe2cde08076777074b8e6038e26338153d59c1603d94a2c"
     },
     {
+      "path": "codex-rs/core/config.schema.json",
+      "sha256": "841e0ab1c1bd2fea736ba2d46212ab5bedc06dce9fd83bbafbf50b57b9056d17"
+    },
+    {
+      "path": ".yijie/build/execution-progress-v1/aarch64-apple-darwin/generated-json-schema/v2/TurnStartParams.json",
+      "sha256": "befb5c2c14416ff6cc67e1b8b7b17e5966378e7ccf3bc30f771c75ab762e67ed"
+    },
+    {
       "path": ".yijie/build/execution-progress-v1/aarch64-apple-darwin/runtime-manifest.json",
       "sha256": "cdf6aed681dba948823b96f8d6fb423c53c44921f3de77a4a334391d35a8d1a8"
     }
@@ -229,13 +237,21 @@
   "generators": [
     {
       "path": "scripts/generate-runtime-kimi-k31-pro.mjs",
-      "sha256": "2d8ee86174346c65faea4f1dffc5f4e557624b2194d011ec42772298cff3680c"
+      "sha256": "78c1abc73ce1d6dce67311e210b129bbeeab12d8e7982eb601571ff8285d47e4"
     }
   ],
   "generated": [
     {
       "path": "sdks/go/openapi/runtime-kimi-k31-pro/artifact.gen.go",
-      "sha256": "70ff2fd20ad387eebcf82416bef9b67d4ef8bcf27af87bc419a8432863e837ff"
+      "sha256": "46dce8e033cec5193cb40ddd38fe8652465d68a8a119e34ba2eb8a3785fe7f80"
+    },
+    {
+      "path": "sdks/go/openapi/runtime-kimi-k31-pro/config.schema.json",
+      "sha256": "841e0ab1c1bd2fea736ba2d46212ab5bedc06dce9fd83bbafbf50b57b9056d17"
+    },
+    {
+      "path": "sdks/go/openapi/runtime-kimi-k31-pro/turn-start.schema.json",
+      "sha256": "befb5c2c14416ff6cc67e1b8b7b17e5966378e7ccf3bc30f771c75ab762e67ed"
     }
   ]
 }

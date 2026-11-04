@@ -64,7 +64,8 @@ const nativeSources = [...expectedPatches, '.yijie/upstream.env', 'scripts/build
   'scripts/write-chat-model-stream-runtime-manifest.py', 'scripts/write-web-search-sources-runtime-manifest.py',
   'scripts/verify-web-search-sources-schema.py', 'scripts/write-runtime-manifest.py',
   'scripts/runtime-env.sh', 'scripts/runtime_manifest.py', 'scripts/canonicalize-json.py',
-  'scripts/verify-release-lock-drift.py', `${artifact}/runtime-manifest.json`];
+  'scripts/verify-release-lock-drift.py', 'codex-rs/core/config.schema.json',
+  `${schema}/v2/TurnStartParams.json`, `${artifact}/runtime-manifest.json`];
 // Product sources must match one immutable Runtime commit; build artifacts
 // remain separately content-addressed and are never substituted into Git.
 const sourceCommit = execFileSync('git', ['rev-parse', 'HEAD'], {cwd: runtime, encoding: 'utf8'}).trim();
@@ -73,6 +74,13 @@ for (const name of nativeSources.filter(name => !name.startsWith('.yijie/build/'
 }
 const go = `// Code generated from the FEAT-164 inactive candidate manifest. DO NOT EDIT.
 package runtimekimik31pro
+import _ "embed"
+// NativeConfigSchema is the exact pinned Runtime schema, not a Host reimplementation.
+//go:embed config.schema.json
+var NativeConfigSchema []byte
+// NativeTurnStartSchema retains the canonical UserInput variants, including Skill.
+//go:embed turn-start.schema.json
+var NativeTurnStartSchema []byte
 const RuntimeBinarySHA256 = ${JSON.stringify(manifest.runtime.sha256)}
 const RuntimeManifestSHA256 = ${JSON.stringify(hash(manifestBytes))}
 const RuntimeBinarySize int64 = ${manifest.runtime.sizeBytes}
@@ -80,7 +88,11 @@ const RuntimeSchemaFileCount = ${manifest.appServer.schemaFileCount}
 const RuntimeSchemaTreeSHA256 = ${JSON.stringify(manifest.appServer.schemaTreeSha256)}
 const RuntimePatchManifest = ${JSON.stringify(JSON.stringify(manifest.patches))}
 `;
-const outputs = {'sdks/go/openapi/runtime-kimi-k31-pro/artifact.gen.go': execFileSync('gofmt', [], {input: go, encoding: 'utf8'})};
+const outputs = {
+  'sdks/go/openapi/runtime-kimi-k31-pro/artifact.gen.go': execFileSync('gofmt', [], {input: go, encoding: 'utf8'}),
+  'sdks/go/openapi/runtime-kimi-k31-pro/config.schema.json': read('codex-rs/core/config.schema.json'),
+  'sdks/go/openapi/runtime-kimi-k31-pro/turn-start.schema.json': read(`${schema}/v2/TurnStartParams.json`),
+};
 outputs['compatibility/runtime-kimi-k31-pro/source.lock.json'] = JSON.stringify({
   schema_version: 1, feature: 'FEAT-164', mode: 'local_worktree_candidate', release: false,
   authority: 'yijie-codex canonical execution-progress candidate retaining the entire answer-completion, retrieval guard and FEAT-164 r5 chain; repeated unchanged accepted plans enter the existing same-turn bounded answer-only finalizer; native rollout_budget owns shared weighted accounting and exhaustion; no additional budget counter or Host execution loop; unchanged wire, permissions and history',
