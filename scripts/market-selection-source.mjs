@@ -27,7 +27,7 @@ export function validateMarketSelectionManifest(m,names){
 }
 export function loadMarketSelectionSource(){
  const sourcePath=marketSelectionSourcePath,source=read(sourcePath),manifest=read(marketSelectionManifestPath),own=source.$defs,names=Object.keys(own);
- keys(source,['$schema','$id','$defs']);assert.equal(source.$schema,'https://json-schema.org/draft/2020-12/schema');assert.equal(source.$id,'https://schemas.yijie.ai/chat/market-selection/v1');assert.equal(names.length,21);
+ keys(source,['$schema','$id','$defs']);assert.equal(source.$schema,'https://json-schema.org/draft/2020-12/schema');assert.equal(source.$id,'https://schemas.yijie.ai/chat/market-selection/v1');assert.equal(names.length,20);
  validateMarketSelectionManifest(manifest,names);
  const allowed=new Set([sourcePath,'openapi/market-connectors/market-connectors.yaml','jsonschema/chat/model-selection-v1.schema.json','jsonschema/chat/message.schema.json','openapi/agent-host/agent-host.yaml']);
  const refs=new Map(names.map(n=>[sourcePath+'#/$defs/'+n,n]));

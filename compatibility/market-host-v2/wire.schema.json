@@ -116,10 +116,6 @@
           "items": {
             "$ref": "#/$defs/ServiceBinding"
           }
-        },
-        "toolProfile": {
-          "$ref": "#/$defs/ToolProfile",
-          "description": "Optional frozen new-chat tool profile. Omitted on continuation; Host restores the immutable profile from its original session record. Expert bindings require full."
         }
       },
       "description": "Trusted immutable Native outbox intention. taskId is the existing PublicTask UUID, distinct from localSessionId and Host agentSessionId; null agentSessionId means creation. snapshot.turnOperationId is the actual turn operation, not the separate create submission operation. cwd is Native canonical authority, content blocks reuse existing v2 attachment handling and aggregate limits. Initial model expectedRevision=0 precedes Host record revision=1. Entire typed intention participates in Host HMAC; grant/context expiry and transport request IDs do not. No platform credential/configuration. Nonempty market selection currently requires permissionMode=ask; auto/full returns permission_mode_unavailable with recovery to request approval mode. Empty selection keeps the existing three permission modes."
@@ -1485,9 +1481,6 @@
           "$ref": "#/$defs/ProviderStatus"
         }
       }
-    },
-    "ToolProfile": {
-      "$ref": "../../openapi/agent-host/agent-host.yaml#/components/schemas/ToolProfile"
     }
   }
 }
