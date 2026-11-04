@@ -305,6 +305,9 @@
     },
     "SelectedSkills": {
       "$ref": "../../openapi/agent-host/agent-host.yaml#/components/schemas/SelectedSkills"
+    },
+    "ToolProfile": {
+      "$ref": "../../openapi/agent-host/agent-host.yaml#/components/schemas/ToolProfile"
     }
   }
 }

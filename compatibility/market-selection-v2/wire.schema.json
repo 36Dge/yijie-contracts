@@ -133,6 +133,10 @@
         },
         "selection": {
           "$ref": "#/$defs/Selection"
+        },
+        "toolProfile": {
+          "$ref": "#/$defs/ToolProfile",
+          "description": "New ordinary chat only. Omit on continuation. A selected expert requires full. Frozen with the original submission; never inferred from text."
         }
       },
       "allOf": [
@@ -305,6 +309,9 @@
     },
     "SelectedSkills": {
       "$ref": "../../openapi/agent-host/agent-host.yaml#/components/schemas/SelectedSkills"
+    },
+    "ToolProfile": {
+      "$ref": "../../openapi/agent-host/agent-host.yaml#/components/schemas/ToolProfile"
     }
   }
 }

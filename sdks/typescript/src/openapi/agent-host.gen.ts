@@ -953,7 +953,18 @@ export interface components {
             tenant_id?: string;
             user_id?: string;
         };
+        /**
+         * @description Explicit new-chat tool configuration. Omission means full. Light maps only
+         *     to native features.multi_agent=false and features.goals=false; it does not
+         *     change sandbox, approvals, selected connectors, models or token budgets.
+         *     The selection is immutable for the session, including resume and model
+         *     changes. Existing sessions retain full. Expert and scheduled-draft tasks
+         *     cannot select light. Providers without this capability reject light.
+         * @enum {string}
+         */
+        ToolProfile: "full" | "light";
         StartSessionRequest: {
+            tool_profile?: components["schemas"]["ToolProfile"];
             /** @description Optional correlation identifier copied to session events. */
             trace_id?: string;
             /** @description Optional request correlation identifier copied to session events. */

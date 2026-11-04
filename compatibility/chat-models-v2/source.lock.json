@@ -19,7 +19,7 @@
     },
     {
       "path": "openapi/agent-host/agent-host.yaml",
-      "sha256": "3a869bb3656bc6ce84f570c324078e0b23fbbdf6872803c448c736561c873541"
+      "sha256": "655e1a91c26d9da2bf98e680f50e67670e2340427c929c215e63e00806f61ab5"
     },
     {
       "path": "openapi/chat-models-v2/chat-models-v2.yaml",
@@ -53,7 +53,7 @@
     },
     {
       "path": "sdks/openapi/chat-models-v2.bundle.json",
-      "sha256": "5a057dbdfa4a36159952a325ea3481e01bbd86b55fa959e4348125072bd53da1"
+      "sha256": "f661bc9c11d12acdc0d48935115aedcb80f98b32b0f54af36a58b2c47895d7a7"
     }
   ]
 }
