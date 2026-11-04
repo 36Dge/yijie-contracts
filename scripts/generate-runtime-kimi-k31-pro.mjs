@@ -65,7 +65,8 @@ const nativeSources = [...expectedPatches, '.yijie/upstream.env', 'scripts/build
   'scripts/verify-web-search-sources-schema.py', 'scripts/write-runtime-manifest.py',
   'scripts/runtime-env.sh', 'scripts/runtime_manifest.py', 'scripts/canonicalize-json.py',
   'scripts/verify-release-lock-drift.py', 'codex-rs/core/config.schema.json',
-  `${schema}/v2/TurnStartParams.json`, `${artifact}/runtime-manifest.json`];
+  `${schema}/v2/TurnStartParams.json`, `${schema}/v2/ConfigBatchWriteParams.json`,
+  `${schema}/v2/ConfigWriteResponse.json`, `${artifact}/runtime-manifest.json`];
 // Product sources must match one immutable Runtime commit; build artifacts
 // remain separately content-addressed and are never substituted into Git.
 const sourceCommit = execFileSync('git', ['rev-parse', 'HEAD'], {cwd: runtime, encoding: 'utf8'}).trim();
@@ -81,6 +82,11 @@ var NativeConfigSchema []byte
 // NativeTurnStartSchema retains the canonical UserInput variants, including Skill.
 //go:embed turn-start.schema.json
 var NativeTurnStartSchema []byte
+//go:embed config-batch-write.schema.json
+var NativeConfigBatchWriteSchema []byte
+//go:embed config-write-response.schema.json
+var NativeConfigWriteResponseSchema []byte
+const NativeConfigReloadMethod = "config/batchWrite"
 const RuntimeBinarySHA256 = ${JSON.stringify(manifest.runtime.sha256)}
 const RuntimeManifestSHA256 = ${JSON.stringify(hash(manifestBytes))}
 const RuntimeBinarySize int64 = ${manifest.runtime.sizeBytes}
@@ -92,12 +98,14 @@ const outputs = {
   'sdks/go/openapi/runtime-kimi-k31-pro/artifact.gen.go': execFileSync('gofmt', [], {input: go, encoding: 'utf8'}),
   'sdks/go/openapi/runtime-kimi-k31-pro/config.schema.json': read('codex-rs/core/config.schema.json'),
   'sdks/go/openapi/runtime-kimi-k31-pro/turn-start.schema.json': read(`${schema}/v2/TurnStartParams.json`),
+  'sdks/go/openapi/runtime-kimi-k31-pro/config-batch-write.schema.json': read(`${schema}/v2/ConfigBatchWriteParams.json`),
+  'sdks/go/openapi/runtime-kimi-k31-pro/config-write-response.schema.json': read(`${schema}/v2/ConfigWriteResponse.json`),
 };
 outputs['compatibility/runtime-kimi-k31-pro/source.lock.json'] = JSON.stringify({
   schema_version: 1, feature: 'FEAT-164', mode: 'local_worktree_candidate', release: false,
   authority: 'yijie-codex canonical execution-progress candidate retaining the entire answer-completion, retrieval guard and FEAT-164 r5 chain; repeated unchanged accepted plans enter the existing same-turn bounded answer-only finalizer; native rollout_budget owns shared weighted accounting and exhaustion; no additional budget counter or Host execution loop; unchanged wire, permissions and history',
   runtime_source: {repository: 'https://github.com/36Dge/yijie-codex.git', base_commit: sourceCommit},
-  upstream: manifest.upstream, methods: base.methods, experimental_api: false,
+  upstream: manifest.upstream, methods: [...base.methods, 'config/batchWrite'], experimental_api: false,
   wire_authority: {path: 'compatibility/runtime-input-only/source.lock.json', sha256: hash(readFileSync(path.join(root, 'compatibility/runtime-input-only/source.lock.json')))},
   runtime_artifact: manifest.runtime, runtime_manifest_sha256: hash(manifestBytes), runtime_schema: manifest.appServer,
   native_sources: nativeSources.map(name => ({path: name, sha256: hash(read(name))})),

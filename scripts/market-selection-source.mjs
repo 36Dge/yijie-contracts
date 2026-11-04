@@ -1,3 +1,4 @@
+import YAML from 'yaml';
 // Shared local source loader for generation and lint. No HTTP discovery.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -6,7 +7,7 @@ import {fileURLToPath} from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 export const marketSelectionSourcePath='compatibility/market-selection/wire.schema.json';
 export const marketSelectionManifestPath='compatibility/market-selection/native-ipc.json';
-const read=p=>JSON.parse(readFileSync(path.join(root,p),'utf8'));
+const read=p=>YAML.parse(readFileSync(path.join(root,p),'utf8'));
 function keys(value,expected){assert.deepEqual(Object.keys(value).sort(),[...expected].sort());}
 function boundedText(v){assert.equal(typeof v,'string');assert.ok(v.length>0&&v.length<=2048);}
 export function validateMarketSelectionManifest(m,names){
@@ -26,9 +27,9 @@ export function validateMarketSelectionManifest(m,names){
 }
 export function loadMarketSelectionSource(){
  const sourcePath=marketSelectionSourcePath,source=read(sourcePath),manifest=read(marketSelectionManifestPath),own=source.$defs,names=Object.keys(own);
- keys(source,['$schema','$id','$defs']);assert.equal(source.$schema,'https://json-schema.org/draft/2020-12/schema');assert.equal(source.$id,'https://schemas.yijie.ai/chat/market-selection/v1');assert.equal(names.length,18);
+ keys(source,['$schema','$id','$defs']);assert.equal(source.$schema,'https://json-schema.org/draft/2020-12/schema');assert.equal(source.$id,'https://schemas.yijie.ai/chat/market-selection/v1');assert.equal(names.length,20);
  validateMarketSelectionManifest(manifest,names);
- const allowed=new Set([sourcePath,'openapi/market-connectors/market-connectors.yaml','jsonschema/chat/model-selection-v1.schema.json','jsonschema/chat/message.schema.json']);
+ const allowed=new Set([sourcePath,'openapi/market-connectors/market-connectors.yaml','jsonschema/chat/model-selection-v1.schema.json','jsonschema/chat/message.schema.json','openapi/agent-host/agent-host.yaml']);
  const refs=new Map(names.map(n=>[sourcePath+'#/$defs/'+n,n]));
  const documents=new Map([[sourcePath,source],[marketSelectionManifestPath,manifest]]),defs={};
  const pointers=new Map(names.map(n=>[n,[sourcePath,'/$defs/'+n]]));
@@ -38,7 +39,7 @@ export function loadMarketSelectionSource(){
  function bundle(s,p){
   if(Array.isArray(s))return s.map(v=>bundle(v,p));if(!s||typeof s!=='object')return s;
   if(s.$ref){const[target,fragment]=targetFor(p,s.$ref),key=target+'#'+fragment;if(!refs.has(key)){let name=fragment.split('/').at(-1);while(pointers.has(name))name='Referenced'+name;refs.set(key,name);pointers.set(name,[target,fragment]);}return{$ref:'#/$defs/'+refs.get(key)};}
-  return Object.fromEntries(Object.entries(s).map(([k,v])=>[k,bundle(v,p)]));
+  return Object.fromEntries(Object.entries(s).filter(([k])=>!k.startsWith('x-')&&k!=='discriminator').map(([k,v])=>[k,bundle(v,p)]));
  }
  for(const[name,[p,pointer]]of pointers)defs[name]=bundle(resolvePointer(p,pointer),p);
  return {sourcePath,source,manifest,own,names,documents,defs,schema:{$schema:source.$schema,$id:source.$id,$defs:defs}};

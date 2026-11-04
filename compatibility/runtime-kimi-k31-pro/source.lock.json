@@ -14,7 +14,8 @@
     "url": "https://github.com/openai/codex.git"
   },
   "methods": [
-    "thread/inputOnlyPolicy/read"
+    "thread/inputOnlyPolicy/read",
+    "config/batchWrite"
   ],
   "experimental_api": false,
   "wire_authority": {
@@ -230,6 +231,14 @@
       "sha256": "befb5c2c14416ff6cc67e1b8b7b17e5966378e7ccf3bc30f771c75ab762e67ed"
     },
     {
+      "path": ".yijie/build/execution-progress-v1/aarch64-apple-darwin/generated-json-schema/v2/ConfigBatchWriteParams.json",
+      "sha256": "fb382df3fbfb02c782f8373b7d553e757b461f502c3587223dc0b74e8515d202"
+    },
+    {
+      "path": ".yijie/build/execution-progress-v1/aarch64-apple-darwin/generated-json-schema/v2/ConfigWriteResponse.json",
+      "sha256": "8cd93ef4e2af27f896f967f17f50cf1b25b91cbaae0d135a29ccd8ce8fbd0aef"
+    },
+    {
       "path": ".yijie/build/execution-progress-v1/aarch64-apple-darwin/runtime-manifest.json",
       "sha256": "cdf6aed681dba948823b96f8d6fb423c53c44921f3de77a4a334391d35a8d1a8"
     }
@@ -237,13 +246,13 @@
   "generators": [
     {
       "path": "scripts/generate-runtime-kimi-k31-pro.mjs",
-      "sha256": "78c1abc73ce1d6dce67311e210b129bbeeab12d8e7982eb601571ff8285d47e4"
+      "sha256": "5c7f77fa1f112741ac1a5ff9d2399230a00182fe087623571dd4cfafa3ffd831"
     }
   ],
   "generated": [
     {
       "path": "sdks/go/openapi/runtime-kimi-k31-pro/artifact.gen.go",
-      "sha256": "46dce8e033cec5193cb40ddd38fe8652465d68a8a119e34ba2eb8a3785fe7f80"
+      "sha256": "0ad71a237c9325a56c76d61eb6678d3398bfe7aeb95223f24749097333d57ce1"
     },
     {
       "path": "sdks/go/openapi/runtime-kimi-k31-pro/config.schema.json",
@@ -252,6 +261,14 @@
     {
       "path": "sdks/go/openapi/runtime-kimi-k31-pro/turn-start.schema.json",
       "sha256": "befb5c2c14416ff6cc67e1b8b7b17e5966378e7ccf3bc30f771c75ab762e67ed"
+    },
+    {
+      "path": "sdks/go/openapi/runtime-kimi-k31-pro/config-batch-write.schema.json",
+      "sha256": "fb382df3fbfb02c782f8373b7d553e757b461f502c3587223dc0b74e8515d202"
+    },
+    {
+      "path": "sdks/go/openapi/runtime-kimi-k31-pro/config-write-response.schema.json",
+      "sha256": "8cd93ef4e2af27f896f967f17f50cf1b25b91cbaae0d135a29ccd8ce8fbd0aef"
     }
   ]
 }

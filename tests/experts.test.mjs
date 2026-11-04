@@ -99,10 +99,13 @@ test('ordinary v2 records retain exact source constraints inside v3',()=>{
   assert.deepEqual(v3.$defs.ordinaryEntry.allOf,inherited(v2.$defs.skillEntry.allOf));
   assert.deepEqual(v3.allOf[0],inherited(v2.allOf[0]));
 });
-test('new output is synchronized without regenerating or changing old authorities',()=>{
+test('expert generation check is read-only and preserves retained bundle authorities',()=>{
+  const shared=['compatibility/market-host/wire.schema.json','compatibility/market-selection/wire.schema.json','scripts/generate.mjs','scripts/generate-market-host.mjs','scripts/market-broker-codegen.mjs'];
+  const before=new Map(shared.map(file=>[file,readFileSync(file)]));
   execFileSync(process.execPath,['scripts/generate-experts.mjs','--check'],{stdio:'pipe'});
   const lock=read('compatibility/experts/source.lock.json');assert.equal(lock.release,false);
-  for(const file of ['jsonschema/skills/skill-bundle-manifest-v1.schema.json','jsonschema/skills/skill-bundle-manifest-v2.schema.json','compatibility/market-host/wire.schema.json','compatibility/market-selection/wire.schema.json','scripts/generate.mjs','scripts/generate-market-host.mjs','scripts/market-broker-codegen.mjs']){
+  for(const file of shared)assert.deepEqual(readFileSync(file),before.get(file),file);
+  for(const file of ['jsonschema/skills/skill-bundle-manifest-v1.schema.json','jsonschema/skills/skill-bundle-manifest-v2.schema.json']){
     assert.deepEqual(readFileSync(file),execFileSync('git',['show',lock.base_commit+':'+file]),file);
   }
 });

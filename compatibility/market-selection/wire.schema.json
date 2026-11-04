@@ -44,7 +44,7 @@
       }
     },
     "TextInput": {
-      "$ref": "../../jsonschema/chat/message.schema.json#/$defs/textContentBlock"
+      "$ref": "../../openapi/agent-host/agent-host.yaml#/components/schemas/StartTurnV2TextBlock"
     },
     "FileInput": {
       "type": "object",
@@ -299,6 +299,12 @@
         }
       },
       "description": "requestId is echoed only when a real canonical non-nil request UUID can be decoded; malformed input errors omit it, never fabricate identity. Optional fields reject explicit null."
+    },
+    "SelectedSkillRef": {
+      "$ref": "../../openapi/agent-host/agent-host.yaml#/components/schemas/SelectedSkillRef"
+    },
+    "SelectedSkills": {
+      "$ref": "../../openapi/agent-host/agent-host.yaml#/components/schemas/SelectedSkills"
     }
   }
 }

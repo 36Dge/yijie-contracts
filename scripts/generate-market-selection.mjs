@@ -48,6 +48,7 @@ function validation(s,exp){
   if(s.maxLength!==undefined)out+=`if ${exp}.chars().count()>${s.maxLength}{return Err("invalid selection text");}`;
   if(s.format==='uuid')out+=`if !canonical_id(${exp}){return Err("invalid selection UUID");}`;
   if(s.const!==undefined)out+=`if ${exp}!=${q(s.const)}{return Err("invalid selection constant");}`;
+  if(s.enum)out+=`if ![${s.enum.map(q).join(',')}].contains(&${exp}.as_str()){return Err("invalid selection enum");}`;
   if(s.pattern==='\\S')out+=`if ${exp}.trim().is_empty(){return Err("blank selection input");}`;
   else if(s.pattern==='^[0-9a-f]{64}$')out+=`if ${exp}.len()!=64||!${exp}.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b)){return Err("invalid selection digest");}`;
   else if(s.pattern)assert.equal(s.format,'uuid');
@@ -64,7 +65,7 @@ for(const name of names){
  if(s.oneOf){
   // Variant identity comes from the source discriminator, while the payload
   // retains its source definition name. Avoid repeating the Input suffix.
-  const variant=v=>pascal(resolved(v).properties.type.const);
+  const variant=v=>{const tag=resolved(v).properties.type;assert.ok(tag.const!==undefined||tag.enum?.length===1);return pascal(tag.const??tag.enum[0]);};
   rust+=`#[derive(Clone,PartialEq,Eq,Serialize,Deserialize)]#[serde(untagged)]pub enum ${name}{${s.oneOf.map(v=>`${variant(v)}(${type(v)}),`).join('')}}\nimpl ${name}{pub fn validate(&self)->Result<(),&'static str>{match self{${s.oneOf.map(v=>`Self::${variant(v)}(v)=>v.validate(),`).join('')}}}}\n`;
  }else if(s.type==='object'){
   const fields=Object.entries(s.properties),fieldsCode=fields.map(([f,v])=>`${!s.required.includes(f)?'#[serde(default,skip_serializing_if="Option::is_none",deserialize_with="optional_non_null")]':v.anyOf?'#[serde(deserialize_with="required_nullable")]':''}pub ${field(f)}:${s.required.includes(f)?type(v):`Option<${type(v)}>`},`).join('\n');

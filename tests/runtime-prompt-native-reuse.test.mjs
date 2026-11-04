@@ -11,7 +11,7 @@ const load = name => readFileSync(path.join(root, name));
 
 test('prompt adapters consume the pinned native config and Skill input schemas', () => {
   const lock = JSON.parse(load('compatibility/runtime-kimi-k31-pro/source.lock.json'));
-  for (const filename of ['config.schema.json', 'turn-start.schema.json']) {
+  for (const filename of ['config.schema.json', 'turn-start.schema.json', 'config-batch-write.schema.json', 'config-write-response.schema.json']) {
     const target = `sdks/go/openapi/runtime-kimi-k31-pro/${filename}`;
     const record = lock.generated.find(entry => entry.path === target);
     assert.ok(record);
@@ -25,4 +25,7 @@ test('prompt adapters consume the pinned native config and Skill input schemas',
   const turn = JSON.parse(load('sdks/go/openapi/runtime-kimi-k31-pro/turn-start.schema.json'));
   const validTurn = ajv.compile(turn);
   assert.equal(validTurn({threadId: 'ordinary-thread', input: [{type: 'text', text: 'Explain six times seven.'}, {type: 'skill', name: 'sample', path: '/ordinary/skills/sample/SKILL.md'}]}), true);
+  assert.ok(lock.methods.includes('config/batchWrite'));
+  const refresh = JSON.parse(load('sdks/go/openapi/runtime-kimi-k31-pro/config-batch-write.schema.json'));
+  assert.equal(ajv.compile(refresh)({edits: [], reloadUserConfig: true}), true);
 });
