@@ -8,7 +8,7 @@ import {fileURLToPath} from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const runtime = path.resolve(root, '../yijie-codex');
-const artifact = '.yijie/build/native-public-messages-v1/aarch64-apple-darwin';
+const artifact = '.yijie/build/native-public-messages-r2/aarch64-apple-darwin';
 assert.ok(process.argv.slice(2).every(arg => arg === '--check'));
 const check = process.argv.includes('--check');
 const schema = `${artifact}/generated-json-schema`;
@@ -39,7 +39,8 @@ const expectedPatches = [...base.native_sources.filter(row => row.path.endsWith(
   '.yijie/patches/chat-models/0013-answer-completion.patch',
   '.yijie/patches/chat-models/0014-execution-progress.patch',
   '.yijie/patches/chat-models/0015-public-progress-completion.patch',
-  '.yijie/patches/chat-models/0016-native-public-messages.patch'];
+  '.yijie/patches/chat-models/0016-native-public-messages.patch',
+  '.yijie/patches/chat-models/0017-native-public-message-validation.patch'];
 assert.deepEqual(manifest.patches.map(row => row.path), expectedPatches);
 for (const row of manifest.patches) assert.equal(hash(read(row.path)), row.sha256, row.path);
 const files = readdirSync(path.join(runtime, schema), {recursive: true})
@@ -64,6 +65,8 @@ const nativeSources = [...expectedPatches, '.yijie/upstream.env', 'scripts/build
   'scripts/build-public-progress-completion.sh', 'scripts/prepare-public-progress-completion.py', 'scripts/write-public-progress-completion-runtime-manifest.py',
   'scripts/build-native-public-messages.sh', 'scripts/prepare-native-public-messages.py', 'scripts/write-native-public-messages-runtime-manifest.py',
   'docs/native-public-messages.md',
+  'scripts/build-native-public-messages-r2.sh', 'scripts/prepare-native-public-messages-r2.py', 'scripts/write-native-public-messages-r2-runtime-manifest.py',
+  'docs/native-public-messages-r2.md',
   'scripts/check-feat164-state-close.py',
   'scripts/write-kimi-k31-pro-runtime-manifest.py',
   'scripts/write-chat-model-stream-runtime-manifest.py', 'scripts/write-web-search-sources-runtime-manifest.py',
@@ -108,7 +111,7 @@ const outputs = {
 };
 outputs['compatibility/runtime-kimi-k31-pro/source.lock.json'] = JSON.stringify({
   schema_version: 1, feature: 'FEAT-164', mode: 'local_worktree_candidate', release: false,
-  authority: 'yijie-codex canonical native-public-messages candidate retaining the complete prior patch chain; opted-in model-authored declarations supply effective public AgentMessage phase and same-turn continuation through the existing Runtime loop; original provider phase/text/declarations remain in raw model history; native phase and end_turn retain precedence, while unknown messages remain unknown; no Host execution loop, hooks activation, permission change, migration or history rewriting; existing budgets, cancellation and two-attempt answer-only finalization remain authoritative',
+  authority: 'yijie-codex canonical native-public-messages-r2 candidate retaining the complete prior patch chain; one valid model-authored declaration supplies effective public AgentMessage phase and same-turn continuation through the existing Runtime loop; multiple unquoted standalone declarations invalidate the declared phase and cannot request continuation, without splitting the real Item or dropping readable text; control lines are consumed in streaming and complete public projections, quoted/code examples stay literal; original provider phase/text/declarations remain in raw model history; native phase and end_turn retain precedence, while unknown messages remain unknown; no Host execution loop, hooks activation, permission change, migration or history rewriting; existing budgets, cancellation and two-attempt answer-only finalization remain authoritative',
   runtime_source: {repository: 'https://github.com/36Dge/yijie-codex.git', base_commit: sourceCommit},
   upstream: manifest.upstream, methods: [...base.methods, 'config/batchWrite'], experimental_api: false,
   wire_authority: {path: 'compatibility/runtime-input-only/source.lock.json', sha256: hash(readFileSync(path.join(root, 'compatibility/runtime-input-only/source.lock.json')))},
