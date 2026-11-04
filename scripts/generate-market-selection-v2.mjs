@@ -36,7 +36,7 @@ function type(s){
  return ({string:'String',integer:'i64',boolean:'bool'})[s.type??typeof s.const]??(()=>{throw Error(q(s));})();
 }
 function validation(s,exp){
- if(s.$ref){const n=s.$ref.split('/').at(-1);if(n==='Selection')return `validate_selection(${exp})?;`;if(n==='ProfileId')return '';if(resolved(s).type==='object'||resolved(s).oneOf)return `${exp}.validate()?;`;return validation(resolved(s),exp);}
+ if(s.$ref){const n=s.$ref.split('/').at(-1);if(n==='Selection')return `validate_selection(${exp})?;`;if(n==='ProfileId'||resolved(s).enum)return '';if(resolved(s).type==='object'||resolved(s).oneOf)return `${exp}.validate()?;`;return validation(resolved(s),exp);}
  if(s.anyOf)return `${exp}.as_ref().map(|value|->Result<(),&'static str>{${validation(s.anyOf[0],'value')}Ok(())}).transpose()?;`;
  let out='';
  if(s.type==='array'){

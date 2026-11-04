@@ -21,6 +21,15 @@ mod tests {
         json!({"schemaVersion":1,"requestId":ID,"contextId":ID,"payload":{"operationId":ID,"projectId":null,"contentBlocks":[{"type":"text","text":"普通本地输入"}],"intent":{"profileId":"minimax-m3-high-v1","expectedRevision":0},"selection":[]}})
     }
     #[test]
+    fn selected_skill_text_preserves_identity_and_checks_inline_discriminator() {
+        let text = json!({"type":"text","text":"ordinary request","skills":[{"id":"ordinary-sample","version":"1.0.0"}]});
+        let value: TextInput = serde_json::from_value(text.clone()).unwrap();
+        assert_eq!(value.skills.unwrap()[0].id, "ordinary-sample");
+        let mut wrong = text;
+        wrong["type"] = json!("image");
+        assert!(serde_json::from_value::<TextInput>(wrong).is_err());
+    }
+    #[test]
     fn vectors_match_shared_bytes_and_digest() {
         let vectors: Vec<Value> = serde_json::from_str(include_str!(
             "../../../fixtures/market-selection/digest-vectors.json"

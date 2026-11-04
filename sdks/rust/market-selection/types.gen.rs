@@ -729,23 +729,6 @@ impl Error {
                 Ok(())
             })
             .transpose()?;
-        {
-            let value_code = &self.code;
-            if ![
-                "invalid_request",
-                "context_invalid",
-                "permission_denied",
-                "not_found",
-                "request_conflict",
-                "selection_stale",
-                "execution_unavailable",
-                "temporarily_unavailable",
-            ]
-            .contains(&value_code.as_str())
-            {
-                return Err("invalid selection enum");
-            }
-        }
         Ok(())
     }
 }
