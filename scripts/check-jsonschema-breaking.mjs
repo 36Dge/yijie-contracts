@@ -6,12 +6,19 @@ import { isDeepStrictEqual, promisify } from "node:util";
 const exec = promisify(execFile);
 const baseRef = process.argv[2] ?? "main";
 
-async function findSchemas(dir) {
+async function findSchemas(dir, suffix = ".json") {
   const files = [];
-  for (const entry of await readdir(dir, { withFileTypes: true })) {
+  let entries;
+  try {
+    entries = await readdir(dir, { withFileTypes: true });
+  } catch (error) {
+    if (error.code === "ENOENT") return files;
+    throw error;
+  }
+  for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) files.push(...(await findSchemas(fullPath)));
-    else if (entry.name.endsWith(".json")) files.push(fullPath.split(path.sep).join("/"));
+    if (entry.isDirectory()) files.push(...(await findSchemas(fullPath, suffix)));
+    else if (entry.name.endsWith(suffix)) files.push(fullPath.split(path.sep).join("/"));
   }
   return files.sort();
 }
@@ -252,15 +259,20 @@ function compareSchema(oldSchema, newSchema, location, errors) {
   }
 }
 
-const currentFiles = await findSchemas("jsonschema");
+// compatibility includes private cross-process wire authorities as well as
+// provenance manifests. Compare schemas, not mutable source-lock metadata.
+const currentFiles = [...await findSchemas("jsonschema"), ...await findSchemas("compatibility", ".schema.json")].sort();
 const { stdout: previousFileList } = await exec("git", [
   "ls-tree",
   "-r",
   "--name-only",
   baseRef,
   "jsonschema",
+  "compatibility",
 ]);
-const previousFiles = previousFileList.split("\n").filter((file) => file.endsWith(".json"));
+const previousFiles = previousFileList.split("\n").filter((file) =>
+  file.startsWith("jsonschema/") && file.endsWith(".json") ||
+  file.startsWith("compatibility/") && file.endsWith(".schema.json"));
 const currentSet = new Set(currentFiles);
 const errors = [];
 
@@ -278,4 +290,4 @@ for (const file of currentFiles) {
 if (errors.length > 0) {
   throw new Error(`Breaking JSON Schema changes detected:\n${errors.join("\n")}`);
 }
-console.log(`No breaking JSON Schema changes relative to ${baseRef}.`);
+console.log(`No breaking JSON Schema changes relative to ${baseRef}. Checked ${previousFiles.length} previous schemas across jsonschema/ and compatibility/.`);

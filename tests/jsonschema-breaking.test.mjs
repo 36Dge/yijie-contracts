@@ -9,14 +9,14 @@ import test from "node:test";
 const exec = promisify(execFile);
 const checker = path.resolve("scripts/check-jsonschema-breaking.mjs");
 
-async function createFixture(t, schema) {
+async function createFixture(t, schema, file = "jsonschema/example.schema.json") {
   const directory = await mkdtemp(path.join(tmpdir(), "yijie-jsonschema-breaking-"));
   t.after(() => rm(directory, { recursive: true, force: true }));
   await mkdir(path.join(directory, "scripts"), { recursive: true });
-  await mkdir(path.join(directory, "jsonschema"), { recursive: true });
+  await mkdir(path.dirname(path.join(directory, file)), { recursive: true });
   await copyFile(checker, path.join(directory, "scripts/check-jsonschema-breaking.mjs"));
   await writeFile(
-    path.join(directory, "jsonschema/example.schema.json"),
+    path.join(directory, file),
     `${JSON.stringify(schema, null, 2)}\n`,
   );
   await exec("git", ["init", "--initial-branch=main"], { cwd: directory });
@@ -69,6 +69,30 @@ test("JSON Schema checker accepts additive and loosening changes", async (t) => 
   });
   const { stdout } = await check(directory);
   assert.match(stdout, /No breaking JSON Schema changes/);
+});
+
+test("private wire optional property removal is detected by the existing schema checker", async (t) => {
+  const file = "compatibility/ordinary/wire.schema.json";
+  const baseline = { ...baselineSchema(), additionalProperties: false };
+  const directory = await createFixture(t, baseline, file);
+  const changed = structuredClone(baseline); delete changed.properties.state;
+  await writeFile(path.join(directory, file), JSON.stringify(changed));
+  await assert.rejects(check(directory), error => {
+    assert.match(error.stderr, /compatibility\/ordinary\/wire.schema.json: property removed: state/);
+    return true;
+  });
+});
+
+test("private wire file deletion is detected and provenance metadata is not treated as schema", async (t) => {
+  const file = "compatibility/ordinary/wire.schema.json";
+  const directory = await createFixture(t, baselineSchema(), file);
+  await writeFile(path.join(directory, "compatibility/ordinary/source.lock.json"), '{"commit":"local-test-only"}');
+  assert.match((await check(directory)).stdout, /Checked 1 previous schemas/);
+  await rm(path.join(directory, file));
+  await assert.rejects(check(directory), error => {
+    assert.match(error.stderr, /compatibility\/ordinary\/wire.schema.json: schema file was removed/);
+    return true;
+  });
 });
 
 test("JSON Schema checker rejects common object and scalar tightening", async (t) => {

@@ -8,18 +8,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import YAML from 'yaml';
 
-export const openApiChecks = [
-  'openapi/public/public.yaml', 'openapi/admin/admin.yaml',
-  'openapi/internal/internal.yaml', 'openapi/agent-host/agent-host.yaml',
-  'openapi/native-turn-timing/native-turn-timing.yaml',
-  'openapi/native-conversation/native-conversation.yaml',
-  'openapi/runtime-permissions/runtime-permissions.yaml',
-  'openapi/native-conversation-v2/native-conversation-v2.yaml',
-  'openapi/runtime-permissions-v2/runtime-permissions-v2.yaml',
-  'openapi/workflow-local/workflow-local.yaml',
-  'openapi/scheduled-plan-draft/scheduled-plan-draft.yaml',
-];
-const roots = ['openapi', 'jsonschema'];
+const roots = ['openapi', 'jsonschema', 'compatibility'];
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const literalKeys = new Set(['example', 'examples', 'default', 'const', 'enum']);
 const dictionaryKeys = new Set(['properties', 'patternProperties', '$defs', 'definitions',
@@ -37,6 +26,13 @@ export function sourceSnapshot(root, revision = null) {
   return new Map([...new Set(files)].map(file => [file,
     revision ? git(['show', `${revision}:${file}`]) : readFileSync(path.join(root, file)),
   ]));
+}
+
+// Discover authorities from each snapshot, not a second list that can omit new
+// versioned APIs. Removed old entrypoints remain required and fail projection.
+export function openApiSources(files) {
+  return [...files].filter(([file, bytes]) => file.startsWith('openapi/') &&
+    typeof YAML.parse(bytes.toString())?.openapi === 'string').map(([file]) => file).sort();
 }
 
 function pointerTarget(document, fragment, context) {
@@ -57,8 +53,7 @@ export function projectSnapshot(files, outputRoot, entrypoints) {
   const ids = new Map();
   for (const [file, document] of parsed) {
     if (typeof document?.$id !== 'string') continue;
-    assert.ok(!ids.has(document.$id), `Ambiguous schema ID: ${document.$id}`);
-    ids.set(document.$id, file);
+    ids.set(document.$id, [...(ids.get(document.$id) ?? []), file]);
   }
   const visited = new Set(), receipts = [], rewrites = [];
   function resolveRef(origin, ref) {
@@ -67,7 +62,13 @@ export function projectSnapshot(files, outputRoot, entrypoints) {
     const fragment = separator < 0 ? '' : ref.slice(separator + 1);
     let target;
     if (!location) target = origin;
-    else if (ids.has(location)) target = ids.get(location);
+    else if (ids.has(location)) {
+      // Historical schema snapshots may retain the same logical ID. A relative
+      // path is unambiguous; an actual ambiguous ID reference must fail closed.
+      const matches = ids.get(location);
+      assert.equal(matches.length, 1, `Ambiguous schema ID: ${location}`);
+      [target] = matches;
+    }
     else {
       assert.ok(!/^[a-z][a-z0-9+.-]*:/i.test(location) && !location.startsWith('/') && !location.includes('?'),
         `No local schema authority for ${ref} in ${origin}`);
@@ -131,14 +132,15 @@ function main() {
   assert.match(base, /^[0-9a-f]{40}$/);
   const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
   const previous = sourceSnapshot(root, base), current = sourceSnapshot(root);
-  const specs = openApiChecks.filter(file => previous.has(file));
+  const specs = openApiSources(previous);
+  const addedSpecs = openApiSources(current).filter(file => !previous.has(file));
   assert.ok(specs.length > 0, 'Baseline has no checked OpenAPI sources');
   const receipt = {
     schema_version: 1, base_commit: base, network_resolution: false,
     projection: 'reference-location-only; non-reference values verified identical',
-    specs,
+    specs, added_specs: addedSpecs,
     base: projectSnapshot(previous, path.join(outputRoot, 'base'), specs),
-    current: projectSnapshot(current, path.join(outputRoot, 'current'), specs),
+    current: projectSnapshot(current, path.join(outputRoot, 'current'), [...specs, ...addedSpecs]),
   };
   writeFileSync(path.join(outputRoot, 'projection.json'), JSON.stringify(receipt, null, 2) + '\n', { flag: 'wx' });
   writeFileSync(path.join(outputRoot, 'specs.txt'), specs.join('\n') + '\n', { flag: 'wx' });

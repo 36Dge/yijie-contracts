@@ -5,7 +5,7 @@ import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
-import { projectSnapshot, sourceSnapshot } from '../scripts/prepare-breaking-inputs.mjs';
+import { openApiSources, projectSnapshot, sourceSnapshot } from '../scripts/prepare-breaking-inputs.mjs';
 
 const entry = 'openapi/example/api.yaml';
 const source = 'jsonschema/example.schema.json';
@@ -89,4 +89,31 @@ test('historical snapshot reads its complete schema closure from the exact exist
   const file = 'jsonschema/scheduled-tasks/draft-execution-v1.schema.json';
   assert.deepEqual(files.get(file), execFileSync('git', ['show', `${base}:${file}`]));
   assert.ok(files.has('openapi/scheduled-plan-draft/scheduled-plan-draft.yaml'));
+});
+
+test('all versioned OpenAPI authorities are discovered and private schema references stay source-local', t => {
+  const root = temporary(t), files = snapshot();
+  const privateSource = 'compatibility/example/wire.schema.json';
+  files.set(privateSource, files.get(source)); files.delete(source);
+  const extra = 'openapi/example-v2/example-v2.yaml';
+  files.set(extra, files.get(entry));
+  assert.deepEqual(openApiSources(files), [extra, entry].sort());
+  const receipt = projectSnapshot(files, root, openApiSources(files));
+  assert.ok(receipt.files.some(file => file.path === privateSource));
+  const actual = openApiSources(sourceSnapshot(process.cwd()));
+  for (const file of ['chat-models-v2', 'market-connectors', 'native-conversation-v4', 'native-conversation-v6', 'scheduled-task-recovery']) {
+    assert.ok(actual.includes(`openapi/${file}/${file}.yaml`), file);
+  }
+});
+
+test('removed OpenAPI authority fails instead of disappearing from the comparison', t => {
+  const old = snapshot(), current = snapshot(); current.delete(entry);
+  assert.throws(() => projectSnapshot(current, temporary(t), openApiSources(old)), /Missing OpenAPI source/);
+});
+
+test('unreferenced historical duplicate IDs do not select or replace a current authority', t => {
+  const files = snapshot();
+  files.set('compatibility/retained/wire.schema.json', Buffer.from('{"$id":"https://schemas.yijie.ai/retained/v1","type":"string"}'));
+  files.set('compatibility/retained/legacy/wire.schema.json', Buffer.from('{"$id":"https://schemas.yijie.ai/retained/v1","type":"object"}'));
+  assert.equal(projectSnapshot(files, temporary(t), [entry]).files.length, 2);
 });

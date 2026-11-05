@@ -22,4 +22,4 @@ Runtime 独立投影入口是 `scripts/generate-runtime-kimi-k31-pro.mjs`，从�
 
 比较基线：已发布 f16a497e1377f45747f8ff9292b4b60cf2027f88、Native 6f632f155eacdaf93df0e0b00b5dab9e369c5442 / 811f38d6b104fa18477107e7ac91a85e19c445d1、scheduled db4458fe94572c4df41a114005d54a049bb79b1f、experts 35e0949c95d7a59ca5480715c225766dcc822056、当前 chat-model family 前身 54be9314dce5319b049dc0a236800fd1a1fdd7a1、实施前 HEAD bedf4159b0fa22e24efe6c295f8b0d4845df56b7。不新增 supported tag 或改变旧 family 的支持窗口。
 
-现有 `check-breaking.sh` 的部分 scheduled baseline 会把 canonical `$id` 当远端下载地址。FEAT-164 使用 `node scripts/check-feat164-breaking.mjs <full-sha>`：分别提取 baseline 与当前的原始 OpenAPI/JSON Schema，在临时副本中只把 canonical 引用改为同一来源树的本地位置，随后比较所有 baseline OpenAPI，并执行原 Protobuf/AsyncAPI/JSON Schema 检查。不会改源、跳过 scheduled family、放宽约束或把工作树当发布来源。原入口失败与离线比较结果均留在元仓 FEAT-164 evidence。
+历史 `check-breaking.sh` 曾将部分 scheduled baseline 的 canonical `$id` 当远端地址；当前共享入口已修复为来源内离线解析。`node scripts/check-feat164-breaking.mjs <full-sha>` 现在仅转调同一入口，自动覆盖所有 baseline OpenAPI 及 compatibility 私有 wire，并执行原 Protobuf/AsyncAPI/JSON Schema 检查。不改源、不放宽约束、不把工作树当发布来源；原失败证据保持。当前范围见 [离线比较说明](offline-breaking-checks.md)。
