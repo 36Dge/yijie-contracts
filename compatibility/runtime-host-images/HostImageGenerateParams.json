@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "callId": {
+      "type": "string"
+    },
+    "prompt": {
+      "type": "string"
+    },
+    "threadId": {
+      "type": "string"
+    },
+    "turnId": {
+      "type": "string"
+    },
+    "useCurrentReference": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "callId",
+    "prompt",
+    "threadId",
+    "turnId",
+    "useCurrentReference"
+  ],
+  "title": "HostImageGenerateParams",
+  "type": "object"
+}

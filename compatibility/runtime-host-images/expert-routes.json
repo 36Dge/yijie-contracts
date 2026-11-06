@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "scope": "Only exact, verified expert resources select external image creation. Dispatch still requires the original turn lease and ordinary approvals.",
+  "routes": [
+    {
+      "route": "linkfox-mannequin-v1",
+      "expertId": "linkfox-expert-aigc-imagegen-mannequin-to-model",
+      "version": "0.1.0",
+      "roleSha256": "042a9acb59429f68adccd0a925fa9d83ea8ba1890b2a1b3f23ecd9049703b80c",
+      "service": "linkfox",
+      "proxy": "proxy_call",
+      "method": "aigc/imageGenAsync"
+    }
+  ]
+}
