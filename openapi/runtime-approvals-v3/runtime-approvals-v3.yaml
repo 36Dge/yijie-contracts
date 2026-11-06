@@ -1,0 +1,79 @@
+openapi: 3.0.3
+info:
+  title: Yijie native command approval choices
+  version: 0.1.0
+  description: Read the existing callback snapshot together with the exact command prefixes offered by Codex. No matching or rule storage is owned by the Host or Desktop.
+servers:
+  - url: http://127.0.0.1:9130
+security:
+  - LocalBearer: []
+paths:
+  /v3/agent-sessions/{agent_session_id}/runtime-approvals:
+    parameters:
+      - $ref: '#/components/parameters/Session'
+    get:
+      operationId: listRuntimeApprovalChoices
+      summary: Read callbacks and their optional native command-prefix choices atomically
+      responses:
+        '200':
+          description: Current callback state; only pending command IDs can have a prefix.
+          headers:
+            Cache-Control: { schema: { type: string, enum: [no-store] } }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RuntimeApprovalChoices' }
+        '404': { description: Unknown session or unsupported route on an older Host. }
+  /v3/agent-sessions/{agent_session_id}/runtime-approvals/{approval_id}:
+    parameters:
+      - $ref: '#/components/parameters/Session'
+      - { name: approval_id, in: path, required: true, schema: { type: string, format: uuid } }
+    post:
+      operationId: acceptRuntimeCommandPrefix
+      summary: Return the bound callback's native execpolicy amendment to Codex
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SimilarCommandDecision' }
+      responses:
+        '200':
+          description: Original approval receipt after the native response was written.
+          headers:
+            Cache-Control: { schema: { type: string, enum: [no-store] } }
+          content:
+            application/json:
+              schema: { $ref: '../runtime-permissions-v2/runtime-permissions-v2.yaml#/components/schemas/RuntimeApproval' }
+        '400': { description: Invalid decision. Callers cannot supply a prefix. }
+        '404': { description: Unknown session or approval. }
+        '409': { description: Unavailable callback or conflicting decision. }
+        '503': { description: Native response not confirmed. }
+components:
+  securitySchemes:
+    LocalBearer: { type: http, scheme: bearer }
+  parameters:
+    Session: { name: agent_session_id, in: path, required: true, schema: { type: string, format: uuid } }
+  schemas:
+    RuntimeApprovalChoices:
+      type: object
+      additionalProperties: false
+      required: [requests, commandPrefixes]
+      properties:
+        requests:
+          type: array
+          maxItems: 128
+          items: { $ref: '../runtime-permissions-v2/runtime-permissions-v2.yaml#/components/schemas/RuntimeApproval' }
+        commandPrefixes:
+          type: object
+          maxProperties: 128
+          description: Approval UUID to unmodified native argv prefix, for display only. Withhold choices that cannot be shown faithfully.
+          additionalProperties:
+            type: array
+            minItems: 1
+            maxItems: 64
+            items: { type: string, minLength: 1, maxLength: 256 }
+    SimilarCommandDecision:
+      type: object
+      additionalProperties: false
+      required: [decision]
+      properties:
+        decision: { type: string, enum: [approve_similar] }

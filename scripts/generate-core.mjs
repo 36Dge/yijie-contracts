@@ -280,9 +280,11 @@ const openapiSpecs = [
   ["native-conversation", "nativeconversation", "openapi/native-conversation/native-conversation.yaml"],
   ["native-conversation-v2", "nativeconversationv2", "openapi/native-conversation-v2/native-conversation-v2.yaml"],
   ["runtime-permissions-v2", "runtimepermissionsv2", "openapi/runtime-permissions-v2/runtime-permissions-v2.yaml"],
+  ["runtime-approvals-v3", "runtimeapprovalsv3", "openapi/runtime-approvals-v3/runtime-approvals-v3.yaml"],
 ];
 
 for (const [name, goPackage, spec] of openapiSpecs) {
+  if (process.argv.includes("--runtime-approval-choices-only") && name !== "runtime-approvals-v3") continue;
   const tsOutput = `sdks/typescript/src/openapi/${name}.gen.ts`;
   const goOutput = `sdks/go/openapi/${name}/client.gen.go`;
   await mkdir(path.dirname(path.join(root, tsOutput)), { recursive: true });
@@ -306,6 +308,7 @@ for (const [name, goPackage, spec] of openapiSpecs) {
     "oapi-codegen",
     "-generate",
     name.startsWith("native-conversation") || name === "runtime-permissions-v2" ? "types,client,skip-prune" : "types,client",
+    ...(name === "runtime-approvals-v3" ? ["-import-mapping", "../runtime-permissions-v2/runtime-permissions-v2.yaml:github.com/36Dge/yijie-contracts/sdks/go/openapi/runtime-permissions-v2"] : []),
     "-package",
     goPackage,
     "-o",
@@ -321,6 +324,7 @@ for (const [name, goPackage, spec] of openapiSpecs) {
   if (name === "native-conversation-v2") await preserveNativeThreadStatusGoCompatibility(path.join(root, goOutput));
 }
 
+if (process.argv.includes("--runtime-approval-choices-only")) process.exit(0);
 await run("pnpm", ["exec", "buf", "generate"]);
 
 await mkdir(path.join(root, "sdks/asyncapi"), { recursive: true });

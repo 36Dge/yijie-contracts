@@ -20,7 +20,7 @@ export const families = [
   ['runtime-kimi-k31-pro', 'runtime-kimi-k31-pro'],
 ];
 export const focused = new Set(['--native-conversation-only', '--native-mcp-only',
-  '--runtime-permissions-only', '--artifact-files-only', '--workflow-local-only']);
+  '--runtime-permissions-only', '--runtime-approval-choices-only', '--artifact-files-only', '--workflow-local-only']);
 export const artifactFamilies = new Set(['artifact-media', 'market-selection',
   'market-broker-control', 'market-host', 'experts', 'chat-models-v2',
   'market-selection-v2', 'market-host-v2', 'experts-v2']);

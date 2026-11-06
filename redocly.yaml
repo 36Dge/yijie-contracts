@@ -15,6 +15,8 @@ apis:
     root: ./openapi/native-conversation-v2/native-conversation-v2.yaml
   runtime-permissions@v2:
     root: ./openapi/runtime-permissions-v2/runtime-permissions-v2.yaml
+  runtime-approvals@v3:
+    root: ./openapi/runtime-approvals-v3/runtime-approvals-v3.yaml
   events@v1:
     root: ./asyncapi/events.yaml
   workflow-local@v1:

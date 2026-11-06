@@ -1,5 +1,7 @@
 # Supported Contract Baselines
 
+命令审批选项 v3 为独立本地增量 HTTP 接口；旧 Host 对新原生规则文件的降级限制见[原生命令审批选项](runtime-approval-choices.md)。当前 fallback 为 `5f305cb7e9746ef58827fe9195f9b493c1dd26df`，保留 FEAT-144 的 v1/v2 兼容窗口及已发布基线；无新增发布 tag。
+
 ## FEAT-162 未激活 Basic/Pro 候选
 
 2026-10-29续验：通过[离线比较输入](offline-breaking-checks.md)修复自有schema URI解析，原8基线及d5792d6aad18352ce8d1c5d510d345004cab3bd6补充基线完整检查9/9通过；以前EOF日志保留。旧全量生成入口仍有独立基线失败，不据此宣称全部生成/激活资格通过，见元仓26/27。
