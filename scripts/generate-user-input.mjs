@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 // Source-first question API, with native question/answer schemas resolved from Runtime.
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
@@ -72,7 +73,15 @@ for(const[n,s]of structs){
  rust+=`#[derive(Clone,PartialEq,serde::Serialize,serde::Deserialize)]\n${s.additionalProperties===false?'#[serde(deny_unknown_fields)]':''}\npub struct ${n}{${fields.join('\n')}}\nimpl ${n}{pub fn validate(&self)->Result<(),&'static str>{${checks.join('\n')}Ok(())}}\nimpl std::fmt::Debug for ${n}{fn fmt(&self,f:&mut std::fmt::Formatter<'_>)->std::fmt::Result{f.write_str("${n}([REDACTED])")}}\n`;
 }
 outputs.set('sdks/rust/user-input/types.gen.rs',execFileSync('rustfmt',['--edition','2021'],{input:rust}));
-const lock={schema_version:1,feature:'FEAT-169',contract_version:spec.info.version,mode:'local_worktree_candidate',release:false,base_commit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),sources:Object.fromEntries([source,'scripts/generate-user-input.mjs','compatibility/runtime-interaction-tools/types.openapi.json','compatibility/runtime-interaction-tools/source.lock.json'].map(p=>[p,hash(read(p))])),generated:Object.fromEntries([...outputs].map(([p,b])=>[p,hash(b)]))};
+// Reuse the established local-candidate baseline convention. Committing the
+// already generated files must not invalidate their source/consumer checks.
+const lockPath = 'compatibility/user-input/source.lock.json';
+const base = existsSync(path.join(root, lockPath)) ? JSON.parse(read(lockPath)).base_commit
+  : execFileSync('git', ['rev-parse', 'HEAD'], {cwd: root, encoding: 'utf8'}).trim();
+assert.match(base, /^[a-f0-9]{40}$/);
+assert.equal(execFileSync('git', ['rev-parse', `${base}^{commit}`], {cwd: root, encoding: 'utf8'}).trim(), base);
+execFileSync('git', ['merge-base', '--is-ancestor', base, 'HEAD'], {cwd: root, stdio: 'pipe'});
+const lock={schema_version:1,feature:'FEAT-169',contract_version:spec.info.version,mode:'local_worktree_candidate',release:false,base_commit:base,sources:Object.fromEntries([source,'scripts/generate-user-input.mjs','compatibility/runtime-interaction-tools/types.openapi.json','compatibility/runtime-interaction-tools/source.lock.json'].map(p=>[p,hash(read(p))])),generated:Object.fromEntries([...outputs].map(([p,b])=>[p,hash(b)]))};
 outputs.set('compatibility/user-input/source.lock.json',json(lock));
 if(sync||check){
  for(const[from,to]of [

@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 // Source-first display contract and exact canonical Runtime input types.
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
@@ -106,7 +107,15 @@ for (const [name, def] of Object.entries(defs)) {
   rust += `#[derive(Debug,Clone,PartialEq,serde::Serialize,serde::Deserialize)]\n#[serde(deny_unknown_fields)]\npub struct ${name}{${fields.join('\n')}}\nimpl ${name}{pub fn validate(&self)->Result<(),&'static str>{${checks.join('\n')}Ok(())}}\n`;
 }
 outputs.set('sdks/rust/context-window/types.gen.rs', execFileSync('rustfmt', ['--edition', '2021'], { input: rust }));
-const lock = { schema_version: 1, contract_version: spec.info.version, mode: 'local_worktree_candidate', release: false, base_commit: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim(), sources: Object.fromEntries([source, 'scripts/generate-context-window.mjs', nativeLockPath, nativePath, '../yijie-codex/codex-rs/protocol/src/protocol.rs', '../yijie-codex/codex-rs/core/src/session/mod.rs', 'docs/context-window-restore.md'].map(p => [p, hash(read(p))])), generated: Object.fromEntries([...outputs].map(([p, b]) => [p, hash(b)])) };
+// Reuse the established local-candidate baseline convention. Committing the
+// already generated files must not invalidate their source/consumer checks.
+const lockPath = 'compatibility/context-window/source.lock.json';
+const base = existsSync(path.join(root, lockPath)) ? JSON.parse(read(lockPath)).base_commit
+  : execFileSync('git', ['rev-parse', 'HEAD'], {cwd: root, encoding: 'utf8'}).trim();
+assert.match(base, /^[a-f0-9]{40}$/);
+assert.equal(execFileSync('git', ['rev-parse', `${base}^{commit}`], {cwd: root, encoding: 'utf8'}).trim(), base);
+execFileSync('git', ['merge-base', '--is-ancestor', base, 'HEAD'], {cwd: root, stdio: 'pipe'});
+const lock = { schema_version: 1, contract_version: spec.info.version, mode: 'local_worktree_candidate', release: false, base_commit: base, sources: Object.fromEntries([source, 'scripts/generate-context-window.mjs', nativeLockPath, nativePath, '../yijie-codex/codex-rs/protocol/src/protocol.rs', '../yijie-codex/codex-rs/core/src/session/mod.rs', 'docs/context-window-restore.md'].map(p => [p, hash(read(p))])), generated: Object.fromEntries([...outputs].map(([p, b]) => [p, hash(b)])) };
 outputs.set('compatibility/context-window/source.lock.json', json(lock));
 if (sync || check) {
   for (const [from, to] of [
