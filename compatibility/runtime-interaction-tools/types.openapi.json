@@ -1,0 +1,127 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Canonical native user input projection",
+    "version": "0.1.0"
+  },
+  "paths": {},
+  "components": {
+    "schemas": {
+      "ToolRequestUserInputParams": {
+        "description": "EXPERIMENTAL. Params sent with a request_user_input event.",
+        "properties": {
+          "autoResolutionMs": {
+            "default": null,
+            "format": "int64",
+            "minimum": 0,
+            "type": "integer",
+            "nullable": true
+          },
+          "itemId": {
+            "type": "string"
+          },
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/ToolRequestUserInputQuestion"
+            },
+            "type": "array"
+          },
+          "threadId": {
+            "type": "string"
+          },
+          "turnId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "itemId",
+          "questions",
+          "threadId",
+          "turnId"
+        ],
+        "type": "object"
+      },
+      "ToolRequestUserInputOption": {
+        "description": "EXPERIMENTAL. Defines a single selectable option for request_user_input.",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "description",
+          "label"
+        ],
+        "type": "object"
+      },
+      "ToolRequestUserInputQuestion": {
+        "description": "EXPERIMENTAL. Represents one request_user_input question and its required options.",
+        "properties": {
+          "header": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "isOther": {
+            "default": false,
+            "type": "boolean"
+          },
+          "isSecret": {
+            "default": false,
+            "type": "boolean"
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/ToolRequestUserInputOption"
+            },
+            "type": "array",
+            "nullable": true
+          },
+          "question": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "header",
+          "id",
+          "question"
+        ],
+        "type": "object"
+      },
+      "ToolRequestUserInputResponse": {
+        "description": "EXPERIMENTAL. Response payload mapping question ids to answers.",
+        "properties": {
+          "answers": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ToolRequestUserInputAnswer"
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "answers"
+        ],
+        "type": "object"
+      },
+      "ToolRequestUserInputAnswer": {
+        "description": "EXPERIMENTAL. Captures a user's answer to a request_user_input question.",
+        "properties": {
+          "answers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "answers"
+        ],
+        "type": "object"
+      }
+    }
+  }
+}

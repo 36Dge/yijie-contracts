@@ -38,7 +38,8 @@ for (const source of [...new Set([...pairs.map(([file]) => file), "scripts/gener
   if (commit && !bytes.equals(execFileSync("git", ["show", `${commit}:${source}`], {cwd: root, maxBuffer: 16 << 20}))) throw new Error(`Uncommitted source: ${source}`);
   sources[source] = createHash("sha256").update(bytes).digest("hex");
 }
-const manifest = {schema_version: 1, contract_family_version: "0.6.0", published: false,
+const familyVersion = JSON.parse(await fs.readFile(path.join(root, "openapi/native-conversation-v6/native-conversation-v6.yaml"), "utf8")).info.version;
+const manifest = {schema_version: 1, contract_family_version: familyVersion, published: false,
   provenance: candidate ? "local-working-tree-candidate" : "git-commit", ...(commit ? {contracts: {full_commit: commit}} : {}), sources};
 const outputs = [];
 for (const [source, destination] of pairs) outputs.push([destination, await fs.readFile(path.join(root, source))]);

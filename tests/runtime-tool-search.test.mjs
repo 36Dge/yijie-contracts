@@ -1,0 +1,32 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import Ajv from 'ajv';
+import Ajv2020 from 'ajv/dist/2020.js';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));
+const profile=read('compatibility/runtime-tool-search/profile.json');
+const schema=read('sdks/go/openapi/runtime-tool-search/model-catalog.schema.json');
+const defs=schema.definitions??schema.$defs;
+const native=defs.ModelInfo.properties;
+const ajv=new (schema.$schema.includes('2020-12')?Ajv2020:Ajv)({strict:false});
+const validate=ajv.compile({$schema:schema.$schema,...(schema.definitions?{definitions:defs}:{$defs:defs}),type:'object',properties:{supports_search_tool:native.supports_search_tool,tool_search_transport:native.tool_search_transport},required:['supports_search_tool'],additionalProperties:false});
+test('tool search profile is confined to the reviewed ordinary Kimi route',()=>{
+ assert.equal(profile.feature,'FEAT-170');assert.equal(profile.release,false);
+ assert.equal(profile.scope,'ordinary-root-thread-catalog-only');
+ assert.equal(profile.public_wire_change,false);
+ assert.deepEqual(Object.keys(profile.model_overrides),['kimi-k3.1-pro']);
+ assert(validate(profile.model_overrides['kimi-k3.1-pro']));
+ assert(validate({supports_search_tool:false}));
+ assert.equal(validate({supports_search_tool:true,tool_search_transport:'ordinary_invalid_mode'}),false);
+});
+test('candidate retains prior native protocols and extends only its ordered patch chain',()=>{
+ const lock=read('compatibility/runtime-tool-search/source.lock.json');
+ const previous=read('compatibility/runtime-interaction-tools/source.lock.json');
+ assert.deepEqual(lock.patches.slice(0,-1),previous.patches);
+ assert.equal(lock.patches.at(-1).path,'.yijie/patches/chat-models/0023-tool-search-function-transport.patch');
+ assert.deepEqual(lock.runtime_schema,previous.runtime_schema);
+ assert.equal(lock.mode,'local_worktree_candidate');assert.equal(lock.release,false);
+});

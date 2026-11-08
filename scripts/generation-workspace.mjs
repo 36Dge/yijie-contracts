@@ -8,7 +8,7 @@ import YAML from 'yaml';
 
 const sourceDirs = ['scripts', 'openapi', 'jsonschema', 'protobuf', 'asyncapi', 'compatibility'];
 const sourceFiles = ['package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'go.mod', 'go.sum', 'buf.yaml', 'buf.gen.yaml', 'openapi-typescript.redocly.yaml', 'redocly.yaml', 'tsconfig.json'];
-export const outputFile = file => file.startsWith('sdks/') || /^compatibility\/[^/]+\/source\.lock\.json$/.test(file);
+export const outputFile = file => file.startsWith('sdks/') || /^compatibility\/runtime-interaction-tools\/(types\.openapi|ToolRequestUserInputParams|ToolRequestUserInputResponse)\.json$/.test(file) || /^compatibility\/[^/]+\/source\.lock\.json$/.test(file);
 const excluded = new Set(['node_modules', 'target', 'dist', '.git', 'fixtures']);
 async function filesUnder(root, dir) {
   const files = [];

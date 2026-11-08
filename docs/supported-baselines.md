@@ -1,5 +1,13 @@
 # Supported Contract Baselines
 
+## Context window 只读本地增量（2026-11-08）
+
+独立 `context-window/0.1.0`，`contract-impact = additive`；没有新增发布 tag。
+即时 fallback 为 `c24d73fde83a01b5dd2a9ded8defb5bbef34e311`。
+保留本文登记的全部既有支持窗口；新路径/IPC 不向旧 Native6/SSE13 客户端发送新字段。
+本族在旧基线不存在，本次不修改任何既有 wire 源契约。旧族已有工作树改动属于前序任务，
+不得混称本功能已通过全项目 breaking gate。来源、方向兼容与定向证据见 [context-window.md](context-window.md)。
+
 命令审批选项 v3 为独立本地增量 HTTP 接口；旧 Host 对新原生规则文件的降级限制见[原生命令审批选项](runtime-approval-choices.md)。当前 fallback 为 `5f305cb7e9746ef58827fe9195f9b493c1dd26df`，保留 FEAT-144 的 v1/v2 兼容窗口及已发布基线；无新增发布 tag。
 
 ## FEAT-162 未激活 Basic/Pro 候选
