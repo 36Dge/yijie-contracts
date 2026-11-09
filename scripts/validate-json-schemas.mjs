@@ -62,7 +62,9 @@ ajv.addKeyword({
 });
 for (const keyword of ["x-event-schema-version", "x-resource-version"]) ajv.addKeyword({keyword,schemaType:"number"});
 for (const keyword of ["x-media-types", "x-http"]) ajv.addKeyword({keyword,schemaType:"object"});
-const files = (await findSchemas("jsonschema")).sort();
+for (const keyword of ["x-tools", "x-authority"]) ajv.addKeyword({keyword,schemaType:"object"});
+ajv.addKeyword({keyword:"x-version",schemaType:"string"});
+const files = process.argv.includes('--document-runtime-only') ? ['jsonschema/document-runtime/v1.schema.json'] : (await findSchemas("jsonschema")).sort();
 const documents = [];
 for (const file of files) {
   if (file === "jsonschema/workflow-editor/bridge-v1.schema.json") {
@@ -78,6 +80,7 @@ for (const file of files) {
 // The private IPC family intentionally lives outside the generic public-SDK
 // schema scan. Register its authoritative same-source projection explicitly;
 // validate the manifest and every wire definition without changing HTTP rules.
+if (!process.argv.includes('--document-runtime-only')) {
 const marketSelectionSchema = loadMarketSelectionSource().schema;
 ajv.addSchema(marketSelectionSchema);
 documents.push({ file: marketSelectionSourcePath, schema: marketSelectionSchema });
@@ -91,11 +94,15 @@ for (const family of [loadMarketHostSource(), loadMarketProviderSource()]) {
 const webRetrievalSchema = loadWebRetrievalSource().schema;
 ajv.addSchema(webRetrievalSchema);
 documents.push({ file: webRetrievalSourcePath, schema: webRetrievalSchema });
+}
 
 // Register all canonical sources before compilation so directory order is not
 // part of the contract. The workflow check above retains its existing authority.
 for (const { file, schema } of documents) {
   ajv.compile(schema);
+  if (file === 'jsonschema/document-runtime/v1.schema.json') {
+    for (const name of Object.keys(schema.definitions)) ajv.compile({$ref:`${schema.$id}#/definitions/${name}`});
+  }
   if (file.startsWith("jsonschema/scheduled-tasks/") || file.startsWith("compatibility/market-") || file === webRetrievalSourcePath) {
     for (const name of Object.keys(schema.$defs ?? {})) {
       ajv.compile({ $ref: `${schema.$id}#/$defs/${name}` });
@@ -103,4 +110,4 @@ for (const { file, schema } of documents) {
   }
 }
 
-console.log(`Validated ${files.length} JSON Schema documents and the private market wire authorities.`);
+console.log(process.argv.includes('--document-runtime-only') ? 'Validated document runtime schema and every definition.' : `Validated ${files.length} JSON Schema documents and the private market wire authorities.`);

@@ -1,0 +1,11 @@
+# FEAT-171 内置文档能力 v1
+
+Owner段成威已确认FEAT-171/ADR-0024及实施。新只读工具族本身additive，完整Feature因原生协作退出策略/profile配对按breaking治理。仅local/demo_fast工作树候选；禁止发布，fallback为`babc097206fb4edc772532d1d19e41597b6d6e50`。不改变旧publisher/MIME/事件/ACK或7天Native保留。
+
+权威源`jsonschema/document-runtime/v1.schema.json`；Go/Rust/TS由`generate-document-runtime.mjs`生成。Host是provider，固定Runtime消费工具定义，Desktop消费bundle部署字段。模型只提供格式或artifact_id；thread/turn与资格由现artifact MCP私有元信息、Host会话绑定校验。内部HTTP仍使用现owner bearer，不是新公开服务。
+
+`load_document_environment`读取已配对的受管bundle；未就绪返回空入口，不自动下载或执行。`get_artifact_status`优先匹配ACK；committed只表示Native曾提交，Host重启或无同generation事实返回unknown，不能据此重做生成。返回值不保证永久可读；Native保留期独立。
+
+新工具只在支持的Runtime/Host/Desktop配对后声明；旧客户端不获得新值。bundle文件清单含普通文件和内部相对symlink的摘要，不允许模型指定路径。实际binary摘要在标准构建后固定；JSON模型里的路径不出现在公开状态/持久日志中。
+
+检查仅本族schema、生成一致性、旧artifact源逐字不变及consumer conformance；不把这些结果描述为全项目兼容。原生候选/canonical配置先形成，再同步原生兼容投影与Host，最终本地激活前必须完成正常关闭资格。Owner在实现复审后已授权Git提交并推送既有远端分支；保持本地候选性质，未授权产品发布，不把源码提交当成发行资格。

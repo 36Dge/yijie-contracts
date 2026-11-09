@@ -5,6 +5,7 @@
 node_modules/
 sdks/typescript/dist/
 .artifacts/
+/.local/
 coverage/
 *.log
 # FEAT-157 local Rust conformance build output.

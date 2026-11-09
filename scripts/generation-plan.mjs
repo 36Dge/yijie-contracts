@@ -22,6 +22,7 @@ export const families = [
   ['runtime-interaction-tools', 'runtime-interaction-tools'], ['user-input', 'user-input'],
   ['context-window', 'context-window'],
   ['runtime-tool-search', 'runtime-tool-search'],
+  ['runtime-documents', 'runtime-documents'], ['document-runtime', 'document-runtime'],
 ];
 export const focused = new Set(['--native-conversation-only', '--native-mcp-only',
   '--runtime-permissions-only', '--runtime-approval-choices-only', '--artifact-files-only', '--workflow-local-only']);
