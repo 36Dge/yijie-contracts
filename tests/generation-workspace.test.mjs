@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
-import {mkdir, mkdtemp, readFile, rm, writeFile} from 'node:fs/promises';
+import {mkdir, mkdtemp, readFile, readdir, rm, writeFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -13,14 +14,33 @@ test('all registered receipt outputs and existing public exports remain covered'
   const exports = JSON.parse(await readFile(path.join(root, 'scripts/sdk-exports.json')));
   const old = execFileSync('git', ['show', '61137174a25dc368e0006f27633fd4a9ad097aa6:sdks/typescript/src/index.ts'], {cwd: root, encoding: 'utf8'}).trim().split('\n').slice(1);
   for (const line of old) assert.ok(exports.includes(line), `Lost export: ${line}`);
-  assert.equal(new Set(families.map(([f]) => f)).size, 23);
+  const registered = new Set(families.map(([f]) => f));
+  assert.equal(registered.size, families.length, 'Duplicate generation family');
+  const receipts = [];
+  for (const entry of await readdir(path.join(root, 'compatibility'), {withFileTypes: true})) {
+    if (!entry.isDirectory()) continue;
+    try { await readFile(path.join(root, 'compatibility', entry.name, 'source.lock.json')); }
+    catch (error) { if (error.code === 'ENOENT') continue; throw error; }
+    receipts.push(entry.name);
+  }
+  assert.deepEqual([...registered].sort(), receipts.sort(), 'Every receipt needs a canonical producer');
   const generated = new Map();
-  for (const [family] of families) {
+  for (const [family, generator] of families) {
+    await readFile(path.join(root, `scripts/generate-${generator}.mjs`));
     const lock = JSON.parse(await readFile(path.join(root, `compatibility/${family}/source.lock.json`)));
-    for (const file of lock.generated) {
+    let outputs = lock.generated;
+    if (outputs === undefined) {
+      // Native capability receipts pin the Runtime/schema instead of an SDK
+      // output list. Their canonical producers verify those immutable inputs.
+      assert.ok(lock.runtime_artifact && lock.runtime_schema, `Missing output authority: ${family}`);
+      outputs = lock.schemas ?? [];
+    } else if (!Array.isArray(outputs)) {
+      outputs = Object.entries(outputs).map(([path, sha256]) => ({path, sha256}));
+    }
+    for (const file of outputs) {
       if (generated.has(file.path)) assert.equal(generated.get(file.path), file.sha256, `Conflicting output: ${file.path}`);
       generated.set(file.path, file.sha256);
-      await readFile(path.join(root, file.path));
+      assert.equal(createHash('sha256').update(await readFile(path.join(root, file.path))).digest('hex'), file.sha256, `Stale output: ${file.path}`);
     }
   }
   assert.ok(generated.size > 100);
@@ -28,6 +48,7 @@ test('all registered receipt outputs and existing public exports remain covered'
 
 test('ordinary producer failure and stale comparison never write the checkout', async () => {
   const before = await snapshot(root);
+  assert.ok(before.has('docs/context-window-restore.md'), 'Generator document input is missing from staging');
   await assert.rejects(withWorkspace(root, async stage => {
     await writeFile(path.join(stage, 'sdks/typescript/src/index.ts'), '// ordinary temporary output\n');
     throw Error('ordinary generation error');

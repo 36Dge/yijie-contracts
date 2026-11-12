@@ -75,6 +75,7 @@ host_origin: string;
 host_token: string;
 capability: string;
 document_runtime_enabled?: boolean;
+media?: MediaAdapterCapability;
 }
 export interface InputReceipt {
 schema_version: 1;
@@ -84,4 +85,8 @@ sha256: string;
 size_bytes: number;
 format: "txt" | "md" | "html" | "csv" | "json" | "docx" | "pptx" | "xlsx" | "pdf";
 expires_at: number;
+}
+export interface MediaAdapterCapability {
+capability: string;
+host_token: string;
 }

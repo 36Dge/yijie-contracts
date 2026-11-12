@@ -7,7 +7,9 @@ import path from 'node:path';
 import YAML from 'yaml';
 
 const sourceDirs = ['scripts', 'openapi', 'jsonschema', 'protobuf', 'asyncapi', 'compatibility'];
-const sourceFiles = ['package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'go.mod', 'go.sum', 'buf.yaml', 'buf.gen.yaml', 'openapi-typescript.redocly.yaml', 'redocly.yaml', 'tsconfig.json'];
+// context-window's existing receipt hashes this design input as well as its
+// schema. Include it in staging/concurrent-edit checks; it is never an output.
+const sourceFiles = ['package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'go.mod', 'go.sum', 'buf.yaml', 'buf.gen.yaml', 'openapi-typescript.redocly.yaml', 'redocly.yaml', 'tsconfig.json', 'docs/context-window-restore.md'];
 export const outputFile = file => file.startsWith('sdks/') || /^compatibility\/runtime-interaction-tools\/(types\.openapi|ToolRequestUserInputParams|ToolRequestUserInputResponse)\.json$/.test(file) || /^compatibility\/[^/]+\/source\.lock\.json$/.test(file);
 const excluded = new Set(['node_modules', 'target', 'dist', '.git', 'fixtures']);
 async function filesUnder(root, dir) {

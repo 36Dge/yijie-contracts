@@ -1,5 +1,9 @@
 # Supported Contract Baselines
 
+## FEAT-172 内置媒体 MCP（2026-11-12）
+
+未发布本地候选，整体入口/凭据行为为 breaking；固定 Runtime 不变。新增媒体契约与共享 AdapterStartup 可选 media 配置使用实施前完整基线 `d658a2bd5dd6ebd5ae5c79a547489eca205d6ede`。保留下方既有支持窗口，不新增 tag；仅新 Host/adapter/launcher 同次构建使用。方向与生成规则见 [媒体契约](media-generation.md)。
+
 ## Context window 只读本地增量（2026-11-08）
 
 独立 `context-window/0.1.0`，`contract-impact = additive`；没有新增发布 tag。

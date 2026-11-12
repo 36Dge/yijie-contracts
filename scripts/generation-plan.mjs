@@ -18,11 +18,13 @@ export const families = [
   ['runtime-input-only', 'runtime-input-only'],
   ['runtime-chat-models', 'runtime-chat-models'],
   ['runtime-kimi-k31-pro', 'runtime-kimi-k31-pro'],
+  ['runtime-host-images', 'runtime-host-images'],
   ['runtime-native-tools', 'runtime-native-tools'],
   ['runtime-interaction-tools', 'runtime-interaction-tools'], ['user-input', 'user-input'],
   ['context-window', 'context-window'],
   ['runtime-tool-search', 'runtime-tool-search'],
   ['runtime-documents', 'runtime-documents'], ['document-runtime', 'document-runtime'],
+  ['media-generation', 'media-generation'],
 ];
 export const focused = new Set(['--native-conversation-only', '--native-mcp-only',
   '--runtime-permissions-only', '--runtime-approval-choices-only', '--artifact-files-only', '--workflow-local-only']);

@@ -62,8 +62,10 @@ ajv.addKeyword({
 });
 for (const keyword of ["x-event-schema-version", "x-resource-version"]) ajv.addKeyword({keyword,schemaType:"number"});
 for (const keyword of ["x-media-types", "x-http"]) ajv.addKeyword({keyword,schemaType:"object"});
-for (const keyword of ["x-tools", "x-authority"]) ajv.addKeyword({keyword,schemaType:"object"});
+for (const keyword of ["x-tools", "x-authority", "x-mcp", "x-private-http"]) ajv.addKeyword({keyword,schemaType:"object"});
+ajv.addKeyword({keyword:"x-expert-routes",schemaType:"array"});
 ajv.addKeyword({keyword:"x-version",schemaType:"string"});
+ajv.addKeyword({keyword:"x-artifact-status-authority",schemaType:"string"});
 const files = process.argv.includes('--document-runtime-only') ? ['jsonschema/document-runtime/v1.schema.json'] : (await findSchemas("jsonschema")).sort();
 const documents = [];
 for (const file of files) {
