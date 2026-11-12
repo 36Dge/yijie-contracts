@@ -25,6 +25,7 @@ export const families = [
   ['runtime-tool-search', 'runtime-tool-search'],
   ['runtime-documents', 'runtime-documents'], ['document-runtime', 'document-runtime'],
   ['media-generation', 'media-generation'],
+  ['video-generation', 'video-generation'],
 ];
 export const focused = new Set(['--native-conversation-only', '--native-mcp-only',
   '--runtime-permissions-only', '--runtime-approval-choices-only', '--artifact-files-only', '--workflow-local-only']);

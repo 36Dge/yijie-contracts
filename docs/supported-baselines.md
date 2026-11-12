@@ -1,5 +1,9 @@
 # Supported Contract Baselines
 
+## FEAT-173 内置视频 MCP 增量候选
+
+独立 `video-generation/1` 为 additive，本地未发布；实施前 fallback 为 `cca445ca30c8d13b11185212b3d709bae67cf4aa`。既有 Runtime、图片、Artifact、专家族及下方支持窗口不变，不新增 tag。源、消费者、生成、失败和回滚边界见 [视频契约](video-generation.md)。
+
 ## FEAT-172 内置媒体 MCP（2026-11-12）
 
 未发布本地候选，整体入口/凭据行为为 breaking；固定 Runtime 不变。新增媒体契约与共享 AdapterStartup 可选 media 配置使用实施前完整基线 `d658a2bd5dd6ebd5ae5c79a547489eca205d6ede`。保留下方既有支持窗口，不新增 tag；仅新 Host/adapter/launcher 同次构建使用。方向与生成规则见 [媒体契约](media-generation.md)。
