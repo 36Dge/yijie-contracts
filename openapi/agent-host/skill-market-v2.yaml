@@ -1,0 +1,113 @@
+openapi: 3.1.0
+info:
+  title: Yijie native Skill marketplace local API
+  version: 2.0.0-candidate
+  description: |
+    FEAT-174 local-only candidate. This is a separate versioned surface; v1
+    operations retain their exact replay codec. No response exposes local paths.
+    JSON bodies use the shared skill-market-v2 source, not handwritten DTOs.
+    Both pending and needs_attention receipts prevent compatibility rollback.
+    Rollback must preserve later user intent, including a completed uninstall;
+    it cannot reactivate a retained legacy installation as a side effect.
+    Current offers may grow or shrink. Validated retired legacy installations
+    remain identifiable and manageable independently of the current offers.
+servers:
+  - url: http://127.0.0.1:{port}
+    variables:
+      port: {default: '18080'}
+security:
+  - localBearer: []
+paths:
+  /v2/skills:
+    get:
+      operationId: listSkillMarketV2
+      summary: List bundled offers and native installation facts
+      x-local-capability: plugin.read
+      responses:
+        '200':
+          description: Current offer, native inventory, and published pending identities.
+          content:
+            application/json:
+              schema: {$ref: '../../jsonschema/skills/market-v2.schema.json#/$defs/Catalog'}
+        default: {$ref: '#/components/responses/Error'}
+  /v2/skills/operations:
+    post:
+      operationId: mutateSkillMarketV2
+      summary: Submit a versioned local skill lifecycle operation
+      x-local-capability: plugin.manage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '../../jsonschema/skills/market-v2.schema.json#/$defs/Mutation'}
+      responses:
+        '200': {$ref: '#/components/responses/Operation'}
+        default: {$ref: '#/components/responses/Error'}
+  /v2/skills/imports/{operation_id}:
+    post:
+      operationId: importSkillMarketV2
+      summary: Import local skill source bytes
+      x-local-capability: plugin.manage
+      description: |
+        Native file-picker bound bytes, never a renderer path. Required length
+        1..67108864; standalone SKILL.md is at most 1048576 bytes. SHA-256 binds
+        the bytes to this operation. The Native client retains operation identity
+        for querying or cancellation if a connection is interrupted.
+      parameters:
+        - {$ref: '#/components/parameters/OperationId'}
+        - in: query
+          name: filename
+          required: true
+          schema: {type: string, minLength: 1, maxLength: 256}
+        - in: header
+          name: X-Skill-SHA256
+          required: true
+          schema: {type: string, pattern: '^[0-9a-f]{64}$'}
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema: {type: string, format: binary, maxLength: 67108864}
+      responses:
+        '200': {$ref: '#/components/responses/Operation'}
+        default: {$ref: '#/components/responses/Error'}
+  /v2/skills/operations/{operation_id}:
+    get:
+      operationId: readSkillOperationV2
+      summary: Read the durable skill operation result
+      x-local-capability: plugin.read
+      parameters:
+        - {$ref: '#/components/parameters/OperationId'}
+      responses:
+        '200': {$ref: '#/components/responses/Operation'}
+        default: {$ref: '#/components/responses/Error'}
+  /v2/skills/operations/{operation_id}/cancel:
+    post:
+      operationId: cancelSkillOperationV2
+      summary: Request normal skill operation cancellation
+      x-local-capability: plugin.manage
+      parameters:
+        - {$ref: '#/components/parameters/OperationId'}
+      responses:
+        '200': {$ref: '#/components/responses/Operation'}
+        default: {$ref: '#/components/responses/Error'}
+components:
+  securitySchemes:
+    localBearer: {type: http, scheme: bearer}
+  parameters:
+    OperationId:
+      in: path
+      name: operation_id
+      required: true
+      schema: {type: string, format: uuid}
+  responses:
+    Operation:
+      description: Durable operation receipt; pending is not installed or cancelled success.
+      content:
+        application/json:
+          schema: {$ref: '../../jsonschema/skills/market-v2.schema.json#/$defs/Operation'}
+    Error:
+      description: Sanitized error (400 invalid input, 401 unauthenticated, 403 capability denied, 409 conflict, 503 unavailable).
+      content:
+        application/json:
+          schema: {$ref: '../../jsonschema/skills/market-v2.schema.json#/$defs/ErrorResponse'}

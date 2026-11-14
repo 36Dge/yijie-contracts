@@ -1,0 +1,39 @@
+openapi: 3.1.0
+info:
+  title: Local market pre-dispatch rejection proof
+  version: 1.0.0-candidate
+  description: |
+    FEAT-174 local paired candidate. Existing accepted/pending/uncertain receipts
+    and their durable codecs do not change. This read-only proof is created only
+    under the existing submission ownership/serialization boundary, before native
+    mutation, and atomically fences both original operation identities.
+    Lost responses query the original proof; absence is unknown, never permission
+    to resend. Native must match original host, task, local session, submission,
+    turn operation and selection digest before using its existing failed path.
+servers:
+  - url: http://127.0.0.1:{port}
+    variables:
+      port: {default: '18080'}
+security:
+  - localBearer: []
+paths:
+  /v1/market-chat/tasks/{taskId}/operations/{turnOperationId}/rejection:
+    get:
+      operationId: readMarketSubmissionRejectionV1
+      summary: Read the original owner-bound non-dispatch proof
+      parameters:
+        - {in: path, name: taskId, required: true, schema: {type: string, format: uuid}}
+        - {in: path, name: turnOperationId, required: true, schema: {type: string, format: uuid}}
+        - {in: header, name: X-Yijie-Market-Request-Id, required: true, schema: {type: string, format: uuid}}
+      responses:
+        '200':
+          description: Durable proof bound to the original same-owner operation.
+          content:
+            application/json:
+              schema: {$ref: '../../jsonschema/agent/market-submission-rejection-v1.schema.json#/$defs/Response'}
+        '404': {description: No proof; no inference about dispatch is permitted.}
+        '401': {description: Invalid local bearer.}
+        '403': {description: Native owner or task binding differs.}
+components:
+  securitySchemes:
+    localBearer: {type: http, scheme: bearer}
