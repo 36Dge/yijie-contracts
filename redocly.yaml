@@ -1,4 +1,12 @@
 apis:
+  builtin-web-local@v1:
+    root: ./openapi/local/web-retrieval.yaml
+  builtin-web-host@v1:
+    root: ./openapi/agent-host/builtin-web.yaml
+  builtin-web-public@v1:
+    root: ./openapi/public/web-retrieval.yaml
+  builtin-web-internal@v1:
+    root: ./openapi/internal/web-retrieval.yaml
   native-turn-timing@v1:
     root: ./openapi/native-turn-timing/native-turn-timing.yaml
   public@v1:

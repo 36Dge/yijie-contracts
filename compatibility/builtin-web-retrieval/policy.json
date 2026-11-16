@@ -1,0 +1,142 @@
+{
+  "contract_id": "builtin-web-retrieval/1",
+  "contract_version": "0.1.0",
+  "feature": "FEAT-175",
+  "release": false,
+  "wire_authority": "compatibility/builtin-web-retrieval/wire.schema.json",
+  "reuse_authority": "compatibility/web-retrieval/wire.schema.json",
+  "server_name": "yijie_web",
+  "completion_instructions": "Built-in read-only web retrieval needs no connector selection. Use returned results to decide follow-up retrieval: continue only for a specific missing part of the requested deliverable, without adding verification goals. Once the requested items or facts are supported, finish within the user's full output limit.",
+  "collection_instructions": "For an unfiltered source list or material collection, call kimi_web_search (Basic). Titles, URLs and short descriptions for later reading are a collection deliverable, not ordinary Q&A or a researched answer. Provider-hosted pre-search does not replace this Basic step; reuse a sufficient collection already returned by Basic for the same need. With include_content=false, enough relevant titles, URLs and snippets satisfy a metadata-only list. Do not run Pro or Fetch merely to verify those links or improve that completed list. Site/date filters or researched conclusions instead require Pro.",
+  "research_instructions": "Ordinary questions normally use native web_search; an explicit URL-reading request uses kimi_web_fetch. For a researched answer or comparison needing body evidence, or a search with explicit site/date restrictions, call kimi_web_search_pro before answering and pass requested sites/time_window filters. An unfiltered list of sources for later reading belongs to Basic. Provider-hosted pre-search may occur independently, but does not replace this Pro step or its filters. Reuse sufficient Pro evidence already returned for the same information need; do not repeat a successful search just to satisfy this rule.",
+  "server_instructions": "In Code Mode, inspect or emit structuredContent rather than both structuredContent and content. Preserve error/truncation status and never claim missing content was retrieved.",
+  "approval_mode": "auto",
+  "tool_timeout_seconds": 60,
+  "startup_timeout_seconds": 10,
+  "tools": [
+    {
+      "name": "kimi_web_search",
+      "title": "网页资料采集",
+      "description": "Within schema bounds, set limit to the requested item count when specified; collect more only if relevant results are insufficient. Use include_content=false for source metadata, true only when the user needs collected page bodies.",
+      "input": "SearchArguments",
+      "output": "SearchOutput",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "path": "/v1/tools/search",
+      "method": "POST"
+    },
+    {
+      "name": "kimi_web_search_pro",
+      "title": "网页研究检索",
+      "description": "Returns query-relevant body chunks and source URLs. Mentioning a site in query alone does not apply a filter. Use a focused query for facts missing from a truncated page.",
+      "input": "ProArguments",
+      "output": "ProOutput",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "path": "/v1/tools/search_pro",
+      "method": "POST"
+    },
+    {
+      "name": "kimi_web_fetch",
+      "title": "读取指定网页",
+      "description": "Read an explicitly requested public HTTP(S) URL, or a returned research source whose body is still needed after consuming Pro. A URL in a source list or used only as an example is not itself a reading request. This tool accepts only url, with no pagination or adjustable content limit. A successful truncated=true result is usable partial evidence: do not refetch it to obtain a missing tail. Changing only #fragment is not pagination; reuse the returned page body. If required facts remain missing, use a focused Pro query with sites or state the gap. An explicit refresh is a new need for the same page.",
+      "input": "FetchArguments",
+      "output": "FetchOutput",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "path": "/v1/tools/fetch",
+      "method": "POST"
+    }
+  ],
+  "error_messages": {
+    "invalid_arguments": "网页检索参数无效。",
+    "session_expired": "产品会话已过期，请恢复易界会话。",
+    "not_entitled": "当前账户没有网页检索资格。",
+    "quota_exceeded": "网页检索额度已用尽。",
+    "busy": "网页检索暂时繁忙。",
+    "upstream_unavailable": "网页检索服务暂不可用。",
+    "timeout": "网页检索请求超时，未自动重试。",
+    "no_content": "网页未返回可用正文。",
+    "response_too_large": "网页检索结果超过限制。",
+    "invalid_response": "网页检索服务返回了无效结果。",
+    "cancelled": "网页检索已取消。",
+    "outcome_unknown": "请求可能已发送，结果暂时未知。",
+    "operation_conflict": "操作标识与原请求不一致。",
+    "operation_expired": "操作标识已超过新准入期限。",
+    "result_unavailable": "原操作结果正文不可恢复，请勿自动重发。"
+  },
+  "expert_default": "inherit",
+  "expert_policies": [
+    {
+      "expert_id": "data-analyst-pro",
+      "version": "0.1.0",
+      "role_sha256": "cc86509bd4f6289f60ea8677cc5e813b2547d99aabbae14309c22a7d8ac4ca78",
+      "policy": "disabled"
+    },
+    {
+      "expert_id": "data-analyst-pro",
+      "version": "0.1.1",
+      "role_sha256": "34a44b6580e5b284e925dbf2719c9f73d30b4ef74f354269437a3438a1bbe877",
+      "policy": "disabled"
+    },
+    {
+      "expert_id": "data-analyst-pro",
+      "version": "0.1.2",
+      "role_sha256": "ca15eb3ce9578c52f32b0aeaedae786e54a5a7737a34ec1b7bbe9f9b8f4bd910",
+      "policy": "disabled"
+    }
+  ],
+  "parameters": {
+    "delegation_ttl_seconds": 300,
+    "renew_before_expiry_seconds": 60,
+    "new_operation_max_age_seconds": 300,
+    "new_operation_max_future_seconds": 60,
+    "operation_retention_days": 30,
+    "expired_grant_retention_hours": 24,
+    "subject_concurrency": 2,
+    "gateway_queue_wait_seconds": 5,
+    "api_timeout_seconds": 45,
+    "binding_wait_seconds": 5,
+    "mcp_result_bytes": 65536
+  },
+  "semantics": {
+    "business_retry": "never_except_explicit_no_dispatch_401_once_same_operation",
+    "gateway_backpressure": "Before API operation admission, the existing MCP gateway waits at most 5 seconds for one of 2 local dispatch slots. Native cancellation, root revocation and binding clear cancel queued calls. Queue expiry returns busy without supplier dispatch; no busy retry and no increase to server-side subject concurrency.",
+    "claim": "ready -> dispatch_committed atomically before supplier HTTP; not proof of transmission",
+    "rotation": "credential revision only; admitted operation retains its own deadline",
+    "revocation": "binding-level; all overlapping grants and not-yet-claimed operations",
+    "results": "status cannot reconstruct discarded bodies or rewrite native terminal Items",
+    "control": "typed methods on negotiated Native-owned carrier; single reader; ACK does not wait for external I/O",
+    "token_visibility": "Native/Host/worker private memory only; redacted formatting; never Runtime or renderer",
+    "public_admission": "main product identity or web-only delegation as specified per operation; permission web.retrieve; finite quota required",
+    "legacy_web_approval": "A still-pending kimi-web connector call from an existing selection must obey the current verified expert web policy before approve_once. Resolved historical decision receipts retain their original replay semantics; fresh selection retirement remains a separate migration.",
+    "default_entitlement": "Existing task.create roles receive web.retrieve once through migration 00006. New default owner/member roles include it; later explicit removal is not undone at startup.",
+    "fresh_selection": "Retire kimi-web only for a newly frozen submission. Preserve original input digest/selection and all previously frozen snapshots, history and decision receipts. Do not reinterpret replay using current installation state."
+  },
+  "service_identities": {
+    "api": "spiffe://yijie/services/api",
+    "executor": "spiffe://yijie/services/web-executor"
+  },
+  "local_demo": {
+    "environment": "local",
+    "profile": "demo_fast",
+    "api_origin": "http://127.0.0.1:18890",
+    "credential_environment_key": "YIJIE_WEB_LOCAL_CREDENTIAL_FILE",
+    "epoch_header": "X-Yijie-Run-Epoch",
+    "owner_user_id": "12500000-0000-4000-8000-000000000001",
+    "tenant_id": "12500000-0000-4000-8000-100000000001",
+    "retired_service_id": "kimi-web"
+  }
+}

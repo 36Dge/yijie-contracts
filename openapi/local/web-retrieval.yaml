@@ -1,0 +1,546 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Yijie exact local Demo web retrieval",
+    "version": "0.1.0",
+    "description": "ADR-0018 local + demo_fast only. Fixed Native principal, owner-only local credential and run epoch. Not a public product identity fallback."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:18890"
+    }
+  ],
+  "paths": {
+    "/v1/web-retrieval/delegations": {
+      "post": {
+        "operationId": "mintWebDelegation",
+        "summary": "mintWebDelegation",
+        "description": "Server derives subject, tenant membership and web.retrieve; binds native reference to server-owned binding. 300-second TTL, renew with 60 seconds left. Normal rotation does not cancel admitted work.",
+        "security": [
+          {
+            "ProductSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result or recorded operation state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/Delegation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input; no dispatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "This HTTP attempt did not dispatch. Refresh the grant and retry once with the same operation ID only. Supplier authentication failure is never returned as product 401.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not entitled; no new dispatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Operation conflict or state conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Finite quota or capacity reached; no automatic retry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable; dispatch fact is explicit, unknown is not free",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/DelegationRequest"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Yijie-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-Yijie-Run-Epoch",
+            "in": "header",
+            "required": false,
+            "description": "Required together with the Native local session credential; not required for web-only delegation.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/web-retrieval/bindings/{id}/revoke": {
+      "post": {
+        "operationId": "revokeWebBinding",
+        "summary": "revokeWebBinding",
+        "description": "Only own binding; revoke all overlapping grants and cancel unclaimed operations. Never called for normal token rotation. With ProductSession, X-Yijie-Tenant-ID is required and verified against active membership and binding ownership; web.retrieve is not required to revoke. WebDelegation derives its tenant from the server-owned binding and needs no tenant header.",
+        "security": [
+          {
+            "ProductSession": []
+          },
+          {
+            "WebDelegation": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result or recorded operation state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/BindingRevocation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input; no dispatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "This HTTP attempt did not dispatch. Refresh the grant and retry once with the same operation ID only. Supplier authentication failure is never returned as product 401.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not entitled; no new dispatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Operation conflict or state conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Finite quota or capacity reached; no automatic retry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable; dispatch fact is explicit, unknown is not free",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-Yijie-Tenant-ID",
+            "in": "header",
+            "required": false,
+            "description": "Required for ProductSession revocation; omitted for WebDelegation.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-Yijie-Run-Epoch",
+            "in": "header",
+            "required": false,
+            "description": "Required together with the Native local session credential; not required for web-only delegation.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/web-retrieval/operations": {
+      "post": {
+        "operationId": "executeWebOperation",
+        "summary": "executeWebOperation",
+        "description": "Atomically deduplicate same subject/tenant and UUIDv7 operation ID plus canonical argument digest before quota reservation. ready -> one internal execute -> unique claim -> at most one supplier request. Existing records checked before new-ID age window. Unknown never auto-replayed.",
+        "security": [
+          {
+            "WebDelegation": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result or recorded operation state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/ExecutionResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input; no dispatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "This HTTP attempt did not dispatch. Refresh the grant and retry once with the same operation ID only. Supplier authentication failure is never returned as product 401.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not entitled; no new dispatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Operation conflict or state conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Finite quota or capacity reached; no automatic retry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable; dispatch fact is explicit, unknown is not free",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/OperationRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/web-retrieval/operations/{id}": {
+      "get": {
+        "operationId": "getWebOperation",
+        "summary": "getWebOperation",
+        "description": "Own operation only. No execution quota or supplier request. Discarded bodies remain result_unavailable.",
+        "security": [
+          {
+            "WebDelegation": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result or recorded operation state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/OperationStatus"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input; no dispatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "This HTTP attempt did not dispatch. Refresh the grant and retry once with the same operation ID only. Supplier authentication failure is never returned as product 401.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not entitled; no new dispatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Operation conflict or state conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Finite quota or capacity reached; no automatic retry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable; dispatch fact is explicit, unknown is not free",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/web-retrieval/operations/{id}/cancel": {
+      "post": {
+        "operationId": "cancelWebOperation",
+        "summary": "cancelWebOperation",
+        "description": "Own operation only; quota-independent. Cancel wins before claim: zero supplier requests. After claim: may_have_dispatched, no fee guarantee.",
+        "security": [
+          {
+            "WebDelegation": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result or recorded operation state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/CancelResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input; no dispatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "This HTTP attempt did not dispatch. Refresh the grant and retry once with the same operation ID only. Supplier authentication failure is never returned as product 401.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not entitled; no new dispatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Operation conflict or state conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Finite quota or capacity reached; no automatic retry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable; dispatch fact is explicit, unknown is not free",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ProductSession": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Native-owned local credential, accepted only by the exact loopback Demo service with matching X-Yijie-Run-Epoch. Never accepted by public api-server."
+      },
+      "WebDelegation": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "Opaque web-only binding grant"
+      }
+    }
+  }
+}

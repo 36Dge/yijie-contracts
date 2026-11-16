@@ -1,0 +1,399 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Yijie internal web executor candidate",
+    "version": "0.1.0",
+    "description": "FEAT-175 unpublished candidate. No production activation. Source-first scoped web.retrieve permission; no automatic paid retries."
+  },
+  "servers": [
+    {
+      "url": "https://web-executor.yijie.internal"
+    }
+  ],
+  "paths": {
+    "/internal/v1/web-retrieval/execute": {
+      "post": {
+        "operationId": "executeInternalWeb",
+        "summary": "executeInternalWeb",
+        "description": "Pinned managed mTLS service identity; terminal grants forbidden. Claim CAS rechecks binding/current authorization/deadline atomically; normal grant expiry does not cancel admitted work. Receipt binds operation/digest/executor. Never reclaim a committed dispatch.",
+        "security": [
+          {
+            "ServiceIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result or recorded operation state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/ExecutionResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input; no dispatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Managed mTLS peer identity unavailable; no end-user grant refresh or automatic execute retry.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not entitled; no new dispatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Operation conflict or state conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Finite quota or capacity reached; no automatic retry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable; dispatch fact is explicit, unknown is not free",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/InternalExecute"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/v1/web-retrieval/claim": {
+      "post": {
+        "operationId": "claimInternalWeb",
+        "summary": "claimInternalWeb",
+        "description": "Pinned managed mTLS service identity; terminal grants forbidden. Claim CAS rechecks binding/current authorization/deadline atomically; normal grant expiry does not cancel admitted work. Receipt binds operation/digest/executor. Never reclaim a committed dispatch.",
+        "security": [
+          {
+            "ServiceIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result or recorded operation state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/ClaimReceipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input; no dispatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Managed mTLS peer identity unavailable; no end-user grant refresh or automatic execute retry.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not entitled; no new dispatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Operation conflict or state conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Finite quota or capacity reached; no automatic retry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable; dispatch fact is explicit, unknown is not free",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/ClaimRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/v1/web-retrieval/finish": {
+      "post": {
+        "operationId": "finishInternalWeb",
+        "summary": "finishInternalWeb",
+        "description": "Pinned managed mTLS service identity; terminal grants forbidden. Claim CAS rechecks binding/current authorization/deadline atomically; normal grant expiry does not cancel admitted work. Receipt binds operation/digest/executor. Never reclaim a committed dispatch.",
+        "security": [
+          {
+            "ServiceIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result or recorded operation state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/OperationStatus"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input; no dispatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Managed mTLS peer identity unavailable; no end-user grant refresh or automatic execute retry.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not entitled; no new dispatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Operation conflict or state conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Finite quota or capacity reached; no automatic retry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable; dispatch fact is explicit, unknown is not free",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/ClaimFinish"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/v1/web-retrieval/operations/{id}": {
+      "get": {
+        "operationId": "getInternalWeb",
+        "summary": "getInternalWeb",
+        "description": "Pinned managed mTLS service identity; terminal grants forbidden. Claim CAS rechecks binding/current authorization/deadline atomically; normal grant expiry does not cancel admitted work. Receipt binds operation/digest/executor. Never reclaim a committed dispatch.",
+        "security": [
+          {
+            "ServiceIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result or recorded operation state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/OperationStatus"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input; no dispatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Managed mTLS peer identity unavailable; no end-user grant refresh or automatic execute retry.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not entitled; no new dispatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Operation conflict or state conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Finite quota or capacity reached; no automatic retry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable; dispatch fact is explicit, unknown is not free",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ServiceIdentity": {
+        "type": "mutualTLS"
+      }
+    }
+  }
+}

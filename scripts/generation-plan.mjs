@@ -15,6 +15,7 @@ export const families = [
   ['market-selection-v2', 'market-selection-v2'],
   ['market-host-v2', 'market-host-v2'], ['experts-v2', 'experts-v2'],
   ['web-retrieval', 'web-retrieval'],
+  ['builtin-web-retrieval', 'builtin-web'],
   ['runtime-input-only', 'runtime-input-only'],
   ['runtime-chat-models', 'runtime-chat-models'],
   ['runtime-kimi-k31-pro', 'runtime-kimi-k31-pro'],
@@ -24,6 +25,9 @@ export const families = [
   ['context-window', 'context-window'],
   ['runtime-tool-search', 'runtime-tool-search'],
   ['runtime-documents', 'runtime-documents'], ['document-runtime', 'document-runtime'],
+  ['runtime-skill-marketplace', 'runtime-skill-marketplace'],
+  ['skill-market-v2', 'skill-market-v2'],
+  ['submission-rejection', 'submission-rejection'],
   ['media-generation', 'media-generation'],
   ['video-generation', 'video-generation'],
 ];

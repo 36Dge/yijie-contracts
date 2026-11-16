@@ -1,0 +1,70 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Builtin web private worker admission",
+    "version": "0.1.0",
+    "description": "FEAT-175 unpublished candidate. Host-owned loopback callback used only by its existing shared worker. Native-owned installation supplies the ephemeral URL/bearer; Runtime and renderer never receive this bearer."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:{port}",
+      "variables": {
+        "port": {
+          "default": "1",
+          "description": "Assigned by the existing owned Host listener; deployment chooses the port."
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/internal/web-retrieval/admit": {
+      "post": {
+        "operationId": "admitBuiltinWebCall",
+        "security": [
+          {
+            "OwnedWorkerBearer": []
+          }
+        ],
+        "description": "Checks installed process/binding epoch, active native root turn, native spawn ancestry for descendants, current stored expert policy and local stop tombstones. No current-root fallback for unproven children. Receipt is scoped to one operation and at most 45 seconds; stops cancel through the negotiated Native-owned shared worker channel. This is eligibility, not a second user approval dialog.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/WebAdmissionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Current owned session admitted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/WebAdmissionReceipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid private request; no dispatch"
+          },
+          "403": {
+            "description": "Unavailable, stopped, unbound, offline expert or invalid worker bearer; no dispatch"
+          }
+        },
+        "summary": "Admit a current native web tool call"
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OwnedWorkerBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Random 256-bit owner capability, private Host/worker memory only; not the product delegation or main local API bearer."
+      }
+    }
+  }
+}

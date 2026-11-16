@@ -8,6 +8,8 @@ import { loadMarketSelectionSource, marketSelectionSourcePath } from "./market-s
 import { loadBrokerSource, brokerSourcePath } from "./market-broker-source.mjs";
 import { loadMarketHostSource, loadMarketProviderSource } from "./market-host-source.mjs";
 import { loadWebRetrievalSource, sourcePath as webRetrievalSourcePath } from "./web-retrieval-source.mjs";
+import { loadBuiltinWebSource, family as builtinWebFamily } from "./builtin-web-source.mjs";
+import { registerGovernanceAnnotations } from "./schema-governance-annotations.mjs";
 
 async function findSchemas(dir) {
   const files = [];
@@ -20,9 +22,11 @@ async function findSchemas(dir) {
 }
 
 const ajv = new Ajv2020({ allErrors: true, strict: true });
+ajv.addKeyword({keyword: "x-sensitive", schemaType: "boolean"});
 addFormats(ajv);
 ajv.addFormat("int64", { type: "number", validate: Number.isSafeInteger });
 registerScheduledAnnotations(ajv);
+registerGovernanceAnnotations(ajv);
 for (const keyword of [
   "x-yijie-max-reasoning-items-per-turn",
   "x-yijie-max-reasoning-utf8-bytes-per-turn",
@@ -62,7 +66,7 @@ ajv.addKeyword({
 });
 for (const keyword of ["x-event-schema-version", "x-resource-version"]) ajv.addKeyword({keyword,schemaType:"number"});
 for (const keyword of ["x-media-types", "x-http"]) ajv.addKeyword({keyword,schemaType:"object"});
-for (const keyword of ["x-tools", "x-authority", "x-mcp", "x-private-http", "x-provider"]) ajv.addKeyword({keyword,schemaType:"object"});
+for (const keyword of ["x-tools", "x-mcp", "x-private-http", "x-provider"]) ajv.addKeyword({keyword,schemaType:"object"});
 ajv.addKeyword({keyword:"x-expert-routes",schemaType:"array"});
 ajv.addKeyword({keyword:"x-version",schemaType:"string"});
 ajv.addKeyword({keyword:"x-artifact-status-authority",schemaType:"string"});
@@ -96,6 +100,9 @@ for (const family of [loadMarketHostSource(), loadMarketProviderSource()]) {
 const webRetrievalSchema = loadWebRetrievalSource().schema;
 ajv.addSchema(webRetrievalSchema);
 documents.push({ file: webRetrievalSourcePath, schema: webRetrievalSchema });
+const builtinWebSchema = loadBuiltinWebSource().schema;
+ajv.addSchema(builtinWebSchema);
+documents.push({file: builtinWebFamily + '/wire.schema.json', schema: builtinWebSchema});
 }
 
 // Register all canonical sources before compilation so directory order is not
@@ -105,7 +112,7 @@ for (const { file, schema } of documents) {
   if (file === 'jsonschema/document-runtime/v1.schema.json') {
     for (const name of Object.keys(schema.definitions)) ajv.compile({$ref:`${schema.$id}#/definitions/${name}`});
   }
-  if (file.startsWith("jsonschema/scheduled-tasks/") || file.startsWith("compatibility/market-") || file === webRetrievalSourcePath) {
+  if (file.startsWith("jsonschema/scheduled-tasks/") || file === 'jsonschema/skills/market-v2.schema.json' || file.startsWith("compatibility/market-") || file === webRetrievalSourcePath || file.startsWith(builtinWebFamily + '/')) {
     for (const name of Object.keys(schema.$defs ?? {})) {
       ajv.compile({ $ref: `${schema.$id}#/$defs/${name}` });
     }
