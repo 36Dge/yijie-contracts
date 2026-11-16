@@ -36,7 +36,7 @@
     },
     {
       "path": "scripts/sync-model-call-surfaces-v2.mjs",
-      "sha256": "d61f7aeb4008a4caca96c72d56b5ec4f93b4461fc70b7f46027897baa011b232"
+      "sha256": "fd917ae26e5928824bca3fa9dd0e366da24d6b0c996ad33c6f881a27520e1036"
     },
     {
       "path": "pnpm-lock.yaml",

@@ -9,7 +9,7 @@ const fixture=JSON.parse(readFileSync('fixtures/market-broker-control/normal-wir
 const ajv=new Ajv({strict:true,allErrors:true});ajv.addFormat('uuid',/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);ajv.addSchema(schema);
 const validator=n=>ajv.getSchema(schema.$id+'#/$defs/'+n);
 test('private control source declares eight owner-only actions and bounded resources',()=>{
- validateBrokerManifest(manifest,names);assert.equal(manifest.commands.length,8);assert.equal(names.length,55);
+ validateBrokerManifest(manifest,names);assert.equal(manifest.commands.length,8);assert.equal(names.length,57);
  assert.equal(manifest.transport,'owner_owned_stdio_jsonl');assert.equal(Object.hasOwn(source,'paths'),false);
  for(const n of ['SelectionSnapshot','SelectionRef','CanonicalId','ServiceId','Revision'])assert.ok(source.$defs[n].$ref&&!source.$defs[n].$ref.startsWith('#'));
  assert.equal(manifest.limits.maxLeaseTtlMs,300000);assert.equal(manifest.limits.maxFrameBytes,65536);
@@ -45,7 +45,7 @@ test('new thread intent is explicit null and actual binding identities are manda
  assert.match(manifest.semantics.deduplication,/nativeProcessEpoch, agentSessionId, actual turnOperationId/);
 });
 test('external network assembly is explicit and response extras are not authority',()=>{
- const r=structuredClone(fixture.InitializeResponse);r.data.externalCallsEnabled=true;assert.equal(validator('InitializeResponse')(r),true);assert.equal(manifest.contract_version,'0.7.0');assert.match(manifest.semantics.qualification,/not an execution grant/);
+ const r=structuredClone(fixture.InitializeResponse);r.data.externalCallsEnabled=true;assert.equal(validator('InitializeResponse')(r),true);assert.equal(manifest.contract_version,'0.8.0');assert.match(manifest.semantics.qualification,/not an execution grant/);
  assert.ok(validator('InitializeResponse')({...fixture.InitializeResponse,futureField:true}));
  assert.equal(validator('Error')({...fixture.Error,retryable:true}),false);
  for(const gatewayUrl of ['http://127.0.0.1:0/mcp','http://127.0.0.1:65536/mcp']){const v=structuredClone(fixture.InitializeResponse);v.data.gatewayUrl=gatewayUrl;assert.equal(validator('InitializeResponse')(v),false);}

@@ -5,6 +5,11 @@ import { isDeepStrictEqual, promisify } from "node:util";
 
 const exec = promisify(execFile);
 const baseRef = process.argv[2] ?? "main";
+// Explicit focused checks retain the exact comparator and the default full
+// check. Unknown paths fail instead of creating an empty comparison scope.
+const scopeArgs = process.argv.slice(3);
+if (scopeArgs.some(arg => !arg.startsWith("--schema="))) throw new Error("Expected --schema=<source path>");
+const scopedSchemas = new Set(scopeArgs.map(arg => arg.slice("--schema=".length)));
 
 async function findSchemas(dir, suffix = ".json") {
   const files = [];
@@ -261,7 +266,7 @@ function compareSchema(oldSchema, newSchema, location, errors) {
 
 // compatibility includes private cross-process wire authorities as well as
 // provenance manifests. Compare schemas, not mutable source-lock metadata.
-const currentFiles = [...await findSchemas("jsonschema"), ...await findSchemas("compatibility", ".schema.json")].sort();
+const allCurrentFiles = [...await findSchemas("jsonschema"), ...await findSchemas("compatibility", ".schema.json")].sort();
 const { stdout: previousFileList } = await exec("git", [
   "ls-tree",
   "-r",
@@ -270,9 +275,15 @@ const { stdout: previousFileList } = await exec("git", [
   "jsonschema",
   "compatibility",
 ]);
-const previousFiles = previousFileList.split("\n").filter((file) =>
+const allPreviousFiles = previousFileList.split("\n").filter((file) =>
   file.startsWith("jsonschema/") && file.endsWith(".json") ||
   file.startsWith("compatibility/") && file.endsWith(".schema.json"));
+for (const file of scopedSchemas) {
+  if (!allCurrentFiles.includes(file) && !allPreviousFiles.includes(file)) throw new Error(`Unknown schema scope: ${file}`);
+}
+const inScope = file => scopedSchemas.size === 0 || scopedSchemas.has(file);
+const currentFiles = allCurrentFiles.filter(inScope);
+const previousFiles = allPreviousFiles.filter(inScope);
 const currentSet = new Set(currentFiles);
 const errors = [];
 
@@ -290,4 +301,4 @@ for (const file of currentFiles) {
 if (errors.length > 0) {
   throw new Error(`Breaking JSON Schema changes detected:\n${errors.join("\n")}`);
 }
-console.log(`No breaking JSON Schema changes relative to ${baseRef}. Checked ${previousFiles.length} previous schemas across jsonschema/ and compatibility/.`);
+console.log(`No breaking JSON Schema changes relative to ${baseRef}. Checked ${previousFiles.length} previous schemas${scopedSchemas.size ? " in explicit scope: " + [...scopedSchemas].join(", ") : " across jsonschema/ and compatibility/"}.`);

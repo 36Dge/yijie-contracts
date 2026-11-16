@@ -1,3 +1,6 @@
+import { refreshProvenance } from "./refresh-provenance.mjs";
+const refresh = process.argv.includes("--refresh-provenance");
+if (refresh && process.argv.includes("--check")) throw new Error("Choose check or provenance refresh, not both");
 // FEAT-170 native source and canonical model schema own the tool protocol.
 // This projection only selects a reviewed per-model capability and exact artifact.
 import assert from 'node:assert/strict';
@@ -12,8 +15,8 @@ import addFormats from 'ajv-formats';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const fork=path.resolve(root,'../yijie-codex');
 const family='compatibility/runtime-documents';
-const check=process.argv.includes('--check'),sync=process.argv.includes('--sync');
-assert(process.argv.slice(2).every(v=>['--check','--sync'].includes(v)));
+const check=process.argv.includes('--check'),sync=process.argv.includes('--sync')||refresh;
+assert(process.argv.slice(2).every(v=>['--check','--sync','--refresh-provenance'].includes(v)));
 const read=(base,name)=>readFileSync(path.join(base,name));
 const sha=value=>createHash('sha256').update(value).digest('hex');
 const json=value=>Buffer.from(JSON.stringify(value,null,2)+'\n');
@@ -73,5 +76,6 @@ for(const dir of ['sdks/go/openapi/runtime-documents',...((sync||check)?['../yij
  outputs.set(dir+'/runtime.gen.go',go);outputs.set(dir+'/profile.json',profileBytes);outputs.set(dir+'/config.schema.json',modelBytes);
 }
 if(sync||check)outputs.set('../yijie-desktop/contracts/runtime-documents.candidate.json',json(lock));
-for(const [name,bytes]of outputs){const target=path.resolve(root,name);if(check)assert.deepEqual(readFileSync(target),bytes,name);else{mkdirSync(path.dirname(target),{recursive:true});writeFileSync(target,bytes);}}
+if(refresh)refreshProvenance([...outputs].map(([name,bytes])=>[path.resolve(root,name),bytes]));
+else for(const [name,bytes]of outputs){const target=path.resolve(root,name);if(check)assert.deepEqual(readFileSync(target),bytes,name);else{mkdirSync(path.dirname(target),{recursive:true});writeFileSync(target,bytes);}}
 console.log('FEAT-171 cooperative Runtime projection '+(check?'verified':'generated')+'; local candidate only.');

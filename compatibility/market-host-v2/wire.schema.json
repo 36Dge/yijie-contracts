@@ -608,9 +608,19 @@
         },
         "truncated": {
           "type": "boolean"
+        },
+        "correlation": {
+          "$ref": "#/$defs/GatewayCallReceipt"
+        },
+        "resultTextSource": {
+          "$ref": "#/$defs/ResultTextSource"
+        },
+        "structuredResultText": {
+          "type": "string",
+          "maxLength": 65536
         }
       },
-      "description": "Minimal observation from actual native MCP Tool Item facts. Optional service/callRef require explicit trusted correlation; never guess matching Item by latest item, same tool or args. resultText is safe bounded text from actual native output, never raw platform credentials/transport/config. Approval acceptance is not result completion. failed is an unsuccessful native tool observation, not proof that a provider request was sent, not sent or executed. Fixed Gateway error text may distinguish known pre-dispatch rejection from unverified outcome; do not infer this distinction from a generic code or guess callRef linkage."
+      "description": "Minimal observation from actual native MCP Tool Item facts. Optional service/callRef require explicit trusted correlation; never guess matching Item by latest item, same tool or args. resultText is safe bounded text from actual native output, never raw platform credentials/transport/config. Approval acceptance is not result completion. failed is an unsuccessful native tool observation, not proof that a provider request was sent, not sent or executed. Fixed Gateway error text may distinguish known pre-dispatch rejection from unverified outcome; do not infer this distinction from a generic code or guess callRef linkage. Optional correlation is the bounded Gateway-owned native result metadata. callRef must equal correlation.callRef; thread/turn/tool must match the containing Item and Native must verify the original selection/reference. Unknown/invalid metadata is omitted without losing native facts. service retains its old ProviderBinding type; correlation never contains credentialRef. Read-only decision and admission facts cannot authorize execution or imply provider success. Result text is a common bounded/redacted projection of native content and structuredContent, shared by native notifications and history. Structured-only results use resultText with resultTextSource=structured; different structured JSON is retained in structuredResultText. Identical JSON copies are not duplicated. Combined display bytes stay within maxResultTextBytes; truncated marks actual omitted/truncated content, never merely a second representation."
     },
     "ToolSnapshot": {
       "type": "object",
@@ -1251,6 +1261,9 @@
         },
         "nativeTurnId": {
           "$ref": "#/$defs/NativeId"
+        },
+        "toolsRead": {
+          "$ref": "#/$defs/ToolsReadMode"
         }
       }
     },
@@ -1287,9 +1300,22 @@
         },
         "turnsTruncated": {
           "type": "boolean"
+        },
+        "decisionFacts": {
+          "type": "array",
+          "maxItems": 128,
+          "items": {
+            "$ref": "#/$defs/DecisionFact"
+          }
+        },
+        "decisionFactsTruncated": {
+          "type": "boolean"
+        },
+        "remoteIssue": {
+          "$ref": "#/$defs/ErrorCode"
         }
       },
-      "description": "Safe scoped Native observation. Optional availableTurns is the latest 128 known native bindings in descending submission order, each with its original selectionDisplay; turnsTruncated reports older bindings omitted from the index. A known requested nativeTurnId is read with its own display snapshot, never the latest selection. Without a current Host, omit remote facts without starting/probing/reconstructing authority. With a current owned Host, historical tool reads validate scope/agent/thread/turn, not the original Host nonce. Approvals always require the current Host nonce. Current remote read failures stay typed errors. Recheck task.read and local view after awaits. Unmanaged sessions need no Host access. Old producers may omit the new index, and old readers may ignore it. No history read restores execution or approval."
+      "description": "Safe scoped Native observation. Optional availableTurns is the latest 128 known native bindings in descending submission order, each with its original selectionDisplay; turnsTruncated reports older bindings omitted from the index. A known requested nativeTurnId is read with its own display snapshot, never the latest selection. Without a current Host, omit remote facts without starting/probing/reconstructing authority. With a current owned Host, historical tool reads validate scope/agent/thread/turn, not the original Host nonce. Approvals always require the current Host nonce. Current remote read failures stay typed errors. Recheck task.read and local view after awaits. Unmanaged sessions need no Host access. Old producers may omit the new index, and old readers may ignore it. No history read restores execution or approval. Optional decisionFacts are original selected-turn read-only Native evidence, available without Host. They do not populate actionable approvals. toolsRead=none omits tools and must not clear previously observed UI tool facts; events consumes notification-derived snapshots; history preserves explicit read/recovery behavior. With an explicit toolsRead mode, unavailable or invalid remote observations are omitted with remoteIssue while scoped local decisionFacts remain readable. This cannot make historical decisions actionable. Legacy omitted toolsRead retains its existing typed remote-error behavior. Active observations prioritize facts for exact currently pending approval/call identities when the history window is truncated. Historical facts otherwise follow append order; observedAtUnixMs is a captured wall-clock value, never an ordering or permission authority."
     },
     "NativeApprovalDecidePayload": {
       "type": "object",
@@ -1481,6 +1507,119 @@
           "$ref": "#/$defs/ProviderStatus"
         }
       }
+    },
+    "GatewayCallReceipt": {
+      "$ref": "../market-broker-control/wire.schema.json#/$defs/GatewayCallReceipt"
+    },
+    "GatewayDecisionReceipt": {
+      "$ref": "../market-broker-control/wire.schema.json#/$defs/GatewayDecisionReceipt"
+    },
+    "ArgsDigest": {
+      "$ref": "../market-broker-control/wire.schema.json#/$defs/ArgsDigest"
+    },
+    "ToolsReadMode": {
+      "type": "string",
+      "enum": [
+        "none",
+        "events",
+        "history"
+      ],
+      "description": "none reads approvals/local facts only; events uses a bounded projection of real native notifications, seeding a missing snapshot from native history; history explicitly refreshes native history. Omission retains history behavior. No mode dispatches tools."
+    },
+    "ResultTextSource": {
+      "type": "string",
+      "enum": [
+        "content",
+        "structured"
+      ]
+    },
+    "DecisionFactKind": {
+      "type": "string",
+      "enum": [
+        "requested",
+        "acknowledged",
+        "unconfirmed"
+      ]
+    },
+    "ToolName": {
+      "$ref": "../market-broker-control/wire.schema.json#/$defs/ToolName"
+    },
+    "DecisionFact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "approvalId",
+        "decisionId",
+        "callRef",
+        "serviceId",
+        "reference",
+        "nativeThreadId",
+        "nativeTurnId",
+        "turnOperationId",
+        "selectionDigest",
+        "toolName",
+        "argsDigest",
+        "decision",
+        "kind",
+        "schemaVersion",
+        "argsEncoding",
+        "observedAtUnixMs"
+      ],
+      "properties": {
+        "approvalId": {
+          "$ref": "#/$defs/CanonicalId"
+        },
+        "decisionId": {
+          "$ref": "#/$defs/CanonicalId"
+        },
+        "callRef": {
+          "$ref": "#/$defs/CanonicalId"
+        },
+        "serviceId": {
+          "$ref": "#/$defs/ServiceId"
+        },
+        "reference": {
+          "$ref": "#/$defs/SelectionRef"
+        },
+        "nativeThreadId": {
+          "$ref": "#/$defs/NativeId"
+        },
+        "nativeTurnId": {
+          "$ref": "#/$defs/NativeId"
+        },
+        "turnOperationId": {
+          "$ref": "#/$defs/CanonicalId"
+        },
+        "selectionDigest": {
+          "$ref": "#/$defs/SelectionDigest"
+        },
+        "toolName": {
+          "$ref": "#/$defs/ToolName"
+        },
+        "argsDigest": {
+          "$ref": "#/$defs/ArgsDigest"
+        },
+        "decision": {
+          "$ref": "#/$defs/Decision"
+        },
+        "kind": {
+          "$ref": "#/$defs/DecisionFactKind"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "argsEncoding": {
+          "type": "string",
+          "const": "worker-json-v1"
+        },
+        "observedAtUnixMs": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "description": "Append-only read-only Native decision evidence in the existing scoped conversation database. requested is durable user intent before delivery, acknowledged is an exact validated Host reply, unconfirmed is absence of a verified reply. None proves permit consumption, tool completion or business success. Contains no authority/capability/credential references or raw parameters; never queued, replayed or used to restore approval."
     }
   }
 }

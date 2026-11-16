@@ -1,3 +1,6 @@
+import { refreshProvenance } from "./refresh-provenance.mjs";
+const refresh = process.argv.includes("--refresh-provenance");
+if (refresh && process.argv.includes("--check")) throw new Error("Choose check or provenance refresh, not both");
 // Canonical Runtime -> reviewed local projection. No Runtime protocol is invented here.
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
@@ -10,8 +13,8 @@ import addFormats from 'ajv-formats';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const fork=path.resolve(root,'../yijie-codex');
 const family='compatibility/runtime-interaction-tools';
-const check=process.argv.includes('--check'), sync=process.argv.includes('--sync');
-assert(process.argv.slice(2).every(a=>['--check','--sync'].includes(a)));
+const check=process.argv.includes('--check'), sync=process.argv.includes('--sync')||refresh;
+assert(process.argv.slice(2).every(a=>['--check','--sync','--refresh-provenance'].includes(a)));
 const read=(base,p)=>readFileSync(path.join(base,p));
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const json=v=>Buffer.from(JSON.stringify(v,null,2)+'\n');
@@ -74,5 +77,6 @@ for(const dir of ['sdks/go/openapi/runtime-interaction-tools',...((sync||check)?
  outputs.set(dir+'/types.gen.go',go);outputs.set(dir+'/runtime.gen.go',constants);outputs.set(dir+'/profile.json',profile);
 }
 if(sync||check)outputs.set('../yijie-desktop/contracts/runtime-interaction-tools.candidate.json',json(lock));
-for(const[p,b]of outputs){const target=path.resolve(root,p);if(check)assert.deepEqual(readFileSync(target),b,p);else{mkdirSync(path.dirname(target),{recursive:true});writeFileSync(target,b);}}
+if(refresh)refreshProvenance([...outputs].map(([name,bytes])=>[path.resolve(root,name),bytes]));
+else for(const[p,b]of outputs){const target=path.resolve(root,p);if(check)assert.deepEqual(readFileSync(target),b,p);else{mkdirSync(path.dirname(target),{recursive:true});writeFileSync(target,b);}}
 console.log('Interaction Runtime projection '+(check?'verified':'generated')+'; local candidate only.');

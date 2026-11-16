@@ -1,3 +1,6 @@
+import { refreshProvenance } from "./refresh-provenance.mjs";
+const refresh = process.argv.includes("--refresh-provenance");
+if (refresh && process.argv.includes("--check")) throw new Error("Choose check or provenance refresh, not both");
 // Project only canonical schemas produced by the FEAT-174 Runtime candidate.
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
@@ -6,8 +9,8 @@ import {readFileSync,writeFileSync,mkdirSync,readdirSync} from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),fork=path.join(root,'../yijie-codex');
-const args=process.argv.slice(2),check=args.includes('--check'),sync=args.includes('--sync');
-assert(args.every(x=>['--check','--sync'].includes(x)));
+const args=process.argv.slice(2),check=args.includes('--check'),sync=args.includes('--sync')||refresh;
+assert(args.every(x=>['--check','--sync','--refresh-provenance'].includes(x)));
 const read=(base,name)=>readFileSync(path.join(base,name));
 const sha=b=>createHash('sha256').update(b).digest('hex');
 const json=v=>Buffer.from(JSON.stringify(v,null,2)+'\n');
@@ -59,11 +62,14 @@ const configSchema=read(artifact,'config.schema.json');const config=JSON.parse(c
 outputs.set(family+'/config.schema.json',configSchema);
 const lock={schema_version:1,feature:'FEAT-174',mode:'local_worktree_candidate',release:false,runtime_source:{base_commit:execFileSync('git',['-C',fork,'rev-parse','HEAD'],{encoding:'utf8'}).trim(),sources:Object.fromEntries(inputs.map(p=>[p,sha(read(fork,p))]))},upstream:manifest.upstream,runtime_artifact:manifest.runtime,runtime_manifest_sha256:sha(manifestBytes),runtime_schema:manifest.appServer,runtime_relative_path:relative,patches:manifest.patches,config_schema_sha256:sha(configSchema),generator_sha256:sha(readFileSync(fileURLToPath(import.meta.url)))};
 outputs.set(family+'/source.lock.json',json(lock));
-function put(p,b){if(check)assert.deepEqual(readFileSync(p),Buffer.from(b),p);else{mkdirSync(path.dirname(p),{recursive:true});writeFileSync(p,b);}}
+const pending = new Map();
+function put(p,b){pending.set(p,b);}
 for(const[p,b]of outputs)put(path.join(root,p),b);
 if(sync||check){
  for(const[p,b]of outputs)if(p.startsWith('sdks/go/openapi/runtime-skill-marketplace/'))put(path.join(root,'../yijie-agent-host/internal/contracts/runtimeskillmarket',path.basename(p)),b);
  put(path.join(root,'../yijie-agent-host/api/runtime-skill-marketplace.candidate.json'),json(lock));
  put(path.join(root,'../yijie-desktop/contracts/runtime-skill-marketplace.candidate.json'),json(lock));
 }
+if(refresh)refreshProvenance(pending);
+else for(const[p,b]of pending){if(check)assert.deepEqual(readFileSync(p),Buffer.from(b),p);else{mkdirSync(path.dirname(p),{recursive:true});writeFileSync(p,b);}}
 console.log('FEAT-174 canonical Runtime projection '+(check?'verified':'generated')+'.');

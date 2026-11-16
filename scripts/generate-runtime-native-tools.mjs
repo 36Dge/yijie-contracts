@@ -1,3 +1,6 @@
+import { refreshProvenance } from "./refresh-provenance.mjs";
+const refresh = process.argv.includes("--refresh-provenance");
+if (refresh && process.argv.includes("--check")) throw new Error("Choose check or provenance refresh, not both");
 // Canonical local-development projection of the four approved native tool groups.
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
@@ -12,8 +15,8 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const fork = path.resolve(root, "../yijie-codex");
 const family = "compatibility/runtime-native-tools";
 const check = process.argv.includes("--check");
-const sync = process.argv.includes("--sync");
-assert(process.argv.slice(2).every(arg => ["--check", "--sync"].includes(arg)));
+const sync = process.argv.includes("--sync") || refresh;
+assert(process.argv.slice(2).every(arg => ["--check", "--sync", "--refresh-provenance"].includes(arg)));
 const hash = bytes => createHash("sha256").update(bytes).digest("hex");
 const json = value => Buffer.from(JSON.stringify(value, null, 2) + "\n");
 const read = (base, name) => readFileSync(path.join(base, name));
@@ -108,7 +111,8 @@ if(sync || check) outputs.set("../yijie-desktop/contracts/runtime-native-tools.c
 for (const dir of ["sdks/go/openapi/runtime-native-tools", ...((sync || check) ? ["../yijie-agent-host/internal/contracts/runtimenativetools"] : [])]) {
   for (const [file, bytes] of [["types.gen.go", go], ["profile.json", profileBytes], ["config.schema.json", configBytes], ["thread-read.schema.json", threadBytes]]) outputs.set(dir + "/" + file, bytes);
 }
-for (const [name, bytes] of outputs) {
+if (refresh) refreshProvenance([...outputs].map(([name, bytes]) => [path.resolve(root, name), bytes]));
+else for (const [name, bytes] of outputs) {
   const target = path.resolve(root, name);
   if (check) assert.deepEqual(readFileSync(target), bytes, name);
   else { mkdirSync(path.dirname(target), { recursive: true }); writeFileSync(target, bytes); }

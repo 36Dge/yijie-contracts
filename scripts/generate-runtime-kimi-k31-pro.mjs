@@ -1,3 +1,6 @@
+import { refreshProvenance } from "./refresh-provenance.mjs";
+const refresh = process.argv.includes("--refresh-provenance");
+if (refresh && process.argv.includes("--check")) throw new Error("Choose check or provenance refresh, not both");
 // FEAT-164 inactive Runtime candidate; existing projections remain untouched.
 import assert from 'node:assert/strict';
 import {readFileSync, writeFileSync, mkdirSync, readdirSync, statSync} from 'node:fs';
@@ -9,7 +12,7 @@ import {fileURLToPath} from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const runtime = path.resolve(root, '../yijie-codex');
 const artifact = '.yijie/build/native-public-messages-r3/aarch64-apple-darwin';
-assert.ok(process.argv.slice(2).every(arg => arg === '--check'));
+assert.ok(process.argv.slice(2).every(arg => ['--check', '--refresh-provenance'].includes(arg)));
 const check = process.argv.includes('--check');
 const schema = `${artifact}/generated-json-schema`;
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -124,7 +127,8 @@ outputs['compatibility/runtime-kimi-k31-pro/source.lock.json'] = JSON.stringify(
     .map(name => ({path: name, sha256: hash(readFileSync(path.join(root, name)))})),
   generated: Object.entries(outputs).map(([name, bytes]) => ({path: name, sha256: hash(bytes)})),
 }, null, 2) + '\n';
-for (const [name, bytes] of Object.entries(outputs)) {
+if (refresh) refreshProvenance(Object.entries(outputs).map(([name, bytes]) => [path.join(root, name), bytes]));
+else for (const [name, bytes] of Object.entries(outputs)) {
   const target = path.join(root, name);
   if (check) assert.deepEqual(readFileSync(target), Buffer.from(bytes), name);
   else { mkdirSync(path.dirname(target), {recursive: true}); writeFileSync(target, bytes); }

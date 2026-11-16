@@ -1,3 +1,6 @@
+import { refreshProvenance } from "./refresh-provenance.mjs";
+const refresh = process.argv.includes("--refresh-provenance");
+if (refresh && process.argv.includes("--check")) throw new Error("Choose check or provenance refresh, not both");
 import { existsSync } from "node:fs";
 // Source-first question API, with native question/answer schemas resolved from Runtime.
 import assert from 'node:assert/strict';
@@ -10,8 +13,8 @@ import openapiTS,{astToString} from 'openapi-typescript';
 import Ajv from 'ajv';
 import standalone from 'ajv/dist/standalone/index.js';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-const check=process.argv.includes('--check'),sync=process.argv.includes('--sync');
-assert(process.argv.slice(2).every(a=>['--check','--sync'].includes(a)));
+const check=process.argv.includes('--check'),sync=process.argv.includes('--sync')||refresh;
+assert(process.argv.slice(2).every(a=>['--check','--sync','--refresh-provenance'].includes(a)));
 const read=p=>readFileSync(path.resolve(root,p));
 const json=v=>Buffer.from(JSON.stringify(v,null,2)+'\n');
 const hash=b=>createHash('sha256').update(b).digest('hex');
@@ -95,5 +98,6 @@ if(sync||check){
   ['compatibility/user-input/source.lock.json','../yijie-desktop/contracts/user-input.candidate.json'],
   ['compatibility/user-input/source.lock.json','../yijie-agent-host/api/user-input.candidate.json']])outputs.set(to,outputs.get(from));
 }
-for(const[p,b]of outputs){const dest=path.resolve(root,p);if(check)assert.deepEqual(readFileSync(dest),b,p);else{mkdirSync(path.dirname(dest),{recursive:true});writeFileSync(dest,b);}}
+if(refresh)refreshProvenance([...outputs].map(([name,bytes])=>[path.resolve(root,name),bytes]), [["sources", "compatibility/runtime-interaction-tools/source.lock.json"]]);
+else for(const[p,b]of outputs){const dest=path.resolve(root,p);if(check)assert.deepEqual(readFileSync(dest),b,p);else{mkdirSync(path.dirname(dest),{recursive:true});writeFileSync(dest,b);}}
 console.log('User input API and consumers '+(check?'verified':'generated')+'; local candidate only.');
