@@ -1,6 +1,7 @@
 // Independent FEAT-157 canonical generator. Does not call legacy generators.
 import assert from 'node:assert/strict';
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
@@ -137,8 +138,16 @@ const validators=banner+'/* Bundled helper license notices:\n'+notices+'\n*/\n'+
 assert.ok(!validators.includes('require('),'Standalone validators must have no runtime require/dependency');
 let dts=banner+'import type * as T from "../../domain/market-connectors.generated.js";\nexport interface ValidationIssue{instancePath:string;schemaPath:string;keyword:string;params:Record<string,unknown>;message?:string;}\nexport interface SchemaValidator<T>{(data:unknown):data is T;errors?:ValidationIssue[]|null;}\n';
 for(const [name]of entries)dts+=`export declare const validate${name}:SchemaValidator<T.${name}>;\n`;
+function formatGoSource(source){
+ const directory=mkdtempSync(path.join(tmpdir(),'yijie-market-format-'));
+ try{
+  const file=path.join(directory,'source.go');writeFileSync(file,source,{mode:0o600});
+  // A complete file has an unambiguous EOF even in nested synchronous checks.
+  return execFileSync('gofmt',[file],{stdio:['ignore','pipe','pipe'],maxBuffer:8*1024*1024});
+ }finally{rmSync(directory,{recursive:true});}
+}
 const outputs=new Map([
- ['sdks/go/market-connectors/types.gen.go',execFileSync('gofmt',[],{input:go})],
+ ['sdks/go/market-connectors/types.gen.go',formatGoSource(go)],
  ['sdks/rust/market-connectors/types.gen.rs',execFileSync('rustfmt',['--edition','2021'],{input:rust})],
  ['sdks/typescript/src/domain/market-connectors.generated.ts',ts],
  ['sdks/typescript/src/api/generated/market-connectors-validator.gen.js',validators],
