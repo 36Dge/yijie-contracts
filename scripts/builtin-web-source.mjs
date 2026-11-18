@@ -92,7 +92,7 @@ export function loadBuiltinWebSource() {
     delete output.$defs.ErrorOutput; delete output.$defs.ToolError; delete output.$defs.ErrorCode;
     Object.assign(output.$defs, standalone('AppErrorOutput').$defs, {AppErrorOutput: schema.$defs.AppErrorOutput});
     const description = [policy.completion_instructions, taskInstructions[t.name], t.description].filter(Boolean).join(' ');
-    return {name: t.name, title: t.title, description, inputSchema: standalone(t.input), outputSchema: output, annotations: t.annotations};
+    return {name: t.name, title: t.title, description, inputSchema: standalone(t.input), outputSchema: output, annotations: t.annotations, ...(t._meta ? {_meta: t._meta} : {})};
   });
   return {source, schema, policy, tools, standalone};
 }

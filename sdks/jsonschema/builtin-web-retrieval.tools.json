@@ -1311,6 +1311,9 @@
       "destructiveHint": false,
       "idempotentHint": false,
       "openWorldHint": true
+    },
+    "_meta": {
+      "ai.yijie/coalescesExactTurnRequests": true
     }
   },
   {

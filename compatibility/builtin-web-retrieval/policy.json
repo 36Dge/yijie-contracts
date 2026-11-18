@@ -1,6 +1,6 @@
 {
   "contract_id": "builtin-web-retrieval/1",
-  "contract_version": "0.2.0",
+  "contract_version": "0.2.1",
   "feature": "FEAT-175",
   "release": false,
   "wire_authority": "compatibility/builtin-web-retrieval/wire.schema.json",
@@ -42,7 +42,10 @@
         "openWorldHint": true
       },
       "path": "/v1/tools/search_pro",
-      "method": "POST"
+      "method": "POST",
+      "_meta": {
+        "ai.yijie/coalescesExactTurnRequests": true
+      }
     },
     {
       "name": "kimi_web_fetch",

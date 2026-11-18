@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "feature": "FEAT-175",
-  "contract_version": "0.2.0",
+  "contract_version": "0.2.1",
   "mode": "local_worktree_candidate",
   "release": false,
   "base_commit": "2592f5d5b07fcd92de10d25c4dcf73bd1ce03cb5",
@@ -19,7 +19,7 @@
     },
     {
       "path": "compatibility/builtin-web-retrieval/policy.json",
-      "sha256": "efb5534ec8063479cffd8950a9ea6c5e0e8a1d0bbf3174334dae2dc3d77a1e26"
+      "sha256": "0559c8f31f4bd777622a66f05ef5ba2def1f20a7c637026a0655582f9e51eba6"
     },
     {
       "path": "openapi/public/web-retrieval.yaml",
@@ -51,11 +51,11 @@
     },
     {
       "path": "compatibility/runtime-tool-search/source.lock.json",
-      "sha256": "6bdde9eeb08baefbef3997bd34b0bb0963b7f11075042481f34624712e6a0eb7"
+      "sha256": "f7da4d129b97a17c743fef3320033171cbcd67b88e1154b2f918de5084e4aafc"
     },
     {
       "path": "scripts/builtin-web-source.mjs",
-      "sha256": "f29aa8e0c2e00b061149d443b71451c6d039157af6dd6fa4b1588934aff33fd4"
+      "sha256": "51b94172f6ed320a35a2b9748c0df4dd1a6da135c115850cfb05369b9a458c20"
     },
     {
       "path": "scripts/generate-builtin-web.mjs",
@@ -93,7 +93,7 @@
     },
     {
       "path": "sdks/go/builtinweb/tools.json",
-      "sha256": "6f080907faa08bef35b8f0279353a6862415629d1c7c390bcd2b708534dbe3fc"
+      "sha256": "81ffa8752799665ad50c2e2b95cca3fbf249a4ce66853c98340bdd1c04f6fc86"
     },
     {
       "path": "sdks/go/builtinweb/wire.schema.json",
@@ -105,11 +105,11 @@
     },
     {
       "path": "sdks/jsonschema/builtin-web-retrieval.tools.json",
-      "sha256": "6f080907faa08bef35b8f0279353a6862415629d1c7c390bcd2b708534dbe3fc"
+      "sha256": "81ffa8752799665ad50c2e2b95cca3fbf249a4ce66853c98340bdd1c04f6fc86"
     },
     {
       "path": "sdks/rust/builtinweb/source.gen.rs",
-      "sha256": "dfdad1f3fc00d89705837fcf1b46b3b51e9605b12df925abfef8842bacaca1bd"
+      "sha256": "ae9c91f457ff5c7fba26e0bf0ec05e0de8d62968004dc91f7c2e166d9b7c3513"
     },
     {
       "path": "sdks/go/builtinweb/validate.gen.go",
