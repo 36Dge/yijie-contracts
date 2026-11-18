@@ -70,7 +70,7 @@ export interface components {
             exitCode?: number | null;
             /** Format: int64 */
             durationMs?: number | null;
-            /** @description Metadata display only; raw native arguments never leave Host. */
+            /** @description Metadata display only; raw native arguments never leave Host. For yijie_web/kimi_web_search_pro this may contain the validated, displayable query alone. */
             argumentsSummary?: string;
             /** @description Metadata display only, omitted when native result is absent or null. */
             resultSummary?: string;
@@ -176,10 +176,10 @@ export interface components {
         NativeMcpText: {
             /** @description Original native content array index; never renumber after filtering. */
             index: number;
-            /** @description Complete native text block after existing whole-line confidentiality projection, then UTF-8 truncation. Plain text only; links remain inert. */
+            /** @description Complete native text block after existing whole-line confidentiality projection, then UTF-8 truncation. Plain text only; links remain inert. The built-in deep search may summarize its original text block at index 0 into the existing SearchSuccess display shape (title, public URL and snippet), or a validated public retrieval error. */
             text: string;
         };
-        /** @description Display-only native MCP facts. No raw arguments/error/meta/resources/structuredContent and no business field parsing. Native list_mcp_resources/list_mcp_resource_templates may expose a validated resource count and redacted resource names/titles, never resource URIs, cursors or metadata. Empty resource lists are successful real results, not omitted content. Other tools retain their existing display policies. Limits do not change execution status; partial content availability must not suppress a known execution outcome. Host bounds total UTF-8 text at 256KiB and first 32 original content entries. Confidentiality may replace entire lines. */
+        /** @description Display-only native MCP facts. No raw arguments/error/meta/resources/structuredContent and no business field parsing. Native list_mcp_resources/list_mcp_resource_templates may expose a validated resource count and redacted resource names/titles, never resource URIs, cursors or metadata. Empty resource lists are successful real results, not omitted content. For yijie_web/kimi_web_search_pro only, Host validates the closed built-in web result and projects the ordered source summaries from its native text block. Raw page content and chunks are excluded. Other tools retain their existing display policies. Limits do not change execution status; partial content availability must not suppress a known execution outcome. Host bounds total UTF-8 text at 256KiB and first 32 original content entries. Confidentiality may replace entire lines. */
         NativeMcpDisplay: {
             server?: string;
             tool?: string;
