@@ -32,7 +32,7 @@
     {
       "name": "kimi_web_search_pro",
       "title": "网页研究检索",
-      "description": "Returns query-relevant body chunks and source URLs. Mentioning a site in query alone does not apply a filter. Use a focused query for facts missing from a truncated page. The model preview contains the query, source URLs, dates, snippets and truncation status. In Code Mode emit the result once; read selected structuredContent.results[i].chunks for a missing detail. Repeating identical arguments within this turn reuses the original successful search.",
+      "description": "Returns query-relevant body chunks and source URLs. Mentioning a site in query alone does not apply a filter. Use a focused query for facts missing from a truncated page.",
       "input": "ProArguments",
       "output": "ProOutput",
       "annotations": {
@@ -42,10 +42,7 @@
         "openWorldHint": true
       },
       "path": "/v1/tools/search_pro",
-      "method": "POST",
-      "_meta": {
-        "ai.yijie/coalescesExactTurnRequests": true
-      }
+      "method": "POST"
     },
     {
       "name": "kimi_web_fetch",
@@ -143,5 +140,13 @@
     "owner_user_id": "12500000-0000-4000-8000-000000000001",
     "tenant_id": "12500000-0000-4000-8000-100000000001",
     "retired_service_id": "kimi-web"
+  },
+  "gateway_capabilities": {
+    "kimi_web_search_pro": {
+      "description": "The model preview contains the query, source URLs, dates, snippets and truncation status. In Code Mode emit the result once; read selected structuredContent.results[i].chunks for a missing detail. Repeating identical arguments within this turn reuses the original successful search.",
+      "_meta": {
+        "ai.yijie/coalescesExactTurnRequests": true
+      }
+    }
   }
 }

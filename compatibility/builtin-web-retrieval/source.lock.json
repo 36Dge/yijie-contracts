@@ -19,7 +19,7 @@
     },
     {
       "path": "compatibility/builtin-web-retrieval/policy.json",
-      "sha256": "0559c8f31f4bd777622a66f05ef5ba2def1f20a7c637026a0655582f9e51eba6"
+      "sha256": "7e9fea592684c487231d8be115b7a740c6483bba4afb033ea29505c21b613f95"
     },
     {
       "path": "openapi/public/web-retrieval.yaml",
@@ -55,11 +55,11 @@
     },
     {
       "path": "scripts/builtin-web-source.mjs",
-      "sha256": "51b94172f6ed320a35a2b9748c0df4dd1a6da135c115850cfb05369b9a458c20"
+      "sha256": "e29b915e5dfc8a6a328f45e5a40788d494a28c9750dc1241d42d9c5d9fa94ead"
     },
     {
       "path": "scripts/generate-builtin-web.mjs",
-      "sha256": "c074a70b77b423ad6ee33fcee051dec54106d1bc79a1b6c20ea5925821a1ef1b"
+      "sha256": "f0a2323f878258d93108ff2a36b03fcd55832f9799fb7f53cd65d06dbbdc90f4"
     },
     {
       "path": "scripts/generation-plan.mjs",
@@ -93,7 +93,7 @@
     },
     {
       "path": "sdks/go/builtinweb/tools.json",
-      "sha256": "81ffa8752799665ad50c2e2b95cca3fbf249a4ce66853c98340bdd1c04f6fc86"
+      "sha256": "d6ba09caf2f216cb9cb3694979bff184c53c2ceeddf33609aa84ba6b5e2b5227"
     },
     {
       "path": "sdks/go/builtinweb/wire.schema.json",

@@ -16,7 +16,7 @@ const check = args.includes('--check');
 const read = p => readFileSync(path.resolve(root, p));
 const hash = v => createHash('sha256').update(v).digest('hex');
 const json = v => JSON.stringify(v, null, 2) + '\n';
-const {schema, policy, tools, standalone} = loadBuiltinWebSource();
+const {schema, policy, portableTools, tools, standalone} = loadBuiltinWebSource();
 const credentialPipe = JSON.parse(read('compatibility/market-broker-control/control.json')).kimi_model_credential;
 const runtimeLock = JSON.parse(read('compatibility/runtime-tool-search/source.lock.json'));
 const artifact = path.resolve(root, '../yijie-codex', runtimeLock.runtime_relative_path);
@@ -89,7 +89,7 @@ const outputs = new Map([
   ['sdks/go/builtinweb/native.gen.go', nativeGo],
   ['sdks/go/builtinweb/wire.gen.go', wireGo],
   ['sdks/go/builtinweb/policy.gen.go', constants],
-  ['sdks/go/builtinweb/tools.json', json(tools)],
+  ['sdks/go/builtinweb/tools.json', json(portableTools)],
   ['sdks/go/builtinweb/wire.schema.json', json(schema)],
   ['sdks/jsonschema/builtin-web-retrieval.schema.json', json(schema)],
   ['sdks/jsonschema/builtin-web-retrieval.tools.json', json(tools)],

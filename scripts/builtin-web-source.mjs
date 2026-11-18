@@ -85,14 +85,22 @@ export function loadBuiltinWebSource() {
     walk(definition);
     return {$schema: schema.$schema, ...definition, ...(Object.keys(deps).length ? {$defs: deps} : {})};
   }
-  const tools = policy.tools.map(t => {
+  const portableTools = policy.tools.map(t => {
     assert.deepEqual(t.annotations, {readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: true});
     const output = standalone(t.output);
     output.oneOf = output.oneOf.map(v => v.$ref === '#/$defs/ErrorOutput' ? {$ref: '#/$defs/AppErrorOutput'} : v);
     delete output.$defs.ErrorOutput; delete output.$defs.ToolError; delete output.$defs.ErrorCode;
     Object.assign(output.$defs, standalone('AppErrorOutput').$defs, {AppErrorOutput: schema.$defs.AppErrorOutput});
     const description = [policy.completion_instructions, taskInstructions[t.name], t.description].filter(Boolean).join(' ');
-    return {name: t.name, title: t.title, description, inputSchema: standalone(t.input), outputSchema: output, annotations: t.annotations, ...(t._meta ? {_meta: t._meta} : {})};
+    return {name: t.name, title: t.title, description, inputSchema: standalone(t.input), outputSchema: output, annotations: t.annotations};
   });
-  return {source, schema, policy, tools, standalone};
+  // Only the implementing MCP gateway can advertise support for concurrent
+  // coalescing. Portable descriptors are also used by ordinary protocol peers.
+  const tools = portableTools.map(tool => {
+    const capability = policy.gateway_capabilities[tool.name];
+    return capability
+      ? {...tool, description: tool.description + ' ' + capability.description, _meta: capability._meta}
+      : tool;
+  });
+  return {source, schema, policy, portableTools, tools, standalone};
 }

@@ -7,10 +7,20 @@ import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
 import {root, loadBuiltinWebSource, nativeOpenApiSchema} from '../scripts/builtin-web-source.mjs';
 
-const {schema, policy, tools, standalone} = loadBuiltinWebSource();
+const {schema, policy, portableTools, tools, standalone} = loadBuiltinWebSource();
 const ajv = new Ajv2020({strict: true, allErrors: true}); addFormats(ajv);
 ajv.addKeyword({keyword: 'x-sensitive', schemaType: 'boolean'});
 ajv.addSchema(schema);
+
+test('only the deep search gateway advertises exact in-flight coalescing', () => {
+  const pro = tools.find(t => t.name === 'kimi_web_search_pro');
+  const portable = portableTools.find(t => t.name === pro.name);
+  assert.equal(pro._meta['ai.yijie/coalescesExactTurnRequests'], true);
+  assert.equal(portable._meta, undefined);
+  assert.equal(pro.inputSchema, portable.inputSchema);
+  assert.equal(pro.outputSchema, portable.outputSchema);
+  assert(tools.filter(t => t !== pro).every(t => t._meta === undefined));
+});
 
 test('FEAT175 every private/public candidate definition compiles with strict validation', () => {
   for (const name of Object.keys(schema.$defs)) assert.equal(typeof ajv.getSchema(schema.$id + '#/$defs/' + name), 'function', name);

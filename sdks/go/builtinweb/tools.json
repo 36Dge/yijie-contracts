@@ -631,7 +631,7 @@
   {
     "name": "kimi_web_search_pro",
     "title": "网页研究检索",
-    "description": "Built-in read-only web retrieval needs no connector selection. Use returned results to decide follow-up retrieval: continue only for a specific missing part of the requested deliverable, without adding verification goals. Once the requested items or facts are supported, finish within the user's full output limit. Ordinary questions normally use native web_search; an explicit URL-reading request uses kimi_web_fetch. For a researched answer or comparison needing body evidence, or a search with explicit site/date restrictions, call kimi_web_search_pro before answering and pass requested sites/time_window filters. An unfiltered list of sources for later reading belongs to Basic. Provider-hosted pre-search may occur independently, but does not replace this Pro step or its filters. Reuse sufficient Pro evidence already returned for the same information need; do not repeat a successful search just to satisfy this rule. Returns query-relevant body chunks and source URLs. Mentioning a site in query alone does not apply a filter. Use a focused query for facts missing from a truncated page. The model preview contains the query, source URLs, dates, snippets and truncation status. In Code Mode emit the result once; read selected structuredContent.results[i].chunks for a missing detail. Repeating identical arguments within this turn reuses the original successful search.",
+    "description": "Built-in read-only web retrieval needs no connector selection. Use returned results to decide follow-up retrieval: continue only for a specific missing part of the requested deliverable, without adding verification goals. Once the requested items or facts are supported, finish within the user's full output limit. Ordinary questions normally use native web_search; an explicit URL-reading request uses kimi_web_fetch. For a researched answer or comparison needing body evidence, or a search with explicit site/date restrictions, call kimi_web_search_pro before answering and pass requested sites/time_window filters. An unfiltered list of sources for later reading belongs to Basic. Provider-hosted pre-search may occur independently, but does not replace this Pro step or its filters. Reuse sufficient Pro evidence already returned for the same information need; do not repeat a successful search just to satisfy this rule. Returns query-relevant body chunks and source URLs. Mentioning a site in query alone does not apply a filter. Use a focused query for facts missing from a truncated page.",
     "inputSchema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
@@ -1311,9 +1311,6 @@
       "destructiveHint": false,
       "idempotentHint": false,
       "openWorldHint": true
-    },
-    "_meta": {
-      "ai.yijie/coalescesExactTurnRequests": true
     }
   },
   {
