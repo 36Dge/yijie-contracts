@@ -1,6 +1,6 @@
 {
   "contract_id": "builtin-web-retrieval/1",
-  "contract_version": "0.1.0",
+  "contract_version": "0.2.0",
   "feature": "FEAT-175",
   "release": false,
   "wire_authority": "compatibility/builtin-web-retrieval/wire.schema.json",
@@ -32,7 +32,7 @@
     {
       "name": "kimi_web_search_pro",
       "title": "网页研究检索",
-      "description": "Returns query-relevant body chunks and source URLs. Mentioning a site in query alone does not apply a filter. Use a focused query for facts missing from a truncated page.",
+      "description": "Returns query-relevant body chunks and source URLs. Mentioning a site in query alone does not apply a filter. Use a focused query for facts missing from a truncated page. The model preview contains the query, source URLs, dates, snippets and truncation status. In Code Mode emit the result once; read selected structuredContent.results[i].chunks for a missing detail. Repeating identical arguments within this turn reuses the original successful search.",
       "input": "ProArguments",
       "output": "ProOutput",
       "annotations": {
@@ -123,7 +123,9 @@
     "public_admission": "main product identity or web-only delegation as specified per operation; permission web.retrieve; finite quota required",
     "legacy_web_approval": "A still-pending kimi-web connector call from an existing selection must obey the current verified expert web policy before approve_once. Resolved historical decision receipts retain their original replay semantics; fresh selection retirement remains a separate migration.",
     "default_entitlement": "Existing task.create roles receive web.retrieve once through migration 00006. New default owner/member roles include it; later explicit removal is not undone at startup.",
-    "fresh_selection": "Retire kimi-web only for a newly frozen submission. Preserve original input digest/selection and all previously frozen snapshots, history and decision receipts. Do not reinterpret replay using current installation state."
+    "fresh_selection": "Retire kimi-web only for a newly frozen submission. Preserve original input digest/selection and all previously frozen snapshots, history and decision receipts. Do not reinterpret replay using current installation state.",
+    "deep_search_reuse": "For Pro only, after fresh Host admission, coalesce concurrent exact tool and argument matches within the same native caller/root turn, binding and authorization revision. Reauthorize completed matches through the original API operation ID. Preserve the result-unavailable status if its body expired. Changed arguments or a user refresh submitted in a new turn creates a new operation. Never treat failed or unconfirmed outcomes as successful results.",
+    "deep_search_model_output": "Direct model output and default Code Mode serialization carry one bounded preview with query, outcome, source count and indexed sources, preserving upstream truncation and dropped result counts. Code Mode can explicitly read full validated chunks from the original MCP receipt. Desktop evidence stays on the original receipt."
   },
   "service_identities": {
     "api": "spiffe://yijie/services/api",

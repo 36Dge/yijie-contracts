@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "feature": "FEAT-175",
-  "contract_version": "0.1.0",
+  "contract_version": "0.2.0",
   "mode": "local_worktree_candidate",
   "release": false,
   "base_commit": "2592f5d5b07fcd92de10d25c4dcf73bd1ce03cb5",
@@ -19,7 +19,7 @@
     },
     {
       "path": "compatibility/builtin-web-retrieval/policy.json",
-      "sha256": "15aee18bdad7666960e358bb56666ced427475c6971ef0a80c290614a53ab52a"
+      "sha256": "efb5534ec8063479cffd8950a9ea6c5e0e8a1d0bbf3174334dae2dc3d77a1e26"
     },
     {
       "path": "openapi/public/web-retrieval.yaml",
@@ -93,7 +93,7 @@
     },
     {
       "path": "sdks/go/builtinweb/tools.json",
-      "sha256": "d6ba09caf2f216cb9cb3694979bff184c53c2ceeddf33609aa84ba6b5e2b5227"
+      "sha256": "6f080907faa08bef35b8f0279353a6862415629d1c7c390bcd2b708534dbe3fc"
     },
     {
       "path": "sdks/go/builtinweb/wire.schema.json",
@@ -105,11 +105,11 @@
     },
     {
       "path": "sdks/jsonschema/builtin-web-retrieval.tools.json",
-      "sha256": "d6ba09caf2f216cb9cb3694979bff184c53c2ceeddf33609aa84ba6b5e2b5227"
+      "sha256": "6f080907faa08bef35b8f0279353a6862415629d1c7c390bcd2b708534dbe3fc"
     },
     {
       "path": "sdks/rust/builtinweb/source.gen.rs",
-      "sha256": "f64a7e157bc8fb099f555d00528b9f8fad2fe82cc6074f71d668ee64de48b311"
+      "sha256": "dfdad1f3fc00d89705837fcf1b46b3b51e9605b12df925abfef8842bacaca1bd"
     },
     {
       "path": "sdks/go/builtinweb/validate.gen.go",
