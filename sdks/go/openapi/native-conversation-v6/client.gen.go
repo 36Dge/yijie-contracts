@@ -687,7 +687,7 @@ type NativeMcpText struct {
 	// Index Original native content array index; never renumber after filtering.
 	Index int `json:"index"`
 
-	// Text Complete native text block after existing whole-line confidentiality projection, then UTF-8 truncation. Plain text only; links remain inert. The built-in deep search may summarize its original text block at index 0 into the existing SearchSuccess display shape (title, public URL and snippet), or a validated public retrieval error.
+	// Text Complete native text block after existing whole-line confidentiality projection, then UTF-8 truncation. Plain text only; links remain inert. The built-in deep search may summarize its original text block at index 0 into the SearchSuccess display shape (title, public HTTP(S) website origin and snippet), or a validated public retrieval error. In this display projection url identifies the source site only.
 	Text string `json:"text"`
 }
 

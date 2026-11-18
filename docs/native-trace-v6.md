@@ -46,7 +46,9 @@ Native and Vue. For the exact `yijie_web/kimi_web_search_pro` identity,
 normal single MCP text block must validate against the built-in Pro success or
 public error schema. A success is projected at its original index zero using
 the existing `SearchSuccess` schema. It contains the ordered, displayable
-titles, source URLs and snippets. Its `truncated` flag covers both upstream
+titles, source website origins and snippets. The URL in this display-only
+`SearchSuccess` is the HTTP(S) origin used to display the site name. Page
+paths, query strings and fragments stay out of the receipt. Its `truncated` flag covers both upstream
 and display limits. Page chunks, raw arguments and MCP metadata stay outside
 the display. Errors carry only a validated public error. Links are inert.
 Collection happens on native Item notifications. Rebuilding an older turn
