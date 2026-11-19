@@ -10,7 +10,8 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),fork=path.join(root,'../yijie-codex');
 const args=process.argv.slice(2),check=args.includes('--check'),sync=args.includes('--sync')||refresh;
-assert(args.every(x=>['--check','--sync','--refresh-provenance'].includes(x)));
+const sourceArg=args.find(x=>/^--runtime-commit=[a-f0-9]{40}$/.test(x));
+assert(args.every(x=>['--check','--sync','--refresh-provenance'].includes(x)||x===sourceArg));
 const read=(base,name)=>readFileSync(path.join(base,name));
 const sha=b=>createHash('sha256').update(b).digest('hex');
 const json=v=>Buffer.from(JSON.stringify(v,null,2)+'\n');
@@ -19,10 +20,11 @@ assert.equal(current.artifact,current.source_sha256+'/aarch64-apple-darwin');
 const relative='.yijie/build/native-skill-marketplace-v1/'+current.artifact,artifact=path.join(fork,relative);
 const manifestBytes=read(artifact,'runtime-manifest.json'),manifest=JSON.parse(manifestBytes);
 const previous=JSON.parse(read(root,'compatibility/runtime-documents/source.lock.json'));
-assert.deepEqual(manifest.patches.slice(0,-2),previous.patches);
-assert.deepEqual(manifest.patches.slice(-2).map(p=>p.path),[
+assert.deepEqual(manifest.patches.slice(0,-3),previous.patches);
+assert.deepEqual(manifest.patches.slice(-3).map(p=>p.path),[
   '.yijie/patches/chat-models/0025-native-skill-marketplace.patch',
   '.yijie/patches/chat-models/0026-deep-search-model-view.patch',
+  '.yijie/patches/chat-models/0027-scoped-search-progress.patch',
 ]);
 const inputs=[...manifest.patches.map(p=>p.path),...['build-native-skill-marketplace.sh','prepare-native-skill-marketplace.py','write-native-skill-marketplace-runtime-manifest.py','prepare-answer-completion.py'].map(p=>'scripts/'+p)];
 const inputHash=createHash('sha256');for(const p of inputs)inputHash.update(p).update('\0').update(read(fork,p));
@@ -63,7 +65,15 @@ outputs.set('sdks/go/openapi/runtime-skill-marketplace/schema.gen.go',execFileSy
 for(const name of names)outputs.set('sdks/go/openapi/runtime-skill-marketplace/'+name+'.json',read(schemaRoot,'v2/'+name+'.json'));
 const configSchema=read(artifact,'config.schema.json');const config=JSON.parse(configSchema);for(const k of ['plugin_marketplace_mode','plugin_refresh_mode','plugin_allowed_local_roots'])assert(config.properties[k]);
 outputs.set(family+'/config.schema.json',configSchema);
-const lock={schema_version:1,feature:'FEAT-174',mode:'local_worktree_candidate',release:false,runtime_source:{base_commit:execFileSync('git',['-C',fork,'rev-parse','HEAD'],{encoding:'utf8'}).trim(),sources:Object.fromEntries(inputs.map(p=>[p,sha(read(fork,p))]))},upstream:manifest.upstream,runtime_artifact:manifest.runtime,runtime_manifest_sha256:sha(manifestBytes),runtime_schema:manifest.appServer,runtime_relative_path:relative,patches:manifest.patches,config_schema_sha256:sha(configSchema),generator_sha256:sha(readFileSync(fileURLToPath(import.meta.url)))};
+// Pin the tree that contains the reviewed inputs, including a detached local
+// candidate. A worktree hash alone cannot make an older commit their source.
+const head=execFileSync('git',['-C',fork,'rev-parse','HEAD'],{encoding:'utf8'}).trim();
+const previousPin=JSON.parse(read(root,family+'/source.lock.json')).runtime_source.base_commit;
+const blobs=inputs.map(p=>execFileSync('git',['-C',fork,'hash-object',p],{encoding:'utf8'}).trim());
+const matches=rev=>{try{return execFileSync('git',['-C',fork,'rev-parse',...inputs.map(p=>rev+':'+p)],{encoding:'utf8',stdio:['ignore','pipe','ignore']}).trim().split('\n').every((v,i)=>v===blobs[i]);}catch{return false;}};
+const runtimeCommit=(sourceArg?[sourceArg.slice('--runtime-commit='.length)]:[head,previousPin]).find(matches);
+assert(runtimeCommit,'Pin an immutable Runtime revision containing all reviewed inputs');
+const lock={schema_version:1,feature:'FEAT-174',mode:'local_worktree_candidate',release:false,runtime_source:{base_commit:runtimeCommit,sources:Object.fromEntries(inputs.map(p=>[p,sha(read(fork,p))]))},upstream:manifest.upstream,runtime_artifact:manifest.runtime,runtime_manifest_sha256:sha(manifestBytes),runtime_schema:manifest.appServer,runtime_relative_path:relative,patches:manifest.patches,config_schema_sha256:sha(configSchema),generator_sha256:sha(readFileSync(fileURLToPath(import.meta.url)))};
 outputs.set(family+'/source.lock.json',json(lock));
 const pending = new Map();
 function put(p,b){pending.set(p,b);}

@@ -1,5 +1,7 @@
 # 当前上下文用量与整理状态
 
+0.3.0 增加同一对话切换模型后的上次实测值。新客户端显式请求扩展，并显示样本的来源模型。默认读取继续使用以下 0.2.0 规则。兼容范围和恢复条件见 [重开与切换模型](context-window-restore.md)。
+
 2026-11-08，`demo_fast + local`，未发布候选。0.1.0 为 `additive`；当前 0.2.0
 重开恢复修复为 `contract-impact = semantic`，JSON/IPC 形状与 schema_version 1 不变。
 Owner：Agent Runtime Team / Client Team；producer：Agent Host；consumers：Desktop Native / Vue。

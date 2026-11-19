@@ -1,5 +1,15 @@
 # 上下文统计重开恢复
 
+## 0.3.0 同一对话切换模型
+
+本地候选的 `contract-impact = additive`。Agent Runtime Team 与 Client Team 分别维护 Host 生产者和 Desktop Native/Vue 消费者。0.2.0 兼容基线为 `58b31c380f4a671b13dabe651550fc8b28060dd4`。
+
+默认 GET 和 IPC 继续返回当前模型绑定的 `sample`。新客户端在 IPC 中传 `includeLastObservation: true`，Native 向原 GET 传 `include_last_observation=true`。当当前绑定尚无实测值时，Host 可额外返回 `last_observation`，其中 `model` 是测量时的原生模型名，`sample` 完整保留当时的用量、有效容量、轮次和时间。新模型首次有效统计到达后由当前 `sample` 接替。
+
+模型选择与原生上下文整理是独立事件。同线程切换模型可以保留上次实测。真正开始整理或回滚会使旧值失效。冷读使用原生统计文件和已授权会话的轮次归属，沿用原始模型名。默认请求省略扩展字段，旧客户端可继续使用原有封闭校验器。先升级 Host，再升级配套桌面端。回滚桌面端或 Host 都可继续读到 0.2.0 的当前模型统计。
+
+## 0.2.0 当前模型绑定的统计
+
 2026-11-08，`contract-impact = semantic`，本地 context-window 0.2.0 候选。
 用户确认已完成聊天重开后缺少用量是缺陷，授权审计与修复。Owner：Agent Runtime Team；
 producer：Host；consumer：Desktop。JSON/IPC 的字段、枚举、权限与版本号 1 不变；

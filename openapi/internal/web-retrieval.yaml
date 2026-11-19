@@ -387,6 +387,100 @@
           }
         ]
       }
+    },
+    "/internal/v2/web-retrieval/finish": {
+      "post": {
+        "operationId": "finishWebOperationV2",
+        "summary": "Settle an observed supplier attempt with business facts",
+        "description": "Pinned managed mTLS service identity; terminal grants forbidden. Claim CAS rechecks binding/current authorization/deadline atomically; normal grant expiry does not cancel admitted work. Receipt binds operation/digest/executor. Never reclaim a committed dispatch.",
+        "security": [
+          {
+            "ServiceIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result or recorded operation state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/OperationStatus"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input; no dispatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Managed mTLS peer identity unavailable; no end-user grant refresh or automatic execute retry.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not entitled; no new dispatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Operation conflict or state conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Finite quota or capacity reached; no automatic retry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable; dispatch fact is explicit, unknown is not free",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/ClaimFinishV2"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {

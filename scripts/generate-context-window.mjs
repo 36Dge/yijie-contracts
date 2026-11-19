@@ -95,14 +95,18 @@ function rustCheck(s, v) {
   return c;
 }
 let rust = '// Generated from context-window source. DO NOT EDIT.\nfn required_nullable<\'de,D,T>(d:D)->Result<Option<T>,D::Error> where D:serde::Deserializer<\'de>,T:serde::Deserialize<\'de>{<Option<T> as serde::Deserialize<\'de>>::deserialize(d)}\n';
+rust += 'fn optional_non_null<\'de,D,T>(d:D)->Result<Option<T>,D::Error> where D:serde::Deserializer<\'de>,T:serde::Deserialize<\'de>{T::deserialize(d).map(Some)}\n';
 for (const [name, def] of Object.entries(defs)) {
   assert.equal(def.additionalProperties, false);
-  assert.equal(def.required.length, Object.keys(def.properties).length);
   const fields = [], checks = [];
   for (const [field, s] of Object.entries(def.properties)) {
     const f = snake(field), type = rustType(s), checkBody = rustCheck(s, 'value');
-    fields.push(`#[serde(rename=${JSON.stringify(field)}${s.nullable ? ',deserialize_with="required_nullable"' : ''})] pub ${f}:${s.nullable ? `Option<${type}>` : type},`);
-    if (checkBody) checks.push(s.nullable ? `if let Some(value)=&self.${f}{${checkBody}}` : `{let value=&self.${f};${checkBody}}`);
+    const optional = !def.required.includes(field);
+    assert(!(optional && s.nullable), 'optional and nullable requires a three-state representation');
+    const attributes = optional ? ',default,deserialize_with="optional_non_null",skip_serializing_if="Option::is_none"'
+      : s.nullable ? ',deserialize_with="required_nullable"' : '';
+    fields.push(`#[serde(rename=${JSON.stringify(field)}${attributes})] pub ${f}:${optional || s.nullable ? `Option<${type}>` : type},`);
+    if (checkBody) checks.push(optional || s.nullable ? `if let Some(value)=&self.${f}{${checkBody}}` : `{let value=&self.${f};${checkBody}}`);
   }
   rust += `#[derive(Debug,Clone,PartialEq,serde::Serialize,serde::Deserialize)]\n#[serde(deny_unknown_fields)]\npub struct ${name}{${fields.join('\n')}}\nimpl ${name}{pub fn validate(&self)->Result<(),&'static str>{${checks.join('\n')}Ok(())}}\n`;
 }

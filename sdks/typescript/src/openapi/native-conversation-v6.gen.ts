@@ -187,6 +187,7 @@ export interface components {
             resultKind: "absent" | "null" | "empty" | "text" | "unsupported" | "omitted";
             texts: components["schemas"]["NativeMcpText"][];
             diagnostics: ("identity_unavailable" | "arguments_unavailable" | "unsupported_content" | "content_redacted" | "content_truncated" | "content_limit" | "result_unavailable" | "display_limit")[];
+            searchReceipt?: components["schemas"]["DeepSearchReceipt"];
         };
         /** @description Current thread/read(includeTurns=false) status only. This ephemeral observation has no history watermark and must not change saved Item or Turn facts, infer their completion, or be persisted as a history format. */
         NativeThreadStatusSnapshot: {
@@ -230,6 +231,21 @@ export interface components {
             sourceLabel?: string;
             title?: string;
         };
+        DeepSearchReceipt: {
+            version: number;
+            /** Format: uuid */
+            operation_id?: string;
+            /** @enum {string} */
+            relation: "first" | "joined" | "reused";
+            /** @enum {string} */
+            dispatch: "not_dispatched" | "uncertain" | "attempted" | "responded";
+            /** @enum {string} */
+            outcome: "pending" | "results" | "empty" | "partial" | "failed" | "unknown";
+            /** @enum {string} */
+            availability: "pending" | "available" | "unavailable";
+            /** @enum {string} */
+            error_code?: "invalid_arguments" | "session_expired" | "not_entitled" | "quota_exceeded" | "busy" | "upstream_unavailable" | "timeout" | "no_content" | "response_too_large" | "invalid_response" | "cancelled" | "outcome_unknown" | "operation_conflict" | "operation_expired" | "result_unavailable";
+        };
     };
     responses: never;
     parameters: never;
@@ -242,7 +258,10 @@ export interface operations {
     readNativeThreadProcess: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Opt in to typed receipt projection for the builtin deep-search tool. */
+                "X-Yijie-Search-Receipt"?: "2";
+            };
             path: {
                 agent_session_id: string;
             };
@@ -286,6 +305,8 @@ export interface operations {
             };
             header?: {
                 "Last-Event-ID"?: string;
+                /** @description Opt in to typed receipt projection for the builtin deep-search tool. */
+                "X-Yijie-Search-Receipt"?: "2";
             };
             path: {
                 agent_session_id: string;

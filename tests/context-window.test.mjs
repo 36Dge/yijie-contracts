@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { validateContextWindowSnapshot } from '../sdks/typescript/src/context-window-validator.gen.js';
+import { validateContextWindowQuery, validateContextWindowSnapshot } from '../sdks/typescript/src/context-window-validator.gen.js';
 const id = '10000000-0000-4000-8000-000000000001';
 const empty = { schema_version: 1, thread_id: id, model_profile: 'ordinary-model', model_revision: 1, sample: null, compactions: [] };
 test('context snapshot preserves null, measured zero, effective capacity and native lifecycle', () => {
@@ -20,4 +20,16 @@ test('native TokenUsage schema is copied from the qualified Runtime without rewr
   const bytes = readFileSync(file);
   assert.equal(createHash('sha256').update(bytes).digest('hex'), lock.sources[file]);
   assert.deepEqual(JSON.parse(bytes), JSON.parse(readFileSync('sdks/jsonschema/context-window-native.schema.json')));
+});
+test('last observation is an opt-in with the measured model and the original complete sample', () => {
+  const query = {sessionId: id, includeHistory: false};
+  assert(validateContextWindowQuery(query));
+  assert(validateContextWindowQuery({...query, includeLastObservation: true}));
+  assert(!validateContextWindowQuery({...query, includeLastObservation: null}));
+  const measured = {model: 'MiniMax-M3', sample: {used_tokens: 19638, capacity_tokens: 950000, turn_id: 'turn', window_id: id, observed_at: '2026-11-08T12:00:00Z'}};
+  assert(validateContextWindowSnapshot({...empty, last_observation: measured}));
+  assert(!validateContextWindowSnapshot({...empty, sample: measured.sample, last_observation: measured}));
+  assert(!validateContextWindowSnapshot({...empty, thread_id: null, last_observation: measured}));
+  assert(!validateContextWindowSnapshot({...empty, last_observation: {sample: measured.sample}}));
+  assert(!validateContextWindowSnapshot({...empty, last_observation: null}));
 });

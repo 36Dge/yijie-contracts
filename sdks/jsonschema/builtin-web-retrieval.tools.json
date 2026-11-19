@@ -1313,7 +1313,8 @@
       "openWorldHint": true
     },
     "_meta": {
-      "ai.yijie/coalescesExactTurnRequests": true
+      "ai.yijie/coalescesExactTurnRequests": true,
+      "ai.yijie/searchReceiptVersion": 2
     }
   },
   {

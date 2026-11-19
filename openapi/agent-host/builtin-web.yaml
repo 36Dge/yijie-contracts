@@ -44,6 +44,11 @@
                 "schema": {
                   "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/WebAdmissionReceipt"
                 }
+              },
+              "application/vnd.yijie.web-admission.v2+json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/WebAdmissionReceiptV2"
+                }
               }
             }
           },

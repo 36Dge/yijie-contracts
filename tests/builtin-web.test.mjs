@@ -16,10 +16,27 @@ test('only the deep search gateway advertises exact in-flight coalescing', () =>
   const pro = tools.find(t => t.name === 'kimi_web_search_pro');
   const portable = portableTools.find(t => t.name === pro.name);
   assert.equal(pro._meta['ai.yijie/coalescesExactTurnRequests'], true);
+  assert.equal(pro._meta['ai.yijie/searchReceiptVersion'], 2);
   assert.equal(portable._meta, undefined);
   assert.equal(pro.inputSchema, portable.inputSchema);
   assert.equal(pro.outputSchema, portable.outputSchema);
   assert(tools.filter(t => t !== pro).every(t => t._meta === undefined));
+});
+
+test('private and native projections agree on the closed versioned search receipt', () => {
+  const api = JSON.parse(readFileSync(path.join(root, 'openapi/native-conversation-v6/native-conversation-v6.yaml')));
+  const core = schema.$defs.DeepSearchReceipt;
+  const native = api.components.schemas.DeepSearchReceipt;
+  assert.deepEqual(Object.keys(native.properties).sort(), Object.keys(core.properties).sort());
+  assert.deepEqual([...native.required].sort(), [...core.required].sort());
+  assert.equal(native.additionalProperties, false);
+  assert.equal(core.additionalProperties, false);
+  for (const key of ['dispatch','relation','outcome','availability','error_code']) {
+    assert.deepEqual(native.properties[key].enum, core.properties[key].enum ?? schema.$defs.AppErrorCode.enum);
+  }
+  assert.equal(native.properties.operation_id.format, 'uuid');
+  assert.equal(native.properties.version.minimum, 2);
+  assert.equal(native.properties.version.maximum, 2);
 });
 
 test('FEAT175 every private/public candidate definition compiles with strict validation', () => {
@@ -121,8 +138,8 @@ test('FEAT175 uses the fixed Runtime MCP configuration without extending its sch
 test('FEAT175 public and internal operations keep separate authentication authorities', () => {
   const pub = JSON.parse(readFileSync(path.join(root, 'openapi/public/web-retrieval.yaml')));
   const internal = JSON.parse(readFileSync(path.join(root, 'openapi/internal/web-retrieval.yaml')));
-  assert.equal(Object.keys(pub.paths).length, 5);
-  assert.equal(Object.keys(internal.paths).length, 4);
+  assert.equal(Object.keys(pub.paths).length, 7);
+  assert.equal(Object.keys(internal.paths).length, 5);
   assert.deepEqual(pub.paths['/v1/web-retrieval/delegations'].post.security, [{ProductSession: []}]);
   assert.deepEqual(pub.paths['/v1/web-retrieval/operations'].post.security, [{WebDelegation: []}]);
   for (const item of Object.values(internal.paths)) for (const op of Object.values(item)) assert.deepEqual(op.security, [{ServiceIdentity: []}]);

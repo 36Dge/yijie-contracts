@@ -48,6 +48,7 @@ export function loadBuiltinWebSource() {
   assert(Number.isInteger(policy.parameters.subject_concurrency) && policy.parameters.subject_concurrency > 0);
   assert(Number.isInteger(policy.parameters.gateway_queue_wait_seconds) && policy.parameters.gateway_queue_wait_seconds > 0);
   assert(policy.parameters.gateway_queue_wait_seconds + policy.parameters.binding_wait_seconds + policy.parameters.api_timeout_seconds < policy.tool_timeout_seconds);
+  assert(policy.parameters.deep_search_queue_max_seconds + policy.parameters.binding_wait_seconds + policy.parameters.api_timeout_seconds < policy.tool_timeout_seconds);
   assert.deepEqual(policy.tools.map(t => t.name), legacy.manifest.tools.map(t => t.name));
   // Native standalone functions retain their description, not the namespace.
   // Project each task rule and the shared completion rule from the same source.
