@@ -20,11 +20,12 @@ assert.equal(current.artifact,current.source_sha256+'/aarch64-apple-darwin');
 const relative='.yijie/build/native-skill-marketplace-v1/'+current.artifact,artifact=path.join(fork,relative);
 const manifestBytes=read(artifact,'runtime-manifest.json'),manifest=JSON.parse(manifestBytes);
 const previous=JSON.parse(read(root,'compatibility/runtime-documents/source.lock.json'));
-assert.deepEqual(manifest.patches.slice(0,-3),previous.patches);
-assert.deepEqual(manifest.patches.slice(-3).map(p=>p.path),[
+assert.deepEqual(manifest.patches.slice(0,-4),previous.patches);
+assert.deepEqual(manifest.patches.slice(-4).map(p=>p.path),[
   '.yijie/patches/chat-models/0025-native-skill-marketplace.patch',
   '.yijie/patches/chat-models/0026-deep-search-model-view.patch',
   '.yijie/patches/chat-models/0027-scoped-search-progress.patch',
+  '.yijie/patches/chat-models/0028-public-message-publication.patch',
 ]);
 const inputs=[...manifest.patches.map(p=>p.path),...['build-native-skill-marketplace.sh','prepare-native-skill-marketplace.py','write-native-skill-marketplace-runtime-manifest.py','prepare-answer-completion.py'].map(p=>'scripts/'+p)];
 const inputHash=createHash('sha256');for(const p of inputs)inputHash.update(p).update('\0').update(read(fork,p));
@@ -37,6 +38,15 @@ for(const p of schemas){const n=Buffer.alloc(8);n.writeBigUInt64BE(BigInt(Buffer
 assert.equal(tree.digest('hex'),manifest.appServer.schemaTreeSha256);assert.equal(schemas.length,manifest.appServer.schemaFileCount);
 const names=['PluginStateReadParams','PluginStateReadResponse','PluginRefreshParams','PluginRefreshResponse','PluginInstallParams','PluginInstallResponse','PluginUninstallParams','PluginUninstallResponse','PluginReadParams','PluginReadResponse','MarketplaceAddParams','MarketplaceAddResponse','ConfigReadParams','ConfigReadResponse','ConfigBatchWriteParams','ConfigWriteResponse','SkillsListParams','SkillsListResponse','ListMcpServerStatusParams','ListMcpServerStatusResponse'];
 const outputs=new Map(),family='compatibility/runtime-skill-marketplace';
+const history = JSON.parse(read(schemaRoot, "v2/ThreadReadResponse.json"));
+const notification = JSON.parse(read(schemaRoot, "v2/ItemStartedNotification.json"));
+for (const name of ["PublicMessagePublication","PublicPhaseSource"]) {
+  assert.deepEqual(history.definitions[name], notification.definitions[name]);
+  outputs.set(family+"/"+name+".json",json(history.definitions[name]));
+}
+const publicAssistant = history.definitions.ThreadItem.oneOf.find(item=>item.properties?.type?.enum?.includes("agentMessage"));
+const undelivered = history.definitions.ThreadItem.oneOf.find(item=>item.properties?.type?.enum?.includes("unpublishedText"));
+assert(publicAssistant?.properties.publication && undelivered?.required.includes("publication"));
 const definitions=new Map();
 for(const name of names){const bytes=read(schemaRoot,'v2/'+name+'.json');outputs.set(family+'/'+name+'.json',bytes);if(name.startsWith('PluginState')||name.startsWith('PluginRefresh')||name==='PluginReadResponse'||name.startsWith('ListMcpServerStatus')){const s=JSON.parse(bytes);definitions.set(name,s);for(const[n,d]of Object.entries(s.definitions??{})){if(definitions.has(n))assert.deepEqual(definitions.get(n),d);else definitions.set(n,d);}}}
 function type(s){

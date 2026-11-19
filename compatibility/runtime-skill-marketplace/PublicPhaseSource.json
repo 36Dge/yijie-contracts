@@ -1,0 +1,16 @@
+{
+  "description": "Durable source of a published Yijie message, shared by live and rebuilt views.",
+  "enum": [
+    "provider",
+    "declaration",
+    "subsequent_work",
+    "turn_commit",
+    "progress_step",
+    "final_step",
+    "interrupted",
+    "failed",
+    "superseded",
+    "display_limit"
+  ],
+  "type": "string"
+}

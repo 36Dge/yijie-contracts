@@ -64,3 +64,9 @@ accept the same bounded text fields. Records from 0.7.1 open their saved site
 origin on the updated Desktop. The compatibility baseline is
 `a961f6573da7588a8d4b0d2e1663ee8dda44bf57`. Desktop can be updated first.
 Rolling back the Host restores site-only recording for subsequent searches.
+
+## Public message publication 2
+
+Authenticated Desktop session creation and resume opt in with the X-Yijie-Publication header set to 2. The native-thread and SSE routes use the same header for reads, including reconnect. A paired Host echoes the negotiated value. The Runtime emits the authoritative item ID, order, previous item ID when available, and decision source on the first public assistant item. Deltas address that same ID. For mixed-purpose samples a valid commentary declaration is checked over the complete item. A later tool within the sample establishes commentary. An otherwise unclassified final requires the exact item selected at successful turn commit. Raw provider items and historical archives keep their original representation.
+
+Consumers retain the decision through completion and cold reads. A bounded unpublishedText carries partial text and the reason it was retained. It has no answer phase. Clients using the preceding wire contract get the legacy projection. The authoritative schema tree and immutable Runtime source are recorded in compatibility/runtime-skill-marketplace/source.lock.json.

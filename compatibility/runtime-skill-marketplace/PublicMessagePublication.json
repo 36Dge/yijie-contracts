@@ -1,0 +1,31 @@
+{
+  "properties": {
+    "afterItemId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "itemId": {
+      "type": "string"
+    },
+    "order": {
+      "format": "uint32",
+      "minimum": 0,
+      "type": "integer"
+    },
+    "source": {
+      "$ref": "#/definitions/PublicPhaseSource"
+    },
+    "truncated": {
+      "default": false,
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "itemId",
+    "order",
+    "source"
+  ],
+  "type": "object"
+}
