@@ -38,7 +38,7 @@ retirement is deliberate and authorized, not claimed backward compatibility.
 Fixtures use only normal synthetic records; prohibited fault/attack tests are
 not run. Checks and real-provider verification are reported separately.
 
-### Built-in deep web search, 0.7.1
+### Built-in deep web search, 0.7.2
 
 Contract impact is semantic. Agent Host produces the same v6 Item for Desktop
 Native and Vue. For the exact `yijie_web/kimi_web_search_pro` identity,
@@ -46,15 +46,21 @@ Native and Vue. For the exact `yijie_web/kimi_web_search_pro` identity,
 normal single MCP text block must validate against the built-in Pro success or
 public error schema. A success is projected at its original index zero using
 the existing `SearchSuccess` schema. It contains the ordered, displayable
-titles, source website origins and snippets. The URL in this display-only
-`SearchSuccess` is the HTTP(S) origin used to display the site name. Page
-paths, query strings and fragments stay out of the receipt. Its `truncated` flag covers both upstream
+titles, source URLs and snippets. Newly observed results preserve the original
+public HTTP(S) article URL, including its path, query and fragment, when it
+passes the existing native search-source confidentiality checks. If only the
+origin passes, that origin is retained. Its `truncated` flag covers both upstream
 and display limits. Page chunks, raw arguments and MCP metadata stay outside
-the display. Errors carry only a validated public error. Links are inert.
+the display. Errors carry only a validated public error. Desktop displays the
+hostname. A user can open the recorded URL through the native source opener,
+which reauthorizes the session, turn, item and exact URL on activation.
 Collection happens on native Item notifications. Rebuilding an older turn
 from a thread snapshot does not backfill deep search details.
 
 The transport, item identity, event order, timing and archive format stay the
 same. New readers show saved metadata-only calls using their recorded status
 and duration. Opening a disclosure reads the saved Item. Earlier v6 readers
-accept the same bounded text fields. This is a local consumer/producer update.
+accept the same bounded text fields. Records from 0.7.1 open their saved site
+origin on the updated Desktop. The compatibility baseline is
+`a961f6573da7588a8d4b0d2e1663ee8dda44bf57`. Desktop can be updated first.
+Rolling back the Host restores site-only recording for subsequent searches.
