@@ -65,6 +65,12 @@ origin on the updated Desktop. The compatibility baseline is
 `a961f6573da7588a8d4b0d2e1663ee8dda44bf57`. Desktop can be updated first.
 Rolling back the Host restores site-only recording for subsequent searches.
 
+### Built-in fetch display, 0.9.1
+
+Agent Host projects newly observed `yijie_web/kimi_web_fetch` Items into the existing v6 fields. The request contributes only its validated hostname to `argumentsSummary`. A successful native text result must validate as `FetchSuccess`. It may contribute its sanitized title (up to 512 UTF-8 bytes) to `resultSummary` and a short full or truncated reading outcome to text block zero. A validated public error contributes only its fixed message. Raw URLs, page bodies, MCP metadata and supplier error bodies never enter this projection. Disclosure reads the saved Item without opening a website or executing a tool.
+
+This semantic change preserves the wire shape and saved format. The existing metadata-only reader remains usable for saved turns, reconstructed history and older Host versions. Older clients can display the short outcome as plain text. Deploying or rolling back either reader requires no migration.
+
 ## Public message publication 2
 
 Authenticated Desktop session creation and resume opt in with the X-Yijie-Publication header set to 2. The native-thread and SSE routes use the same header for reads, including reconnect. A paired Host echoes the negotiated value. The Runtime emits the authoritative item ID, order, previous item ID when available, and decision source on the first public assistant item. Deltas address that same ID. For mixed-purpose samples a valid commentary declaration is checked over the complete item. A later tool within the sample establishes commentary. An otherwise unclassified final requires the exact item selected at successful turn commit. Raw provider items and historical archives keep their original representation.
