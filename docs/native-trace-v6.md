@@ -76,3 +76,16 @@ This semantic change preserves the wire shape and saved format. The existing met
 Authenticated Desktop session creation and resume opt in with the X-Yijie-Publication header set to 2. The native-thread and SSE routes use the same header for reads, including reconnect. A paired Host echoes the negotiated value. The Runtime emits the authoritative item ID, order, previous item ID when available, and decision source on the first public assistant item. Deltas address that same ID. For mixed-purpose samples a valid commentary declaration is checked over the complete item. A later tool within the sample establishes commentary. An otherwise unclassified final requires the exact item selected at successful turn commit. Raw provider items and historical archives keep their original representation.
 
 Consumers retain the decision through completion and cold reads. A bounded unpublishedText carries partial text and the reason it was retained. It has no answer phase. Clients using the preceding wire contract get the legacy projection. The authoritative schema tree and immutable Runtime source are recorded in compatibility/runtime-skill-marketplace/source.lock.json.
+
+### Live public message previews, 0.10.0
+
+Contract impact is additive. With publication 2, a paired client may also negotiate
+`X-Yijie-Publication-Preview: 1` on turn admission and the native event subscription.
+The opt-in stream has its own cursor. Ordinary and expert root turns from either
+supported model use the same Runtime decision. A complete public declaration allows
+cleaned assistant body bytes to stream while the authoritative phase remains pending.
+`item/agentMessage/previewDelta` identifies the thread, turn, item and UTF-8 offset.
+The existing display limits apply. Reasoning and tool output use their own channels.
+Preview bytes are transient; a formal Item and its full completion snapshot have priority.
+Replaying an offset is idempotent. A missing prefix must never be displayed as a complete
+answer. Older subscribers receive their original uninterrupted event sequence.

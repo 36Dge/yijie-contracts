@@ -27,6 +27,7 @@ assert.deepEqual(manifest.patches.slice(previous.patches.length).map(p=>p.path),
   '.yijie/patches/chat-models/0027-scoped-search-progress.patch',
   '.yijie/patches/chat-models/0028-public-message-publication.patch',
   '.yijie/patches/chat-models/0029-resume-after-terminal-error.patch',
+  '.yijie/patches/chat-models/0030-declared-public-preview.patch',
 ]);
 const inputs=[...manifest.patches.map(p=>p.path),...['build-native-skill-marketplace.sh','prepare-native-skill-marketplace.py','write-native-skill-marketplace-runtime-manifest.py','prepare-answer-completion.py'].map(p=>'scripts/'+p)];
 const inputHash=createHash('sha256');for(const p of inputs)inputHash.update(p).update('\0').update(read(fork,p));
@@ -37,7 +38,7 @@ const schemaRoot=path.join(artifact,'generated-json-schema');
 const schemas=readdirSync(schemaRoot,{recursive:true}).filter(p=>p.endsWith('.json')).sort(),tree=createHash('sha256');
 for(const p of schemas){const n=Buffer.alloc(8);n.writeBigUInt64BE(BigInt(Buffer.byteLength(p)));tree.update(n).update(p).update(Buffer.from(sha(read(schemaRoot,p)),'hex'));}
 assert.equal(tree.digest('hex'),manifest.appServer.schemaTreeSha256);assert.equal(schemas.length,manifest.appServer.schemaFileCount);
-const names=['PluginStateReadParams','PluginStateReadResponse','PluginRefreshParams','PluginRefreshResponse','PluginInstallParams','PluginInstallResponse','PluginUninstallParams','PluginUninstallResponse','PluginReadParams','PluginReadResponse','MarketplaceAddParams','MarketplaceAddResponse','ConfigReadParams','ConfigReadResponse','ConfigBatchWriteParams','ConfigWriteResponse','SkillsListParams','SkillsListResponse','ListMcpServerStatusParams','ListMcpServerStatusResponse'];
+const names=['AgentMessagePreviewDeltaNotification','PluginStateReadParams','PluginStateReadResponse','PluginRefreshParams','PluginRefreshResponse','PluginInstallParams','PluginInstallResponse','PluginUninstallParams','PluginUninstallResponse','PluginReadParams','PluginReadResponse','MarketplaceAddParams','MarketplaceAddResponse','ConfigReadParams','ConfigReadResponse','ConfigBatchWriteParams','ConfigWriteResponse','SkillsListParams','SkillsListResponse','ListMcpServerStatusParams','ListMcpServerStatusResponse'];
 const outputs=new Map(),family='compatibility/runtime-skill-marketplace';
 const history = JSON.parse(read(schemaRoot, "v2/ThreadReadResponse.json"));
 const notification = JSON.parse(read(schemaRoot, "v2/ItemStartedNotification.json"));
