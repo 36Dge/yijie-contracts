@@ -20,12 +20,13 @@ assert.equal(current.artifact,current.source_sha256+'/aarch64-apple-darwin');
 const relative='.yijie/build/native-skill-marketplace-v1/'+current.artifact,artifact=path.join(fork,relative);
 const manifestBytes=read(artifact,'runtime-manifest.json'),manifest=JSON.parse(manifestBytes);
 const previous=JSON.parse(read(root,'compatibility/runtime-documents/source.lock.json'));
-assert.deepEqual(manifest.patches.slice(0,-4),previous.patches);
-assert.deepEqual(manifest.patches.slice(-4).map(p=>p.path),[
+assert.deepEqual(manifest.patches.slice(0,previous.patches.length),previous.patches);
+assert.deepEqual(manifest.patches.slice(previous.patches.length).map(p=>p.path),[
   '.yijie/patches/chat-models/0025-native-skill-marketplace.patch',
   '.yijie/patches/chat-models/0026-deep-search-model-view.patch',
   '.yijie/patches/chat-models/0027-scoped-search-progress.patch',
   '.yijie/patches/chat-models/0028-public-message-publication.patch',
+  '.yijie/patches/chat-models/0029-resume-after-terminal-error.patch',
 ]);
 const inputs=[...manifest.patches.map(p=>p.path),...['build-native-skill-marketplace.sh','prepare-native-skill-marketplace.py','write-native-skill-marketplace-runtime-manifest.py','prepare-answer-completion.py'].map(p=>'scripts/'+p)];
 const inputHash=createHash('sha256');for(const p of inputs)inputHash.update(p).update('\0').update(read(fork,p));
