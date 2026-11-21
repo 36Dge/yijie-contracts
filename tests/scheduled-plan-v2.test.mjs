@@ -46,10 +46,10 @@ test('v2 accepts known historical profiles while v1 rejects the new identity', (
   const old = JSON.parse(readFileSync('sdks/jsonschema/scheduled-plan.schema.json'));
   const legacy = new Ajv2020({strict:true}); addFormats(legacy); legacy.addSchema(old);
   const checkOld = legacy.compile({$ref: old.$id+'#/$defs/PlanDefinition'});
-  for(const profile of ['kimi-k3-max-v1','kimi-k3-1-pro-max-v1','minimax-m3-high-v1']) {
+  for(const profile of ['kimi-k3-max-v1','kimi-k3-1-pro-max-v1','kimi-k3-1-pro-high-v1','minimax-m3-high-v1']) {
     const value={...definition,model_profile:profile};
     assert.equal(validate('PlanDefinition')(value),true);
-    assert.equal(checkOld(value),profile!=='kimi-k3-1-pro-max-v1');
+    assert.equal(checkOld(value),!profile.startsWith('kimi-k3-1-pro-'));
   }
   assert.equal(validate('PlanDefinition')({...definition,model_profile:'unknown-profile'}),false);
   assert.equal(validate('PlanDefinition')({...definition,model_profile:null}),false);

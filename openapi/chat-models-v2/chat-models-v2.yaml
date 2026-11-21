@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "FEAT-164 versioned chat model migration",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "description": "Unreleased v2 candidate. v1 is preserved. Active execution targets are separate from known historical identities. Retired K3 may be read in receipts but never submitted for new execution. Configuration recovery is explicit and operation-bound; it is not inference and is not a read-only query. Exact candidate compatibility is required before activation."
   },
   "servers": [

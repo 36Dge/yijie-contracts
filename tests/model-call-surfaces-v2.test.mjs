@@ -10,8 +10,8 @@ for(const family of ['market-selection','market-host','experts']){
   const model=family==='experts'?current.$defs.ModelIntent:current.$defs.ModelIntent;
   const actualField=Object.keys(model.properties).find(k=>/profile/i.test(k))??field;
   const revision=Object.keys(model.properties).find(k=>/revision/i.test(k));
-  for(const id of ['kimi-k3-max-v1','kimi-k3-1-pro-max-v1','minimax-m3-high-v1']){
-   const input={[actualField]:id,[revision]:1};assert.equal(v2('ModelIntent')(input),true,JSON.stringify(v2('ModelIntent').errors));assert.equal(v1('ModelIntent')(input),id!=='kimi-k3-1-pro-max-v1');
+  for(const id of ['kimi-k3-max-v1','kimi-k3-1-pro-max-v1','kimi-k3-1-pro-high-v1','minimax-m3-high-v1']){
+   const input={[actualField]:id,[revision]:1};assert.equal(v2('ModelIntent')(input),true,JSON.stringify(v2('ModelIntent').errors));assert.equal(v1('ModelIntent')(input),!id.startsWith('kimi-k3-1-pro-'));
   }
   assert.equal(v2('ModelIntent')({[actualField]:'future-model',[revision]:1}),false);
   assert.equal(v2('ModelIntent')({[actualField]:null,[revision]:1}),false);
@@ -19,7 +19,7 @@ for(const family of ['market-selection','market-host','experts']){
    if(Array.isArray(v))return v.map(x=>expand(x,defs));
    if(!v||typeof v!=='object')return v;
    if(v.$ref)return expand(defs[v.$ref.split('/').at(-1)],defs);
-   return Object.fromEntries(Object.entries(v).filter(([k])=>k!=='description').map(([k,x])=>[k,k==='enum'?x.filter(y=>y!=='kimi-k3-1-pro-max-v1'&&(!(x.includes('application/pdf')&&x.includes('text/plain'))||!['image/svg+xml','video/mp4'].includes(y))):expand(x,defs)]));
+   return Object.fromEntries(Object.entries(v).filter(([k])=>k!=='description').map(([k,x])=>[k,k==='enum'?x.filter(y=>y!=='kimi-k3-1-pro-max-v1'&&y!=='kimi-k3-1-pro-high-v1'&&(!(x.includes('application/pdf')&&x.includes('text/plain'))||!['image/svg+xml','video/mp4'].includes(y))):expand(x,defs)]));
   };
   for(const [name,value] of Object.entries(old.$defs)){
    if(name==='ProfileId')continue;
@@ -38,6 +38,6 @@ test('K3.1 market reader preserves the shared missing-credential error',()=>{
   const valid=ajv.compile({$ref:schema.$id+'#/$defs/ErrorCode'});
   assert.equal(valid('not_configured'),true);
   assert.equal(valid('unknown_credential_error'),false);
- assert.equal(read('compatibility/market-host-v2/transport.json').contract_version,'0.6.0');
+ assert.equal(read('compatibility/market-host-v2/transport.json').contract_version,'0.8.1');
  assert.equal(read('compatibility/experts-v2/transport.json').contract_version,'0.2.0');
 });

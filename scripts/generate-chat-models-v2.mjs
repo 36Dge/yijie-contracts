@@ -11,7 +11,7 @@ const check=process.argv.includes('--check');
 assert.ok(process.argv.slice(2).every(x=>x==='--check'));
 const sourcePath='jsonschema/chat/model-selection-v2.schema.json';
 const source=JSON.parse(readFileSync(path.join(root,sourcePath)));
-assert.equal(source['x-family-version'],'0.2.0');
+assert.equal(source['x-family-version'],'0.3.0');
 assert.deepEqual(source['x-model-profiles'].map(p=>p.profile_id),source.$defs.ActiveProfileId.enum);
 assert.equal(source.$defs.Catalog.properties.default_profile.const,source['x-model-profiles'][0].profile_id);
 const defs=new Map(Object.entries(source.$defs));
@@ -109,6 +109,6 @@ const hash=b=>createHash('sha256').update(b).digest('hex');
 const sources=[...new Set([sourcePath,'scripts/generate-chat-models-v2.mjs',...apiSources])].sort();
 const lockPath='compatibility/chat-models-v2/source.lock.json';
 const base=existsSync(path.join(root,lockPath))?JSON.parse(readFileSync(path.join(root,lockPath))).base_commit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
-out.set(lockPath,JSON.stringify({schema_version:1,contract_version:'0.2.0',mode:'local_worktree_candidate',release:false,base_commit:base,sources:sources.map(p=>({path:p,sha256:hash(readFileSync(path.join(root,p)))})),generated:[...out].map(([p,b])=>({path:p,sha256:hash(b)}))},null,2)+'\n');
+out.set(lockPath,JSON.stringify({schema_version:1,contract_version:source['x-family-version'],mode:'local_worktree_candidate',release:false,base_commit:base,sources:sources.map(p=>({path:p,sha256:hash(readFileSync(path.join(root,p)))})),generated:[...out].map(([p,b])=>({path:p,sha256:hash(b)}))},null,2)+'\n');
 for(const [p,b]of out){let f=path.join(root,p);if(check)assert.deepEqual(readFileSync(f),Buffer.from(b),p);else{mkdirSync(path.dirname(f),{recursive:true});writeFileSync(f,b);}}
 console.log('Chat models v2 source generation '+(check?'verified':'complete')+'; unreleased local candidate.');

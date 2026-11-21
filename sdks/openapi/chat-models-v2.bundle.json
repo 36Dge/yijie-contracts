@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "FEAT-164 versioned chat model migration",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "description": "Unreleased v2 candidate. v1 is preserved. Active execution targets are separate from known historical identities. Retired K3 may be read in receipts but never submitted for new execution. Configuration recovery is explicit and operation-bound; it is not inference and is not a read-only query. Exact candidate compatibility is required before activation."
   },
   "servers": [
@@ -39,16 +39,17 @@
                     "default_profile": {
                       "type": "string",
                       "enum": [
-                        "kimi-k3-1-pro-max-v1",
-                        "minimax-m3-high-v1"
+                        "kimi-k3-1-pro-high-v1",
+                        "minimax-m3-high-v1",
+                        "kimi-k3-1-pro-max-v1"
                       ],
                       "description": "Only these identities may be used for a new execution or selection target.",
-                      "const": "kimi-k3-1-pro-max-v1"
+                      "const": "kimi-k3-1-pro-high-v1"
                     },
                     "models": {
                       "type": "array",
-                      "minItems": 2,
-                      "maxItems": 2,
+                      "minItems": 3,
+                      "maxItems": 3,
                       "items": {
                         "type": "object",
                         "additionalProperties": false,
@@ -73,8 +74,9 @@
                               "profile_id": {
                                 "type": "string",
                                 "enum": [
-                                  "kimi-k3-1-pro-max-v1",
-                                  "minimax-m3-high-v1"
+                                  "kimi-k3-1-pro-high-v1",
+                                  "minimax-m3-high-v1",
+                                  "kimi-k3-1-pro-max-v1"
                                 ],
                                 "description": "Only these identities may be used for a new execution or selection target."
                               },
@@ -99,7 +101,7 @@
                               {
                                 "properties": {
                                   "profile_id": {
-                                    "const": "kimi-k3-1-pro-max-v1"
+                                    "const": "kimi-k3-1-pro-high-v1"
                                   },
                                   "label": {
                                     "const": "Kimi K3.1 Pro"
@@ -111,7 +113,7 @@
                                     "const": "kimi-k3.1-pro"
                                   },
                                   "effort": {
-                                    "const": "max"
+                                    "const": "high"
                                   },
                                   "context_window": {
                                     "const": 1048576
@@ -145,6 +147,36 @@
                                   },
                                   "context_window": {
                                     "const": 1000000
+                                  }
+                                },
+                                "required": [
+                                  "profile_id",
+                                  "label",
+                                  "provider",
+                                  "model",
+                                  "effort",
+                                  "context_window"
+                                ]
+                              },
+                              {
+                                "properties": {
+                                  "profile_id": {
+                                    "const": "kimi-k3-1-pro-max-v1"
+                                  },
+                                  "label": {
+                                    "const": "Kimi K3.1 Pro"
+                                  },
+                                  "provider": {
+                                    "const": "kimi"
+                                  },
+                                  "model": {
+                                    "const": "kimi-k3.1-pro"
+                                  },
+                                  "effort": {
+                                    "const": "max"
+                                  },
+                                  "context_window": {
+                                    "const": 1048576
                                   }
                                 },
                                 "required": [
@@ -201,6 +233,29 @@
                         ]
                       },
                       "allOf": [
+                        {
+                          "contains": {
+                            "properties": {
+                              "profile": {
+                                "properties": {
+                                  "profile_id": {
+                                    "const": "kimi-k3-1-pro-high-v1"
+                                  }
+                                },
+                                "required": [
+                                  "profile_id"
+                                ],
+                                "type": "object"
+                              }
+                            },
+                            "required": [
+                              "profile"
+                            ],
+                            "type": "object"
+                          },
+                          "minContains": 1,
+                          "maxContains": 1
+                        },
                         {
                           "contains": {
                             "properties": {
@@ -482,6 +537,7 @@
                       "type": "string",
                       "enum": [
                         "kimi-k3-max-v1",
+                        "kimi-k3-1-pro-high-v1",
                         "kimi-k3-1-pro-max-v1",
                         "minimax-m3-high-v1"
                       ],
@@ -544,8 +600,9 @@
                           "profile_id": {
                             "type": "string",
                             "enum": [
-                              "kimi-k3-1-pro-max-v1",
-                              "minimax-m3-high-v1"
+                              "kimi-k3-1-pro-high-v1",
+                              "minimax-m3-high-v1",
+                              "kimi-k3-1-pro-max-v1"
                             ],
                             "description": "Only these identities may be used for a new execution or selection target."
                           },
@@ -819,6 +876,7 @@
                       "type": "string",
                       "enum": [
                         "kimi-k3-max-v1",
+                        "kimi-k3-1-pro-high-v1",
                         "kimi-k3-1-pro-max-v1",
                         "minimax-m3-high-v1"
                       ],
@@ -881,8 +939,9 @@
                           "profile_id": {
                             "type": "string",
                             "enum": [
-                              "kimi-k3-1-pro-max-v1",
-                              "minimax-m3-high-v1"
+                              "kimi-k3-1-pro-high-v1",
+                              "minimax-m3-high-v1",
+                              "kimi-k3-1-pro-max-v1"
                             ],
                             "description": "Only these identities may be used for a new execution or selection target."
                           },
@@ -1141,8 +1200,9 @@
                   "profile_id": {
                     "type": "string",
                     "enum": [
-                      "kimi-k3-1-pro-max-v1",
-                      "minimax-m3-high-v1"
+                      "kimi-k3-1-pro-high-v1",
+                      "minimax-m3-high-v1",
+                      "kimi-k3-1-pro-max-v1"
                     ],
                     "description": "Only these identities may be used for a new execution or selection target."
                   }
@@ -1731,8 +1791,9 @@
             "schema": {
               "type": "string",
               "enum": [
-                "kimi-k3-1-pro-max-v1",
-                "minimax-m3-high-v1"
+                "kimi-k3-1-pro-high-v1",
+                "minimax-m3-high-v1",
+                "kimi-k3-1-pro-max-v1"
               ],
               "description": "Only these identities may be used for a new execution or selection target."
             }
@@ -2372,8 +2433,9 @@
             "schema": {
               "type": "string",
               "enum": [
-                "kimi-k3-1-pro-max-v1",
-                "minimax-m3-high-v1"
+                "kimi-k3-1-pro-high-v1",
+                "minimax-m3-high-v1",
+                "kimi-k3-1-pro-max-v1"
               ],
               "description": "Only these identities may be used for a new execution or selection target."
             }
@@ -3721,8 +3783,9 @@
             "schema": {
               "type": "string",
               "enum": [
-                "kimi-k3-1-pro-max-v1",
-                "minimax-m3-high-v1"
+                "kimi-k3-1-pro-high-v1",
+                "minimax-m3-high-v1",
+                "kimi-k3-1-pro-max-v1"
               ],
               "description": "Only these identities may be used for a new execution or selection target."
             }
@@ -4194,8 +4257,9 @@
             "schema": {
               "type": "string",
               "enum": [
-                "kimi-k3-1-pro-max-v1",
-                "minimax-m3-high-v1"
+                "kimi-k3-1-pro-high-v1",
+                "minimax-m3-high-v1",
+                "kimi-k3-1-pro-max-v1"
               ],
               "description": "Only these identities may be used for a new execution or selection target."
             }
@@ -4463,8 +4527,9 @@
             "schema": {
               "type": "string",
               "enum": [
-                "kimi-k3-1-pro-max-v1",
-                "minimax-m3-high-v1"
+                "kimi-k3-1-pro-high-v1",
+                "minimax-m3-high-v1",
+                "kimi-k3-1-pro-max-v1"
               ],
               "description": "Only these identities may be used for a new execution or selection target."
             }
@@ -4726,8 +4791,9 @@
             "schema": {
               "type": "string",
               "enum": [
-                "kimi-k3-1-pro-max-v1",
-                "minimax-m3-high-v1"
+                "kimi-k3-1-pro-high-v1",
+                "minimax-m3-high-v1",
+                "kimi-k3-1-pro-max-v1"
               ],
               "description": "Only these identities may be used for a new execution or selection target."
             }
@@ -5000,8 +5066,9 @@
             "schema": {
               "type": "string",
               "enum": [
-                "kimi-k3-1-pro-max-v1",
-                "minimax-m3-high-v1"
+                "kimi-k3-1-pro-high-v1",
+                "minimax-m3-high-v1",
+                "kimi-k3-1-pro-max-v1"
               ],
               "description": "Only these identities may be used for a new execution or selection target."
             }
@@ -5105,6 +5172,7 @@
                           "type": "string",
                           "enum": [
                             "kimi-k3-max-v1",
+                            "kimi-k3-1-pro-high-v1",
                             "kimi-k3-1-pro-max-v1",
                             "minimax-m3-high-v1"
                           ],
@@ -5172,8 +5240,9 @@
                                 "profile_id": {
                                   "type": "string",
                                   "enum": [
-                                    "kimi-k3-1-pro-max-v1",
-                                    "minimax-m3-high-v1"
+                                    "kimi-k3-1-pro-high-v1",
+                                    "minimax-m3-high-v1",
+                                    "kimi-k3-1-pro-max-v1"
                                   ],
                                   "description": "Only these identities may be used for a new execution or selection target."
                                 }
@@ -5222,6 +5291,7 @@
                           "type": "string",
                           "enum": [
                             "kimi-k3-max-v1",
+                            "kimi-k3-1-pro-high-v1",
                             "kimi-k3-1-pro-max-v1",
                             "minimax-m3-high-v1"
                           ],
@@ -5329,6 +5399,7 @@
                                   "type": "string",
                                   "enum": [
                                     "kimi-k3-max-v1",
+                                    "kimi-k3-1-pro-high-v1",
                                     "kimi-k3-1-pro-max-v1",
                                     "minimax-m3-high-v1"
                                   ],
@@ -5391,8 +5462,9 @@
                                       "profile_id": {
                                         "type": "string",
                                         "enum": [
-                                          "kimi-k3-1-pro-max-v1",
-                                          "minimax-m3-high-v1"
+                                          "kimi-k3-1-pro-high-v1",
+                                          "minimax-m3-high-v1",
+                                          "kimi-k3-1-pro-max-v1"
                                         ],
                                         "description": "Only these identities may be used for a new execution or selection target."
                                       },
@@ -5488,6 +5560,7 @@
                                 "type": "string",
                                 "enum": [
                                   "kimi-k3-max-v1",
+                                  "kimi-k3-1-pro-high-v1",
                                   "kimi-k3-1-pro-max-v1",
                                   "minimax-m3-high-v1"
                                 ],
@@ -5595,6 +5668,7 @@
                                         "type": "string",
                                         "enum": [
                                           "kimi-k3-max-v1",
+                                          "kimi-k3-1-pro-high-v1",
                                           "kimi-k3-1-pro-max-v1",
                                           "minimax-m3-high-v1"
                                         ],
@@ -5657,8 +5731,9 @@
                                             "profile_id": {
                                               "type": "string",
                                               "enum": [
-                                                "kimi-k3-1-pro-max-v1",
-                                                "minimax-m3-high-v1"
+                                                "kimi-k3-1-pro-high-v1",
+                                                "minimax-m3-high-v1",
+                                                "kimi-k3-1-pro-max-v1"
                                               ],
                                               "description": "Only these identities may be used for a new execution or selection target."
                                             },
@@ -5972,8 +6047,9 @@
                   "profile_id": {
                     "type": "string",
                     "enum": [
-                      "kimi-k3-1-pro-max-v1",
-                      "minimax-m3-high-v1"
+                      "kimi-k3-1-pro-high-v1",
+                      "minimax-m3-high-v1",
+                      "kimi-k3-1-pro-max-v1"
                     ],
                     "description": "Only these identities may be used for a new execution or selection target."
                   }
@@ -6053,6 +6129,7 @@
                           "type": "string",
                           "enum": [
                             "kimi-k3-max-v1",
+                            "kimi-k3-1-pro-high-v1",
                             "kimi-k3-1-pro-max-v1",
                             "minimax-m3-high-v1"
                           ],
@@ -6120,8 +6197,9 @@
                                 "profile_id": {
                                   "type": "string",
                                   "enum": [
-                                    "kimi-k3-1-pro-max-v1",
-                                    "minimax-m3-high-v1"
+                                    "kimi-k3-1-pro-high-v1",
+                                    "minimax-m3-high-v1",
+                                    "kimi-k3-1-pro-max-v1"
                                   ],
                                   "description": "Only these identities may be used for a new execution or selection target."
                                 }
@@ -6170,6 +6248,7 @@
                           "type": "string",
                           "enum": [
                             "kimi-k3-max-v1",
+                            "kimi-k3-1-pro-high-v1",
                             "kimi-k3-1-pro-max-v1",
                             "minimax-m3-high-v1"
                           ],
@@ -6277,6 +6356,7 @@
                                   "type": "string",
                                   "enum": [
                                     "kimi-k3-max-v1",
+                                    "kimi-k3-1-pro-high-v1",
                                     "kimi-k3-1-pro-max-v1",
                                     "minimax-m3-high-v1"
                                   ],
@@ -6339,8 +6419,9 @@
                                       "profile_id": {
                                         "type": "string",
                                         "enum": [
-                                          "kimi-k3-1-pro-max-v1",
-                                          "minimax-m3-high-v1"
+                                          "kimi-k3-1-pro-high-v1",
+                                          "minimax-m3-high-v1",
+                                          "kimi-k3-1-pro-max-v1"
                                         ],
                                         "description": "Only these identities may be used for a new execution or selection target."
                                       },
@@ -6436,6 +6517,7 @@
                                 "type": "string",
                                 "enum": [
                                   "kimi-k3-max-v1",
+                                  "kimi-k3-1-pro-high-v1",
                                   "kimi-k3-1-pro-max-v1",
                                   "minimax-m3-high-v1"
                                 ],
@@ -6543,6 +6625,7 @@
                                         "type": "string",
                                         "enum": [
                                           "kimi-k3-max-v1",
+                                          "kimi-k3-1-pro-high-v1",
                                           "kimi-k3-1-pro-max-v1",
                                           "minimax-m3-high-v1"
                                         ],
@@ -6605,8 +6688,9 @@
                                             "profile_id": {
                                               "type": "string",
                                               "enum": [
-                                                "kimi-k3-1-pro-max-v1",
-                                                "minimax-m3-high-v1"
+                                                "kimi-k3-1-pro-high-v1",
+                                                "minimax-m3-high-v1",
+                                                "kimi-k3-1-pro-max-v1"
                                               ],
                                               "description": "Only these identities may be used for a new execution or selection target."
                                             },

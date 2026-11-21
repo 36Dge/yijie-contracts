@@ -14,7 +14,7 @@ ajv.addKeyword({keyword:'x-model-profiles',schemaType:'array'});
 ajv.addKeyword({keyword:'x-family-version',schemaType:'string'});
 ajv.addSchema(legacy);ajv.addSchema(source);
 const validate=name=>ajv.getSchema(source.$id+'#/$defs/'+name);
-const old='kimi-k3-max-v1', current='kimi-k3-1-pro-max-v1', mini='minimax-m3-high-v1';
+const old='kimi-k3-max-v1', current='kimi-k3-1-pro-high-v1', retained='kimi-k3-1-pro-max-v1', mini='minimax-m3-high-v1';
 const session='00000000-0000-4000-8000-000000000164';
 const operation='00000000-0000-4000-8000-000000000165';
 const request={schema_version:2,operation_id:operation,expected_revision:7,profile_id:current};
@@ -26,7 +26,7 @@ test('v2 compiles every definition under strict schema validation',()=>{
 test('known historic identities do not grant fresh execution authority',()=>{
   assert.equal(validate('ProfileId')(old),true);
   assert.equal(validate('ActiveProfileId')(old),false);
-  for(const profile_id of [current,mini])assert.equal(validate('ActiveProfileId')(profile_id),true);
+  for(const profile_id of [current,retained,mini])assert.equal(validate('ActiveProfileId')(profile_id),true);
   for(const name of ['SelectRequest','RecoverRequest']){
     assert.equal(validate(name)(request),true);
     assert.equal(validate(name)({...request,profile_id:old}),false);
@@ -34,12 +34,15 @@ test('known historic identities do not grant fresh execution authority',()=>{
     assert.equal(validate(name)({...request,expected_revision:-1}),false);
   }
 });
-test('catalog is exactly the new Kimi and retained MiniMax with exact model metadata',()=>{
-  assert.deepEqual(source['x-model-profiles'].map(p=>[p.profile_id,p.model,p.effort]),[[current,'kimi-k3.1-pro','max'],[mini,'MiniMax-M3','high']]);
+test('catalog defaults to high and preserves the exact max and MiniMax identities',()=>{
+  assert.deepEqual(source['x-model-profiles'].map(p=>[p.profile_id,p.model,p.effort]),[[current,'kimi-k3.1-pro','high'],[mini,'MiniMax-M3','high'],[retained,'kimi-k3.1-pro','max']]);
   const models=source['x-model-profiles'].map(profile=>({profile,available:true,reason:'ready'}));
   const catalog={schema_version:2,default_profile:current,models};
   assert.equal(validate('Catalog')(catalog),true);
-  assert.equal(validate('Catalog')({...catalog,models:[models[0],models[0]]}),false);
+  assert.equal(validate('Catalog')({...catalog,models:[models[0],models[1],models[0]]}),false);
+  assert.equal(validate('Catalog')({...catalog,default_profile:retained}),false);
+  assert.equal(validate('ModelDefinition')({...models[0].profile,effort:'max'}),false);
+  assert.equal(validate('ModelDefinition')({...models[2].profile,effort:'high'}),false);
   assert.equal(validate('Catalog')({...catalog,default_profile:mini}),false);
   assert.equal(validate('ModelDefinition')({...models[0].profile,model:'kimi-k3'}),false);
   assert.equal(validate('ModelDefinition')({...models[0].profile,provider:'minimax'}),false);
