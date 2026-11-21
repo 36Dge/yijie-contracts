@@ -89,3 +89,11 @@ The existing display limits apply. Reasoning and tool output use their own chann
 Preview bytes are transient; a formal Item and its full completion snapshot have priority.
 Replaying an offset is idempotent. A missing prefix must never be displayed as a complete
 answer. Older subscribers receive their original uninterrupted event sequence.
+
+Expert execution uses the existing owner-only Native control pipe. A Native
+client supporting the same v1 preview stream requests it for that pipe by
+setting `YIJIE_NATIVE_PIPE_PUBLIC_PREVIEW=1` on its own child after clearing
+inherited environment. Only a local Host paired with the preview-capable
+Runtime accepts the request. Older parents omit it. This display capability
+travels in the context of the existing expert grant and submit operations.
+Their request formats, authorization, retries and response receipts are unchanged.
