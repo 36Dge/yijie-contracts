@@ -12,7 +12,7 @@ function keys(value,expected){assert.deepEqual(Object.keys(value).sort(),[...exp
 function boundedText(v){assert.equal(typeof v,'string');assert.ok(v.length>0&&v.length<=2048);}
 export function validateMarketSelectionManifest(m,names){
  keys(m,['schema_version','contract_id','contract_version','title','description','wire_authority','transport','native_ipc','selection_digest','semantics']);
- assert.equal(m.schema_version,1);assert.equal(m.contract_id,'market-selection/1');assert.equal(m.contract_version,'0.2.0');
+ assert.equal(m.schema_version,1);assert.equal(m.contract_id,'market-selection/1');assert.equal(m.contract_version,'0.3.0');
  assert.equal(m.wire_authority,marketSelectionSourcePath);assert.equal(m.transport,'native_ipc');boundedText(m.title);boundedText(m.description);
  keys(m.native_ipc,['version','contextBinding','commands']);assert.equal(m.native_ipc.version,1);assert.equal(m.native_ipc.contextBinding,'chat_bind_context_v1');
  assert.deepEqual(m.native_ipc.commands,[{command:'chat_market_submit_v1',request:'SubmitRequest',response:'SubmitResponse',requiredPermission:'chat permissions; connector.use only for nonempty selection'}]);

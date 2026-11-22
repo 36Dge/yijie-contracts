@@ -34,13 +34,32 @@ test('optional bounded history index preserves old observations and request auth
  request.payload.selectionDisplay=[];
  assert.equal(native.validateNativeObserveRequest(request),false);
 });
-test('Native UI exports exactly observe and decision, never private grants or provider control',()=>{
+test('Native UI exports observation, user decisions and installation-scoped remembered rules',()=>{
  const m=JSON.parse(readFileSync('compatibility/market-host/native-ipc.json'));
- assert.deepEqual(m.commands.map(c=>c.command),['chat_market_observe_v1','chat_market_approval_decide_v1']);
+ assert.deepEqual(m.commands.map(c=>c.command),['chat_market_observe_v1','chat_market_approval_decide_v1','chat_market_remembered_rules_v1']);
  for(const n of ['NativeObserveRequest','NativeObserveResponse','NativeApprovalDecideRequest','NativeError'])assert.ok(native['validate'+n](fixture[n]));
  assert.equal(Object.hasOwn(native,'validateGrantRegisterRequest'),false);assert.equal(Object.hasOwn(native,'validateAuthBeginRequest'),false);
  const decision=structuredClone(fixture.NativeApprovalDecideRequest);decision.payload.scope=fixture.GrantRegisterRequest.payload.scope;assert.equal(native.validateNativeApprovalDecideRequest(decision),false);
  assert.ok(native.validateNativeError({...fixture.NativeError,code:'keyring_unavailable'}));
+});
+test('negotiates selected modes with the Worker and preserves legacy receipts', () => {
+  const grant = fixture.GrantRegisterRequest.payload.submission;
+  const reqId = fixture.GrantRegisterRequest.payload.operationId;
+  for (const permissionMode of ['ask', 'auto', 'full']) {
+    assert.ok(hv('Submission')({ ...grant, permissionMode, nativeApprovalVersion: 1, nativeApprovalAuthorityOperations: grant.services.map(() => reqId) }));
+    assert.equal(hv('Submission')({ ...grant, permissionMode }), permissionMode === 'ask');
+  }
+  const status = fixture.AuthPollResponse.data;
+  assert.ok(pv('ProviderStatus')(status));
+  assert.ok(pv('ProviderStatus')({ ...status, nativeApprovalVersion: 1 }));
+  const req = fixture.NativeApprovalDecideRequest;
+  for (const decision of ['approve_once', 'approve_session', 'approve_always', 'reject', 'cancel']) {
+    assert.ok(native.validateNativeApprovalDecideRequest({ ...req, payload: { ...req.payload, decision } }));
+  }
+  for (const decision of ['native_auto', 'native_full', 'native_always', 'native_session', 'native_auto_reject']) {
+    assert.ok(host.defs.Decision.enum.includes(decision));
+    assert.ok(host.defs.NativeApprovalDecidePayload.not.properties.decision.enum.includes(decision));
+  }
 });
 test('provider management validates exact non-secret installation and operation identity',()=>{
  for(const n of Object.keys(provider.defs))assert.ok(pv(n),n);
@@ -57,7 +76,7 @@ test('new family generated output and original source families stay synchronized
 test('daily profile admits one instrument and one Gregorian day without expanding upstream tools',()=>{
  const policy=provider.manifest.tool_profile;
  assert.equal(policy.profile,'tushare-daily-v1');assert.equal(policy.gatewayToolName,'tushare_daily');assert.equal(policy.upstreamToolName,'daily');
- assert.equal(policy.risk,'read');assert.equal(policy.permissionMode,'ask');assert.equal(policy.maxRows,1);assert.equal(policy.maxCallsPerApproval,1);
+ assert.equal(policy.risk,'read');assert.equal(policy.permissionMode,'paired_native_or_legacy_ask');assert.equal(policy.maxRows,1);assert.equal(policy.maxCallsPerApproval,1);
  assert.equal(policy.upstreamInputSchemaSha256,'ec10409543d1ae690de2b5da5893a0e69387cdd5a398f976fb04d187fc632ae1');
  assert.match(provider.manifest.semantics.admission,/without network, a new probe or a new authorization attempt/);
  assert.match(provider.manifest.semantics.lifecycle,/polling never extends them/);

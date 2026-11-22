@@ -8,7 +8,7 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const source=readFileSync(path.join(root,'compatibility/market-local-acceptance/profile.json'));
 const value=JSON.parse(source);
 assert.equal(value.contractId,'market-local-acceptance/1');
-assert.equal(value.contractVersion,'0.1.0');assert.equal(value.release,false);
+assert.equal(value.contractVersion,'0.2.0');assert.equal(value.release,false);
 assert.equal(value.selector,'YIJIE_MARKET_LOCAL_ACCEPTANCE');
 assert.equal(value.dataDirectory,'market-local-acceptance');
 assert.equal(value.runLabelPattern,'^[a-z0-9][a-z0-9-]{0,47}$');
