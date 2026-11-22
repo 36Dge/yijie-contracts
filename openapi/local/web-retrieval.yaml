@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Yijie exact local Demo web retrieval",
-    "version": "0.1.0",
+    "version": "0.4.0",
     "description": "ADR-0018 local + demo_fast only. Fixed Native principal, owner-only local credential and run epoch. Not a public product identity fallback."
   },
   "servers": [
@@ -256,7 +256,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Result or recorded operation state",
+            "description": "Result or recorded operation state A Fetch refusal from the provider URL policy is a tool error with code url_blocked in the result.",
             "content": {
               "application/json": {
                 "schema": {

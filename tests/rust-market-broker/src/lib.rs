@@ -22,7 +22,7 @@ mod tests {
     }
 
     #[test]
-    fn all_eight_requests_use_strict_generated_types() {
+    fn all_owner_requests_use_strict_generated_types() {
         for (name, value) in fixtures().as_object().unwrap() {
             if !name.ends_with("Request") {
                 continue;
@@ -41,6 +41,7 @@ mod tests {
         serde_json::from_value::<InitializeResponse>(v["InitializeResponse"].clone()).unwrap();
         let mut prepared: PrepareResponse =
             serde_json::from_value(v["PrepareResponse"].clone()).unwrap();
+        serde_json::from_value::<RenewScopeResponse>(v["RenewScopeResponse"].clone()).unwrap();
         serde_json::from_value::<BindTurnResponse>(v["BindTurnResponse"].clone()).unwrap();
         serde_json::from_value::<RevokeResponse>(v["RevokeResponse"].clone()).unwrap();
         serde_json::from_value::<StatusResponse>(v["StatusResponse"].clone()).unwrap();

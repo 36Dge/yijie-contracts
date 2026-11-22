@@ -2,7 +2,21 @@
 
 2026-10-07。Owner：段成威；Host 是控制请求的唯一 producer，Connectors Rust worker 是唯一 consumer；响应方向相反。新增独立源是 additive，整体 FEAT-157 按 breaking 管理。用户已授权按需求包逐步实现；本地可审查候选不是生产发布、真实供应商资格或外部账户授权。
 
-唯一 wire 权威源为 `compatibility/market-broker-control/wire.schema.json`；共址 `control.json` 声明私有 transport、8 个动作、有界资源、生命周期与参数摘要语义。没有 HTTP 控制端点。`sdks/jsonschema/market-broker-control.schema.json` 只是机械生成的 bundled 投影，不是第二份源。原 market-connectors 的 55 个定义/9 个 Native IPC、market-selection 的 18 个定义和旧 pinned generator 保持原样。
+唯一 wire 权威源为 `compatibility/market-broker-control/wire.schema.json`；共址 `control.json` 声明私有 transport、9 个动作、有界资源、生命周期与参数摘要语义。没有 HTTP 控制端点。`sdks/jsonschema/market-broker-control.schema.json` 只是机械生成的 bundled 投影，不是第二份源。原 market-connectors 的 55 个定义/9 个 Native IPC、market-selection 的 18 个定义和旧 pinned generator 保持原样。
+
+## 长任务续期与停止重试（0.9.0）
+
+本地候选的 `contract-impact=breaking`。已登记的调用保留逐次审批。实际授权到期或撤销时，Gateway 返回带原因的 MCP 工具错误，并向配套 Runtime 提供轮次级停止标记。升级前的对照版本为 Contracts `a1101880f60726c056bf859bb61389e299df6e66`。
+
+Native 在同一仍有效的上下文中重新核验身份、权限版本以及 `task.read`、`task.create`、`connector.use`。它通过已有私有管道发送 `renew_market_scope`，Host 验证当前范围并转交自己的 Worker。Worker 只更新匹配的存活选集，使用可信有效期的剩余时间、首次请求的 TTL 上限和 300 秒三者中的最小值。每个 Native 进程递增证明序号，重复证明幂等，旧序号被拒绝。每轮的会话、选集、安装代际和每次审批身份始终绑定。缩短权限时，越过新截止的待审批调用和原有执行许可会被取消。
+
+Gateway 在清除供应商元数据后，仅在能确认尚未发送的轮次授权失败上写入 `_meta["yijie.market.turnStop"]`，取值为 `lease_expired` 或 `lease_revoked`。单次审批到期、拒绝和执行结果未知各自返回对应错误。Runtime 在当前轮次撤下市场工具，阻止仍在运行的 Code Mode 脚本再次调用，并在下一次模型请求中写明原因。下一轮重新选择工具。
+
+先同步契约，构建 Worker 和 Runtime，再更新 Host 与 Desktop。旧 Native 沿用固定租期，旧 Runtime 可读取错误文字。配套构建经正常退出和启动后生效。回滚时按同一组版本切换，原轮次授权和审批均不重放。此变更没有持久化迁移。
+
+2026-11-22 的 Worker 回归 `market_scope_renewal_spans_forty_minutes_and_preserves_each_approval` 使用可控时钟跨越 40 分钟。Host 集成测试 `TestMarketRenewalAndTerminalStopAcrossToolsInCodeMode` 使用真实 Runtime、产品 Worker 和本地模型响应，经过原始截止、续期后新审批、权限自然到期以及同一脚本内的第二个市场工具调用。测试确认下一次模型请求带有到期原因，市场工具已撤下，其他计算可继续。Runtime 本地源码固定在 `5fb7f7f3fd444ed1714f21dd590398c57171f498`。
+
+未执行真实 Sorftime 业务查询，验证覆盖本地准入、审批与重试控制，供应商额度及在线数据不在本次验收范围。全量测试中涉及攻击注入和破坏性故障的项目按用户安全条款跳过。市场协议定向兼容检查和契约 lint 通过。全仓检查另有既存的内置网页检索 schema 差异、Runtime 配置对象默认值比较误报，以及两个历史生成清单的来源摘要差异。
 
 ## 进程和信任边界
 
@@ -41,7 +55,7 @@ CallIdentity 和 PendingCallPayload 也携带实际 nativeThreadId。Host 对 nu
 
 ## 租期、容量和正常关闭
 
-首次接收把请求 TTL、可信授权剩余墙钟时长和 300000 ms 取最小，拒绝非正/不确定时钟，再用 worker 单调时钟执行到期。Host 在发送前还应扣除排队耗时。重放、绑定、刷新 scope 和审批都不得延长原期限。新一轮必须使用真实新的 turn operation；不得静默续权。
+首次接收把请求 TTL、可信授权剩余墙钟时长和 300000 ms 取最小，拒绝非正/不确定时钟，再用 worker 单调时钟执行到期。Host 在发送前还应扣除排队耗时。重放、绑定、普通 provider poll 和审批都沿用原期限。有效轮次的续期使用下述专用控制命令。新一轮必须使用真实新的 turn operation；不得静默续权。
 
 限制来自 control.json 并生成两种语言常量：frame 65536 bytes、lease 300000 ms、未绑定等待 5000 ms、审批最多 60000 ms 且不得超过父 lease、64 个保留 lease、128 个 pending call、1024 个 mutation receipt、参数 32768 bytes/16 层。保留的 mutation/turn reservation 不因满容量被逐出以接受新执行；容量满时失败关闭。需要新 generation 时走正常所有者关闭和退出确认。
 
@@ -57,7 +71,7 @@ Host 复用已有审批生命周期验证 approvalRef/decisionId，不能只检�
 
 2026-10-08 的 `tushare-daily-v1` 只实现 [Provider 源工具策略](market-provider-v1.md) 中的 `tushare_daily`。prepare 不再把所有真实服务写死为未资格，而是查找当前 owned actor 的唯一 live 精确 scope/epoch/installation/revision/generation 映射（含冻结的 credentialRef）。缺失或失效仍为 not_qualified；不从历史重建、不每轮启动 Probe。Probe 观察能力、Native 显式 Enable 与本轮 grant、实际单调用审批分别成立。旧 OAuth-only profile 不获得金融执行能力。
 
-同 owner/Host/Native epoch、authorization revision 与精确 ref/credentialRef 下已完成且存活的 client/schema 可由新鲜 Native scope 只读 poll 观察，不产生新网络或授权。它是受管资源，不是旧权限的续租：pending OAuth attempt 和全部旧 turn/call TTL 保持原期限；每次 prepare/new call 独立核验当前授权。Backend 关闭、凭据/绑定改变、撤权或 owner 退出立即失效，不能从 SQL 历史重建。
+同 owner/Host/Native epoch、authorization revision 与精确 ref/credentialRef 下已完成且存活的 client/schema 可由新鲜 Native scope 只读 poll 观察，不产生新网络或授权。它是受管资源，不是旧权限的续租：pending OAuth attempt 和已登记调用保留原期限，进行中的市场轮次只接受专用的原生续期证明；每次 prepare/new call 独立核验当前授权。Backend 关闭、凭据/绑定改变、撤权或 owner 退出立即失效，不能从 SQL 历史重建。
 
 `worker-json-v1` 只标识同一 worker 冻结的 parsed argument 值：domain bytes + 固定 serde_json 对 `Option<Map<String, Value>>` 的序列化后 SHA-256。省略为 null，显式空对象为 `{}`，Host 不重算。先完成参数 schema 校验与已资格默认值，再冻结；最终调用使用同一份值，登记后变更需要新调用/审批。它不是签名，也不宣称跨语言通用 JSON canonicalization。
 

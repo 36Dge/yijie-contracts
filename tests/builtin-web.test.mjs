@@ -109,6 +109,15 @@ test('FEAT175 error output distinguishes product identity from supplier service 
   assert(!valid({error: {code: 'authentication_failed', message: 'ordinary obsolete message'}}));
 });
 
+test('a blocked Fetch URL is a validated tool error distinct from an unavailable provider', () => {
+  const fetch = tools.find(tool => tool.name === 'kimi_web_fetch');
+  const valid = ajv.compile(fetch.outputSchema);
+  const blocked = {error: {code: 'url_blocked', message: '网页读取服务的安全策略拒绝了此网址。'}};
+  assert(valid(blocked), JSON.stringify(valid.errors));
+  assert(!valid({error: {...blocked.error, message: policy.error_messages.upstream_unavailable}}));
+  assert(!valid({error: {...blocked.error, code: 'upstream_unavailable'}}));
+});
+
 test('FEAT175 canonical projection preserves nullable turn, metadata and form property names', () => {
   const lock = JSON.parse(readFileSync(path.join(root, 'compatibility/runtime-tool-search/source.lock.json')));
   const canonical = JSON.parse(readFileSync(path.resolve(root, '../yijie-codex', lock.runtime_relative_path, 'generated-json-schema/McpServerElicitationRequestParams.json')));

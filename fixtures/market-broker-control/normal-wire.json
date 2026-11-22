@@ -523,5 +523,36 @@
   "ElicitationMetadata": {
     "yijieMarketCallRef": "00000000-0000-4000-8000-000000000157",
     "yijieKind": "gateway_call_approval"
+  },
+  "RenewScopeRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000157",
+    "method": "renew_market_scope",
+    "payload": {
+      "hostInstanceId": "00000000-0000-4000-8000-000000000157",
+      "scope": {
+        "ownerUserId": "00000000-0000-4000-8000-000000000157",
+        "tenantId": "00000000-0000-4000-8000-000000000158",
+        "nativeProcessEpoch": "00000000-0000-4000-8000-000000000157",
+        "authorizationRevision": 1,
+        "authorizationExpiresAtUnixMs": 1800000300000
+      },
+      "sequence": 1
+    }
+  },
+  "RenewScopeResponse": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000157",
+    "data": {
+      "hostInstanceId": "00000000-0000-4000-8000-000000000157",
+      "scope": {
+        "ownerUserId": "00000000-0000-4000-8000-000000000157",
+        "tenantId": "00000000-0000-4000-8000-000000000158",
+        "nativeProcessEpoch": "00000000-0000-4000-8000-000000000157",
+        "authorizationRevision": 1,
+        "authorizationExpiresAtUnixMs": 1800000300000
+      },
+      "sequence": 1
+    }
   }
 }

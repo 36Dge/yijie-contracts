@@ -1,6 +1,6 @@
 {
   "contract_id": "builtin-web-retrieval/1",
-  "contract_version": "0.3.0",
+  "contract_version": "0.4.0",
   "feature": "FEAT-175",
   "release": false,
   "wire_authority": "compatibility/builtin-web-retrieval/wire.schema.json",
@@ -47,7 +47,7 @@
     {
       "name": "kimi_web_fetch",
       "title": "读取指定网页",
-      "description": "Read an explicitly requested public HTTP(S) URL, or a returned research source whose body is still needed after consuming Pro. A URL in a source list or used only as an example is not itself a reading request. This tool accepts only url, with no pagination or adjustable content limit. A successful truncated=true result is usable partial evidence: do not refetch it to obtain a missing tail. Changing only #fragment is not pagination; reuse the returned page body. If required facts remain missing, use a focused Pro query with sites or state the gap. An explicit refresh is a new need for the same page.",
+      "description": "Read an explicitly requested public HTTP(S) URL, or a returned research source whose body is still needed after consuming Pro. A URL in a source list or used only as an example is not itself a reading request. This tool accepts only url, with no pagination or adjustable content limit. A successful truncated=true result is usable partial evidence: do not refetch it to obtain a missing tail. Changing only #fragment is not pagination; reuse the returned page body. If required facts remain missing, use a focused Pro query with sites or state the gap. An explicit refresh is a new need for the same page. A url_blocked result means the retrieval provider declined this URL under its security policy. Report the refusal for that URL.",
       "input": "FetchArguments",
       "output": "FetchOutput",
       "annotations": {
@@ -68,6 +68,7 @@
     "busy": "网页检索暂时繁忙。",
     "upstream_unavailable": "网页检索服务暂不可用。",
     "timeout": "网页检索请求超时，未自动重试。",
+    "url_blocked": "网页读取服务的安全策略拒绝了此网址。",
     "no_content": "网页未返回可用正文。",
     "response_too_large": "网页检索结果超过限制。",
     "invalid_response": "网页检索服务返回了无效结果。",

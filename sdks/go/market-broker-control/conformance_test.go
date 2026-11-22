@@ -47,7 +47,7 @@ func TestResponsesAndPortableSnapshotConform(t *testing.T) {
 	decoders := map[string]any{
 		"InitializeResponse": new(InitializeResponse), "PrepareResponse": new(PrepareResponse),
 		"BindTurnResponse": new(BindTurnResponse), "RevokeResponse": new(RevokeResponse),
-		"StatusResponse": new(StatusResponse), "PendingCallResponse": new(PendingCallResponse),
+		"RenewScopeResponse": new(RenewScopeResponse), "StatusResponse": new(StatusResponse), "PendingCallResponse": new(PendingCallResponse),
 		"DecideCallResponse": new(DecideCallResponse), "ShutdownResponse": new(ShutdownResponse),
 		"Error": new(Error), "ElicitationMetadata": new(ElicitationMetadata),
 	}

@@ -28,6 +28,7 @@ assert.deepEqual(manifest.patches.slice(previous.patches.length).map(p=>p.path),
   '.yijie/patches/chat-models/0028-public-message-publication.patch',
   '.yijie/patches/chat-models/0029-resume-after-terminal-error.patch',
   '.yijie/patches/chat-models/0030-declared-public-preview.patch',
+  '.yijie/patches/chat-models/0031-market-turn-admission.patch',
 ]);
 const inputs=[...manifest.patches.map(p=>p.path),...['build-native-skill-marketplace.sh','prepare-native-skill-marketplace.py','write-native-skill-marketplace-runtime-manifest.py','prepare-answer-completion.py'].map(p=>'scripts/'+p)];
 const inputHash=createHash('sha256');for(const p of inputs)inputHash.update(p).update('\0').update(read(fork,p));

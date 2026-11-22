@@ -42,3 +42,9 @@ operation使用UUIDv7；已有记录先按主体／租户和参数摘要查重�
 本批即时比较基线为`2592f5d5b07fcd92de10d25c4dcf73bd1ce03cb5`；旧受支持tag和FEAT-162列出的全部比较基线仍保留。新family在这些基线不存在；既有wire的任务前后字节保持另行核验，新增API引用闭合使用既有prepare-breaking-inputs工具。全局历史差异不因本批是新增family而宣称兼容通过。
 
 部署仍按修订3：服务端先支持→客户端精确pin→最后启用；关闭候选即可回到旧行为，保留已读历史和原有生成物。不降库、不清历史，不把全量检查受其他需求阻塞隐藏为PASS。
+
+### 0.4.0 网页读取拒绝原因
+
+`kimi_web_fetch` 收到 Kimi HTTP 403 且响应的 `error.type` 为 `security_risk` 时，返回 `url_blocked` 和固定文案“网页读取服务的安全策略拒绝了此网址。”。该次读取失败，没有网页正文。操作的派发、结算和重试规则沿用既有定义。其他 403 继续按供应商权限错误处理，404 沿用 `no_content`。[Kimi Fetch 接口](https://platform.kimi.com/docs/api/tools-fetch)
+
+`contract-impact = breaking`。0.3.0 的封闭错误枚举无法识别新值。API、执行器、网关、Agent Host 和 Desktop 同步采用 0.4.0 的生成物，本次为本机候选。切换或回退时将这些组件一起正常停止并按目标版本重新构建、启动。已有对话记录保留当时的错误。变更前的本地比较基线为 `a1101880f60726c056bf859bb61389e299df6e66`。

@@ -18,6 +18,8 @@ renderer 仅有 `chat_market_observe_v1` 和 `chat_market_approval_decide_v1`。
 
 源复用 SelectionRef/Snapshot、Profile、v2 ContentBlocks、Broker Scope/CallIdentity 和 ProviderBinding。`services` 是 ProviderBinding 同源 alias，Native 从 SQL30 派生 opaque credentialRef；secret 始终留 worker/Keyring。五个 provider 控制 wrapper 使用同一源 DTO，转发至同一 Host-owned worker。
 
+Native 在既有私有管道上使用 Broker 0.9.0 的 `RenewScopeRequest` 和 `RenewScopeResponse`。Host 在转发前验证当前 Native 身份、权限版本、绝对期限和 Host 实例。这个操作只维护 Worker 中已经存在的有效市场轮次，不注册提交 grant 或产生调用审批。
+
 生成/验证入口为 `make market-host-generate`、`make market-host-check`、`make market-host-test`。`sync-market-host.mjs --consumer=desktop|agent-host` 只机械同步；Desktop TS 路径为 `src/domain/market-host-native.generated.ts` 和 `src/api/generated/market-host-native-validator.gen.js`。源锁记录实际工作树摘要、base commit、`release=false`，不冒充已发布 pin。验证、基线和未执行项见 [本轮记录](market-host-validation-2026-10-07.md)。
 
 发布前须形成真实 immutable commit/tag、逐仓 pin 和实现符合性证据。当前无新 supported tag；沿用 FEAT-157 四个登记基线。回滚停止新 family 装配并保留隔离 outbox/任务记录，不能降级为 legacy submit 执行。
