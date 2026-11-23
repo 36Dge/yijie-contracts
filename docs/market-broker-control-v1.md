@@ -2,7 +2,11 @@
 
 2026-10-07。Owner：段成威；Host 是控制请求的唯一 producer，Connectors Rust worker 是唯一 consumer；响应方向相反。新增独立源是 additive，整体 FEAT-157 按 breaking 管理。用户已授权按需求包逐步实现；本地可审查候选不是生产发布、真实供应商资格或外部账户授权。
 
-唯一 wire 权威源为 `compatibility/market-broker-control/wire.schema.json`；共址 `control.json` 声明私有 transport、9 个动作、有界资源、生命周期与参数摘要语义。没有 HTTP 控制端点。`sdks/jsonschema/market-broker-control.schema.json` 只是机械生成的 bundled 投影，不是第二份源。原 market-connectors 的 55 个定义/9 个 Native IPC、market-selection 的 18 个定义和旧 pinned generator 保持原样。
+唯一 wire 权威源为 `compatibility/market-broker-control/wire.schema.json`；共址 `control.json` 声明私有 transport、10 个动作、有界资源、生命周期与参数摘要语义。没有 HTTP 控制端点。`sdks/jsonschema/market-broker-control.schema.json` 只是机械生成的 bundled 投影，不是第二份源。原 market-connectors 的 55 个定义/9 个 Native IPC、market-selection 的 18 个定义和旧 pinned generator 保持原样。
+
+## 0.12.0 的原生调用审批
+
+配对进程在准备轮次时协商 `nativeDispatchVersion=2` 和当前权限模式。Runtime 在普通 MCP 审批前通过私有通道登记调用。Host 与 Worker 校验实际线程、轮次、选择、工具和参数。Runtime 提供原生决定后，获准调用携带本次回执执行一次。用户拒绝、取消或原生审核拒绝时，失败的原生 Item 保存实际决定，工具调用不会发往供应商。风险展示字段不参与这次权限决策。
 
 ## 长任务续期与停止重试（0.9.0）
 
@@ -17,6 +21,10 @@ Gateway 在清除供应商元数据后，仅在能确认尚未发送的轮次授
 2026-11-22 的 Worker 回归 `market_scope_renewal_spans_forty_minutes_and_preserves_each_approval` 使用可控时钟跨越 40 分钟。Host 集成测试 `TestMarketRenewalAndTerminalStopAcrossToolsInCodeMode` 使用真实 Runtime、产品 Worker 和本地模型响应，经过原始截止、续期后新审批、权限自然到期以及同一脚本内的第二个市场工具调用。测试确认下一次模型请求带有到期原因，市场工具已撤下，其他计算可继续。Runtime 本地源码固定在 `5fb7f7f3fd444ed1714f21dd590398c57171f498`。
 
 未执行真实 Sorftime 业务查询，验证覆盖本地准入、审批与重试控制，供应商额度及在线数据不在本次验收范围。全量测试中涉及攻击注入和破坏性故障的项目按用户安全条款跳过。市场协议定向兼容检查和契约 lint 通过。全仓检查另有既存的内置网页检索 schema 差异、Runtime 配置对象默认值比较误报，以及两个历史生成清单的来源摘要差异。
+
+## 工具定义和调用数据的深度（0.11.0）
+
+通用连接器按 `maxSchemaDepth = 64` 检查每个输入定义的 JSON 语法树。多层模板的 `properties`、`items` 和组合约束会额外嵌套。单个定义仍限 64 KiB，整组定义限 2 MiB。Worker 完整编译并冻结通过检查的原始定义。实际调用参数和结果继续按 `maxDepth = 16` 检查，每次调用还须通过该工具的参数校验和当次审批规则。
 
 ## 进程和信任边界
 

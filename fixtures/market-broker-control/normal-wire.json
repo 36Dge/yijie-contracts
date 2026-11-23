@@ -554,5 +554,88 @@
       },
       "sequence": 1
     }
+  },
+  "RegisterNativeCallRequest": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000157",
+    "method": "register_native_call",
+    "payload": {
+      "binding": {
+        "context": {
+          "process": {
+            "hostInstanceId": "00000000-0000-4000-8000-000000000157",
+            "runtimeGeneration": "00000000-0000-4000-8000-000000000158"
+          },
+          "scope": {
+            "ownerUserId": "00000000-0000-4000-8000-000000000157",
+            "tenantId": "00000000-0000-4000-8000-000000000158",
+            "nativeProcessEpoch": "00000000-0000-4000-8000-000000000157",
+            "authorizationRevision": 1,
+            "authorizationExpiresAtUnixMs": 1800000300000
+          },
+          "agentSessionId": "00000000-0000-4000-8000-000000000157",
+          "nativeThreadId": "thread-synthetic"
+        },
+        "capabilityRef": "00000000-0000-4000-8000-000000000158",
+        "turnOperationId": "00000000-0000-4000-8000-000000000157",
+        "selectionDigest": "7b02b7ee8d09a9791015929f1b34c6d1a7ff19f5fba9e56c3d1c6bcac0830e87"
+      },
+      "nativeTurnId": "turn-synthetic",
+      "nativeThreadId": "thread-synthetic",
+      "registration": {
+        "yijieKind": "native_market_register_v2",
+        "operationId": "00000000-0000-4000-8000-000000000157",
+        "toolName": "lookup",
+        "argumentsJson": "{\"query\":\"ordinary\"}"
+      }
+    }
+  },
+  "RegisterNativeCallResponse": {
+    "schemaVersion": 1,
+    "requestId": "00000000-0000-4000-8000-000000000157",
+    "data": {
+      "identity": {
+        "binding": {
+          "context": {
+            "process": {
+              "hostInstanceId": "00000000-0000-4000-8000-000000000157",
+              "runtimeGeneration": "00000000-0000-4000-8000-000000000158"
+            },
+            "scope": {
+              "ownerUserId": "00000000-0000-4000-8000-000000000157",
+              "tenantId": "00000000-0000-4000-8000-000000000158",
+              "nativeProcessEpoch": "00000000-0000-4000-8000-000000000157",
+              "authorizationRevision": 1,
+              "authorizationExpiresAtUnixMs": 1800000300000
+            },
+            "agentSessionId": "00000000-0000-4000-8000-000000000157",
+            "nativeThreadId": "thread-synthetic"
+          },
+          "capabilityRef": "00000000-0000-4000-8000-000000000158",
+          "turnOperationId": "00000000-0000-4000-8000-000000000157",
+          "selectionDigest": "7b02b7ee8d09a9791015929f1b34c6d1a7ff19f5fba9e56c3d1c6bcac0830e87"
+        },
+        "nativeTurnId": "turn-synthetic",
+        "callRef": "00000000-0000-4000-8000-000000000157",
+        "serviceId": "market-qualification",
+        "reference": {
+          "installationId": "00000000-0000-4000-8000-000000000159",
+          "revision": 1,
+          "generation": 1
+        },
+        "toolName": "lookup",
+        "argsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "argsEncoding": "worker-json-v1",
+        "nativeThreadId": "thread-synthetic"
+      },
+      "revision": 1,
+      "state": "pending",
+      "remainingTtlMs": 60000,
+      "review": {
+        "title": "合成本地查询",
+        "summary": "查询已固定的本地样例，不涉及外部账号或平台数据。",
+        "risk": "read"
+      }
+    }
   }
 }

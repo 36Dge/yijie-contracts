@@ -1,0 +1,91 @@
+openapi: 3.0.3
+info:
+  title: Yijie native approval options
+  version: 0.2.0
+  description: Display the decisions available for a live Codex callback and select one by its local handle.
+servers:
+  - url: http://127.0.0.1:9130
+security:
+  - LocalBearer: []
+paths:
+  /v4/agent-sessions/{agent_session_id}/runtime-approvals:
+    parameters:
+      - $ref: '#/components/parameters/Session'
+    get:
+      operationId: listNativeApprovalOptions
+      parameters:
+        - name: includePresentation
+          in: query
+          description: Include the presentation of each native decision. Earlier clients receive only its handle and label.
+          schema: { type: boolean, default: false }
+      responses:
+        '200':
+          description: Atomic snapshot of callbacks and the choices on each pending request.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/NativeApprovalSnapshot' }
+  /v4/agent-sessions/{agent_session_id}/runtime-approvals/{approval_id}:
+    parameters:
+      - $ref: '#/components/parameters/Session'
+      - { name: approval_id, in: path, required: true, schema: { type: string, format: uuid } }
+    post:
+      operationId: selectNativeApprovalOption
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/NativeApprovalDecision' }
+      responses:
+        '200':
+          description: Receipt after the bound native response was sent.
+          content:
+            application/json:
+              schema: { $ref: '../runtime-permissions-v2/runtime-permissions-v2.yaml#/components/schemas/RuntimeApproval' }
+components:
+  securitySchemes:
+    LocalBearer: { type: http, scheme: bearer }
+  parameters:
+    Session: { name: agent_session_id, in: path, required: true, schema: { type: string, format: uuid } }
+  schemas:
+    NativeApprovalOption:
+      type: object
+      additionalProperties: false
+      required: [id, label]
+      properties:
+        id: { type: string, pattern: '^native_[0-9]{1,3}$' }
+        label: { type: string, minLength: 1, maxLength: 16384 }
+        kind:
+          type: string
+          description: Presentation of the already offered decision. Execution accepts only the original handle.
+          enum: [allow_once, command_prefix, allow_scope, decline, cancel, deny_rule]
+        detail:
+          type: string
+          maxLength: 4096
+          description: Displayable scope of this particular command-prefix choice, with argument boundaries preserved.
+    NativeApprovalDecision:
+      type: object
+      additionalProperties: false
+      required: [decision]
+      properties:
+        decision: { type: string, pattern: '^native_[0-9]{1,3}$' }
+    NativeApprovalSnapshot:
+      type: object
+      additionalProperties: false
+      required: [requests, commandPrefixes, nativeChoices]
+      properties:
+        requests:
+          type: array
+          maxItems: 128
+          items: { $ref: '../runtime-permissions-v2/runtime-permissions-v2.yaml#/components/schemas/RuntimeApproval' }
+        commandPrefixes:
+          type: object
+          additionalProperties:
+            type: array
+            items: { type: string }
+        nativeChoices:
+          type: object
+          maxProperties: 128
+          additionalProperties:
+            type: array
+            maxItems: 128
+            items: { $ref: '#/components/schemas/NativeApprovalOption' }

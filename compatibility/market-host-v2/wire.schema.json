@@ -620,7 +620,9 @@
               "native_auto_reject",
               "native_full",
               "native_session",
-              "native_always"
+              "native_always",
+              "native_runtime",
+              "native_runtime_reject"
             ]
           }
         },
@@ -1454,7 +1456,9 @@
               "native_auto_reject",
               "native_full",
               "native_session",
-              "native_always"
+              "native_always",
+              "native_runtime",
+              "native_runtime_reject"
             ]
           }
         },

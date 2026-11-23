@@ -35,3 +35,7 @@ SQL29 expands the two existing workspace CHECKs with copied historical values an
 proof/timing triggers. A compatible reader understands SQL29; an older unsupported binary
 must reject it rather than downgrade or reinterpret its references. New operations remain
 subject to their original model snapshot, finite grant and outbox admission.
+
+## 0.3.0 scheduled permission modes
+
+A newly confirmed execution grant records the effective permission mode of its target chat. A new dedicated chat uses the confirmed draft mode. Its run, thread and turn carry that mode. Changing an existing target's permissions requires a new matching grant before another run can use the changed permissions. Schema 51 migrates earlier grants and runs to their original `ask` mode, including already queued deliveries.

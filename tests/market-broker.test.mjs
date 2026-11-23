@@ -8,8 +8,8 @@ const {source,manifest,names,schema}=loadBrokerSource();
 const fixture=JSON.parse(readFileSync('fixtures/market-broker-control/normal-wire.json'));
 const ajv=new Ajv({strict:true,allErrors:true});ajv.addFormat('uuid',/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);ajv.addSchema(schema);
 const validator=n=>ajv.getSchema(schema.$id+'#/$defs/'+n);
-test('private control source declares nine owner-only actions and bounded resources',()=>{
- validateBrokerManifest(manifest,names);assert.equal(manifest.commands.length,9);assert.equal(names.length,61);
+test('private control source declares ten owner-only actions and bounded resources',()=>{
+ validateBrokerManifest(manifest,names);assert.equal(manifest.commands.length,10);assert.equal(names.length,65);
  assert.equal(manifest.transport,'owner_owned_stdio_jsonl');assert.equal(Object.hasOwn(source,'paths'),false);
  for(const n of ['SelectionSnapshot','SelectionRef','CanonicalId','ServiceId','Revision'])assert.ok(source.$defs[n].$ref&&!source.$defs[n].$ref.startsWith('#'));
  assert.equal(manifest.limits.maxLeaseTtlMs,300000);assert.equal(manifest.limits.maxFrameBytes,65536);
@@ -21,6 +21,11 @@ test('private control source declares nine owner-only actions and bounded resour
  assert.match(manifest.semantics.capacity,/observe normal exit or retain STOP_PENDING/);
  assert.match(manifest.semantics.shutdown,/gate-held normal EOF retirement/);
  assert.throws(()=>validateBrokerManifest({...manifest,transport:'http'},names));
+});
+test('tool schema nesting and call data nesting have independent limits',()=>{
+ assert.equal(manifest.generic_profile.maxSchemaDepth,64);
+ assert.equal(manifest.generic_profile.maxDepth,16);
+ assert.equal(manifest.limits.maxArgumentsDepth,16);
 });
 test('all generated definitions compile and normal typed requests/responses validate',()=>{
  for(const name of Object.keys(schema.$defs))assert.ok(validator(name));
@@ -45,7 +50,7 @@ test('new thread intent is explicit null and actual binding identities are manda
  assert.match(manifest.semantics.deduplication,/nativeProcessEpoch, agentSessionId, actual turnOperationId/);
 });
 test('external network assembly is explicit and response extras are not authority',()=>{
- const r=structuredClone(fixture.InitializeResponse);r.data.externalCallsEnabled=true;assert.equal(validator('InitializeResponse')(r),true);assert.equal(manifest.contract_version,'0.10.0');assert.match(manifest.semantics.qualification,/not an execution grant/);
+ const r=structuredClone(fixture.InitializeResponse);r.data.externalCallsEnabled=true;assert.equal(validator('InitializeResponse')(r),true);assert.equal(manifest.contract_version,'0.12.0');assert.match(manifest.semantics.qualification,/not an execution grant/);
  assert.ok(validator('InitializeResponse')({...fixture.InitializeResponse,futureField:true}));
  assert.equal(validator('Error')({...fixture.Error,retryable:true}),false);
  for(const gatewayUrl of ['http://127.0.0.1:0/mcp','http://127.0.0.1:65536/mcp']){const v=structuredClone(fixture.InitializeResponse);v.data.gatewayUrl=gatewayUrl;assert.equal(validator('InitializeResponse')(v),false);}
@@ -57,7 +62,7 @@ test('query/decision have exact frozen identity and elicitation only carries a l
  const decision=structuredClone(fixture.DecideCallRequest);delete decision.payload.identity.argsDigest;assert.equal(validator('DecideCallRequest')(decision),false);
  const query=structuredClone(fixture.PendingCallRequest);query.payload.callRef=null;assert.equal(validator('PendingCallRequest')(query),false);
 });
-test('control wire contains neither raw arguments nor credentials and source remains synchronized',()=>{
+test('private wire restricts arguments to the declared JSON string and has no credential fields',()=>{
  const prohibited=new Set(['arguments','token','secret','apiKey','headers','env','credentialValue','clientSecret']);
  function walk(v){if(!v||typeof v!=='object')return;for(const k of Object.keys(v.properties??{}))assert.ok(!prohibited.has(k),k);for(const c of Object.values(v))walk(c);}
  walk(schema);
@@ -74,4 +79,10 @@ test('new pending observation has both deadlines while legacy omits both',()=>{
  const valid=validator('PendingCall');const call=structuredClone(fixture.PendingCallResponse.data);
  assert.ok(valid(call));call.decisionExpiresAtUnixMs=1800000023000;assert.equal(valid(call),false);
  call.executionExpiresAtUnixMs=1800000060000;assert.ok(valid(call));
+});
+
+test('native dispatch v2 requires a frozen permission mode',()=>{
+ const valid=validator('PrepareRequest');const req=structuredClone(fixture.PrepareRequest);
+ req.payload.nativeDispatchVersion=2;delete req.payload.nativeApprovalMode;assert.equal(valid(req),false);
+ for(const mode of ['ask','auto','full']){req.payload.nativeApprovalMode=mode;assert.ok(valid(req));}
 });

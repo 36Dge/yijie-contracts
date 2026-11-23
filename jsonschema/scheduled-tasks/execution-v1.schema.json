@@ -3,7 +3,7 @@
   "$id": "https://schemas.yijie.ai/scheduled-tasks/execution/v1",
   "title": "ScheduledExecutionFoundationV1",
   "description": "Phase 3A local native foundation. No renderer endpoint, enabled schedule, executable outbox or HTTP producer. Confirming a grant does not enable a plan or receive a run. Scope and authorization derive from native authority. Workspace IDs are native-owned references, never raw paths. A managed_schedule reference identifies the plan workspace policy; per-chat directories are allocated in phase 3B. Run results preserve native outcome separately from delivery and attention; terminal does not prove business success. Logical run quota is not a Provider request budget. Optional properties are absent, never null. Private SQL and reservation ownership remain Desktop-local.",
-  "x-family-version": "0.2.0",
+  "x-family-version": "0.3.0",
   "$defs": {
     "Identity": {
       "$ref": "https://schemas.yijie.ai/scheduled-tasks/storage/v1#/$defs/Identity"
@@ -257,7 +257,9 @@
         "permission_mode": {
           "type": "string",
           "enum": [
-            "ask"
+            "ask",
+            "auto",
+            "full"
           ]
         },
         "delivery_state": {

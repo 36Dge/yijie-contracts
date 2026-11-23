@@ -9,16 +9,16 @@ const read=p=>JSON.parse(readFileSync(path.join(root,p),'utf8'));
 const keys=(v,want)=>assert.deepEqual(Object.keys(v).sort(),[...want].sort());
 export function validateBrokerManifest(m,names){
  keys(m,['schema_version','contract_id','contract_version','wire_authority','transport','owner','commands','limits','semantics','args_digest','gateway_errors','generic_profile','kimi_model_credential','result_metadata']);
- assert.equal(m.schema_version,1);assert.equal(m.contract_id,'market-broker-control/1');assert.equal(m.contract_version,'0.10.0');assert.equal(m.wire_authority,brokerSourcePath);assert.equal(m.transport,'owner_owned_stdio_jsonl');
+ assert.equal(m.schema_version,1);assert.equal(m.contract_id,'market-broker-control/1');assert.equal(m.contract_version,'0.12.0');assert.equal(m.wire_authority,brokerSourcePath);assert.equal(m.transport,'owner_owned_stdio_jsonl');
  assert.deepEqual(m.kimi_model_credential,{environmentKey:'YIJIE_MARKET_KIMI_MODEL_KEY_FD',descriptor:3,preamble:'yijie-kimi-model-key-v1\n',maxKeyBytes:16384,terminator:'\n'});
  assert.deepEqual(m.result_metadata,{key:'yijie.market.call',definition:'GatewayCallReceipt',maxMetadataBytes:4096,maxResultEnvelopeBytes:73728,turnStopKey:'yijie.market.turnStop'});
- assert.deepEqual(m.commands.map(c=>c.method),['initialize','prepare','bind_turn','renew_market_scope','revoke','status','pending_call','decide_call','shutdown']);
+ assert.deepEqual(m.commands.map(c=>c.method),['initialize','prepare','bind_turn','renew_market_scope','revoke','status','register_native_call','pending_call','decide_call','shutdown']);
  for(const c of m.commands){keys(c,['method','request','response','mutation']);assert.ok(names.includes(c.request)&&names.includes(c.response));assert.equal(c.mutation,!['status','pending_call'].includes(c.method));}
  assert.deepEqual(m.limits,{maxFrameBytes:65536,maxLeaseTtlMs:300000,maxUnboundWaitMs:5000,maxApprovalTtlMs:60000,maxRetainedLeases:64,maxPendingCalls:128,maxMutationReceipts:1024,maxArgumentsBytes:32768,maxArgumentsDepth:16});
  keys(m.semantics,['scope','clock','deduplication','capacity','dataCapability','pendingCall','shutdown','unknownOutcome','qualification','gatewayOutcome','kimiModelCredential','resultCorrelation']);
  for(const v of [m.owner,...Object.values(m.semantics)])assert.ok(typeof v==='string'&&v.length>0&&v.length<=2048);
- keys(m.generic_profile,['profile','maxToolsPerService','maxToolsPerSelection','maxSchemaBytes','maxSchemasBytes','maxReviewArgumentsBytes','maxResultBytes','maxDepth','permissionMode','unknownRisk','destructiveWithoutImpactPolicy','schemaReferences','businessRetry']);
- assert.equal(m.generic_profile.profile,'generic-mcp-v1');assert.equal(m.generic_profile.permissionMode,'native_on_qualified_calls');assert.equal(m.generic_profile.unknownRisk,'write');assert.equal(m.generic_profile.destructiveWithoutImpactPolicy,'deny');assert.equal(m.generic_profile.schemaReferences,'local_only_no_network_or_files');assert.equal(m.generic_profile.businessRetry,'never');
+ keys(m.generic_profile,['profile','maxToolsPerService','maxToolsPerSelection','maxSchemaBytes','maxSchemasBytes','maxReviewArgumentsBytes','maxResultBytes','maxDepth','maxSchemaDepth','permissionMode','unknownRisk','destructiveWithoutImpactPolicy','schemaReferences','businessRetry']);
+ assert.equal(m.generic_profile.profile,'generic-mcp-v1');assert.equal(m.generic_profile.permissionMode,'native_for_admitted_calls');assert.equal(m.generic_profile.unknownRisk,'write');assert.equal(m.generic_profile.destructiveWithoutImpactPolicy,'native_policy');assert.equal(m.generic_profile.schemaReferences,'local_only_no_network_or_files');assert.equal(m.generic_profile.businessRetry,'never');
  for(const[k,v]of Object.entries(m.generic_profile))if(k.startsWith('max'))assert.ok(Number.isSafeInteger(v)&&v>0);
  keys(m.args_digest,['version','domain','algorithm','encoding','ordering','numbers','freeze']);assert.equal(m.args_digest.version,'worker-json-v1');assert.equal(m.args_digest.domain,'yijie.market-arguments/worker-json-v1\n');assert.equal(m.args_digest.algorithm,'sha256');
  for(const v of Object.values(m.args_digest))assert.ok(typeof v==='string'&&v.length>0&&v.length<=2048);
@@ -33,7 +33,7 @@ export function validateBrokerManifest(m,names){
 }
 export function loadBrokerSource(){
  const source=read(brokerSourcePath),manifest=read(brokerManifestPath),names=Object.keys(source.$defs);
- keys(source,['$schema','$id','$defs']);assert.equal(source.$schema,'https://json-schema.org/draft/2020-12/schema');assert.equal(source.$id,'https://schemas.yijie.ai/market-broker-control/v1');assert.equal(names.length,61);validateBrokerManifest(manifest,names);
+ keys(source,['$schema','$id','$defs']);assert.equal(source.$schema,'https://json-schema.org/draft/2020-12/schema');assert.equal(source.$id,'https://schemas.yijie.ai/market-broker-control/v1');assert.equal(names.length,65);validateBrokerManifest(manifest,names);
  for(const v of Object.values(manifest.gateway_errors))assert.ok(source.$defs.ErrorCode.enum.includes(v.code),'Gateway projections only reuse existing Broker error codes');
  const allowed=new Set([brokerSourcePath,'compatibility/market-selection/wire.schema.json','openapi/market-connectors/market-connectors.yaml']);
  const documents=new Map([[brokerSourcePath,source],[brokerManifestPath,manifest]]),defs={},pointers=new Map(names.map(n=>[n,[brokerSourcePath,'/$defs/'+n]])),refs=new Map(names.map(n=>[brokerSourcePath+'#/$defs/'+n,n]));

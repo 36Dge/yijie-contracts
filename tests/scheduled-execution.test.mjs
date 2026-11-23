@@ -31,5 +31,6 @@ test('run intent, native outcome and delivery state are distinct closed values',
  assert.equal(v({...run,trigger:'automatic'}),false);
  assert.equal(v({...run,trigger:'automatic',logical_slot:'2026-09-18T09:00'}),true);
  assert.equal(v({...run,trigger:'rerun',original_run_id:id}),true);
- for(const update of [{trigger:'rerun'},{original_run_id:null},{original_run_id:id},{permission_mode:'auto'},{native_outcome:'business_success'},{delivery_state:'future'}])assert.equal(v({...run,...update}),false);
+ for(const permission_mode of ['ask','auto','full'])assert.equal(v({...run,permission_mode}),true);
+ for(const update of [{trigger:'rerun'},{original_run_id:null},{original_run_id:id}, {permission_mode:'unknown'},{native_outcome:'business_success'},{delivery_state:'future'}])assert.equal(v({...run,...update}),false);
 });

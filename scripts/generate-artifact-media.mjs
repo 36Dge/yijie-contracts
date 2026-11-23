@@ -14,6 +14,8 @@ const sourcePath = 'jsonschema/artifact/media-v2.schema.json';
 const source = JSON.parse(read(sourcePath));
 const legacySourcePath = 'jsonschema/artifact/media-v1.schema.json';
 const legacySource = JSON.parse(read(legacySourcePath));
+const publishPath = 'jsonschema/artifact/workspace-publish-v1.schema.json';
+const publish = JSON.parse(read(publishPath));
 function mediaEvent(mediaSource, schemaVersion) {
 const event = JSON.parse(read('jsonschema/agent/session-event-v3.schema.json'));
 event.$id = 'https://schemas.yijie.ai/agent/session-event-v9.schema.json';
@@ -65,16 +67,61 @@ const outputs = new Map([
   ['sdks/rust/artifactmedia/types.gen.rs',execFileSync('rustfmt',['--edition','2021'],{input:rust})],
   ['sdks/typescript/src/jsonschema/artifact-media.gen.ts',await compile(source,'ArtifactMediaV2')],
 ]);
+// Model arguments and optional HTTP diagnostics evolve independently of the
+// frozen v1 HTTP body and v9/v12 event sources.
+const reasons = Object.entries(publish['x-error-reasons']);
+const goName = value => value.split('_').map(part => part[0].toUpperCase() + part.slice(1)).join('');
+const reasonHeader = JSON.stringify(publish['x-reason-header']);
+const publishGo = `// Code generated from workspace-publish-v1; DO NOT EDIT.
+package artifactmedia
+const PublishReasonHeader = ${reasonHeader}
+type PublishReason string
+func (reason PublishReason) Error() string { return string(reason) }
+const (
+${reasons.map(([key]) => `Reason${goName(key)} PublishReason = ${JSON.stringify(key)}`).join('\n')}
+)
+func (reason PublishReason) Known() bool {
+  switch reason { case ${reasons.map(([key]) => 'Reason' + goName(key)).join(',')}: return true }
+  return false
+}
+`;
+const fields = Object.entries(publish.properties).map(([key, spec]) => {
+  assert.equal(spec.type, 'string');
+  return publish.required.includes(key) ? `pub ${key}: String,` :
+    `#[serde(default, deserialize_with="present_string")] pub ${key}: Option<String>,`;
+});
+const publishRust = `// Code generated from workspace-publish-v1; DO NOT EDIT.
+#[derive(serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct WorkspacePublishInput { ${fields.join('\n')} }
+fn present_string<'de, D: serde::Deserializer<'de>>(d: D) -> Result<Option<String>, D::Error> {
+    <String as serde::Deserialize>::deserialize(d).map(Some)
+}
+pub const PUBLISH_REASON_HEADER: &str = ${reasonHeader};
+pub const PRIVATE_NAME_BYTES: usize = ${source.definitions.PublishInput.properties.display_name['x-yijie-max-utf8-bytes']};
+pub const PUBLISH_BODY_BYTES: usize = ${source['x-http'].publish.limits.body_bytes};
+pub fn reason_message(reason: &str) -> &'static str {
+    match reason { ${reasons.map(([key, message]) => `${JSON.stringify(key)} => ${JSON.stringify(message)},`).join('\n')}
+    _ => ${JSON.stringify(publish['x-error-reasons'].unavailable)} }
+}
+`;
+outputs.set('sdks/go/artifactmedia/publish.gen.go', execFileSync('gofmt', [], {input: publishGo}));
+outputs.set('sdks/rust/artifactmedia/publish.gen.rs', execFileSync('rustfmt', ['--edition','2021'], {input: publishRust}));
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const lockPath='compatibility/artifact-media/source.lock.json';
 const base=existsSync(path.join(root,lockPath))?JSON.parse(read(lockPath)).base_commit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
-outputs.set(lockPath,JSON.stringify({schema_version:1,mode:'local_candidate',release:false,base_commit:base,sources:[sourcePath,legacySourcePath,'jsonschema/agent/session-event-v3.schema.json','scripts/generate-artifact-media.mjs'].map(path=>({path,sha256:sha(read(path))})),generated:[...outputs].map(([path,bytes])=>({path,sha256:sha(bytes)}))},null,2)+'\n');
+outputs.set(lockPath,JSON.stringify({schema_version:1,mode:'local_candidate',release:false,base_commit:base,sources:[sourcePath,legacySourcePath,publishPath,'jsonschema/agent/session-event-v3.schema.json','scripts/generate-artifact-media.mjs'].map(path=>({path,sha256:sha(read(path))})),generated:[...outputs].map(([path,bytes])=>({path,sha256:sha(bytes)}))},null,2)+'\n');
 for(const [file,bytes] of outputs) { const target=path.join(root,file);if(check)assert.deepEqual(readFileSync(target),Buffer.from(bytes),file);else{mkdirSync(path.dirname(target),{recursive:true});writeFileSync(target,bytes);} }
 const consumer=process.argv.find(x=>x.startsWith('--consumer='))?.split('=')[1];
 if(consumer) {
   assert.ok(['host','desktop'].includes(consumer));
   const repo=consumer==='host'?'yijie-agent-host':'yijie-desktop';
   const pairs=consumer==='host'?[[sourcePath,'api/schemas/artifact-media-v2.schema.json'],[legacySourcePath,'api/schemas/artifact-media-v1.schema.json'],['sdks/go/artifactmedia/types.gen.go','internal/contracts/artifactmedia/types.gen.go'],['sdks/rust/artifactmedia/types.gen.rs','artifact-mcp/src/types.gen.rs'],[lockPath,'api/artifact-media.candidate.json']]:[['sdks/typescript/src/jsonschema/artifact-media-policy.gen.ts','src/api/generated/artifact-media-policy.gen.ts'],[sourcePath,'contracts/artifact-media-v2.schema.json'],[legacySourcePath,'contracts/artifact-media-v1.schema.json'],['sdks/rust/artifactmedia/types.gen.rs','src-tauri/src/chat/artifact_media_generated.rs'],[lockPath,'contracts/artifact-media.candidate.json']];
+  if (consumer === 'host') pairs.push(
+    [publishPath, 'api/schemas/workspace-publish-v1.schema.json'],
+    ['sdks/go/artifactmedia/publish.gen.go', 'internal/contracts/artifactmedia/publish.gen.go'],
+    ['sdks/rust/artifactmedia/publish.gen.rs', 'artifact-mcp/src/publish.gen.rs'],
+  );
   for(const [src,dst] of pairs){const target=path.join(root,'..',repo,dst),bytes=read(src);if(check)assert.deepEqual(readFileSync(target),bytes,dst);else{mkdirSync(path.dirname(target),{recursive:true});writeFileSync(target,bytes);}}
 }
 console.log('Artifact media generated/verified; local candidate, legacy source unchanged.');

@@ -1,5 +1,11 @@
 # FEAT-165 local file candidate
 
+### Workspace publisher update, 2026-11-23
+
+The local `publish_artifact` MCP input is defined by the [workspace publish schema](../jsonschema/artifact/workspace-publish-v1.schema.json). The required `relative_path` selects the workspace file. The optional `display_name` suggests a saveable name. The adapter fills both fields on the existing private HTTP request. The Host uses a normalized, bounded display name, falling back to the verified basename or a short default. The registration fingerprint and lifecycle events use the resolved name. The MIME type and content checks use the source file.
+
+An optional `X-Yijie-Artifact-Reason` on a rejected request carries one of the bounded codes in the same source. Unknown or absent codes give a generic, unconfirmed result. Old HTTP bodies, event versions, status queries and acknowledgement semantics retain their existing shapes. This is a local semantic change to registration. The directional checks use the pre-change Contracts commit `e2f107e0652768813c89d9339f930ebac146b76e` and both frozen media sources. Roll out the Host first and then the adapter. Roll back the adapter first.
+
 Owner accepted the reviewed FEAT-165 requirements and implementation on 2026-10-28. Overall impact is breaking (new closed media/readers), not a release. This work does not change Codex, provider selection, tool authorization or any live data.
 
 Input is a provider-first extension of the existing StartTurnV2 file union: SVG and MP4 remain type=file. SVG carries bounded original text; MP4 carries only safe display name, MIME, original byte count and an explicit no-audio/video-analysis statement. The MIME discriminates the new metadata-only interpretation; existing file context remains source excerpts. Existing submission IDs, HMAC and market/expert wrappers are unchanged. New values may only be sent with the updated exact Host/Native candidate; old input is still valid.
