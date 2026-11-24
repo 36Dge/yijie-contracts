@@ -705,6 +705,204 @@
           }
         ]
       }
+    },
+    "/v2/web-retrieval/fetches": {
+      "post": {
+        "operationId": "executeScopedFetch",
+        "summary": "Admit or reuse a scoped page read",
+        "description": "Bind a Fetch invocation to its canonical operation within the authorized caller and root turn. Concurrent and completed matches share the original operation.",
+        "security": [
+          {
+            "WebDelegation": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result or recorded operation state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/ScopedFetchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input; no dispatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "This HTTP attempt did not dispatch. Refresh the grant and retry once with the same operation ID only. Supplier authentication failure is never returned as product 401.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not entitled; no new dispatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Operation conflict or state conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Finite quota or capacity reached; no automatic retry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable; dispatch fact is explicit, unknown is not free",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/ScopedFetchRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/web-retrieval/fetches/{scope}/{id}": {
+      "get": {
+        "operationId": "readScopedFetch",
+        "summary": "Read an existing scoped page result",
+        "description": "Read only the original Fetch operation for this binding and scope. An unknown or unavailable result cannot create a new page read.",
+        "security": [
+          {
+            "WebDelegation": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result or recorded operation state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/ScopedFetchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input; no dispatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "This HTTP attempt did not dispatch. Refresh the grant and retry once with the same operation ID only. Supplier authentication failure is never returned as product 401.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not entitled; no new dispatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Operation conflict or state conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Finite quota or capacity reached; no automatic retry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable; dispatch fact is explicit, unknown is not free",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../compatibility/builtin-web-retrieval/wire.schema.json#/$defs/APIError"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "scope",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {

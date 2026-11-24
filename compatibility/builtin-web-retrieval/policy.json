@@ -1,6 +1,6 @@
 {
   "contract_id": "builtin-web-retrieval/1",
-  "contract_version": "0.4.0",
+  "contract_version": "0.5.0",
   "feature": "FEAT-175",
   "release": false,
   "wire_authority": "compatibility/builtin-web-retrieval/wire.schema.json",
@@ -129,7 +129,8 @@
     "fresh_selection": "Retire kimi-web only for a newly frozen submission. Preserve original input digest/selection and all previously frozen snapshots, history and decision receipts. Do not reinterpret replay using current installation state.",
     "deep_search_reuse": "For Pro only, after fresh Host admission, coalesce concurrent exact tool and argument matches within the same native caller/root turn, binding and authorization revision. Reauthorize completed matches through the original API operation ID. Preserve the result-unavailable status if its body expired. Changed arguments or a user refresh submitted in a new turn creates a new operation. Never treat failed or unconfirmed outcomes as successful results.",
     "deep_search_model_output": "Direct model output and default Code Mode serialization carry one bounded preview with query, outcome, source count and indexed sources, preserving upstream truncation and dropped result counts. Code Mode can explicitly read full validated chunks from the original MCP receipt. Desktop evidence stays on the original receipt.",
-    "deep_search_v2": "Authenticated native scope plus immutable grant authorization revision and complete API argument digest identify the canonical search. Claim once. Results are read by a separate authorized read-only request. Distinct logical calls retain independent outcomes. A complete empty result exhausts these exact parameters in this turn. Changed filters and a fresh user turn remain eligible."
+    "deep_search_v2": "Authenticated native scope plus immutable grant authorization revision and complete API argument digest identify the canonical search. Claim once. Results are read by a separate authorized read-only request. Distinct logical calls retain independent outcomes. A complete empty result exhausts these exact parameters in this turn. Changed filters and a fresh user turn remain eligible.",
+    "scoped_page_fetch": "After native scope admission, the API binds Fetch to the current binding, authorization revision, turn scope, tool and exact arguments apart from a document fragment. Return the original Fetch result and the versioned operation fact under ai.yijie/fetch-receipt. Re-reading an unavailable or uncertain operation never dispatches another supplier request. A fresh caller turn can request a new page."
   },
   "service_identities": {
     "api": "spiffe://yijie/services/api",
@@ -151,6 +152,13 @@
       "_meta": {
         "ai.yijie/coalescesExactTurnRequests": true,
         "ai.yijie/searchReceiptVersion": 2
+      }
+    },
+    "kimi_web_fetch": {
+      "description": "Repeated reads of the same page in this user turn reuse its original available result. Use the returned material to finish or read a distinct missing source.",
+      "_meta": {
+        "ai.yijie/coalescesExactTurnRequests": true,
+        "ai.yijie/fetchReceiptVersion": 2
       }
     }
   }

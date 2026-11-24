@@ -12,15 +12,17 @@ const ajv = new Ajv2020({strict: true, allErrors: true}); addFormats(ajv);
 ajv.addKeyword({keyword: 'x-sensitive', schemaType: 'boolean'});
 ajv.addSchema(schema);
 
-test('only the deep search gateway advertises exact in-flight coalescing', () => {
-  const pro = tools.find(t => t.name === 'kimi_web_search_pro');
-  const portable = portableTools.find(t => t.name === pro.name);
-  assert.equal(pro._meta['ai.yijie/coalescesExactTurnRequests'], true);
-  assert.equal(pro._meta['ai.yijie/searchReceiptVersion'], 2);
-  assert.equal(portable._meta, undefined);
-  assert.equal(pro.inputSchema, portable.inputSchema);
-  assert.equal(pro.outputSchema, portable.outputSchema);
-  assert(tools.filter(t => t !== pro).every(t => t._meta === undefined));
+test('only the scoped Pro and Fetch gateway descriptors advertise coalescing', () => {
+  for (const [name, receipt] of [['kimi_web_search_pro', 'ai.yijie/searchReceiptVersion'], ['kimi_web_fetch', 'ai.yijie/fetchReceiptVersion']]) {
+    const tool = tools.find(t => t.name === name);
+    const portable = portableTools.find(t => t.name === name);
+    assert.equal(tool._meta['ai.yijie/coalescesExactTurnRequests'], true);
+    assert.equal(tool._meta[receipt], 2);
+    assert.equal(portable._meta, undefined);
+    assert.equal(tool.inputSchema, portable.inputSchema);
+    assert.equal(tool.outputSchema, portable.outputSchema);
+  }
+  assert.equal(tools.find(t => t.name === 'kimi_web_search')._meta, undefined);
 });
 
 test('private and native projections agree on the closed versioned search receipt', () => {
@@ -147,7 +149,7 @@ test('FEAT175 uses the fixed Runtime MCP configuration without extending its sch
 test('FEAT175 public and internal operations keep separate authentication authorities', () => {
   const pub = JSON.parse(readFileSync(path.join(root, 'openapi/public/web-retrieval.yaml')));
   const internal = JSON.parse(readFileSync(path.join(root, 'openapi/internal/web-retrieval.yaml')));
-  assert.equal(Object.keys(pub.paths).length, 7);
+  assert.equal(Object.keys(pub.paths).length, 9);
   assert.equal(Object.keys(internal.paths).length, 5);
   assert.deepEqual(pub.paths['/v1/web-retrieval/delegations'].post.security, [{ProductSession: []}]);
   assert.deepEqual(pub.paths['/v1/web-retrieval/operations'].post.security, [{WebDelegation: []}]);
