@@ -116,3 +116,12 @@ inherited environment. Only a local Host paired with the preview-capable
 Runtime accepts the request. Older parents omit it. This display capability
 travels in the context of the existing expert grant and submit operations.
 Their request formats, authorization, retries and response receipts are unchanged.
+
+## MiniMax search source titles
+
+A v13 event subscriber opts in with `X-Yijie-Web-Source-Titles` set to `1`.
+An `item/completed` or `turn/completed` notification may include `webSearchSourceTitles`.
+Each row refers to a search item ID and an exact URL already present in that item's sources.
+The consumer fills a missing title in place. The original item owns execution status, ordering,
+and the destination used to open the link. A v6 history snapshot exposes the enriched ordinary
+source rows. Subscribers using the earlier event shape receive the same lifecycle sequence.

@@ -20,6 +20,15 @@
     "truncated": {
       "default": false,
       "type": "boolean"
+    },
+    "webSearchSourceTitles": {
+      "items": {
+        "$ref": "#/definitions/WebSearchSourceTitle"
+      },
+      "type": [
+        "array",
+        "null"
+      ]
     }
   },
   "required": [
