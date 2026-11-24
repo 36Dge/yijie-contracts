@@ -1041,6 +1041,9 @@ type NativeNotification struct {
 	TurnId                *string                    `json:"turnId,omitempty"`
 	WebSearchSourceTitles *[]NativeSearchSourceTitle `json:"webSearchSourceTitles,omitempty"`
 
+	// WebSearchSourceTitlesDeferred When true, resolve titles through the authorized native thread snapshot for this turn. Provided only to subscribers that opt into web search source titles.
+	WebSearchSourceTitlesDeferred *bool `json:"webSearchSourceTitlesDeferred,omitempty"`
+
 	// WillRetry Native retry intent only. Omitted/null means unknown, never false; does not drive client execution.
 	WillRetry *bool `json:"willRetry,omitempty"`
 }

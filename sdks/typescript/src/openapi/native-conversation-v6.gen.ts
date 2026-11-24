@@ -129,6 +129,8 @@ export interface components {
             /** @description Only for item/agentMessage/previewDelta. UTF-8 byte offset in the bounded, cleaned public body. Offset zero starts a preview. The formal item snapshot wins; previews carry no phase or execution authority. */
             previewOffset?: number;
             webSearchSourceTitles?: components["schemas"]["NativeSearchSourceTitle"][];
+            /** @description When true, resolve titles through the authorized native thread snapshot for this turn. Provided only to subscribers that opt into web search source titles. */
+            webSearchSourceTitlesDeferred?: boolean;
         };
         NativeThreadSnapshot: {
             /** @enum {integer} */

@@ -125,3 +125,9 @@ Each row refers to a search item ID and an exact URL already present in that ite
 The consumer fills a missing title in place. The original item owns execution status, ordering,
 and the destination used to open the link. A v6 history snapshot exposes the enriched ordinary
 source rows. Subscribers using the earlier event shape receive the same lifecycle sequence.
+
+The inline batch supports up to 4,096 source memberships. If the serialized event
+exceeds the existing 1 MiB Desktop frame budget, a negotiated subscriber receives
+`webSearchSourceTitlesDeferred` and resolves titles from its authenticated v6 thread
+snapshot. The client updates matching recorded URLs in the same turn and preserves
+the original completion events. A pending read can be retried on completion or reopen.

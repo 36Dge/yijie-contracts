@@ -551,10 +551,14 @@
           },
           "webSearchSourceTitles": {
             "type": "array",
-            "maxItems": 128,
+            "maxItems": 4096,
             "items": {
               "$ref": "#/components/schemas/NativeSearchSourceTitle"
             }
+          },
+          "webSearchSourceTitlesDeferred": {
+            "type": "boolean",
+            "description": "When true, resolve titles through the authorized native thread snapshot for this turn. Provided only to subscribers that opt into web search source titles."
           }
         }
       },
