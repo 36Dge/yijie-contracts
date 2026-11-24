@@ -11,7 +11,7 @@ export function validateBrokerManifest(m,names){
  keys(m,['schema_version','contract_id','contract_version','wire_authority','transport','owner','commands','limits','semantics','args_digest','gateway_errors','generic_profile','kimi_model_credential','result_metadata']);
  assert.equal(m.schema_version,1);assert.equal(m.contract_id,'market-broker-control/1');assert.equal(m.contract_version,'0.12.0');assert.equal(m.wire_authority,brokerSourcePath);assert.equal(m.transport,'owner_owned_stdio_jsonl');
  assert.deepEqual(m.kimi_model_credential,{environmentKey:'YIJIE_MARKET_KIMI_MODEL_KEY_FD',descriptor:3,preamble:'yijie-kimi-model-key-v1\n',maxKeyBytes:16384,terminator:'\n'});
- assert.deepEqual(m.result_metadata,{key:'yijie.market.call',definition:'GatewayCallReceipt',maxMetadataBytes:4096,maxResultEnvelopeBytes:73728,turnStopKey:'yijie.market.turnStop'});
+ assert.deepEqual(m.result_metadata,{key:'yijie.market.call',methodKey:'yijie.market.method',definition:'GatewayCallReceipt',maxMetadataBytes:4096,maxResultEnvelopeBytes:73728,turnStopKey:'yijie.market.turnStop'});
  assert.deepEqual(m.commands.map(c=>c.method),['initialize','prepare','bind_turn','renew_market_scope','revoke','status','register_native_call','pending_call','decide_call','shutdown']);
  for(const c of m.commands){keys(c,['method','request','response','mutation']);assert.ok(names.includes(c.request)&&names.includes(c.response));assert.equal(c.mutation,!['status','pending_call'].includes(c.method));}
  assert.deepEqual(m.limits,{maxFrameBytes:65536,maxLeaseTtlMs:300000,maxUnboundWaitMs:5000,maxApprovalTtlMs:60000,maxRetainedLeases:64,maxPendingCalls:128,maxMutationReceipts:1024,maxArgumentsBytes:32768,maxArgumentsDepth:16});

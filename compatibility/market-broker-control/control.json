@@ -164,6 +164,7 @@
   },
   "result_metadata": {
     "key": "yijie.market.call",
+    "methodKey": "yijie.market.method",
     "definition": "GatewayCallReceipt",
     "maxMetadataBytes": 4096,
     "maxResultEnvelopeBytes": 73728,

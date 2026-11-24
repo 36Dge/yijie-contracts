@@ -36,6 +36,7 @@ test('one-shot decision, rejection and natural expiry have distinct read-only re
 });
 test('result metadata fits native retention and contains no execution or credential capability',()=>{
   assert.equal(manifest.result_metadata.key,'yijie.market.call');
+  assert.equal(manifest.result_metadata.methodKey,'yijie.market.method');
   assert.ok(Buffer.byteLength(JSON.stringify(receipt))<manifest.result_metadata.maxMetadataBytes);
   assert.ok(manifest.result_metadata.maxResultEnvelopeBytes<1024*1024);
   const fields=Object.keys(schema.$defs.GatewayCallReceipt.properties);

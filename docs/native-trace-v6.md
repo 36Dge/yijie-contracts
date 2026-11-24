@@ -27,6 +27,25 @@ to160 characters and canonical metadata; display text grants no authority.
 Missing/null willRetry is unknown; false means explicitly no retry, true means
 native retry intent, not permission for the frontend to restart anything.
 
+All native MCP calls use the existing display title for a readable action and
+an identifiable public target from that invocation. Registered actions can name
+a domain-specific target, such as an ASIN on a daily sales query. Other tools
+use their validated action or method and bounded business identifiers, search
+terms or page numbers. With no displayable target a call keeps its action label.
+Runtime IDs, credentials, free-form payloads and full URLs are excluded. The
+same rule applies to notifications and thread reads. It changes only the
+title semantics. Existing v6 readers accept the same field, with the original
+source label, result, status, and identity.
+
+Paired Desktop clients can opt into the private display item's
+`callStartedAtMs` on subscription and history reads. It records the original
+Host `item/started` event time. A later completion preserves it; a snapshot
+alone cannot supply it. Desktop saves clock-bearing views in format 8 and
+continues to decode formats 6 and 7. Notification facts retain their original
+format. Old IPC requests omit clocks. A terminal history read may supply a
+missing or more specific MCP title on the returned copy when the bound turn,
+item, server, method and status agree. It does not replay or rewrite a turn.
+
 Private IPC/history schema6 is owned by Desktop. Presentation groups and
 expansion choices are derived and memory-only. Reopening saved format6 does not
 replay a turn or migrate content. Old/future formats are rejected explicitly.

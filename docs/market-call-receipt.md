@@ -12,6 +12,13 @@ only add optional `correlation`. The existing `service` ProviderBinding is uncha
 No raw credentials, credentialRef, capabilityRef, original arguments or authority
 context are included. Code Mode can expose metadata; it is not a secret channel.
 
+For generic marketplace tools the owned Gateway may also emit the optional
+string `_meta["yijie.market.method"]`. It is the public method from the
+frozen tool definition. Consumers may use it for display only when the alias
+in the native Item and its existing receipt both equal `m_` plus the first
+60 hex digits of SHA-256 over `serviceId + "\n" + method`. The value never
+comes from the provider result. Older calls and readers may omit or ignore it.
+
 Host sets native `default_tools_approval_mode=approve` only on its owned, leased
 `yijie_market` transport. Nonempty selection remains ask/on-request with user reviewer.
 Gateway server elicitation still takes the native default auto-approval context,
