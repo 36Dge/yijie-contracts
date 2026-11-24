@@ -35,6 +35,7 @@ assert.deepEqual(manifest.patches.slice(previous.patches.length).map(p=>p.path),
   '.yijie/patches/chat-models/0035-fetch-answer-context.patch',
   '.yijie/patches/chat-models/0036-hosted-search-followup.patch',
   '.yijie/patches/chat-models/0037-idle-review-publication.patch',
+  '.yijie/patches/chat-models/0038-minimax-search-source-titles.patch',
 ]);
 const inputs=[...manifest.patches.map(p=>p.path),...['build-native-skill-marketplace.sh','prepare-native-skill-marketplace.py','write-native-skill-marketplace-runtime-manifest.py','prepare-answer-completion.py'].map(p=>'scripts/'+p)];
 const inputHash=createHash('sha256');for(const p of inputs)inputHash.update(p).update('\0').update(read(fork,p));
@@ -48,6 +49,13 @@ assert.equal(tree.digest('hex'),manifest.appServer.schemaTreeSha256);assert.equa
 const names=['AgentMessagePreviewDeltaNotification','PluginStateReadParams','PluginStateReadResponse','PluginRefreshParams','PluginRefreshResponse','PluginInstallParams','PluginInstallResponse','PluginUninstallParams','PluginUninstallResponse','PluginReadParams','PluginReadResponse','MarketplaceAddParams','MarketplaceAddResponse','ConfigReadParams','ConfigReadResponse','ConfigBatchWriteParams','ConfigWriteResponse','SkillsListParams','SkillsListResponse','ListMcpServerStatusParams','ListMcpServerStatusResponse'];
 const outputs=new Map(),family='compatibility/runtime-skill-marketplace';
 const history = JSON.parse(read(schemaRoot, "v2/ThreadReadResponse.json"));
+const turnCompletion = JSON.parse(read(schemaRoot, "v2/TurnCompletedNotification.json"));
+for (const schema of [history.definitions.PublicMessagePublication, turnCompletion]) {
+  const field = schema.properties.webSearchSourceTitles;
+  assert(field && !schema.required.includes("webSearchSourceTitles"), "Optional search title batch missing");
+  assert(JSON.stringify(field).includes("#/definitions/WebSearchSourceTitle"), "Search title schema differs");
+}
+assert.deepEqual([...turnCompletion.definitions.WebSearchSourceTitle.required].sort(), ["searchItemId", "title", "url"]);
 const notification = JSON.parse(read(schemaRoot, "v2/ItemStartedNotification.json"));
 for (const name of ["PublicMessagePublication","PublicPhaseSource"]) {
   assert.deepEqual(history.definitions[name], notification.definitions[name]);
